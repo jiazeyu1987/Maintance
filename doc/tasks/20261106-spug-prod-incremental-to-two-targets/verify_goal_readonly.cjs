@@ -5,16 +5,121 @@ const {chromium}=require('C:/Users/D01021/Documents/ChatGPT/IntRuoyiE2E/node_mod
 const TASK=__dirname,PRIVATE='C:/Spug/runtime/private/prod-incremental-to-two-targets-20261106';
 const ORIGIN='http://127.0.0.1:18080',CATALOGUE='/release-center/api/applications/intruoyi/package-catalog';
 const need=(value,code)=>{if(!value)throw Error(code);};
-need(process.argv.length===4&&process.argv[2]==='--observation'&&/^r[1-9][0-9]*$/.test(process.argv[3]),'EXPLICIT_OBSERVATION_REQUIRED');
-const observation=process.argv[3],output=path.join(TASK,'goal-audit-readonly-'+observation+'.json'),helperRaw=fs.readFileSync(__filename);
+const sha=raw=>crypto.createHash('sha256').update(raw).digest('hex');
+const auditArguments=parseAuditArguments(process.argv.slice(2));
+const selectedPoint=preparePointAudit(auditArguments);
+const observation=auditArguments.observation,output=path.join(TASK,'goal-audit-readonly-'+observation+'.json'),helperRaw=fs.readFileSync(__filename);
 need(!fs.existsSync(output),'ORIGINAL_OBSERVATION_ALREADY_EXISTS');
 const privateDir=path.join(PRIVATE,'goal-audit-readonly-'+observation);fs.mkdirSync(privateDir,{recursive:false});
 const expectedLatest=['smallapp-fbaf12b584214695b6b687e010f4773b','smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5','smallapp-9d5ed2108497411a81bcd5ba7d1a6291'];
 const targets=['172.30.30.57','172.30.30.58','172.30.30.59'];
-const sha=raw=>crypto.createHash('sha256').update(raw).digest('hex');
-const report={schemaVersion:'SpugCompleteGoalReadonlyAudit/v1',startedAt:new Date().toISOString(),observation,
+const report={...auditReportFields(selectedPoint),startedAt:new Date().toISOString(),observation,
  status:'RUNNING',browserMode:'headedChrome',helperPin:{bytes:helperRaw.length,sha256:sha(helperRaw)},authPosts:0,businessWrites:0,blockedRequests:[],pageErrorCount:0,catalogueResponses:[],pagination:[],filters:[],matrix:[]};
 let browser,page,frame,latest,sequence=0,finished=false;const pending=[],responseErrors=[];
+function parseAuditArguments(argv){
+ const values={};
+ need(Array.isArray(argv)&&argv.length%2===0,'EXPLICIT_OBSERVATION_REQUIRED');
+ for(let i=0;i<argv.length;i+=2){
+  const key=argv[i];need(['--observation','--point-audit','--selection'].includes(key)&&!Object.hasOwn(values,key),'EXPLICIT_OBSERVATION_REQUIRED');
+  values[key]=argv[i+1];
+ }
+ need(typeof values['--observation']==='string'&&/^r[1-9][0-9]*$/.test(values['--observation']),'EXPLICIT_OBSERVATION_REQUIRED');
+ need(Object.hasOwn(values,'--point-audit')===Object.hasOwn(values,'--selection'),'POINT_AUDIT_SELECTION_PAIR_REQUIRED');
+ return {observation:values['--observation'],pointAudit:values['--point-audit']??null,selection:values['--selection']??null};
+}
+function sameAuditPin(actual,expected){
+ return actual&&expected&&typeof actual==='object'&&typeof expected==='object'&&
+  Object.keys(actual).length===3&&Object.keys(expected).length===3&&
+  Object.keys(actual).every(key=>Object.hasOwn(expected,key)&&actual[key]===expected[key]);
+}
+function readAuditTaskFile(file,expected=null,records=[]){
+ need(typeof file==='string'&&/^[A-Za-z0-9][A-Za-z0-9_.-]*\.json$/.test(file)&&path.basename(file)===file,'POINT_AUDIT_TASK_FILE_REQUIRED');
+ const filename=path.resolve(TASK,file),before=fs.lstatSync(filename);
+ need(before.isFile()&&!before.isSymbolicLink()&&path.resolve(fs.realpathSync(filename))===filename&&before.size<=16*1024*1024,'POINT_AUDIT_TASK_FILE_REQUIRED');
+ const raw=fs.readFileSync(filename),after=fs.lstatSync(filename),pin={file,bytes:raw.length,sha256:sha(raw)};
+ const identity=info=>[info.dev,info.ino,info.size,info.mtimeMs,info.ctimeMs];
+ need(JSON.stringify(identity(before))===JSON.stringify(identity(after)),'POINT_AUDIT_INPUT_CHANGED');
+ need(!expected||sameAuditPin(pin,expected),'POINT_AUDIT_INPUT_CHANGED');
+ const text=raw.toString('utf8');need(Buffer.from(text,'utf8').equals(raw),'POINT_AUDIT_INPUT_INVALID');
+ records.push({pin,identity:identity(after)});
+ return {value:JSON.parse(text),pin};
+}
+function preparePointAudit(args){
+ need((args.pointAudit===null)===(args.selection===null),'POINT_AUDIT_SELECTION_PAIR_REQUIRED');
+ if(args.pointAudit===null)return null;
+ const records=[],selected=readAuditTaskFile(args.selection,null,records),proof=readAuditTaskFile(args.pointAudit,null,records);
+ const selection=selected.value,audit=proof.value;
+ need(selection&&Object.keys(selection).sort().join(' ')==='controlGenerationPin schemaVersion sourceCommit spugInstallationPin verificationInputsPin'&&
+  selection.schemaVersion==='TaskMainProgramInstallations/v4'&&/^[0-9a-f]{40}$/.test(selection.sourceCommit),'POINT_AUDIT_V4_REQUIRED');
+ const read=reference=>{need(reference&&typeof reference.file==='string','POINT_AUDIT_INPUT_INVALID');return readAuditTaskFile(reference.file,reference,records).value;};
+ const generation=read(selection.controlGenerationPin),spug=read(selection.spugInstallationPin),verification=read(selection.verificationInputsPin);
+ need(generation.schemaVersion==='MainProgramControlGeneration/v1'&&generation.status==='PASS'&&generation.sourceCommit===selection.sourceCommit&&
+  spug.schemaVersion==='MainProgramSpugInstallation/v1'&&spug.status==='PASS'&&spug.sourceCommit===selection.sourceCommit,'POINT_AUDIT_DEPLOYMENT_CHANGED');
+ const build=read(generation.buildPin);
+ need(build.status==='PASS'&&build.targetCommit===selection.sourceCommit&&build.fileCount===147&&
+  /^[0-9a-f]{64}$/.test(build.fileManifestSha256),'POINT_AUDIT_MAIN_147_REQUIRED');
+ need(verification.schemaVersion==='MainProgramSpugPublicationVerificationInputs/v2','POINT_AUDIT_DEPLOYMENT_CHANGED');
+ let transition=read(verification.resourceTransitionPin);
+ if(transition.schemaVersion==='MainProgramSpugResourceTransitionReaderCustody/v1')transition=read(transition.transitionCorePin);
+ need(transition.schemaVersion==='MainProgramSpugResourceTransition/v1'&&transition.status==='PASS','POINT_AUDIT_DEPLOYMENT_CHANGED');
+ const resource=read(transition.resourceBuildPin);
+ need(resource.status==='PASS'&&/^[0-9a-f]{40}$/.test(resource.sourceCommit),'POINT_AUDIT_DEPLOYMENT_CHANGED');
+ need(audit.schemaVersion==='AutomaticBackupChainAudit/v1'&&audit.status==='PASS'&&audit.state==='SUCCEEDED'&&
+  audit.actualExitCode===0&&audit.sourceRestored===true&&audit.uniqueOwnerOperationVerified===true&&
+  audit.readback?.payloadContentVerified===true,'POINT_AUDIT_SUCCESS_REQUIRED');
+ need(audit.sourceConfigRef==='intruoyi-57-safe-20261024-v1'&&audit.sourceCommit===selection.sourceCommit&&
+  audit.spugCommit===resource.sourceCommit&&sameAuditPin(audit.deploymentSelectionPin,selected.pin)&&
+  sameAuditPin(audit.controlGenerationPin,selection.controlGenerationPin)&&sameAuditPin(audit.spugInstallationPin,selection.spugInstallationPin),
+  'POINT_AUDIT_DEPLOYMENT_CHANGED');
+ const baseline=read(audit.baselineEvidencePin);
+ need(baseline.schemaVersion==='MainProgramAutomaticIncrementalUiBaseline/v1'&&baseline.status==='PASS'&&
+  typeof audit.cycle==='string'&&/^[a-z0-9][a-z0-9-]{0,47}$/.test(audit.cycle)&&baseline.cycle===audit.cycle&&
+  baseline.applicationId===audit.sourceConfigRef&&baseline.sourceConfigRef===audit.sourceConfigRef&&
+  sameAuditPin(baseline.deploymentSelectionPin,selected.pin),'POINT_AUDIT_CYCLE_CHANGED');
+ need(audit.package?.variant==='standard'&&audit.package.fileCount===147&&audit.package.allInstalledFilesShaVerified===true&&
+  audit.package.fileManifestSha256===build.fileManifestSha256,'POINT_AUDIT_MAIN_147_REQUIRED');
+ const chain=audit.chain;
+ need(Array.isArray(chain)&&chain.length>=1&&chain.length<=1000&&chain.every((row,i)=>
+  row&&/^smallapp-[0-9a-f]{32}$/.test(row.operationId)&&row.pointType===(i?'INCREMENTAL':'FULL')&&
+  row.pointPin&&Object.keys(row.pointPin).sort().join(' ')==='bytes path sha256'&&
+  typeof row.pointPin.path==='string'&&row.pointPin.path.startsWith('/')&&Number.isSafeInteger(row.pointPin.bytes)&&
+  row.pointPin.bytes>0&&/^[0-9a-f]{64}$/.test(row.pointPin.sha256)),'POINT_AUDIT_CHAIN_INVALID');
+ const chainIds=chain.map(row=>row.operationId);
+ need(new Set(chainIds).size===chainIds.length&&audit.operationId===chainIds.at(-1)&&audit.generationId===chainIds[0]&&
+  audit.pointType===chain.at(-1).pointType&&sameAuditPin(audit.pointPin,chain.at(-1).pointPin)&&
+  Array.isArray(audit.parentPointPins)&&audit.parentPointPins.length===chain.length-1&&
+  audit.parentPointPins.every((pin,i)=>sameAuditPin(pin,chain[i].pointPin)),'POINT_AUDIT_CHAIN_INVALID');
+ const scope={operationId:audit.operationId,sourceConfigRef:audit.sourceConfigRef,cycle:audit.cycle,sourceCommit:audit.sourceCommit,
+  spugCommit:audit.spugCommit,chainIds,chainTypes:chain.map(row=>row.pointType),pointAuditPin:proof.pin,deploymentSelectionPin:selected.pin,records};
+ verifyPointAuditInputs(scope);return scope;
+}
+function selectAuditPoints(items,scope){
+ const eligible=items.filter(row=>['backup-full','backup-incremental'].includes(row.kind)&&row.status==='indexed');
+ if(!scope)return eligible;
+ verifyPointAuditInputs(scope);
+ for(let i=0;i<scope.chainIds.length;i++){
+  const matches=items.filter(row=>row.packageId===scope.chainIds[i]);
+  need(matches.length===1&&matches[0].status==='indexed'&&matches[0].kind===(scope.chainTypes[i]==='FULL'?'backup-full':'backup-incremental'),
+   'POINT_AUDIT_CHAIN_NOT_INDEXED');
+ }
+ return eligible.filter(row=>row.packageId===scope.operationId);
+}
+function auditReportFields(scope){
+ if(!scope)return {schemaVersion:'SpugCompleteGoalReadonlyAudit/v1'};
+ return {schemaVersion:'SpugSelectedPointReadonlyAudit/v1',scope:'single_verified_point',operationId:scope.operationId,
+  sourceConfigRef:scope.sourceConfigRef,cycle:scope.cycle,sourceCommit:scope.sourceCommit,spugCommit:scope.spugCommit,
+  pointAuditPin:scope.pointAuditPin,deploymentSelectionPin:scope.deploymentSelectionPin,verifiedChainIds:scope.chainIds};
+}
+function verifyPointAuditInputs(scope){
+ if(!scope)return;
+ for(const record of scope.records){
+  const current=[];readAuditTaskFile(record.pin.file,record.pin,current);
+  need(JSON.stringify(current[0].identity)===JSON.stringify(record.identity),'POINT_AUDIT_INPUT_CHANGED');
+ }
+}
+function assertSelectedPointState(scope,state){
+ if(scope)need(state.application===scope.sourceConfigRef&&state.source==='172.30.30.57','POINT_AUDIT_UI_SOURCE_CHANGED');
+}
 function save(name,data){fs.writeFileSync(path.join(privateDir,name),data,{flag:'wx'});}
 save('executed-helper.cjs',helperRaw);
 function phase(value){report.stage=value;const row={stage:value,observedAt:new Date().toISOString()};save('stage-'+value+'.private.json',JSON.stringify(row));console.log(JSON.stringify(row));}
@@ -103,8 +208,8 @@ async function allVisiblePages(){
    need(await actual.count()===1&&await actual.getByRole('button',{name:'恢复',exact:true}).isDisabled(),'UNPUBLISHED_POINT_NOT_GUARDED');
    report.unpublished.push({packageId:row.packageId,restoreDisabled:true});
   }
-  const eligible=catalogue.items.filter(r=>['backup-full','backup-incremental'].includes(r.kind)&&r.status==='indexed');
-  need(eligible.length>=3,'RESTORABLE_POINTS_REQUIRED');
+  const eligible=selectAuditPoints(catalogue.items,selectedPoint);
+  need(eligible.length>=(selectedPoint?1:3),'RESTORABLE_POINTS_REQUIRED');
   for(const row of eligible){
    phase('point-'+row.packageId);await filter('',row.packageId);
    const actual=frame.locator('#catalog-body tr[data-package-id="'+row.packageId+'"]');need(await actual.count()===1,'EXACT_CATALOGUE_ROW_REQUIRED');
@@ -117,6 +222,7 @@ async function allVisiblePages(){
      accepted:[...document.querySelector('#point').options].map(o=>o.value).filter(Boolean),
      binding:binding?{applicationId:binding.applicationId,overwriteTargetServers:binding.overwriteTargetServers}:null};
    });
+   assertSelectedPointState(selectedPoint,state);
    const point={packageId:row.packageId,kind:row.kind,source:state.source,accepted:state.accepted.includes(row.packageId),targets:[]};report.matrix.push(point);
    if(!point.accepted){
     point.blockedReason=await frame.locator('#simple-status').innerText();
@@ -153,6 +259,7 @@ async function allVisiblePages(){
  finally{
   finished=true;await Promise.all(pending.splice(0));if(responseErrors.length){save('response-errors.private.json',JSON.stringify(responseErrors));report.responseErrorCount=responseErrors.length;report.status='FAIL';process.exitCode=1;}
   if(page){try{await page.screenshot({path:path.join(privateDir,'actual-page.png'),fullPage:true});}catch(error){save('screenshot-error.private.txt',String(error));report.status='FAIL';report.screenshotFailed=true;process.exitCode=1;}}
+  try{verifyPointAuditInputs(selectedPoint);}catch(error){report.status='FAIL';report.errorCode='POINT_AUDIT_INPUT_CHANGED';process.exitCode=1;}
   report.helperInputUnchanged=fs.readFileSync(__filename).equals(helperRaw);if(!report.helperInputUnchanged){report.status='FAIL';report.errorCode='AUDIT_HELPER_INPUT_CHANGED';process.exitCode=1;}
   report.finishedAt=new Date().toISOString();fs.writeFileSync(output,JSON.stringify(report,null,2),{encoding:'utf8',flag:'wx'});
   console.log(JSON.stringify({status:report.status,stage:report.stage,errorCode:report.errorCode,authPosts:report.authPosts,businessWrites:report.businessWrites,coveredEligiblePoints:report.coveredEligiblePoints,coveredPointTargetPairs:report.coveredPointTargetPairs}));if(browser)await browser.close();
