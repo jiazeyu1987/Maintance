@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "TaskMainProgramInstallations/v4",
+  "sourceCommit": "b5fa4c581f011f022cb9cde86a11b9b0ee0defd3",
+  "controlGenerationPin": {
+    "bytes": 2562,
+    "file": "main-program-control-generation-b5fa4c5-r7.json",
+    "sha256": "753afb01b7ffa8c176e6aff60303133897e4856ba440bf89a8b4435dcc433f1b"
+  },
+  "spugInstallationPin": {
+    "file": "main-program-spug-control-acceptance-b5fa4c5-r7-r1.json",
+    "bytes": 2392,
+    "sha256": "1a3c484241f1c54f8d01221edad9f396f7052fcb43eca7a526ba44e4fc8e770c"
+  },
+  "verificationInputsPin": {
+    "bytes": 841,
+    "file": "main-program-spug-control-acceptance-inputs-b5fa4c5-r7-r1.json",
+    "sha256": "2949a915af0afbd258c520d9d7522a6f1056ed7ce5319fe305b740d87f6afeb3"
+  }
+}
