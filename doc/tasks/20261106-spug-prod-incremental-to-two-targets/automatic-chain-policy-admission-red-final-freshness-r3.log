@@ -1,0 +1,12 @@
+F...                                                                     [100%]
+================================== FAILURES ===================================
+_______ test_final_freshness_crossing_expiry_cannot_return_stale_ready ________
+scripts\tests\test_incremental_chain_policy_admission.py:173: in test_final_freshness_crossing_expiry_cannot_return_stale_ready
+    assert (value['state'], value['reasonCode']) == ('BASELINE_REQUIRED', 'INCREMENTAL_CHAIN_AGE_EXPIRED')
+E   AssertionError: assert ('READY', None) == ('BASELINE_RE..._AGE_EXPIRED')
+E     
+E     At index 0 diff: 'READY' != 'BASELINE_REQUIRED'
+E     Use -v to get more diff
+=========================== short test summary info ===========================
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_final_freshness_crossing_expiry_cannot_return_stale_ready
+1 failed, 3 passed, 50 deselected in 12.98s

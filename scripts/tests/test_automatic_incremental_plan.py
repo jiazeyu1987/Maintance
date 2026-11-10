@@ -41,14 +41,17 @@ class LocalNative(Native):
 
 
 class MetadataFixture:
-    def __init__(self, root):
+    def __init__(self, root, *, policy=None):
         self.root = root
+        # Explicit protocol policy; historical fixture dates are intentionally
+        # long-lived, while policy boundary tests pass the real short limits.
+        self.repository_policy = dict(maxChainPoints=16, maxChainAgeSeconds=10**12) if policy is None else dict(policy)
         for name in ('registry/points', 'registry/applications', 'ledger'):
             (root / name).mkdir(parents=True)
         self.write('capture.json', dict(sourceConfigRef='source-A', source=dict(
             sourceIdentity='identity-A', databaseUuid=DATABASE_UUID)))
         owner = self.write('repository.json', dict(sources={'source-A': dict(
-            configurationPath=str(root / 'capture.json'))}))
+            configurationPath=str(root / 'capture.json'))}, **self.repository_policy))
         registration = self.write('registration.json', dict(schemaVersion='ApplicationRegistration/v1',
             applicationId='app-A', sourceConfigRef='source-A', allowedRestoreTargets=[]))
         self.write('registry/applications/app-A.pin.json', registration)
@@ -68,7 +71,7 @@ class MetadataFixture:
 
     def point(self, ref, parents=(), finished='2026-11-07T01:00:00Z', source='source-A',
               uuid=DATABASE_UUID, prefix=None, exit_code=0, source_restored=True,
-              capture_result_change=None, restoration_change=None):
+              capture_result_change=None, restoration_change=None, created=None):
         kind = 'INCREMENTAL' if parents else 'FULL'
         ancestors = [self.points[p]['pointPin'] for p in parents]
         generation = parents[0] if parents else ref
@@ -88,7 +91,7 @@ class MetadataFixture:
             actualExitCode=exit_code))
         manifest = self.write(ref + '/manifest.json', dict(schemaVersion='RepositoryManifest/v1',
             backupId=ref, generationId=generation, pointType=kind, parentPointPins=prefix,
-            commonRecoveryPoint=common))
+            commonRecoveryPoint=common, createdAt=finished if created is None else created))
         point = self.write(ref + '/point.json', dict(schemaVersion='RepositoryPoint/v1', backupId=ref,
             generationId=generation, pointType=kind, parentPointPins=prefix, manifestPin=manifest,
             originalExitEvidencePin=terminal, integrityState='COMPLETE',
@@ -134,7 +137,8 @@ class MetadataFixture:
         capture = self.write('capture-with-epoch.json', dict(sourceConfigRef='source-A',
             sourceLockPath=self.epoch_policy['sourceLockPath'],
             source=dict(sourceIdentity='identity-A', databaseUuid=DATABASE_UUID)))
-        owner = self.write('repository-with-epoch.json', dict(sources={'source-A': dict(configurationPath=capture['path'])}))
+        owner = self.write('repository-with-epoch.json', dict(sources={'source-A': dict(
+            configurationPath=capture['path'])}, **self.repository_policy))
         config['sourceConfigurations']['source-A'] = owner
         config['sourceEpochPolicies'] = {'source-A': self.epoch_policy}
         self.native.config_pin = self.write('configuration-with-epoch.json', config)

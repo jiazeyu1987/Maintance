@@ -1,0 +1,311 @@
+FFFFFFFFFFFFFFFFFFFFF.FF.FFFFFFFF.F.F.F....F.FF..                        [100%]
+================================== FAILURES ===================================
+_____________ test_shared_age_and_point_boundaries[86399-1-None] ______________
+scripts\tests\test_incremental_chain_policy_admission.py:53: in test_shared_age_and_point_boundaries
+    assert admission(POLICY, stamp(NOW-timedelta(seconds=age)), count) == expected
+scripts\tests\test_incremental_chain_policy_admission.py:39: in admission
+    assert callable(function), 'INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED'
+E   AssertionError: INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED
+E   assert False
+E    +  where False = callable(None)
+_ test_shared_age_and_point_boundaries[86400-1-INCREMENTAL_CHAIN_AGE_EXPIRED] _
+scripts\tests\test_incremental_chain_policy_admission.py:53: in test_shared_age_and_point_boundaries
+    assert admission(POLICY, stamp(NOW-timedelta(seconds=age)), count) == expected
+scripts\tests\test_incremental_chain_policy_admission.py:39: in admission
+    assert callable(function), 'INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED'
+E   AssertionError: INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED
+E   assert False
+E    +  where False = callable(None)
+_ test_shared_age_and_point_boundaries[205907-3-INCREMENTAL_CHAIN_AGE_EXPIRED] _
+scripts\tests\test_incremental_chain_policy_admission.py:53: in test_shared_age_and_point_boundaries
+    assert admission(POLICY, stamp(NOW-timedelta(seconds=age)), count) == expected
+scripts\tests\test_incremental_chain_policy_admission.py:39: in admission
+    assert callable(function), 'INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED'
+E   AssertionError: INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED
+E   assert False
+E    +  where False = callable(None)
+______________ test_shared_age_and_point_boundaries[100-15-None] ______________
+scripts\tests\test_incremental_chain_policy_admission.py:53: in test_shared_age_and_point_boundaries
+    assert admission(POLICY, stamp(NOW-timedelta(seconds=age)), count) == expected
+scripts\tests\test_incremental_chain_policy_admission.py:39: in admission
+    assert callable(function), 'INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED'
+E   AssertionError: INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED
+E   assert False
+E    +  where False = callable(None)
+_ test_shared_age_and_point_boundaries[100-16-INCREMENTAL_CHAIN_POINT_LIMIT_REACHED] _
+scripts\tests\test_incremental_chain_policy_admission.py:53: in test_shared_age_and_point_boundaries
+    assert admission(POLICY, stamp(NOW-timedelta(seconds=age)), count) == expected
+scripts\tests\test_incremental_chain_policy_admission.py:39: in admission
+    assert callable(function), 'INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED'
+E   AssertionError: INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED
+E   assert False
+E    +  where False = callable(None)
+______ test_invalid_policy_is_a_blocker_even_without_a_baseline[policy0] ______
+scripts\tests\test_incremental_chain_policy_admission.py:67: in test_invalid_policy_is_a_blocker_even_without_a_baseline
+    assert (value['state'], value['reasonCode']) == ('BLOCKED', 'REPOSITORY_CHAIN_POLICY_INVALID')
+E   AssertionError: assert ('BASELINE_RE...ULL_BASELINE') == ('BLOCKED', '...LICY_INVALID')
+E     
+E     At index 0 diff: 'BASELINE_REQUIRED' != 'BLOCKED'
+E     Use -v to get more diff
+______ test_invalid_policy_is_a_blocker_even_without_a_baseline[policy1] ______
+scripts\tests\test_incremental_chain_policy_admission.py:67: in test_invalid_policy_is_a_blocker_even_without_a_baseline
+    assert (value['state'], value['reasonCode']) == ('BLOCKED', 'REPOSITORY_CHAIN_POLICY_INVALID')
+E   AssertionError: assert ('BASELINE_RE...ULL_BASELINE') == ('BLOCKED', '...LICY_INVALID')
+E     
+E     At index 0 diff: 'BASELINE_REQUIRED' != 'BLOCKED'
+E     Use -v to get more diff
+______ test_invalid_policy_is_a_blocker_even_without_a_baseline[policy2] ______
+scripts\tests\test_incremental_chain_policy_admission.py:67: in test_invalid_policy_is_a_blocker_even_without_a_baseline
+    assert (value['state'], value['reasonCode']) == ('BLOCKED', 'REPOSITORY_CHAIN_POLICY_INVALID')
+E   AssertionError: assert ('BASELINE_RE...ULL_BASELINE') == ('BLOCKED', '...LICY_INVALID')
+E     
+E     At index 0 diff: 'BASELINE_REQUIRED' != 'BLOCKED'
+E     Use -v to get more diff
+______ test_invalid_policy_is_a_blocker_even_without_a_baseline[policy3] ______
+scripts\tests\test_incremental_chain_policy_admission.py:67: in test_invalid_policy_is_a_blocker_even_without_a_baseline
+    assert (value['state'], value['reasonCode']) == ('BLOCKED', 'REPOSITORY_CHAIN_POLICY_INVALID')
+E   AssertionError: assert ('BASELINE_RE...ULL_BASELINE') == ('BLOCKED', '...LICY_INVALID')
+E     
+E     At index 0 diff: 'BASELINE_REQUIRED' != 'BLOCKED'
+E     Use -v to get more diff
+______ test_invalid_policy_is_a_blocker_even_without_a_baseline[policy4] ______
+scripts\tests\test_incremental_chain_policy_admission.py:67: in test_invalid_policy_is_a_blocker_even_without_a_baseline
+    assert (value['state'], value['reasonCode']) == ('BLOCKED', 'REPOSITORY_CHAIN_POLICY_INVALID')
+E   AssertionError: assert ('BASELINE_RE...ULL_BASELINE') == ('BLOCKED', '...LICY_INVALID')
+E     
+E     At index 0 diff: 'BASELINE_REQUIRED' != 'BLOCKED'
+E     Use -v to get more diff
+______ test_invalid_policy_is_a_blocker_even_without_a_baseline[policy5] ______
+scripts\tests\test_incremental_chain_policy_admission.py:67: in test_invalid_policy_is_a_blocker_even_without_a_baseline
+    assert (value['state'], value['reasonCode']) == ('BLOCKED', 'REPOSITORY_CHAIN_POLICY_INVALID')
+E   AssertionError: assert ('BASELINE_RE...ULL_BASELINE') == ('BLOCKED', '...LICY_INVALID')
+E     
+E     At index 0 diff: 'BASELINE_REQUIRED' != 'BLOCKED'
+E     Use -v to get more diff
+______ test_invalid_policy_is_a_blocker_even_without_a_baseline[policy6] ______
+scripts\tests\test_incremental_chain_policy_admission.py:67: in test_invalid_policy_is_a_blocker_even_without_a_baseline
+    assert (value['state'], value['reasonCode']) == ('BLOCKED', 'REPOSITORY_CHAIN_POLICY_INVALID')
+E   AssertionError: assert ('BASELINE_RE...ULL_BASELINE') == ('BLOCKED', '...LICY_INVALID')
+E     
+E     At index 0 diff: 'BASELINE_REQUIRED' != 'BLOCKED'
+E     Use -v to get more diff
+______ test_invalid_policy_is_a_blocker_even_without_a_baseline[policy7] ______
+scripts\tests\test_incremental_chain_policy_admission.py:67: in test_invalid_policy_is_a_blocker_even_without_a_baseline
+    assert (value['state'], value['reasonCode']) == ('BLOCKED', 'REPOSITORY_CHAIN_POLICY_INVALID')
+E   AssertionError: assert ('BASELINE_RE...ULL_BASELINE') == ('BLOCKED', '...LICY_INVALID')
+E     
+E     At index 0 diff: 'BASELINE_REQUIRED' != 'BLOCKED'
+E     Use -v to get more diff
+______ test_invalid_policy_is_a_blocker_even_without_a_baseline[policy8] ______
+scripts\tests\test_incremental_chain_policy_admission.py:67: in test_invalid_policy_is_a_blocker_even_without_a_baseline
+    assert (value['state'], value['reasonCode']) == ('BLOCKED', 'REPOSITORY_CHAIN_POLICY_INVALID')
+E   AssertionError: assert ('BASELINE_RE...ULL_BASELINE') == ('BLOCKED', '...LICY_INVALID')
+E     
+E     At index 0 diff: 'BASELINE_REQUIRED' != 'BLOCKED'
+E     Use -v to get more diff
+______ test_invalid_policy_is_a_blocker_even_without_a_baseline[policy9] ______
+scripts\tests\test_incremental_chain_policy_admission.py:67: in test_invalid_policy_is_a_blocker_even_without_a_baseline
+    assert (value['state'], value['reasonCode']) == ('BLOCKED', 'REPOSITORY_CHAIN_POLICY_INVALID')
+E   AssertionError: assert ('BASELINE_RE...ULL_BASELINE') == ('BLOCKED', '...LICY_INVALID')
+E     
+E     At index 0 diff: 'BASELINE_REQUIRED' != 'BLOCKED'
+E     Use -v to get more diff
+_____ test_invalid_policy_is_a_blocker_even_without_a_baseline[policy10] ______
+scripts\tests\test_incremental_chain_policy_admission.py:67: in test_invalid_policy_is_a_blocker_even_without_a_baseline
+    assert (value['state'], value['reasonCode']) == ('BLOCKED', 'REPOSITORY_CHAIN_POLICY_INVALID')
+E   AssertionError: assert ('BASELINE_RE...ULL_BASELINE') == ('BLOCKED', '...LICY_INVALID')
+E     
+E     At index 0 diff: 'BASELINE_REQUIRED' != 'BLOCKED'
+E     Use -v to get more diff
+_____ test_invalid_policy_is_a_blocker_even_without_a_baseline[policy11] ______
+scripts\tests\test_incremental_chain_policy_admission.py:67: in test_invalid_policy_is_a_blocker_even_without_a_baseline
+    assert (value['state'], value['reasonCode']) == ('BLOCKED', 'REPOSITORY_CHAIN_POLICY_INVALID')
+E   AssertionError: assert ('BASELINE_RE...ULL_BASELINE') == ('BLOCKED', '...LICY_INVALID')
+E     
+E     At index 0 diff: 'BASELINE_REQUIRED' != 'BLOCKED'
+E     Use -v to get more diff
+_____ test_shared_bad_or_future_root_is_not_a_new_full_reason[not-a-time] _____
+scripts\tests\test_incremental_chain_policy_admission.py:74: in test_shared_bad_or_future_root_is_not_a_new_full_reason
+    admission(POLICY, created, 1)
+scripts\tests\test_incremental_chain_policy_admission.py:39: in admission
+    assert callable(function), 'INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED'
+E   AssertionError: INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED
+E   assert False
+E    +  where False = callable(None)
+_ test_shared_bad_or_future_root_is_not_a_new_full_reason[2026-11-10T04:44:59] _
+scripts\tests\test_incremental_chain_policy_admission.py:74: in test_shared_bad_or_future_root_is_not_a_new_full_reason
+    admission(POLICY, created, 1)
+scripts\tests\test_incremental_chain_policy_admission.py:39: in admission
+    assert callable(function), 'INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED'
+E   AssertionError: INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED
+E   assert False
+E    +  where False = callable(None)
+________ test_shared_bad_or_future_root_is_not_a_new_full_reason[None] ________
+scripts\tests\test_incremental_chain_policy_admission.py:74: in test_shared_bad_or_future_root_is_not_a_new_full_reason
+    admission(POLICY, created, 1)
+scripts\tests\test_incremental_chain_policy_admission.py:39: in admission
+    assert callable(function), 'INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED'
+E   AssertionError: INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED
+E   assert False
+E    +  where False = callable(None)
+_ test_shared_bad_or_future_root_is_not_a_new_full_reason[2026-11-11T00:00:00Z] _
+scripts\tests\test_incremental_chain_policy_admission.py:74: in test_shared_bad_or_future_root_is_not_a_new_full_reason
+    admission(POLICY, created, 1)
+scripts\tests\test_incremental_chain_policy_admission.py:39: in admission
+    assert callable(function), 'INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED'
+E   AssertionError: INCREMENTAL_CHAIN_ADMISSION_API_REQUIRED
+E   assert False
+E    +  where False = callable(None)
+_ test_real_planner_uses_root_creation_and_owner_policy[86400-16-1-BASELINE_REQUIRED-INCREMENTAL_CHAIN_AGE_EXPIRED] _
+scripts\tests\test_incremental_chain_policy_admission.py:99: in test_real_planner_uses_root_creation_and_owner_policy
+    assert (value['state'], value['reasonCode']) == (state, reason)
+E   AssertionError: assert ('READY', None) == ('BASELINE_RE..._AGE_EXPIRED')
+E     
+E     At index 0 diff: 'READY' != 'BASELINE_REQUIRED'
+E     Use -v to get more diff
+_ test_real_planner_uses_root_creation_and_owner_policy[205907-16-3-BASELINE_REQUIRED-INCREMENTAL_CHAIN_AGE_EXPIRED] _
+scripts\tests\test_incremental_chain_policy_admission.py:99: in test_real_planner_uses_root_creation_and_owner_policy
+    assert (value['state'], value['reasonCode']) == (state, reason)
+E   AssertionError: assert ('READY', None) == ('BASELINE_RE..._AGE_EXPIRED')
+E     
+E     At index 0 diff: 'READY' != 'BASELINE_REQUIRED'
+E     Use -v to get more diff
+_ test_real_planner_uses_root_creation_and_owner_policy[100-3-3-BASELINE_REQUIRED-INCREMENTAL_CHAIN_POINT_LIMIT_REACHED] _
+scripts\tests\test_incremental_chain_policy_admission.py:99: in test_real_planner_uses_root_creation_and_owner_policy
+    assert (value['state'], value['reasonCode']) == (state, reason)
+E   AssertionError: assert ('READY', None) == ('BASELINE_RE...IMIT_REACHED')
+E     
+E     At index 0 diff: 'READY' != 'BASELINE_REQUIRED'
+E     Use -v to get more diff
+__________ test_real_planner_blocks_invalid_or_future_root[invalid] ___________
+scripts\tests\test_incremental_chain_policy_admission.py:109: in test_real_planner_blocks_invalid_or_future_root
+    assert value['state'] == 'BLOCKED'
+E   AssertionError: assert 'READY' == 'BLOCKED'
+E     
+E     - BLOCKED
+E     + READY
+____ test_real_planner_blocks_invalid_or_future_root[2026-11-11T00:00:00Z] ____
+scripts\tests\test_incremental_chain_policy_admission.py:109: in test_real_planner_blocks_invalid_or_future_root
+    assert value['state'] == 'BLOCKED'
+E   AssertionError: assert 'READY' == 'BLOCKED'
+E     
+E     - BLOCKED
+E     + READY
+_ test_ready_digest_is_stable_until_expiry_and_resolve_rechecks_before_dispatch _
+scripts\tests\test_incremental_chain_policy_admission.py:124: in test_ready_digest_is_stable_until_expiry_and_resolve_rechecks_before_dispatch
+    assert value['state'] == 'BASELINE_REQUIRED'
+E   AssertionError: assert 'READY' == 'BASELINE_REQUIRED'
+E     
+E     - BASELINE_REQUIRED
+E     + READY
+_______ test_plan_evidence_explicitly_binds_root_manifest_without_clock _______
+scripts\tests\test_incremental_chain_policy_admission.py:143: in test_plan_evidence_explicitly_binds_root_manifest_without_clock
+    assert root['manifestPin'] in seen[-1]
+E   AssertionError: assert {'bytes': 262, 'path': 'C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-377/test_plan_evidence_explicitly_0/full-root/manifest.json', 'sha256': 'a7b264917421372e402b74cd2c7cc8b90cf1bba8a706ae1f71e280e2c03c1322'} in [{'bytes': 212, 'path': 'C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-377/test_plan_evidence_explicitly_...citly_0/full-root/control-binding.json', 'sha256': 'c31237b531586f26c0a729933e0001de73d069c2ce2684c0d4f01c7081b195d8'}]
+_________ test_observation_crossing_expiry_cannot_return_stale_ready __________
+scripts\tests\test_incremental_chain_policy_admission.py:158: in test_observation_crossing_expiry_cannot_return_stale_ready
+    assert (value['state'], value['reasonCode']) == ('BASELINE_REQUIRED', 'INCREMENTAL_CHAIN_AGE_EXPIRED')
+E   AssertionError: assert ('READY', None) == ('BASELINE_RE..._AGE_EXPIRED')
+E     
+E     At index 0 diff: 'READY' != 'BASELINE_REQUIRED'
+E     Use -v to get more diff
+_ test_actual_packaged_constructor_and_publish_stop_before_capture[expired-standard] _
+scripts\tests\test_incremental_chain_policy_admission.py:298: in test_actual_packaged_constructor_and_publish_stop_before_capture
+    assert value['result'] == 'REPOSITORY_NEW_FULL_REQUIRED', value
+E   AssertionError: {'events': ['preflight', 'capture'], 'result': 'CAPTURE_BOUNDARY'}
+E   assert 'CAPTURE_BOUNDARY' == 'REPOSITORY_NEW_FULL_REQUIRED'
+E     
+E     - REPOSITORY_NEW_FULL_REQUIRED
+E     + CAPTURE_BOUNDARY
+_ test_actual_packaged_constructor_and_publish_stop_before_capture[expired-lightweight] _
+scripts\tests\test_incremental_chain_policy_admission.py:298: in test_actual_packaged_constructor_and_publish_stop_before_capture
+    assert value['result'] == 'REPOSITORY_NEW_FULL_REQUIRED', value
+E   AssertionError: {'events': ['capture'], 'result': 'CAPTURE_BOUNDARY'}
+E   assert 'CAPTURE_BOUNDARY' == 'REPOSITORY_NEW_FULL_REQUIRED'
+E     
+E     - REPOSITORY_NEW_FULL_REQUIRED
+E     + CAPTURE_BOUNDARY
+_ test_actual_packaged_constructor_and_publish_stop_before_capture[at-limit-lightweight] _
+scripts\tests\test_incremental_chain_policy_admission.py:298: in test_actual_packaged_constructor_and_publish_stop_before_capture
+    assert value['result'] == 'REPOSITORY_NEW_FULL_REQUIRED', value
+E   AssertionError: {'events': ['capture'], 'result': 'CAPTURE_BOUNDARY'}
+E   assert 'CAPTURE_BOUNDARY' == 'REPOSITORY_NEW_FULL_REQUIRED'
+E     
+E     - REPOSITORY_NEW_FULL_REQUIRED
+E     + CAPTURE_BOUNDARY
+_ test_actual_packaged_constructor_and_publish_stop_before_capture[future-lightweight] _
+scripts\tests\test_incremental_chain_policy_admission.py:303: in test_actual_packaged_constructor_and_publish_stop_before_capture
+    assert value['result'] == 'REPOSITORY_FUTURE_POINT_REFUSED', value
+E   AssertionError: {'events': ['capture'], 'result': 'CAPTURE_BOUNDARY'}
+E   assert 'CAPTURE_BOUNDARY' == 'REPOSITORY_F...POINT_REFUSED'
+E     
+E     - REPOSITORY_FUTURE_POINT_REFUSED
+E     + CAPTURE_BOUNDARY
+_ test_actual_packaged_constructor_and_publish_stop_before_capture[invalid-policy-lightweight] _
+scripts\tests\test_incremental_chain_policy_admission.py:306: in test_actual_packaged_constructor_and_publish_stop_before_capture
+    assert value['result'] in ('REPOSITORY_CHAIN_POLICY_INVALID', 'REPOSITORY_MINIMUM_BUDGET_INVALID'), value
+E   AssertionError: {'events': ['capture'], 'result': 'CAPTURE_BOUNDARY'}
+E   assert 'CAPTURE_BOUNDARY' in ('REPOSITORY_CHAIN_POLICY_INVALID', 'REPOSITORY_MINIMUM_BUDGET_INVALID')
+_ test_actual_packaged_constructor_and_publish_stop_before_capture[during-preflight-standard] _
+scripts\tests\test_incremental_chain_policy_admission.py:298: in test_actual_packaged_constructor_and_publish_stop_before_capture
+    assert value['result'] == 'REPOSITORY_NEW_FULL_REQUIRED', value
+E   AssertionError: {'events': ['preflight', 'capture'], 'result': 'CAPTURE_BOUNDARY'}
+E   assert 'CAPTURE_BOUNDARY' == 'REPOSITORY_NEW_FULL_REQUIRED'
+E     
+E     - REPOSITORY_NEW_FULL_REQUIRED
+E     + CAPTURE_BOUNDARY
+_ test_actual_packaged_constructor_and_publish_stop_before_capture[during-config-standard] _
+scripts\tests\test_incremental_chain_policy_admission.py:298: in test_actual_packaged_constructor_and_publish_stop_before_capture
+    assert value['result'] == 'REPOSITORY_NEW_FULL_REQUIRED', value
+E   AssertionError: {'events': ['preflight', 'capture'], 'result': 'CAPTURE_BOUNDARY'}
+E   assert 'CAPTURE_BOUNDARY' == 'REPOSITORY_NEW_FULL_REQUIRED'
+E     
+E     - REPOSITORY_NEW_FULL_REQUIRED
+E     + CAPTURE_BOUNDARY
+_ test_actual_packaged_constructor_and_publish_stop_before_capture[during-config-lightweight] _
+scripts\tests\test_incremental_chain_policy_admission.py:298: in test_actual_packaged_constructor_and_publish_stop_before_capture
+    assert value['result'] == 'REPOSITORY_NEW_FULL_REQUIRED', value
+E   AssertionError: {'events': ['capture'], 'result': 'CAPTURE_BOUNDARY'}
+E   assert 'CAPTURE_BOUNDARY' == 'REPOSITORY_NEW_FULL_REQUIRED'
+E     
+E     - REPOSITORY_NEW_FULL_REQUIRED
+E     + CAPTURE_BOUNDARY
+=========================== short test summary info ===========================
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_shared_age_and_point_boundaries[86399-1-None]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_shared_age_and_point_boundaries[86400-1-INCREMENTAL_CHAIN_AGE_EXPIRED]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_shared_age_and_point_boundaries[205907-3-INCREMENTAL_CHAIN_AGE_EXPIRED]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_shared_age_and_point_boundaries[100-15-None]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_shared_age_and_point_boundaries[100-16-INCREMENTAL_CHAIN_POINT_LIMIT_REACHED]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_invalid_policy_is_a_blocker_even_without_a_baseline[policy0]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_invalid_policy_is_a_blocker_even_without_a_baseline[policy1]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_invalid_policy_is_a_blocker_even_without_a_baseline[policy2]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_invalid_policy_is_a_blocker_even_without_a_baseline[policy3]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_invalid_policy_is_a_blocker_even_without_a_baseline[policy4]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_invalid_policy_is_a_blocker_even_without_a_baseline[policy5]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_invalid_policy_is_a_blocker_even_without_a_baseline[policy6]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_invalid_policy_is_a_blocker_even_without_a_baseline[policy7]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_invalid_policy_is_a_blocker_even_without_a_baseline[policy8]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_invalid_policy_is_a_blocker_even_without_a_baseline[policy9]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_invalid_policy_is_a_blocker_even_without_a_baseline[policy10]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_invalid_policy_is_a_blocker_even_without_a_baseline[policy11]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_shared_bad_or_future_root_is_not_a_new_full_reason[not-a-time]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_shared_bad_or_future_root_is_not_a_new_full_reason[2026-11-10T04:44:59]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_shared_bad_or_future_root_is_not_a_new_full_reason[None]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_shared_bad_or_future_root_is_not_a_new_full_reason[2026-11-11T00:00:00Z]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_real_planner_uses_root_creation_and_owner_policy[86400-16-1-BASELINE_REQUIRED-INCREMENTAL_CHAIN_AGE_EXPIRED]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_real_planner_uses_root_creation_and_owner_policy[205907-16-3-BASELINE_REQUIRED-INCREMENTAL_CHAIN_AGE_EXPIRED]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_real_planner_uses_root_creation_and_owner_policy[100-3-3-BASELINE_REQUIRED-INCREMENTAL_CHAIN_POINT_LIMIT_REACHED]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_real_planner_blocks_invalid_or_future_root[invalid]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_real_planner_blocks_invalid_or_future_root[2026-11-11T00:00:00Z]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_ready_digest_is_stable_until_expiry_and_resolve_rechecks_before_dispatch
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_plan_evidence_explicitly_binds_root_manifest_without_clock
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_observation_crossing_expiry_cannot_return_stale_ready
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_actual_packaged_constructor_and_publish_stop_before_capture[expired-standard]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_actual_packaged_constructor_and_publish_stop_before_capture[expired-lightweight]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_actual_packaged_constructor_and_publish_stop_before_capture[at-limit-lightweight]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_actual_packaged_constructor_and_publish_stop_before_capture[future-lightweight]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_actual_packaged_constructor_and_publish_stop_before_capture[invalid-policy-lightweight]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_actual_packaged_constructor_and_publish_stop_before_capture[during-preflight-standard]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_actual_packaged_constructor_and_publish_stop_before_capture[during-config-standard]
+FAILED scripts/tests/test_incremental_chain_policy_admission.py::test_actual_packaged_constructor_and_publish_stop_before_capture[during-config-lightweight]
+37 failed, 12 passed in 101.18s (0:01:41)

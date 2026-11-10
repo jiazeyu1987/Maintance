@@ -119,6 +119,39 @@ def timestamp(value):
     return result
 
 
+def incremental_chain_policy(value):
+    """The existing minimum-owner limits, with no inferred/default policy."""
+    require(type(value) is dict and
+            type(value.get('maxChainPoints')) is int and 1 <= value['maxChainPoints'] <= 1024 and
+            type(value.get('maxChainAgeSeconds')) is int and value['maxChainAgeSeconds'] > 0,
+            'REPOSITORY_CHAIN_POLICY_INVALID')
+    return {key: value[key] for key in ('maxChainPoints', 'maxChainAgeSeconds')}
+
+
+def incremental_chain_admission(policy, root_created_at, point_count, *, now=None):
+    """Return a proven new-FULL reason; malformed or future input is an error.
+
+    point_count includes the root and selected parent. Adding the new point may
+    reach maxChainPoints; it may never exceed it. A chain expires at its limit.
+    """
+    policy = incremental_chain_policy(policy)
+    require(type(point_count) is int and point_count > 0, 'REPOSITORY_CHAIN_COUNT_INVALID')
+    require(type(root_created_at) is str and re.fullmatch(
+        r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z', root_created_at),
+        'REPOSITORY_CHAIN_BASELINE_TIME_INVALID')
+    try:
+        created = timestamp(root_created_at)
+    except RepositoryError:
+        raise RepositoryError('REPOSITORY_CHAIN_BASELINE_TIME_INVALID') from None
+    current = datetime.now(timezone.utc) if now is None else now
+    require(created <= current, 'REPOSITORY_FUTURE_POINT_REFUSED')
+    if (current - created).total_seconds() >= policy['maxChainAgeSeconds']:
+        return 'INCREMENTAL_CHAIN_AGE_EXPIRED'
+    if point_count >= policy['maxChainPoints']:
+        return 'INCREMENTAL_CHAIN_POINT_LIMIT_REACHED'
+    return None
+
+
 def utc():
     return datetime.now(timezone.utc).isoformat().replace('+00:00', 'Z')
 

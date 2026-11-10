@@ -214,7 +214,7 @@ def read_point(reader, row, *, complete=True):
     need(type(end) is dict and type(end.get('position')) is int and end['position'] >= 4 and
          type(end.get('file')) is str and re.fullmatch(r'.+\.\d+', end['file']) and
          type(end.get('executedGtidSet')) is str, 'INCREMENTAL_CAPTURE_POSITION_INVALID')
-    return dict(row, captured=captured, capturePin=capture_pin)
+    return dict(row, manifest=manifest, captured=captured, capturePin=capture_pin)
 
 
 def validate_chain(points):
@@ -296,10 +296,13 @@ def build_plan(native, source_ref, *, exclude_operation=None):
             exclude_operation=exclude_operation, guard=reader.guard)
         owner_pin = config['sourceConfigurations'][source_ref]
         owner = reader.document(owner_pin)
+        evidence.append(owner_pin)
+        from repository_records import incremental_chain_policy, incremental_chain_admission
+        chain_policy = incremental_chain_policy(owner)
         from recovery_control_capture_config import read_capture_configuration
         capture_configuration = read_capture_configuration(reader, config, owner, source_ref)
         capture_pin, capture, generation_evidence = capture_configuration
-        evidence.extend([owner_pin, capture_pin, *generation_evidence])
+        evidence.extend([capture_pin, *generation_evidence])
         epoch = native.source_epoch(config, source_ref, reader=reader, capture_configuration=capture_configuration)
         evidence.append(epoch)
         points = {}
@@ -332,6 +335,7 @@ def build_plan(native, source_ref, *, exclude_operation=None):
         roots = [row for row in roots if row['finished'] == latest_time]
         need(len(roots) == 1, 'AMBIGUOUS_LATEST_FULL')
         base = roots[0]
+        evidence.append(base['point']['manifestPin'])
         if (base['captured']['sourceIdentity'], base['captured']['databaseEnd']['databaseUuid']) != (
                 capture['source']['sourceIdentity'], capture['source']['databaseUuid']):
             return finish(source_ref, 'BASELINE_REQUIRED', 'SOURCE_BACKUP_IDENTITY_CHANGED', evidence=evidence)
@@ -354,6 +358,11 @@ def build_plan(native, source_ref, *, exclude_operation=None):
                 if reason is not None:
                     return finish(source_ref, 'BASELINE_REQUIRED', reason, evidence=evidence)
                 evidence.append(bound)
+        def policy_reason():
+            return incremental_chain_admission(chain_policy, base['manifest'].get('createdAt'), len(selected_pins))
+        reason = policy_reason()
+        if reason is not None:
+            return finish(source_ref, 'BASELINE_REQUIRED', reason, evidence=evidence)
         reader.guard()
         observed = native.incremental_source_observation(capture, deadline=reader.deadline)
         need(observed['position']['databaseUuid'] == capture['source']['databaseUuid'],
@@ -362,10 +371,14 @@ def build_plan(native, source_ref, *, exclude_operation=None):
         need(native.source_epoch(config, source_ref, reader=reader) == epoch, 'BACKUP_EPOCH_CHANGED_DURING_PLAN')
         if reason is not None:
             return finish(source_ref, 'BASELINE_REQUIRED', reason, evidence=evidence)
+        reader.finish()
+        reason = policy_reason()
+        if reason is not None:
+            return response(source_ref, 'BASELINE_REQUIRED', reason, evidence=evidence)
         # A live master normally advances between preview and submit. Only the
         # stable readiness conclusion affects the public digest, not its moving
         # position or the currently retained log sizes.
-        return finish(source_ref, 'READY', selected=selected, base=base, evidence=evidence)
+        return response(source_ref, 'READY', selected=selected, base=base, evidence=evidence)
     except Exception as error:
         code = 'INCREMENTAL_PLAN_TIMEOUT' if time.monotonic() >= reader.deadline else public_error(error)
         return response(source_ref, 'BLOCKED', code, evidence=evidence)

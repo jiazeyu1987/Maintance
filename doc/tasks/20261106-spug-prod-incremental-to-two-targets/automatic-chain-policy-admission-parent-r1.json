@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "IncrementalChainPolicyParentVerification/v1",
+  "status": "PASS",
+  "command": [
+    "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "-X",
+    "utf8",
+    "-m",
+    "pytest",
+    "-q",
+    "scripts/tests/test_incremental_chain_policy_admission.py",
+    "--tb=short",
+    "--junitxml=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\automatic-chain-policy-admission-parent-r1.xml"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 107.43699999991804,
+  "counts": {
+    "tests": 54,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "inputFiles": [
+    {
+      "file": "ops/recovery/repository_records.py",
+      "bytes": 20765,
+      "sha256": "10807ebdd3b82d27e882adfe5bf8926744c049126eb2380069a86f14421f833a"
+    },
+    {
+      "file": "backend/src/main/resources/recovery_control_incremental_plan.py",
+      "bytes": 21845,
+      "sha256": "47bbc3a0d1749fd70900b6dc93f2d519f97c6c0b8e2bbe4c9bbe10b800e6e0fb"
+    },
+    {
+      "file": "ops/recovery/repository_minimal.py",
+      "bytes": 42077,
+      "sha256": "f553c94a027e367f04109c754018cbf125e029b4ed45b814f5096279b10fd26b"
+    },
+    {
+      "file": "ops/backup_engine/standard_fixes.py",
+      "bytes": 48706,
+      "sha256": "922529c33f007c7cdec9b658ec16052337c98bd96029b42ed62facb520ef603e"
+    },
+    {
+      "file": "ops/spug/smallapp-ui/app.js",
+      "bytes": 32269,
+      "sha256": "d74c9f512a416c8925a47ca625297bbeb1c5984a7697d6e2002235cbc78371ea"
+    },
+    {
+      "file": "scripts/tests/test_automatic_incremental_plan.py",
+      "bytes": 38068,
+      "sha256": "27b5351635261ef060c1cb791dbbea43c08a3096f1d616c876dc9774bf495606"
+    },
+    {
+      "file": "scripts/tests/test_backup_variants.py",
+      "bytes": 30474,
+      "sha256": "d360fbf18ce96b2a878605e4d07260c51d52d656b76e4a48d1d0953647fb1af4"
+    },
+    {
+      "file": "scripts/tests/test_incremental_chain_policy_admission.py",
+      "bytes": 20943,
+      "sha256": "32ff4081c01716b185c17b5c64f4a5d4b94b8ff9b58f1e8efbc9c735534c7d18"
+    }
+  ],
+  "inputFilesUnchanged": true,
+  "rawLogPin": {
+    "file": "automatic-chain-policy-admission-parent-r1.log",
+    "bytes": 250,
+    "sha256": "3c72d57fb960ede81770affa75b45ace31a92ff53b08f086ed94667bcd4cf259"
+  },
+  "junitPin": {
+    "file": "automatic-chain-policy-admission-parent-r1.xml",
+    "bytes": 9658,
+    "sha256": "2632379f21b782a5fb69474361f0cd6b05cf68c1d716ceb5fb9a3b8594d79e0b"
+  },
+  "installed": false,
+  "serverOperations": 0
+}

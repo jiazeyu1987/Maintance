@@ -65,6 +65,28 @@ def native_invocation_transports(payload, root):
     payload[name] = frozen.encode('utf-8')
 
 
+def incremental_chain_admission(payload, root):
+    """Share only the admission policy; keep all frozen SAFE archive checks."""
+    name = 'common/repository_records.py'
+    frozen = payload[name].decode('utf-8').replace('\r\n', '\n')
+    if hashlib.sha256(frozen.encode('utf-8')).hexdigest() != \
+            'f192fe6222b295c59844ed375776dc2f7bdafce3bf1b625c5b08053f64c032af':
+        raise ValueError('STANDARD_CHAIN_POLICY_BASELINE_CHANGED')
+    current = (root/'ops/recovery/repository_records.py').read_text(encoding='utf-8')
+    functions = []
+    for function in ('incremental_chain_policy', 'incremental_chain_admission'):
+        matches = [node for node in ast.parse(current).body if
+                   isinstance(node, ast.FunctionDef) and node.name == function]
+        if len(matches) != 1 or matches[0].decorator_list:
+            raise ValueError('STANDARD_CHAIN_POLICY_SOURCE_CHANGED ' + function)
+        node = matches[0]
+        functions.append(''.join(current.splitlines(keepends=True)[node.lineno-1:node.end_lineno]))
+    anchor = 'def utc():\n'
+    if frozen.count(anchor) != 1:
+        raise ValueError('STANDARD_CHAIN_POLICY_BOUNDARY_CHANGED')
+    payload[name] = frozen.replace(anchor, '\n\n'.join(functions) + '\n\n\n' + anchor).encode('utf-8')
+
+
 def program_restore_handoff(payload, root):
     """Add typed execution custody to SAFE without replacing its data checks."""
     name = 'common/recovery_minimal_runtime.py'
@@ -161,6 +183,7 @@ def apply(payload):
     root = Path(__file__).resolve().parents[2]
     incremental_sql_stream(payload, root)
     native_invocation_transports(payload, root)
+    incremental_chain_admission(payload, root)
 
     def replace(name, before, after):
         source = payload[name].decode().replace('\r\n', '\n')
@@ -264,6 +287,20 @@ def apply(payload):
                     references.append(reference)""")
     payload['control/recovery_control_point_quarantine.py'] = (root/'backend/src/main/resources/recovery_control_point_quarantine.py').read_bytes()
     payload = backup_timings(restore_timings(payload))
+    replace('common/repository_minimal.py',
+        'from staging_cleanup import cleanup, capture_paths\n',
+        'from staging_cleanup import cleanup, capture_paths\nfrom repository_records import incremental_chain_admission\n')
+    replace('common/repository_minimal.py',
+        "            require(len(parents) < config.value['maxChainPoints'], 'REPOSITORY_NEW_FULL_REQUIRED')\n",
+        "            require(incremental_chain_admission(config.value, parents[0][2].get('createdAt'), len(parents)) is None,\n"
+        "                    'REPOSITORY_NEW_FULL_REQUIRED')\n")
+    replace('common/repository_minimal.py',
+        "        while True:\n            role = 'capture' if query == 0 else 'capture-query-' + str(query)\n",
+        "        while True:\n"
+        "            if query == 0 and parents:\n"
+        "                require(incremental_chain_admission(config.value, parents[0][2].get('createdAt'), len(parents)) is None,\n"
+        "                        'REPOSITORY_NEW_FULL_REQUIRED')\n"
+        "            role = 'capture' if query == 0 else 'capture-query-' + str(query)\n")
     payload['formal/formal_capture_parent_guard.py'] = (root/'ops/backup_engine/formal/formal_capture_parent_guard.py').read_bytes()
     # Only MinimalSemantic adopts continuous parent custody. The normal formal
     # owner keeps its original full verifier through the base-class hook.

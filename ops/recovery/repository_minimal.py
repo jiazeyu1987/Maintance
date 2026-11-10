@@ -33,6 +33,7 @@ from repository_native_archive_reader import LabBackupArchiveReader
 from repository_native_publisher import Publisher
 from repository_native_readback import SmbReadback
 from staging_cleanup import cleanup, capture_paths
+from repository_records import incremental_chain_admission
 
 REQUEST_FIELDS = 'schemaVersion operationId action sourceConfigRef parentChainRef recoveryPointRef targetConfigRef'
 
@@ -327,6 +328,8 @@ def publish(config, request, operation, deadline):
     if request['action'] == 'INCREMENTAL':
         require(request['parentChainRef'] in config.value['parentChains'], 'REPOSITORY_PARENT_NOT_CONFIGURED')
         parents = catalog.chain(config.value['parentChains'][request['parentChainRef']])
+        require(incremental_chain_admission(config.value, parents[0][2].get('createdAt'), len(parents)) is None,
+                'REPOSITORY_NEW_FULL_REQUIRED')
     capture_config_pin = pin_file(config.source['configurationPath'], deadline)
     selected = document(read_pin(capture_config_pin, deadline=deadline))
     parent_binding = catalog.binding(parents[-1][0]) if parents else None
@@ -335,6 +338,9 @@ def publish(config, request, operation, deadline):
         command = list(config.source['captureCommand'])
         query = 0
         while True:
+            if query == 0 and parents:
+                require(incremental_chain_admission(config.value, parents[0][2].get('createdAt'), len(parents)) is None,
+                        'REPOSITORY_NEW_FULL_REQUIRED')
             role = 'capture' if query == 0 else 'capture-query-' + str(query)
             capture_output = operation / (role + '-output.json')
             result, terminal = run_child(command + ['--configuration', config.source['configurationPath'],

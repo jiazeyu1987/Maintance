@@ -26,7 +26,7 @@ def packages(tmp_path_factory):
 def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(packages):
     original, _ = builder.standard_sources()
     reviewed = builder.safe_fixes(original)
-    allowed = {'common/recovery_minimal_runtime.py', 'common/recovery_step_timing.py',
+    allowed = {'common/repository_records.py', 'common/recovery_minimal_runtime.py', 'common/recovery_step_timing.py',
         'common/recovery_minimal.py', 'common/recovery_resource_admission.py',
         'common/recovery_firewall.py', 'common/recovery_minimal_worker.py', 'common/recovery_archive_guard.py',
         'common/repository_minimal.py', 'control/recovery_control_capture_config.py',

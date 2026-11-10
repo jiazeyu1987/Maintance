@@ -66,6 +66,8 @@ const reasons = {
   SOURCE_OPERATION_IN_PROGRESS:'同一来源已有操作正在执行，完成后再刷新备份计划。',
   ORIGINAL_OPERATION_STILL_UNRESOLVED:'同一来源的原操作尚未确认结束，请在操作记录中查看原编号。',
   NO_SUCCESSFUL_FULL_BASELINE:'该来源尚无成功的全量备份，需要先建立全量基线。',
+  INCREMENTAL_CHAIN_AGE_EXPIRED:'当前备份链已达到配置的最长接续期限，需要建立新的全量基线。',
+  INCREMENTAL_CHAIN_POINT_LIMIT_REACHED:'当前备份链已达到配置的最大备份点数，需要建立新的全量基线。',
   SOURCE_BACKUP_IDENTITY_CHANGED:'来源数据库身份已变化，旧链不能接续，需要建立新的全量基线。',
   BACKUP_POINT_EPOCH_REQUIRED:'历史备份缺少当前恢复周期凭证，需要建立新的全量基线。',
   BACKUP_POINT_EPOCH_CHANGED:'来源已执行覆盖恢复，旧备份链已过期，需要建立新的全量基线。',
