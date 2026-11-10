@@ -2,7 +2,7 @@
 
 ## Current Status
 
-prepared_not_dispatched。用户此前已授权三服控制组件安装及本地 Spug 更新；本步骤沿用该范围。b5fa4c5 双包已由本次专用干净 worktree 构建并完成 273 项真实 Linux 验证，三服 r7 暂存已通过。当前仅准备有限执行载体；不执行业务恢复。
+in_progress。用户此前已授权三服控制组件安装及本地 Spug 更新；本步骤沿用该范围。b5fa4c5 双包已由本次专用干净 worktree 构建并完成 273 项真实 Linux 验证，三服 r7 暂存已通过。59target、58target、57target、57source已依序真实激活并通过，PID分别14132、30094、30534、9510；正式generation inspector/load已通过507输入，原source错误READY已准确转为AGE_EXPIRED/BASELINE_REQUIRED。新鲜发布后观察r2通过，独立六阶段验收正在运行，尚未新备份或恢复。
 
 ## 目标、里程碑与预期验证
 
