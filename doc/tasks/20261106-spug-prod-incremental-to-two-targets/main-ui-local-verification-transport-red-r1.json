@@ -1,0 +1,14 @@
+{
+  "exitCode": 1,
+  "command": [
+    "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.EXE",
+    "--test",
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_ui_local_verification_transport.test.cjs"
+  ],
+  "logPin": {
+    "file": "main-ui-local-verification-transport-red-r1.log",
+    "bytes": 27291,
+    "sha256": "3e105f6e0e0baab6cfce1ef10a930496b358834ba668565c361ffef56b318c93"
+  },
+  "actualUiOrRemote": false
+}

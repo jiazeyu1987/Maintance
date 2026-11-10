@@ -1,0 +1,405 @@
+✖ retain exact native timeout before exposing safe code (131.5185ms)
+✖ retain exact native output limit before exposing safe code (1.1793ms)
+✖ retain exact native spawn failure before exposing safe code (0.9589ms)
+✖ retain exact native signal before exposing safe code (0.8861ms)
+✖ retain exact native unknown exit before exposing safe code (0.9625ms)
+✖ retain exact native nonzero exit before exposing safe code (0.8733ms)
+✖ retain exact native unexpected stderr before exposing safe code (1.1133ms)
+✖ successful native result is recorded before JSON is consumed (0.8706ms)
+✖ invalid JSON still retains original successful native exit and raw output (0.8847ms)
+✖ thrown startup error records unavailable exit fields honestly (0.9616ms)
+✖ same observation never overwrites originals or dispatches another CLI (2.4061ms)
+✖ evidence directory failure blocks CLI invocation (77.2324ms)
+✖ only valid fixed observation fields may determine private evidence paths (1.5872ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 0
+ℹ fail 13
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 819.0271
+
+✖ failing tests:
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:39:3
+✖ retain exact native timeout before exposing safe code (131.5185ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^Error: MAIN_CURRENT_INSTALLATION_TIMEOUT$/. Input:
+  
+  'ReferenceError: runMainInstallationCli is not defined'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:41:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ReferenceError: runMainInstallationCli is not defined
+        at globalThis.nativeRunner (evalmachine.<anonymous>:517:33)
+        at f.run (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:16:20)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:41:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.start (node:internal/test_runner/test:1242:17)
+        at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17),
+    expected: /^Error: MAIN_CURRENT_INSTALLATION_TIMEOUT$/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:39:3
+✖ retain exact native output limit before exposing safe code (1.1793ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^Error: MAIN_CURRENT_INSTALLATION_OUTPUT_LIMIT$/. Input:
+  
+  'ReferenceError: runMainInstallationCli is not defined'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:41:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ReferenceError: runMainInstallationCli is not defined
+        at globalThis.nativeRunner (evalmachine.<anonymous>:517:33)
+        at f.run (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:16:20)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:41:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19)
+        at Test.run (node:internal/test_runner/test:1447:12),
+    expected: /^Error: MAIN_CURRENT_INSTALLATION_OUTPUT_LIMIT$/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:39:3
+✖ retain exact native spawn failure before exposing safe code (0.9589ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^Error: MAIN_CURRENT_INSTALLATION_SPAWN_FAILED$/. Input:
+  
+  'ReferenceError: runMainInstallationCli is not defined'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:41:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ReferenceError: runMainInstallationCli is not defined
+        at globalThis.nativeRunner (evalmachine.<anonymous>:517:33)
+        at f.run (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:16:20)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:41:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19)
+        at Test.run (node:internal/test_runner/test:1447:12),
+    expected: /^Error: MAIN_CURRENT_INSTALLATION_SPAWN_FAILED$/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:39:3
+✖ retain exact native signal before exposing safe code (0.8861ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^Error: MAIN_CURRENT_INSTALLATION_TERMINATED$/. Input:
+  
+  'ReferenceError: runMainInstallationCli is not defined'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:41:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ReferenceError: runMainInstallationCli is not defined
+        at globalThis.nativeRunner (evalmachine.<anonymous>:517:33)
+        at f.run (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:16:20)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:41:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19)
+        at Test.run (node:internal/test_runner/test:1447:12),
+    expected: /^Error: MAIN_CURRENT_INSTALLATION_TERMINATED$/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:39:3
+✖ retain exact native unknown exit before exposing safe code (0.9625ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^Error: MAIN_CURRENT_INSTALLATION_TERMINATED$/. Input:
+  
+  'ReferenceError: runMainInstallationCli is not defined'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:41:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ReferenceError: runMainInstallationCli is not defined
+        at globalThis.nativeRunner (evalmachine.<anonymous>:517:33)
+        at f.run (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:16:20)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:41:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19)
+        at Test.run (node:internal/test_runner/test:1447:12),
+    expected: /^Error: MAIN_CURRENT_INSTALLATION_TERMINATED$/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:39:3
+✖ retain exact native nonzero exit before exposing safe code (0.8733ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^Error: MAIN_CURRENT_INSTALLATION_EXIT_FAILED$/. Input:
+  
+  'ReferenceError: runMainInstallationCli is not defined'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:41:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ReferenceError: runMainInstallationCli is not defined
+        at globalThis.nativeRunner (evalmachine.<anonymous>:517:33)
+        at f.run (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:16:20)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:41:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19)
+        at Test.run (node:internal/test_runner/test:1447:12),
+    expected: /^Error: MAIN_CURRENT_INSTALLATION_EXIT_FAILED$/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:39:3
+✖ retain exact native unexpected stderr before exposing safe code (1.1133ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^Error: MAIN_CURRENT_INSTALLATION_STDERR_REJECTED$/. Input:
+  
+  'ReferenceError: runMainInstallationCli is not defined'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:41:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ReferenceError: runMainInstallationCli is not defined
+        at globalThis.nativeRunner (evalmachine.<anonymous>:517:33)
+        at f.run (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:16:20)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:41:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19)
+        at Test.run (node:internal/test_runner/test:1447:12),
+    expected: /^Error: MAIN_CURRENT_INSTALLATION_STDERR_REJECTED$/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:45:1
+✖ successful native result is recorded before JSON is consumed (0.8706ms)
+  ReferenceError: runMainInstallationCli is not defined
+      at globalThis.nativeRunner (evalmachine.<anonymous>:517:33)
+      at f.run (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:16:20)
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:47:17)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7)
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:52:1
+✖ invalid JSON still retains original successful native exit and raw output (0.8847ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_CURRENT_INSTALLATION_INVALID/. Input:
+  
+  'ReferenceError: runMainInstallationCli is not defined'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:54:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ReferenceError: runMainInstallationCli is not defined
+        at globalThis.nativeRunner (evalmachine.<anonymous>:517:33)
+        at f.run (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:16:20)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:54:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19)
+        at Test.run (node:internal/test_runner/test:1447:12),
+    expected: /MAIN_CURRENT_INSTALLATION_INVALID/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:56:1
+✖ thrown startup error records unavailable exit fields honestly (0.9616ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_CURRENT_INSTALLATION_SPAWN_FAILED/. Input:
+  
+  'ReferenceError: runMainInstallationCli is not defined'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:58:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ReferenceError: runMainInstallationCli is not defined
+        at globalThis.nativeRunner (evalmachine.<anonymous>:517:33)
+        at f.run (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:16:20)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:58:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19)
+        at Test.run (node:internal/test_runner/test:1447:12),
+    expected: /MAIN_CURRENT_INSTALLATION_SPAWN_FAILED/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:61:1
+✖ same observation never overwrites originals or dispatches another CLI (2.4061ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_CURRENT_INSTALLATION_EXIT_FAILED/. Input:
+  
+  'ReferenceError: runMainInstallationCli is not defined'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:63:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ReferenceError: runMainInstallationCli is not defined
+        at globalThis.nativeRunner (evalmachine.<anonymous>:517:33)
+        at f.run (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:16:20)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:63:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19)
+        at Test.run (node:internal/test_runner/test:1447:12),
+    expected: /MAIN_CURRENT_INSTALLATION_EXIT_FAILED/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:69:1
+✖ evidence directory failure blocks CLI invocation (77.2324ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_CURRENT_INSTALLATION_EVIDENCE_WRITE_FAILED/. Input:
+  
+  'ReferenceError: runMainInstallationCli is not defined'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:72:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ReferenceError: runMainInstallationCli is not defined
+        at globalThis.nativeRunner (evalmachine.<anonymous>:517:33)
+        at f.run (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:16:20)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:72:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19)
+        at Test.run (node:internal/test_runner/test:1447:12),
+    expected: /MAIN_CURRENT_INSTALLATION_EVIDENCE_WRITE_FAILED/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:74:1
+✖ only valid fixed observation fields may determine private evidence paths (1.5872ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_CURRENT_INSTALLATION_OBSERVATION_INVALID/. Input:
+  
+  'ReferenceError: runMainInstallationCli is not defined'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:76:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: ReferenceError: runMainInstallationCli is not defined
+        at globalThis.nativeRunner (evalmachine.<anonymous>:517:33)
+        at f.run (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:16:20)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_local_verification_transport.test.cjs:76:9)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19)
+        at Test.run (node:internal/test_runner/test:1447:12),
+    expected: /MAIN_CURRENT_INSTALLATION_OBSERVATION_INVALID/,
+    operator: 'throws',
+    diff: 'simple'
+  }

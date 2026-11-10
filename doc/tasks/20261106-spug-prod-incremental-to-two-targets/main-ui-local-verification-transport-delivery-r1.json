@@ -1,0 +1,120 @@
+{
+  "schemaVersion": "TaskMainUiLocalVerificationDelivery/v1",
+  "status": "LOCAL_VALIDATION_PASS_FROZEN",
+  "headAtDelivery": "f18c0e4a3d793228ab0304c61551e4a55c2fc59f",
+  "ownedFiles": [
+    {
+      "file": "automatic_incremental_ui_acceptance.cjs",
+      "bytes": 46932,
+      "sha256": "fd48c6dae38f673c61419be619feef7bc5453ebe9c9523ded1f428523d006690"
+    },
+    {
+      "file": "main_ui_deployment_root.test.cjs",
+      "bytes": 8900,
+      "sha256": "d4d55941d7954cdc2563b6adf5bb314404381c7240cd78219c92ea9e21db4925"
+    },
+    {
+      "file": "main_ui_local_verification_transport.test.cjs",
+      "bytes": 6705,
+      "sha256": "55de69616d9227f69c667efdf00926534df16b78f687b9bc89dabdf5a0e89d1a"
+    },
+    {
+      "file": "main-ui-local-verification-transport-plan.md",
+      "bytes": 10895,
+      "sha256": "c271296ab88a26c7cc93cbcb350c4d75117beb55df214f5e772226b82f53efa9"
+    },
+    {
+      "file": "main-ui-local-verification-transport-red-r1.json",
+      "bytes": 554,
+      "sha256": "85163323ffa0c14a5e2bee98afc78ace2699f9757866666971ec65c2485081ab"
+    },
+    {
+      "file": "main-ui-local-verification-transport-red-r1.log",
+      "bytes": 27291,
+      "sha256": "3e105f6e0e0baab6cfce1ef10a930496b358834ba668565c361ffef56b318c93"
+    },
+    {
+      "file": "main-ui-local-verification-transport-green-r1.json",
+      "bytes": 1735,
+      "sha256": "a998b026c9bad934eb7fa2e311e1ea579aa33d270fd4d5744af344f6cdaf6a71"
+    },
+    {
+      "file": "main-ui-local-verification-transport-green-r1.log",
+      "bytes": 3777,
+      "sha256": "3872ba6450a82b6dd022f1f05f3f693b0b2c7486e0db60fdf5770f583a68b1e7"
+    }
+  ],
+  "preservedFiles": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\prepare_main_program_ui_preflight.py",
+      "bytes": 20446,
+      "sha256": "e7bb6624fe46f0e5831e696ff665febeb2cc222871482d828dde8a9a3350dc90"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\prepare_automatic_ui_preflight.py",
+      "bytes": 13716,
+      "sha256": "237e617f266579dd0190b51109f5427391d4cce5b38d4d7a8850bae2789c5abb"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_current_installation.py",
+      "bytes": 11142,
+      "sha256": "7a4cbfef68841d2a842ecbd6c96ad99524d9d22ccd3cffbe1cb99eb37682161a"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_installation_selection.py",
+      "bytes": 15700,
+      "sha256": "557b384234b5b38ec7c738ba3c1086d74f8c2768412399dc1680a6a5427dd786"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication_continuation.py",
+      "bytes": 61675,
+      "sha256": "7e530263fe988e4b2591889c84e4fb740d7e936393905797c133d8ba5c67e735"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\spug_runtime_dependency_completion.py",
+      "bytes": 49959,
+      "sha256": "db6b9c7a3b143fe09673746c038617be941de1b5a1b41ea61586003025d7188e"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication_verify_only.py",
+      "bytes": 33957,
+      "sha256": "7aa3a8f6913d53f4057e7594342678a8c79cb4414f0e71d530b8b87e997990b0"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_resource_transition.py",
+      "bytes": 32860,
+      "sha256": "eb464b017a6a5a46ab6cd2e48023e398a0a89b8995fd165a019444d9c62ee712"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_historical_custody.py",
+      "bytes": 11270,
+      "sha256": "d5a66739ee5aaeb910ea43567027afea6eb1e7d2ab04f067f801ea4411bca6b3"
+    }
+  ],
+  "originalFailurePins": [
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-ui-submit-20261110-r1-native.private.json",
+      "bytes": 824,
+      "sha256": "3adc5c0b542bec4826150f4440e1526280d49979d1185cc0510da1fbf2eab6b9"
+    },
+    {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-ui-submit-20261110-r1-stderr.private.log",
+      "bytes": 72,
+      "sha256": "da7ee4daffcade993d356f3352fabb5a3c03558f2d0cec6a09a7de445be89f7e"
+    }
+  ],
+  "budgetEvidencePin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-dispatcher-cli-observation-20261110-r1-native.private.json",
+    "bytes": 700,
+    "sha256": "1e913b153fe968801335ed3084fd2fd1a9a540dcbad6df561e66828effefab5d"
+  },
+  "budgetMs": 600000,
+  "validation": {
+    "passed": 50,
+    "skipped": 0,
+    "exitCode": 0,
+    "inputsUnchanged": true
+  },
+  "actualUiOrRemote": false,
+  "indexWrites": false
+}

@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "MainProgramAutomaticIncrementalUiBaseline/v1",
+  "status": "PASS",
+  "cycle": "main-r7-20261110",
+  "observedAt": "2026-11-10T14:47:08.296208+00:00",
+  "applicationId": "intruoyi-57-safe-20261024-v1",
+  "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+  "deploymentSelectionPin": {
+    "file": "main-program-current-installations-b5fa4c5-r7-v4.json",
+    "bytes": 728,
+    "sha256": "71571705bdd0e5430c41edf34f377d9f535113897d1f111ed651fd27ff6ee930"
+  },
+  "expectedPlan": {
+    "state": "BASELINE_REQUIRED",
+    "parentChainRef": null,
+    "baseFullRef": null,
+    "planDigest": "5cc05816fad33b56e19ba80141e5973ca2624c7a2c505470976dfc5e4aafd1b7"
+  },
+  "operationId": null
+}

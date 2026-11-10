@@ -28,18 +28,19 @@ function setup(t){
  const inputPins=[selectionPin,controlGenerationPin,buildPin,resourceBuildPin].map(ref=>({path:path.join(root,ref.file),bytes:ref.bytes,sha256:ref.sha256}));
  const summary={schemaVersion:'MainProgramCurrentInstallationSummary/v1',status:'PASS',selectionPin,sourceCommit,controlGenerationPin,spugInstallationPin:selection.spugInstallationPin,buildPin,
   build:{fileCount:147,fileManifestSha256:'c'.repeat(64),packageSha256:'d'.repeat(64)},resourceBuildPin,spugCommit,inputPins};
- const f={root,build,resource,generation,selection,selectionPin,gate,runtime,summary,calls:[],reply:null};
- const scopedRequire=name=>name==='node:child_process'?{spawnSync:(...args)=>{f.calls.push(args);return f.reply||{status:0,stderr:'',stdout:JSON.stringify(f.summary)};}}:require(name);
+ const f={root,build,resource,generation,selection,selectionPin,gate,runtime,summary,calls:[],reply:null,options:{cycle:'dual-roots',kind:'FULL',phase:'submit',observation:'r1'}};
+ const scopedRequire=name=>name==='node:child_process'?{spawnSync:(...args)=>{f.calls.push(args);return f.reply||{status:0,stderr:Buffer.alloc(0),stdout:Buffer.from(JSON.stringify(f.summary))};}}:require(name);
  const context=vm.createContext({require:scopedRequire,__dirname:root,process:{argv:['node','driver']},console,Buffer});
- vm.runInContext(source.slice(0,source.lastIndexOf('\nmain().catch'))+'\nglobalThis.contract={validateMainDeploymentContract};',context);
- f.check=()=>context.contract.validateMainDeploymentContract(f.gate,{cycle:'dual-roots'},f.selection,f.selectionPin);
+ const relocated=source.replace("PRIVATE='C:/Spug/runtime/private/prod-incremental-to-two-targets-20261106'","PRIVATE=__dirname");
+ vm.runInContext(relocated.slice(0,relocated.lastIndexOf('\nmain().catch'))+'\nglobalThis.contract={validateMainDeploymentContract};',context);
+ f.check=()=>context.contract.validateMainDeploymentContract(f.gate,f.options,f.selection,f.selectionPin);
  return f;
 }
 test('v2 admits different registered component heads via one fixed real-file CLI protocol',t=>{
  const f=setup(t);f.check();assert.equal(f.calls.length,1);const [exe,args,options]=f.calls[0];
  assert.equal(exe,'C:/Users/D01021/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe');
  assert.deepEqual(Array.from(args),['-B','-X','utf8',path.join(f.root,'main_program_current_installation.py'),'--selection','selection.json','--public-summary']);
- assert.equal(options.shell,false);assert.equal(options.timeout,120000);assert.equal(options.maxBuffer,16*1024*1024);assert.equal(options.windowsHide,true);
+ assert.equal(options.shell,false);assert.equal(options.timeout,600000);assert.equal(options.maxBuffer,16*1024*1024);assert.equal(options.windowsHide,true);
  f.check();assert.equal(f.calls.length,1,'later barriers must not repeat the expensive immutable inference');
 });
 for(const [name,change] of [
@@ -57,8 +58,8 @@ for(const [name,change] of [
  ['runtime status',f=>{f.runtime.status='FAIL';f.gate.runtimeEvidencePin=save(f.root,'runtime.json',f.runtime);}],
 ])test('v2 refuses '+name+' before browser',t=>{const f=setup(t);change(f);assert.throws(f.check,/MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/);});
 for(const [name,change] of [
- ['nonzero',f=>f.reply={status:1,stderr:'',stdout:'{}'}],
- ['stderr',f=>f.reply={status:0,stderr:'diagnostic',stdout:'{}'}],
+ ['nonzero',f=>f.reply={status:1,stderr:Buffer.alloc(0),stdout:Buffer.from('{}')}],
+ ['stderr',f=>f.reply={status:0,stderr:Buffer.from('diagnostic'),stdout:Buffer.from('{}')}],
  ['bad schema',f=>f.summary.schemaVersion='unverified'],
  ['other source',f=>f.summary.sourceCommit='4'.repeat(40)],
  ['unbound resource',f=>f.summary.inputPins=f.summary.inputPins.filter(p=>!p.path.endsWith('resource-build.json'))],
@@ -66,8 +67,8 @@ for(const [name,change] of [
  ['changed input',f=>fs.appendFileSync(path.join(f.root,'source-build.json'),' ')],
 ])test('formal CLI closure refuses '+name,t=>{const f=setup(t);change(f);assert.throws(f.check,/MAIN_CURRENT_INSTALLATION/);});
 test('failed CLI does not create a successful cached proof',t=>{
- const f=setup(t);f.reply={status:1,stderr:'',stdout:'{}'};assert.throws(f.check,/MAIN_CURRENT_INSTALLATION/);
- f.reply=null;f.check();assert.equal(f.calls.length,2);
+ const f=setup(t);f.reply={status:1,stderr:Buffer.alloc(0),stdout:Buffer.from('{}')};assert.throws(f.check,/MAIN_CURRENT_INSTALLATION/);
+ f.reply=null;f.options.observation='r2';f.check();assert.equal(f.calls.length,2);
 });
 test('later barrier rereads all original inputs without a second CLI',t=>{
  const f=setup(t);f.check();fs.appendFileSync(path.join(f.root,'resource-build.json'),' ');

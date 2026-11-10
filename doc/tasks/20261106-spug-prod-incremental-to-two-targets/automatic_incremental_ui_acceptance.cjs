@@ -125,16 +125,56 @@ function verifyMainInputClosure(summary,previous){
   }catch(error){check(false,error.publicCode||'MAIN_CURRENT_INSTALLATION_INPUT_UNREADABLE');}
   return identities;
 }
-function currentMainProof(deployment,selectionPin,gate){
+function runMainInstallationCli(selectionPin,options){
+  check(localPin(selectionPin)&&CYCLE.test(options?.cycle||'')&&['FULL','I1','I2'].includes(options?.kind)&&
+    ['preview','submit','verify'].includes(options?.phase)&&/^[a-z0-9][a-z0-9-]{0,47}$/.test(options?.observation||''),
+    'MAIN_CURRENT_INSTALLATION_OBSERVATION_INVALID');
+  const {privateDir,privateLabel}=artifactPaths(options),directory=path.join(privateDir,privateLabel+'-current-installation');
+  try{
+    fs.mkdirSync(privateDir,{recursive:true});
+    check(!fs.existsSync(directory),'MAIN_CURRENT_INSTALLATION_OBSERVATION_EXISTS');
+    fs.mkdirSync(directory);
+    check(path.resolve(fs.realpathSync(directory))===path.resolve(directory),'MAIN_CURRENT_INSTALLATION_EVIDENCE_WRITE_FAILED');
+  }catch(error){check(false,error.publicCode||(error.code==='EEXIST'?'MAIN_CURRENT_INSTALLATION_OBSERVATION_EXISTS':'MAIN_CURRENT_INSTALLATION_EVIDENCE_WRITE_FAILED'));}
+  const executable='C:/Users/D01021/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe';
+  const argv=['-B','-X','utf8',path.join(TASK,'main_program_current_installation.py'),'--selection',selectionPin.file,'--public-summary'];
+  const timeoutMs=600000,clock=require('node:perf_hooks').performance,startedAt=new Date().toISOString(),start=clock.now();
+  let response,thrown=null;
+  try{response=require('node:child_process').spawnSync(executable,argv,
+    {shell:false,timeout:timeoutMs,maxBuffer:16*1024*1024,windowsHide:true});}catch(error){thrown=error;}
+  const finishedAt=new Date().toISOString(),durationMs=clock.now()-start,error=thrown||response?.error;
+  const stdout=response?.stdout??Buffer.alloc(0),stderr=response?.stderr??Buffer.alloc(0);
+  const exitCode=Number.isSafeInteger(response?.status)?response.status:null,signal=typeof response?.signal==='string'?response.signal:null;
+  const errorCode=typeof error?.code==='string'?error.code:null;
+  try{
+    check(Buffer.isBuffer(stdout)&&Buffer.isBuffer(stderr),'MAIN_CURRENT_INSTALLATION_EVIDENCE_WRITE_FAILED');
+    const save=(name,raw)=>{
+      const file=path.join(directory,name),descriptor=fs.openSync(file,'wx');
+      try{fs.writeFileSync(descriptor,raw);fs.fsyncSync(descriptor);}finally{fs.closeSync(descriptor);}
+      check(fs.readFileSync(file).equals(raw),'MAIN_CURRENT_INSTALLATION_EVIDENCE_WRITE_FAILED');
+      return {path:file,bytes:raw.length,sha256:sha(raw)};
+    };
+    const stdoutPin=save('stdout.private.log',stdout),stderrPin=save('stderr.private.log',stderr);
+    exclusive(path.join(directory,'native.private.json'),{schemaVersion:'MainUiCurrentInstallationNative/v1',selectionPin,
+      cycle:options.cycle,kind:options.kind,phase:options.phase,observation:options.observation,startedAt,finishedAt,durationMs,timeoutMs,
+      executable,argv,responseReturned:!thrown&&response!==undefined,pid:Number.isSafeInteger(response?.pid)?response.pid:null,
+      exitCode,signal,errorCode,stdoutPin,stderrPin});
+  }catch(writeError){check(false,'MAIN_CURRENT_INSTALLATION_EVIDENCE_WRITE_FAILED');}
+  if(error)check(false,errorCode==='ETIMEDOUT'?'MAIN_CURRENT_INSTALLATION_TIMEOUT':errorCode==='ENOBUFS'?
+    'MAIN_CURRENT_INSTALLATION_OUTPUT_LIMIT':'MAIN_CURRENT_INSTALLATION_SPAWN_FAILED');
+  check(signal===null&&exitCode!==null,'MAIN_CURRENT_INSTALLATION_TERMINATED');
+  check(exitCode===0,'MAIN_CURRENT_INSTALLATION_EXIT_FAILED');
+  check(stderr.length===0,'MAIN_CURRENT_INSTALLATION_STDERR_REJECTED');
+  try{
+    const text=stdout.toString('utf8');check(Buffer.from(text,'utf8').equals(stdout),'MAIN_CURRENT_INSTALLATION_INVALID');
+    return JSON.parse(text);
+  }catch(parseError){check(false,'MAIN_CURRENT_INSTALLATION_INVALID');}
+}
+function currentMainProof(deployment,selectionPin,gate,options){
   check(!mainInstallationSelection||mainDeepEqual(mainInstallationSelection,selectionPin),'MAIN_CURRENT_INSTALLATION_SELECTION_CHANGED');
   let summary=mainInstallationProof?.summary;
   if(!summary){
-    const response=require('node:child_process').spawnSync(
-      'C:/Users/D01021/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe',
-      ['-B','-X','utf8',path.join(TASK,'main_program_current_installation.py'),'--selection',selectionPin.file,'--public-summary'],
-      {shell:false,encoding:'utf8',timeout:120000,maxBuffer:16*1024*1024,windowsHide:true});
-    check(!response.error&&response.status===0&&response.stderr==='','MAIN_CURRENT_INSTALLATION_FAILED');
-    try{summary=JSON.parse(response.stdout);}catch(error){check(false,'MAIN_CURRENT_INSTALLATION_INVALID');}
+    summary=runMainInstallationCli(selectionPin,options);
   }
   check(mainKeys(summary,['schemaVersion','status','selectionPin','sourceCommit','controlGenerationPin','spugInstallationPin','buildPin','build','resourceBuildPin','spugCommit','inputPins'])&&
     summary.schemaVersion==='MainProgramCurrentInstallationSummary/v1'&&summary.status==='PASS'&&
@@ -150,9 +190,9 @@ function currentMainProof(deployment,selectionPin,gate){
   }
   return {summary,identities};
 }
-function validateMainDeploymentRoots(gate,deployment,selectionPin){
+function validateMainDeploymentRoots(gate,deployment,selectionPin,options){
   try{
-    const proof=currentMainProof(deployment,selectionPin,gate),summary=proof.summary;
+    const proof=currentMainProof(deployment,selectionPin,gate,options),summary=proof.summary;
     const inputs=gate.gitDeploymentInputs,bindings=inputs?.deploymentRootBindings;
     check(mainKeys(inputs,['source','spug','deploymentRootBindings'])&&mainKeys(bindings,['source','spug']),'MAIN_ROOT_BINDINGS_REQUIRED');
     const generation=readTaskPin(summary.controlGenerationPin);
@@ -195,7 +235,7 @@ function validateMainDeploymentContract(gate,options,deployment,selectionPin){
   check(localPin(selectionPin)&&localPin(gate.deploymentSelectionPin)&&exact(gate.deploymentSelectionPin,selectionPin),'MAIN_SELECTION_PIN_CHANGED');
   for(const name of ['controlGenerationPin','spugInstallationPin'])check(localPin(deployment[name])&&localPin(gate[name])&&exact(deployment[name],gate[name]),'MAIN_DEPLOYMENT_PIN_CHANGED');
   check(localPin(deployment.verificationInputsPin)&&remotePin(gate.sourceCaptureConfigurationPin)&&remotePin(gate.sourceOwnerConfigurationPin)&&gate.mainDeploymentVerified===true,'MAIN_DEPLOYMENT_NOT_VERIFIED');
-  if(gate.schemaVersion==='MainProgramAutomaticIncrementalUiPreflight/v2')validateMainDeploymentRoots(gate,deployment,selectionPin);
+  if(gate.schemaVersion==='MainProgramAutomaticIncrementalUiPreflight/v2')validateMainDeploymentRoots(gate,deployment,selectionPin,options);
 }
 function validateMainBaseline(gate,options,expected,baseline){
   const fields=['schemaVersion','status','cycle','observedAt','applicationId','sourceConfigRef','deploymentSelectionPin','expectedPlan','operationId'];

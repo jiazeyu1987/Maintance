@@ -1,0 +1,37 @@
+{
+  "schemaVersion": "TaskMainUiLocalVerificationTests/v1",
+  "exitCode": 0,
+  "seconds": 32.80239224433899,
+  "command": [
+    "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.EXE",
+    "--test",
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_ui_local_verification_transport.test.cjs",
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_ui_deployment_root.test.cjs",
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\automatic_main_cycle_ui_contract.test.cjs",
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\automatic_stage_ui_contract.test.cjs"
+  ],
+  "logPin": {
+    "file": "main-ui-local-verification-transport-green-r1.log",
+    "bytes": 3777,
+    "sha256": "3872ba6450a82b6dd022f1f05f3f693b0b2c7486e0db60fdf5770f583a68b1e7"
+  },
+  "inputs": [
+    {
+      "file": "automatic_incremental_ui_acceptance.cjs",
+      "bytes": 46932,
+      "sha256": "fd48c6dae38f673c61419be619feef7bc5453ebe9c9523ded1f428523d006690"
+    },
+    {
+      "file": "main_ui_deployment_root.test.cjs",
+      "bytes": 8900,
+      "sha256": "d4d55941d7954cdc2563b6adf5bb314404381c7240cd78219c92ea9e21db4925"
+    },
+    {
+      "file": "main_ui_local_verification_transport.test.cjs",
+      "bytes": 6705,
+      "sha256": "55de69616d9227f69c667efdf00926534df16b78f687b9bc89dabdf5a0e89d1a"
+    }
+  ],
+  "inputsUnchanged": true,
+  "actualUiOrRemote": false
+}
