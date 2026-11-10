@@ -429,6 +429,47 @@ def validate_generation_staging(inputs, plan, build, engine_report, configuratio
          'GENERATION_STAGE_RETENTION_NOT_PROVEN')
 
 
+def generation_source_path(name, root, code):
+    need(type(name) is str and name and '\\' not in name and ':' not in name and '\x00' not in name,
+         code)
+    relative = PurePosixPath(name)
+    need(not relative.is_absolute() and '..' not in relative.parts and str(relative) == name, code)
+    root = Path(root).resolve(strict=True); path = root / name
+    need(path.resolve(strict=True).is_relative_to(root), code)
+    return path
+
+
+def generation_product_source(name, reference, build, linux_source_pins):
+    """V1 local tests pin committed blob bytes; Linux separately pins checkout bytes."""
+    root = Path(build['worktree']).resolve(strict=True)
+    path = generation_source_path(name, root, 'GENERATION_SOURCE_EVIDENCE_SCOPE')
+    need(not name.startswith('doc/tasks/') and name in linux_source_pins,
+         'GENERATION_PRODUCT_LINUX_BINDING_REQUIRED')
+    physical = file_pin(path)
+    need(physical['bytes'] <= 64 * 1024 * 1024 and physical['sha256'] == linux_source_pins[name],
+         'GENERATION_LINUX_SOURCE_CHANGED')
+    commit = build['targetCommit']
+    need(type(commit) is str and re.fullmatch('[0-9a-f]{40}', commit), 'GENERATION_SOURCE_COMMIT_INVALID')
+    env = dict(os.environ, GIT_OPTIONAL_LOCKS='0', GIT_NO_REPLACE_OBJECTS='1')
+    commands = []
+    def git(*args):
+        command = ['git', '-C', str(root), *args]
+        result = subprocess.run(command, capture_output=True, env=env, timeout=30, check=True)
+        commands.append(dict(command=command, actualExitCode=result.returncode, timedOut=False,
+            stdoutBytes=len(result.stdout), stdoutSha256=hashlib.sha256(result.stdout).hexdigest(),
+            stderrBytes=len(result.stderr), stderrSha256=hashlib.sha256(result.stderr).hexdigest()))
+        return result.stdout
+    identity = commit + ':' + name
+    size_raw = git('cat-file', '-s', identity).strip()
+    need(size_raw.isdigit() and 0 < int(size_raw) <= 64 * 1024 * 1024, 'GENERATION_SOURCE_BLOB_SIZE_INVALID')
+    raw = git('cat-file', 'blob', identity)
+    blob_pin = dict(bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest())
+    need(len(raw) == int(size_raw) and blob_pin == reference, 'GENERATION_EVIDENCE_PIN_CHANGED')
+    need(file_pin(path) == physical, 'GENERATION_EVIDENCE_CHANGED_DURING_READ')
+    return dict(raw=raw, physicalPin=physical, provenance=dict(sourceCommit=commit, relativePath=name,
+                blobPin=blob_pin, checkoutPin=physical, commands=commands))
+
+
 def validate_generation_coverage(records, inputs, predecessor):
     """Read the original full proof and exact candidate delta, including both tars."""
     from main_program_control_upgrade_plan import validate_delta
@@ -496,12 +537,14 @@ def validate_generation_coverage(records, inputs, predecessor):
     need(log.count('\nOK\n') == 3 and not any(word in log for word in ('skipped=', 'FAILED (', 'ERROR:', 'FAIL:')),
          'GENERATION_LINUX_LOG_NOT_GREEN')
     root = TASK.parents[2]
-    for name, ref in local_proof['files'].items():
-        path = root / name
-        need(not PurePosixPath(name).is_absolute() and '..' not in PurePosixPath(name).parts and
-             path.resolve(strict=True).is_relative_to(root.resolve(strict=True)), 'GENERATION_SOURCE_EVIDENCE_SCOPE')
-        checked_bytes(path, ref)
     candidate_root = Path(build['worktree']).resolve(strict=True)
+    committed_sources = []
+    for name, ref in local_proof['files'].items():
+        if name.startswith('doc/tasks/'):
+            checked_bytes(generation_source_path(name, root, 'GENERATION_SOURCE_EVIDENCE_SCOPE'), ref)
+        else:
+            source = generation_product_source(name, ref, build, linux['sourcePins'])
+            physical.append(source['physicalPin']); committed_sources.append(source['provenance'])
     for name, sha in linux['sourcePins'].items():
         # The task-owned test is separately pinned; product files come from the committed build checkout.
         base = root if name.startswith('doc/tasks/') else candidate_root
@@ -568,7 +611,8 @@ def validate_generation_coverage(records, inputs, predecessor):
                    inputs['sourceCommit'], predecessor['generation']['sourceCommit'])
     for ref in physical: need(file_pin(ref['path']) == ref, 'GENERATION_EVIDENCE_CHANGED_DURING_READ')
     return dict(coverage=report, build=build, delta=delta, packageFiles=standard,
-                previousPackageFiles=before_standard, physicalPins=physical)
+                previousPackageFiles=before_standard, physicalPins=physical,
+                committedSourceEvidence=committed_sources)
 
 
 def validate_coverage(records, build):
