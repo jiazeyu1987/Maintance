@@ -8,8 +8,8 @@ import re
 import subprocess
 
 from common import TASK, PRIVATE, SOURCE, now, remote
-from main_program_installation_selection import Records, local_name
-from main_program_spug_publication_verify_only import validate_publication_v4
+from main_program_installation_selection import local_name
+from main_program_current_installation import load_current_installation, BoundDocuments
 from prepare_automatic_ui_preflight import verify_stage_deployment_inputs
 
 
@@ -67,13 +67,8 @@ def pinned_context(verified, path):
 
 
 def spug_observation(verified, selection):
-    private_core=PRIVATE/(Path(selection['spugInstallationPin']['file']).stem+'.private.json')
-    core=pinned_context(verified,private_core)
-    stage=next(s for s in core['stages'] if s['stage']=='spug-guard-after')
-    guard=pinned_context(verified,stage['resultPin']['path'])['result']
-    wrapper=pinned_context(verified,TASK/core['resourceTransitionPin']['file'])
-    transition=pinned_context(verified,TASK/wrapper['transitionCorePin']['file'])
-    build=pinned_context(verified,TASK/transition['resourceBuildPin']['file'])
+    guard=verified['spugRuntime']['guard']
+    build=verified['spugRuntime']['resourceBuild']
     script='EXPECTED='+repr(guard)+'\n'+SPUG_SCRIPT
     result=subprocess.run([str(Path(os.environ['LOCALAPPDATA'])/'Programs/DockerDesktop/resources/bin/docker.exe'),
         'exec','-i','f615a60c76f46e4f6ae20ea6298f737fb9786684ce941fcc15763654461265bf',
@@ -115,9 +110,8 @@ def main():
     stem=prefix+'-'+args.phase+'-'+args.observation
     gate_path=TASK/(stem+'-preflight.json')
     need(not gate_path.exists(),'OBSERVATION_ALREADY_EXISTS')
-    records=Records(TASK);selection=records.read(args.selection)
-    need(selection['schemaVersion']=='TaskMainProgramInstallations/v4','FORMAL_MAIN_V4_REQUIRED')
-    verified=validate_publication_v4(records,PRIVATE,selection);bundle=verified['generation']
+    verified=load_current_installation(TASK,PRIVATE,selection_file=args.selection)
+    selection=verified['selection'];selection_pin=verified['selectionPin'];bundle=verified['generation']
     spug,build=spug_observation(verified,selection)
     git=verify_stage_deployment_inputs(TASK.parents[2],selection['sourceCommit'],build['sourceCommit'],
          [name.removeprefix('ops/spug/') for name in build['files']])
@@ -130,23 +124,24 @@ def main():
     if args.phase=='verify':
         receipt=json.loads((TASK/(prefix+'-ui-submission.json')).read_text(encoding='utf-8'))
         need(receipt['schemaVersion']=='AutomaticIncrementalUiSubmission/v3' and receipt['cycle']==args.cycle and
-             receipt['kind']==args.kind and receipt['deploymentSelectionPin']==records.references[args.selection],
+             receipt['kind']==args.kind and receipt['deploymentSelectionPin']==selection_pin,
              'ORIGINAL_RECEIPT_DEPLOYMENT_CHANGED')
         original=receipt['plan'];operation=receipt['request']['operationId']
     expected=plan_for_gate(actual,args.kind,args.phase,original)
+    BoundDocuments(TASK,verified['inputPins']).finish()
     evidence=dict(schemaVersion='MainProgramAutomaticIncrementalUiRuntime/v1',status='PASS',
          observedAt=now(),source=actual,spug=spug,gitDeploymentInputs=git,
-         deploymentSelectionPin=records.references[args.selection],backupDispatched=False,restoreDispatched=False)
+         deploymentSelectionPin=selection_pin,backupDispatched=False,restoreDispatched=False)
     runtime_pin=write_new(TASK/(stem+'-runtime.json'),evidence)
     baseline=dict(schemaVersion='MainProgramAutomaticIncrementalUiBaseline/v1',status='PASS',cycle=args.cycle,
-         observedAt=now(),applicationId=SOURCE,sourceConfigRef=SOURCE,deploymentSelectionPin=records.references[args.selection],
+         observedAt=now(),applicationId=SOURCE,sourceConfigRef=SOURCE,deploymentSelectionPin=selection_pin,
          expectedPlan=expected,operationId=operation)
     baseline_pin=write_new(TASK/(stem+'-baseline.json'),baseline)
     gate=dict(schemaVersion='MainProgramAutomaticIncrementalUiPreflight/v1',status='PASS',experiencePreflight='PASS',
          cycle=args.cycle,kind=args.kind,phase=args.phase,origin='http://127.0.0.1:18080',server='172.30.30.57',mode='safe',
          applicationId=SOURCE,sourceConfigRef=SOURCE,implementationCommit=selection['sourceCommit'],
          installationCommit=selection['sourceCommit'],buildCommit=selection['sourceCommit'],spugCommit=build['sourceCommit'],
-         deploymentSelectionPin=records.references[args.selection],controlGenerationPin=selection['controlGenerationPin'],
+         deploymentSelectionPin=selection_pin,controlGenerationPin=selection['controlGenerationPin'],
          spugInstallationPin=selection['spugInstallationPin'],sourceCaptureConfigurationPin=actual['captureConfigurationPin'],
          sourceOwnerConfigurationPin=rows[0]['ownerConfigurationPin'],mainDeploymentVerified=True,
          observedAt=now(),expectedUserLabel='管理员',sourceIdentityVerified=True,installationVerified=True,

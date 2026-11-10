@@ -59,15 +59,24 @@ def package_manifest(identity, task, private):
     return manifest
 
 
-def main_package_manifest(identity, task, private):
+def main_package_manifest(identity, task, private, *, build_pin=None):
     """Explicit MAIN/v1 contract; old 130-file package reader stays unchanged."""
     commit = identity['sourceCommit']
     need(type(commit) is str and re.fullmatch('[0-9a-f]{40}', commit), 'AUDIT_MAIN_COMMIT_INVALID')
-    build = json.loads((task / ('release-build-' + commit[:7] + '.json')).read_bytes())
+    if build_pin is None:
+        # Original callers retain their original standalone package contract.
+        build = json.loads((task / ('release-build-' + commit[:7] + '.json')).read_bytes())
+    else:
+        from main_program_installation_selection import Records
+        build = Records(task).pinned(build_pin)
     need(build['status'] == 'PASS' and build['targetCommit'] == commit and
          all(build[k] == identity[k] for k in ('packageSha256','fileManifestSha256','fileCount')) and
          type(build['fileCount']) is int and build['fileCount'] == 147, 'AUDIT_MAIN_BUILD_CHANGED')
-    archive = private / ('package-' + commit[:7]) / 'backup-restore-standard.tgz'
+    if build_pin is None:
+        archive = private / ('package-' + commit[:7]) / 'backup-restore-standard.tgz'
+    else:
+        from main_program_current_installation import standard_package_pin
+        archive = Path(standard_package_pin(build, private)['path'])
     need(archive.stat().st_size <= 64*1024*1024, 'AUDIT_MAIN_ARCHIVE_LIMIT')
     raw = archive.read_bytes()
     need(hashlib.sha256(raw).hexdigest() == build['packageSha256'], 'AUDIT_MAIN_PACKAGE_CHANGED')
@@ -157,30 +166,21 @@ def _prepare_main(submission, submission_path, selection_path, installation_path
          submission['intent']['applicationId'] == source and submission['intent']['planDigest'] == expected['planDigest'] and
          type(expected['planDigest']) is str and re.fullmatch('[0-9a-f]{64}', expected['planDigest']) and
          (parent is None or expected['baseFullRef'] == parent['chain'][0]['operationId']), 'AUDIT_MAIN_BASELINE_CHANGED')
-    # This is the exact v4 validator used by select_main_program_installation;
-    # retain its full verified bundle instead of loading the same closure twice.
-    from main_program_installation_selection import Records
-    from main_program_spug_publication_verify_only import validate_publication_v4
-    records = Records(task); records.pinned(submission['deploymentSelectionPin'])
-    verified = validate_publication_v4(records, private, selected)
+    from main_program_current_installation import load_current_installation, BoundDocuments, standard_package_pin
+    verified = load_current_installation(task, private, selection_file=selection_path.name)
+    need(verified['selectionPin'] == submission['deploymentSelectionPin'] and verified['selection'] == selected,
+         'AUDIT_MAIN_DEPLOYMENT_CHANGED')
     bundle = verified['generation']; controllers = bundle['controllersByHost']['57']
     need(len(controllers) == 2 and controllers[0]['role'] == 'source' and controllers[1]['role'] == 'target' and
          controllers[0]['ownerConfigurationPin'] == submission['sourceOwnerConfigurationPin'], 'AUDIT_MAIN_SOURCE_CHANGED')
-    bound = {str(Path(p['path']).resolve()):p for p in verified['inputPins']}
-    def document(path):
-        reference = bound.get(str(Path(path).resolve()))
-        need(reference is not None, 'AUDIT_MAIN_UNBOUND_DEPLOYMENT_INPUT')
-        raw = Path(path).read_bytes()
-        need(hashlib.sha256(raw).hexdigest() == reference['sha256'] and len(raw) == reference['bytes'],
-             'AUDIT_MAIN_UNBOUND_DEPLOYMENT_INPUT')
-        return json.loads(raw)
-    rich = document(private/(Path(selected['spugInstallationPin']['file']).stem+'.private.json'))
-    transition = document(task/rich['resourceTransitionPin']['file'])
-    if transition['schemaVersion'] == 'MainProgramSpugResourceTransitionReaderCustody/v1':
-        transition = document(task/transition['transitionCorePin']['file'])
-    resource_build = document(task/transition['resourceBuildPin']['file'])
+    resource_build = verified['spugRuntime']['resourceBuild']
     need(resource_build['sourceCommit'] == submission['spugCommit'], 'AUDIT_MAIN_SPUG_COMMIT_CHANGED')
-    manifests = [main_package_manifest(row, task, private) for row in controllers]
+    build_pin = bundle['generation']['buildPin']
+    build = BoundDocuments(task,verified['inputPins']).read(build_pin)
+    package_pin = standard_package_pin(build, private)
+    need(any(Path(p['path']) == Path(package_pin['path']) and p['bytes'] == package_pin['bytes'] and
+             p['sha256'] == package_pin['sha256'] for p in verified['inputPins']), 'AUDIT_MAIN_UNBOUND_PACKAGE')
+    manifests = [main_package_manifest(row, task, private, build_pin=build_pin) for row in controllers]
     deployment = {k:submission[k] for k in ('cycle','spugCommit','deploymentSelectionPin','controlGenerationPin',
         'spugInstallationPin','sourceCaptureConfigurationPin','sourceOwnerConfigurationPin','baselineEvidencePin')}
     deployment.update(sourceCommit=selected['sourceCommit'], controllerGenerations=controllers)
@@ -189,7 +189,7 @@ def _prepare_main(submission, submission_path, selection_path, installation_path
         controllerFiles=[m['files'] for m in manifests], fileCount=147,
         fileManifestSha256=controllers[0]['fileManifestSha256'], deployment=deployment)
     inputs = [submission_path, selection_path, task/submission['baselineEvidencePin']['file'],
-              private/('package-'+selected['sourceCommit'][:7])/'backup-restore-standard.tgz']
+              Path(package_pin['path'])]
     if parent_path is not None: inputs.append(parent_path)
     pins = {}
     for pin in [*verified['inputPins'], *initial_pins, *[local_pin(p) for p in inputs]]:

@@ -44,6 +44,41 @@ function readAuditTaskFile(file,expected=null,records=[]){
  records.push({pin,identity:identity(after)});
  return {value:JSON.parse(text),pin};
 }
+function readAuditBoundInput(pin,records=[]){
+ need(pin&&Object.keys(pin).sort().join(' ')==='bytes path sha256'&&typeof pin.path==='string'&&path.isAbsolute(pin.path)&&
+  Number.isSafeInteger(pin.bytes)&&pin.bytes>=0&&/^[0-9a-f]{64}$/.test(pin.sha256),'POINT_AUDIT_INPUT_INVALID');
+ const filename=path.resolve(pin.path),before=fs.lstatSync(filename);
+ need(before.isFile()&&!before.isSymbolicLink()&&before.nlink===1&&path.resolve(fs.realpathSync(filename))===filename,'POINT_AUDIT_INPUT_INVALID');
+ const identity=s=>[s.dev,s.ino,s.size,s.mtimeMs,s.ctimeMs],raw=fs.readFileSync(filename),after=fs.lstatSync(filename);
+ need(JSON.stringify(identity(before))===JSON.stringify(identity(after))&&raw.length===pin.bytes&&sha(raw)===pin.sha256,'POINT_AUDIT_INPUT_CHANGED');
+ records.push({pin,identity:identity(after)});
+}
+function readCurrentInstallationSummary(file,selectionPin){
+ need(typeof file==='string'&&/^[A-Za-z0-9][A-Za-z0-9_.-]*\.json$/.test(file)&&path.basename(file)===file,'POINT_AUDIT_TASK_FILE_REQUIRED');
+ const response=require('node:child_process').spawnSync(
+  'C:/Users/D01021/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe',
+  ['-B','-X','utf8',path.join(TASK,'main_program_current_installation.py'),'--selection',file,'--public-summary'],
+  {shell:false,encoding:'utf8',timeout:120000,maxBuffer:16*1024*1024,windowsHide:true});
+ need(!response.error&&response.status===0&&response.stderr==='','POINT_AUDIT_CURRENT_INSTALLATION_FAILED');
+ let summary;try{summary=JSON.parse(response.stdout);}catch(error){throw Error('POINT_AUDIT_CURRENT_INSTALLATION_INVALID');}
+ need(summary&&Object.keys(summary).sort().join(' ')==='build buildPin controlGenerationPin inputPins resourceBuildPin schemaVersion selectionPin sourceCommit spugCommit spugInstallationPin status'&&
+  summary.schemaVersion==='MainProgramCurrentInstallationSummary/v1'&&summary.status==='PASS'&&
+  sameAuditPin(summary.selectionPin,selectionPin)&&/^[0-9a-f]{40}$/.test(summary.sourceCommit)&&/^[0-9a-f]{40}$/.test(summary.spugCommit)&&
+  summary.build&&Object.keys(summary.build).sort().join(' ')==='fileCount fileManifestSha256 packageSha256'&&summary.build.fileCount===147&&
+  /^[0-9a-f]{64}$/.test(summary.build.fileManifestSha256)&&/^[0-9a-f]{64}$/.test(summary.build.packageSha256)&&
+  Array.isArray(summary.inputPins)&&summary.inputPins.length>0,'POINT_AUDIT_CURRENT_INSTALLATION_INVALID');
+ for(const name of ['buildPin','controlGenerationPin','spugInstallationPin','resourceBuildPin']){
+  const p=summary[name];need(p&&Object.keys(p).sort().join(' ')==='bytes file sha256'&&typeof p.file==='string'&&
+   /^[A-Za-z0-9][A-Za-z0-9_.-]*\.json$/.test(p.file)&&Number.isSafeInteger(p.bytes)&&p.bytes>0&&/^[0-9a-f]{64}$/.test(p.sha256),
+   'POINT_AUDIT_CURRENT_INSTALLATION_INVALID');
+ }
+ const records=[],paths=new Set();
+ for(const pin of summary.inputPins){readAuditBoundInput(pin,records);const key=path.resolve(pin.path);
+  need(!paths.has(key),'POINT_AUDIT_CURRENT_INSTALLATION_INPUT_DUPLICATE');paths.add(key);}
+ need(summary.inputPins.some(pin=>path.resolve(pin.path)===path.resolve(TASK,file)&&pin.bytes===selectionPin.bytes&&pin.sha256===selectionPin.sha256),
+  'POINT_AUDIT_CURRENT_INSTALLATION_SELECTION_UNBOUND');
+ return {summary,records};
+}
 function preparePointAudit(args){
  need((args.pointAudit===null)===(args.selection===null),'POINT_AUDIT_SELECTION_PAIR_REQUIRED');
  if(args.pointAudit===null)return null;
@@ -52,18 +87,11 @@ function preparePointAudit(args){
  need(selection&&Object.keys(selection).sort().join(' ')==='controlGenerationPin schemaVersion sourceCommit spugInstallationPin verificationInputsPin'&&
   selection.schemaVersion==='TaskMainProgramInstallations/v4'&&/^[0-9a-f]{40}$/.test(selection.sourceCommit),'POINT_AUDIT_V4_REQUIRED');
  const read=reference=>{need(reference&&typeof reference.file==='string','POINT_AUDIT_INPUT_INVALID');return readAuditTaskFile(reference.file,reference,records).value;};
- const generation=read(selection.controlGenerationPin),spug=read(selection.spugInstallationPin),verification=read(selection.verificationInputsPin);
- need(generation.schemaVersion==='MainProgramControlGeneration/v1'&&generation.status==='PASS'&&generation.sourceCommit===selection.sourceCommit&&
-  spug.schemaVersion==='MainProgramSpugInstallation/v1'&&spug.status==='PASS'&&spug.sourceCommit===selection.sourceCommit,'POINT_AUDIT_DEPLOYMENT_CHANGED');
- const build=read(generation.buildPin);
- need(build.status==='PASS'&&build.targetCommit===selection.sourceCommit&&build.fileCount===147&&
-  /^[0-9a-f]{64}$/.test(build.fileManifestSha256),'POINT_AUDIT_MAIN_147_REQUIRED');
- need(verification.schemaVersion==='MainProgramSpugPublicationVerificationInputs/v2','POINT_AUDIT_DEPLOYMENT_CHANGED');
- let transition=read(verification.resourceTransitionPin);
- if(transition.schemaVersion==='MainProgramSpugResourceTransitionReaderCustody/v1')transition=read(transition.transitionCorePin);
- need(transition.schemaVersion==='MainProgramSpugResourceTransition/v1'&&transition.status==='PASS','POINT_AUDIT_DEPLOYMENT_CHANGED');
- const resource=read(transition.resourceBuildPin);
- need(resource.status==='PASS'&&/^[0-9a-f]{40}$/.test(resource.sourceCommit),'POINT_AUDIT_DEPLOYMENT_CHANGED');
+ const current=readCurrentInstallationSummary(args.selection,selected.pin),summary=current.summary;
+ records.push(...current.records);
+ need(summary.sourceCommit===selection.sourceCommit&&sameAuditPin(summary.controlGenerationPin,selection.controlGenerationPin)&&
+  sameAuditPin(summary.spugInstallationPin,selection.spugInstallationPin),'POINT_AUDIT_DEPLOYMENT_CHANGED');
+ const build=summary.build,resource={sourceCommit:summary.spugCommit};
  need(audit.schemaVersion==='AutomaticBackupChainAudit/v1'&&audit.status==='PASS'&&audit.state==='SUCCEEDED'&&
   audit.actualExitCode===0&&audit.sourceRestored===true&&audit.uniqueOwnerOperationVerified===true&&
   audit.readback?.payloadContentVerified===true,'POINT_AUDIT_SUCCESS_REQUIRED');
@@ -113,7 +141,9 @@ function auditReportFields(scope){
 function verifyPointAuditInputs(scope){
  if(!scope)return;
  for(const record of scope.records){
-  const current=[];readAuditTaskFile(record.pin.file,record.pin,current);
+  const current=[];
+  if(Object.hasOwn(record.pin,'path'))readAuditBoundInput(record.pin,current);
+  else readAuditTaskFile(record.pin.file,record.pin,current);
   need(JSON.stringify(current[0].identity)===JSON.stringify(record.identity),'POINT_AUDIT_INPUT_CHANGED');
  }
 }

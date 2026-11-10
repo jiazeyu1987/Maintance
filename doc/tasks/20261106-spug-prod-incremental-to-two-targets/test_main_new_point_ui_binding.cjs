@@ -6,17 +6,18 @@ const acorn=require('C:/Users/D01021/Documents/ChatGPT/IntRuoyiE2E/node_modules/
 const HELPER=path.join(__dirname,'verify_goal_readonly.cjs'),source=fs.readFileSync(HELPER,'utf8');
 const tree=acorn.parse(source,{ecmaVersion:'latest',sourceType:'script'});
 const functions=['parseAuditArguments','sameAuditPin','readAuditTaskFile','preparePointAudit',
- 'selectAuditPoints','auditReportFields','verifyPointAuditInputs','assertSelectedPointState'];
+ 'selectAuditPoints','auditReportFields','verifyPointAuditInputs','assertSelectedPointState',
+ 'readAuditBoundInput','readCurrentInstallationSummary'];
 const sha=raw=>crypto.createHash('sha256').update(raw).digest('hex');
 const SOURCE='intruoyi-57-safe-20261024-v1',COMMIT='1'.repeat(40),SPUG='2'.repeat(40),MANIFEST='a'.repeat(64);
 const ids=[1,2,3,4].map(n=>'smallapp-'+String(n).repeat(32));
-function load(task){
+function load(task,cliRequire){
  const declarations=functions.map(name=>{
   const matches=tree.body.filter(n=>n.type==='FunctionDeclaration'&&n.id.name===name);
   assert.equal(matches.length,1,'POINT_AUDIT_API_REQUIRED: '+name);
   return source.slice(matches[0].start,matches[0].end);
  }).join('\n');
- const context=vm.createContext({fs,path,crypto,Buffer,TASK:task,sha,
+ const context=vm.createContext({fs,path,crypto,Buffer,TASK:task,sha,require:cliRequire,
   need:(value,code)=>{if(!value)throw Error(code);}});
  vm.runInContext(declarations+'\nthis.api={'+functions.join(',')+'};',context);
  return context.api;
@@ -60,7 +61,20 @@ function fixture(t){
  const args={observation:'r14',pointAudit:'audit.json',selection:'selection.json'};
  const items=ids.map((packageId,i)=>({packageId,status:'indexed',kind:i?'backup-incremental':'backup-full'}));
  items.push({packageId:'old-blocked',status:'indexed',kind:'backup-incremental'});
- return {task,put,selection,selectionPin,audit,baseline,args,items,api:load(task),prepare(){return this.api.preparePointAudit(this.args);}};
+ // The fixed subprocess boundary below returns a protocol summary. It does not
+ // claim these temporary records pass the Python completed native validator.
+ const inputPins=fs.readdirSync(task).filter(name=>!['audit.json','baseline.json'].includes(name)).map(name=>{
+  const filename=path.join(task,name),raw=fs.readFileSync(filename);return {path:filename,bytes:raw.length,sha256:sha(raw)};
+ });
+ const summary={schemaVersion:'MainProgramCurrentInstallationSummary/v1',status:'PASS',selectionPin,sourceCommit:COMMIT,
+  controlGenerationPin,spugInstallationPin,buildPin,resourceBuildPin,spugCommit:SPUG,inputPins,
+  build:{fileCount:147,fileManifestSha256:MANIFEST,packageSha256:'c'.repeat(64)}};
+ const cliRequire=name=>{assert.equal(name,'node:child_process');return {spawnSync(exe,argv,options){
+  assert.ok(exe.endsWith('/dependencies/python/python.exe'));assert.equal(options.shell,false);
+  assert.deepEqual(Array.from(argv),['-B','-X','utf8',path.join(task,'main_program_current_installation.py'),'--selection','selection.json','--public-summary']);
+  return {status:0,stdout:JSON.stringify(summary),stderr:''};
+ }};};
+ return {task,put,selection,selectionPin,audit,baseline,args,items,cliRequire,api:load(task,cliRequire),prepare(){return this.api.preparePointAudit(this.args);}};
 }
 
 test('old arguments keep full-matrix mode and new arguments require an explicit pair',()=>{
@@ -74,7 +88,7 @@ test('old arguments keep full-matrix mode and new arguments require an explicit 
   assert.throws(()=>api.parseAuditArguments(args),/EXPLICIT_OBSERVATION_REQUIRED/);
 });
 
-test('explicit temporary successful MAIN proof binds exact v4 bytes and only its unique new point',t=>{
+test('explicit temporary CLI summary protocol binds exact v4 bytes and only its unique new point',t=>{
  const f=fixture(t),scope=f.prepare(),fields=f.api.auditReportFields(scope);
  assert.equal(scope.operationId,ids[3]);assert.deepEqual(plain(scope.chainIds),ids);
  assert.equal(fields.schemaVersion,'SpugSelectedPointReadonlyAudit/v1');assert.equal(fields.scope,'single_verified_point');
@@ -165,7 +179,7 @@ test('actual driver input initializers prepare the new point in production evalu
  assert.equal(initializers.length,names.length);
  const definitions=tree.body.filter(n=>n.type==='FunctionDeclaration'&&functions.includes(n.id.name));
  const code=[...definitions,...initializers].map(n=>source.slice(n.start,n.end)).join('\n');
- const context=vm.createContext({fs,path,crypto,Buffer,TASK:f.task,
+ const context=vm.createContext({fs,path,crypto,Buffer,TASK:f.task,require:f.cliRequire,
   process:{argv:['node','helper','--observation','r14','--point-audit','audit.json','--selection','selection.json']},
   need:(value,code)=>{if(!value)throw Error(code);}});
  vm.runInContext(code+'\nthis.selected=selectedPoint;',context);

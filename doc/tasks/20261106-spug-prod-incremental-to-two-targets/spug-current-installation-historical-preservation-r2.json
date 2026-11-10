@@ -1,0 +1,99 @@
+{
+  "status": "PASS",
+  "custodyPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-historical-read-custody-20261110-r1.private.json",
+    "bytes": 12119,
+    "sha256": "779c3eae7d706abd5f91bdb4f679a1edde268cbc5f9f9d969e6fe7db259702da"
+  },
+  "originalAttemptAndReaderPins": [
+    {
+      "bytes": 89473,
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-installation-45dd7dc-r6-continuation-c1.attempt.private.json",
+      "sha256": "8593e4510f0c4206e3260894f6c1523b59c6226bf0ed1da4195f096e461dd296"
+    },
+    {
+      "bytes": 184844,
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-runtime-dependency-activation-c7728ad-r1.attempt.private.json",
+      "sha256": "5670c6c4eb6b37b71805a7787f2c76336f66cdc54b6e821e95f784b720066afc"
+    },
+    {
+      "bytes": 73005,
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-installation-45dd7dc-r6.attempt.private.json",
+      "sha256": "50a42921f08ef427c6983391fd90e55bb714267dcc5c12b5a222415b2cfb9360"
+    },
+    {
+      "bytes": 288419,
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-resource-transition-5651efc-r1.attempt.private.json",
+      "sha256": "ab8a478b09de9eed3269823d88aa395ca0c7a3c4d875f95236a8e43a06499673"
+    },
+    {
+      "bytes": 275829,
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-installation-45dd7dc-r6-continuation-c1-verification-v3.attempt.private.json",
+      "sha256": "41b3cd85685a4d6c6a4981dd069d30a34162e8bef26a437a4be51baa3d93d2b1"
+    },
+    {
+      "bytes": 61675,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication_continuation.py",
+      "sha256": "7e530263fe988e4b2591889c84e4fb740d7e936393905797c133d8ba5c67e735"
+    },
+    {
+      "bytes": 49959,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\spug_runtime_dependency_completion.py",
+      "sha256": "db6b9c7a3b143fe09673746c038617be941de1b5a1b41ea61586003025d7188e"
+    },
+    {
+      "bytes": 33957,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication_verify_only.py",
+      "sha256": "7aa3a8f6913d53f4057e7594342678a8c79cb4414f0e71d530b8b87e997990b0"
+    },
+    {
+      "bytes": 32860,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_resource_transition.py",
+      "sha256": "eb464b017a6a5a46ab6cd2e48023e398a0a89b8995fd165a019444d9c62ee712"
+    },
+    {
+      "bytes": 11270,
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_historical_custody.py",
+      "sha256": "d5a66739ee5aaeb910ea43567027afea6eb1e7d2ab04f067f801ea4411bca6b3"
+    }
+  ],
+  "selectorPin": {
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_installation_selection.py",
+    "bytes": 15700,
+    "sha256": "557b384234b5b38ec7c738ba3c1086d74f8c2768412399dc1680a6a5427dd786"
+  },
+  "selectorEqualsHead": true,
+  "attemptScans": [
+    {
+      "attempt": "continuation",
+      "inputPinCount": 350,
+      "modifiedFileHits": []
+    },
+    {
+      "attempt": "dependency",
+      "inputPinCount": 719,
+      "modifiedFileHits": []
+    },
+    {
+      "attempt": "publication",
+      "inputPinCount": 286,
+      "modifiedFileHits": []
+    },
+    {
+      "attempt": "resourceTransition",
+      "inputPinCount": 1141,
+      "modifiedFileHits": []
+    },
+    {
+      "attempt": "verification",
+      "inputPinCount": 1079,
+      "modifiedFileHits": []
+    }
+  ],
+  "remoteDispatched": false,
+  "rejectedPartialReportPin": {
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\spug-current-installation-historical-preservation-r1.json",
+    "bytes": 3783,
+    "sha256": "c78bfd59680857df34aeed5fc0c1d6be2c3a9a09e498d31eff9ed5026a93894a"
+  }
+}

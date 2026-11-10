@@ -113,7 +113,26 @@ def test_main_installed_files_and_manifest_remain_strict(tmp_path, mode):
         audit.verify_package(audit.AuditReader(), spec)
 
 
-def test_real_v3_v4_prepare_preserves_existing_main_parent_without_remote(monkeypatch):
+def test_verified_historical_bundle_chain_boundary_preserves_v3_parent_and_all_147_files(monkeypatch):
+    # Formal historical validation supplies real original evidence at the
+    # dispatcher-output unit boundary. This is not current r6 acceptance.
+    import main_program_current_installation as current
+    import main_program_installation_selection as contract
+    import main_program_spug_publication as publication
+    import main_program_spug_publication_verify_only as verify
+    import main_program_spug_historical_custody as history
+    custody=publication.file_pin(PRIVATE/'main-program-spug-historical-read-custody-20261110-r1.private.json')
+    context=history.load_context(TASK,PRIVATE,custody)
+    records=contract.Records(TASK);selected=records.read(SELECTION)
+    verified=verify.validate_publication_v4(records,PRIVATE,selected,historical=context)
+    reader=current.BoundDocuments(TASK,verified['inputPins']+records.path_pins()+context.finish())
+    runtime=current.project_runtime(reader,PRIVATE,selected,reader.read(selected['verificationInputsPin']),
+                                    'PUBLICATION_VERIFICATION')
+    def historical_boundary(task,private,*,selection_file):
+        assert task==TASK and private==PRIVATE and selection_file==SELECTION
+        return dict(selection=selected,selectionPin=records.references[SELECTION],
+                    generation=verified['generation'],inputPins=reader.finish(),spugRuntime=runtime)
+    monkeypatch.setattr(current,'load_current_installation',historical_boundary)
     def forbidden(*args, **kwargs):
         pytest.fail('remote dispatch is forbidden in local preparation')
     monkeypatch.setattr(chain, 'remote', forbidden)

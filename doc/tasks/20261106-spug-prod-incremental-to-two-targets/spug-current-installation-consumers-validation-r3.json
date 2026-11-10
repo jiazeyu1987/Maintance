@@ -1,0 +1,54 @@
+{
+  "status": "PASS",
+  "exitCode": 0,
+  "inputsUnchanged": true,
+  "inputPins": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_current_installation.py",
+      "bytes": 11142,
+      "sha256": "7a4cbfef68841d2a842ecbd6c96ad99524d9d22ccd3cffbe1cb99eb37682161a"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\prepare_main_program_ui_preflight.py",
+      "bytes": 15757,
+      "sha256": "53ba5b2de1febb1591db9df635e1c9230c4d419b32d07fc5c9824fefe095f4d7"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\verify_automatic_backup_chain.py",
+      "bytes": 18764,
+      "sha256": "f5630403a9e0f9eb99ffda704ead3bba876bd9588f1f326b0b05b0d1260e5819"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\verify_goal_readonly.cjs",
+      "bytes": 27682,
+      "sha256": "2b55821683ddade68c823eaf400287d4945c495f2f3dc7cb7528c3c6004ed3c9"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_current_installation.py",
+      "bytes": 11810,
+      "sha256": "3bf29b64f78c198c41bbfd3d1db2dee7fdb0fef2e84db127621a4d496afa79b9"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_current_installation_cli.cjs",
+      "bytes": 4440,
+      "sha256": "37a8a04c7d85606736473b6fd4624dee5f3b8a1a97d9e528da7a886503d56201"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_new_point_ui_binding.cjs",
+      "bytes": 17413,
+      "sha256": "a87044277c2d33d56c56cb86932f6bd7a21bd37ab32b30e99ea67bffb7e9ef8f"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_automatic_main_chain_audit.py",
+      "bytes": 12246,
+      "sha256": "7d448664813378a920aa656b64eda6dd4b4e8f06e4826c088a9436c929e0024f"
+    }
+  ],
+  "logPin": {
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\spug-current-installation-python-final-r3.log",
+    "bytes": 102,
+    "sha256": "8df2a9947d4d82c667f91a218c4534f8c76b96d4a714aeb8c66df505cb720b01"
+  },
+  "remoteDispatched": false,
+  "actualR7AcceptanceClaimed": false
+}
