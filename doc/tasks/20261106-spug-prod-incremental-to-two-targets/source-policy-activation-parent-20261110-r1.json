@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "TaskSourcePolicyParentVerification/v1",
+  "command": [
+    "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "pytest",
+    "doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_source_policy_activation.py",
+    "doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_activation.py",
+    "doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_generation_activation.py",
+    "doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_generation.py",
+    "doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_environment.py",
+    "doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_activation_evidence_pins.py",
+    "-q",
+    "--tb=short",
+    "--junitxml=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\source-policy-activation-parent-20261110-r1.xml"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 90.688,
+  "counts": {
+    "tests": 214,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "inputPinsBefore": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_source_policy_activation.py",
+      "bytes": 21817,
+      "sha256": "7d2ee454eb03f58033681f8c168b46079f0db7358cf130a4014a624396e0beb9"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_activation.py",
+      "bytes": 18406,
+      "sha256": "83959203778ef60812a9eb36c1cfd9efc94dfefb0bff80b363615fd47f563453"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_generation_activation.py",
+      "bytes": 31117,
+      "sha256": "f67513703d57a7093081d7258dca5a97f88c424690bb05a290e2a51506500174"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_generation.py",
+      "bytes": 26848,
+      "sha256": "0a9172c732d15a7c64de8b203f488735333888e858b466aca7f460bb8fb6609e"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_environment.py",
+      "bytes": 15982,
+      "sha256": "fb2e7a13f1208958be3d521c79b49bdffa55f32519117c6b11425c49bbebe765"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_activation_evidence_pins.py",
+      "bytes": 5945,
+      "sha256": "e6618bbf7e3791f88d9a017cfbf8fea7ef33c384bd1b4bcd6c7fdbfcf4a267de"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_control_activation.py",
+      "bytes": 121722,
+      "sha256": "ba46ae81fa20861c6a4c9221f80bcd86cbbd0e7e9eec18548d117e7c0ba1ac3b"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_control_generation.py",
+      "bytes": 24452,
+      "sha256": "f853dc6b3b5e4de7c58e6f732aa76641eefd344810c70504c15638b817de6c12"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_control_staging.py",
+      "bytes": 54040,
+      "sha256": "6eea3c3f3e9437640fd67138e3e53deb5fae956871203b4f7f0ccf3fbe033a0a"
+    }
+  ],
+  "inputPinsAfter": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_source_policy_activation.py",
+      "bytes": 21817,
+      "sha256": "7d2ee454eb03f58033681f8c168b46079f0db7358cf130a4014a624396e0beb9"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_activation.py",
+      "bytes": 18406,
+      "sha256": "83959203778ef60812a9eb36c1cfd9efc94dfefb0bff80b363615fd47f563453"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_generation_activation.py",
+      "bytes": 31117,
+      "sha256": "f67513703d57a7093081d7258dca5a97f88c424690bb05a290e2a51506500174"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_generation.py",
+      "bytes": 26848,
+      "sha256": "0a9172c732d15a7c64de8b203f488735333888e858b466aca7f460bb8fb6609e"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_environment.py",
+      "bytes": 15982,
+      "sha256": "fb2e7a13f1208958be3d521c79b49bdffa55f32519117c6b11425c49bbebe765"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_activation_evidence_pins.py",
+      "bytes": 5945,
+      "sha256": "e6618bbf7e3791f88d9a017cfbf8fea7ef33c384bd1b4bcd6c7fdbfcf4a267de"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_control_activation.py",
+      "bytes": 121722,
+      "sha256": "ba46ae81fa20861c6a4c9221f80bcd86cbbd0e7e9eec18548d117e7c0ba1ac3b"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_control_generation.py",
+      "bytes": 24452,
+      "sha256": "f853dc6b3b5e4de7c58e6f732aa76641eefd344810c70504c15638b817de6c12"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_control_staging.py",
+      "bytes": 54040,
+      "sha256": "6eea3c3f3e9437640fd67138e3e53deb5fae956871203b4f7f0ccf3fbe033a0a"
+    }
+  ],
+  "rawLogPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\source-policy-activation-parent-20261110-r1.log",
+    "bytes": 413,
+    "sha256": "d9fca88004edc883a759c68297ca3d1781ad68a783987973beab4b48a13b4b3e"
+  },
+  "junitPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\source-policy-activation-parent-20261110-r1.xml",
+    "bytes": 46641,
+    "sha256": "23ab4ca382af7951f8f4a5ecb840e937095cca0a9bb4aa1da8dc77e01ebf3f14"
+  },
+  "remoteActions": 0,
+  "businessWrites": 0
+}

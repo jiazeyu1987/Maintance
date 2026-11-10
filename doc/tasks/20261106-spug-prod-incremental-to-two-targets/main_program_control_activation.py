@@ -119,6 +119,116 @@ def canonical(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False).encode('utf-8')
 
 
+# Shared, bounded evidence checks for this reviewed v4 source-policy upgrade.
+# This pure reader is embedded verbatim in both candidate and activation gates;
+# historical consumption never reads live state or evaluates the current clock.
+SOURCE_POLICY_PROGRAM = r'''
+def source_policy_pin(value):
+ need(type(value) is dict and set(value)=={'path','bytes','sha256'} and
+  type(value['path']) is str and value['path'] and type(value['bytes']) is int and value['bytes']>0 and
+  type(value['sha256']) is str and re.fullmatch('[0-9a-f]{64}',value['sha256']),'SOURCE_POLICY_PIN_INVALID')
+def source_policy_limits(value):
+ need(type(value) is dict and type(value.get('maxChainPoints')) is int and 1<=value['maxChainPoints']<=1024 and
+  type(value.get('maxChainAgeSeconds')) is int and value['maxChainAgeSeconds']>0,'SOURCE_POLICY_LIMITS_INVALID')
+ return {key:value[key] for key in ('maxChainPoints','maxChainAgeSeconds')}
+def source_policy_time(value):
+ from datetime import datetime
+ need(type(value) is str and re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|\+00:00)',value),
+  'SOURCE_POLICY_TIME_INVALID')
+ try:datetime.fromisoformat(value.replace('Z','+00:00'))
+ except ValueError:raise ValueError('SOURCE_POLICY_TIME_INVALID') from None
+def source_policy_scope(value):
+ need(type(value) is dict and set(value)=={'profile','coveragePin','sourceBaselinePin','sourceConfigRef','sourceExpected','chain','policy','rootAuditPin','rootManifestPin'} and
+  value['profile']=='incremental-chain-policy-admission/v1','SOURCE_POLICY_SCOPE_INVALID')
+ for key in ('coveragePin','sourceBaselinePin','rootAuditPin'):
+  ref=value[key]
+  need(type(ref) is dict and set(ref)=={'file','bytes','sha256'} and type(ref['file']) is str and ref['file'] and
+   type(ref['bytes']) is int and ref['bytes']>0 and type(ref['sha256']) is str and re.fullmatch('[0-9a-f]{64}',ref['sha256']),
+   'SOURCE_POLICY_LOCAL_PIN_INVALID')
+ need(value['rootAuditPin']['file']=='automatic-full-audit.json','SOURCE_POLICY_ROOT_AUDIT_REQUIRED')
+ source_policy_pin(value['rootManifestPin'])
+ need(type(value['sourceConfigRef']) is str and value['sourceConfigRef'],'SOURCE_POLICY_SOURCE_INVALID')
+ chain=value['chain'];need(type(chain) is list and len(chain)==3,'SOURCE_POLICY_ORIGINAL_CHAIN_REQUIRED')
+ ids=[];pins=[]
+ for index,row in enumerate(chain):
+  need(type(row) is dict and set(row)=={'operationId','pointType','pointPin','epochBindingPin'} and
+   type(row['operationId']) is str and re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.:-]{0,127}',row['operationId']) and
+   row['pointType']==('FULL' if index==0 else 'INCREMENTAL'),'SOURCE_POLICY_POINT_IDENTITY_CHANGED')
+  for key in ('pointPin','epochBindingPin'):source_policy_pin(row[key])
+  ids.append(row['operationId']);pins.append(row['pointPin']['path'])
+ need(len(set(ids))==len(set(pins))==3 and value['sourceExpected']==dict(baseFullRef=ids[0],parentChainRef=ids[-1],generationId=ids[0]),
+  'SOURCE_POLICY_ORIGINAL_CHAIN_CHANGED')
+ need(source_policy_limits(value['policy'])==value['policy'],'SOURCE_POLICY_LIMIT_FIELDS_INVALID')
+def source_policy_plan(plan,transition,reason):
+ fields={'schemaVersion','sourceConfigRef','state','reasonCode','parentChainRef','baseFullRef','generationId','chainDepth',
+  'pointType','finishedAt','baseFinishedAt','basePointType','parentPointType','evidenceDigest','planDigest'}
+ need(type(plan) is dict and set(plan)==fields and plan['schemaVersion']=='AutomaticIncrementalPlan/v1' and
+  plan['sourceConfigRef']==transition['sourceConfigRef'],'SOURCE_POLICY_PLAN_SCHEMA_CHANGED')
+ need(all(type(plan[k]) is str and re.fullmatch('[0-9a-f]{64}',plan[k]) for k in ('evidenceDigest','planDigest')) and
+  hashlib.sha256(canonical({k:v for k,v in plan.items() if k!='planDigest'})).hexdigest()==plan['planDigest'],
+  'SOURCE_POLICY_PLAN_DIGEST_CHANGED')
+ need(reason in (None,'INCREMENTAL_CHAIN_AGE_EXPIRED') and plan['reasonCode']==reason,'SOURCE_POLICY_REASON_NOT_APPROVED')
+ if reason is None:
+  need(plan['state']=='READY' and all(plan[k]==v for k,v in transition['sourceExpected'].items()) and
+   type(plan['chainDepth']) is int and plan['chainDepth']==3 and plan['pointType']==plan['parentPointType']=='INCREMENTAL' and
+   plan['basePointType']=='FULL','SOURCE_POLICY_READY_CHAIN_CHANGED')
+  for key in ('finishedAt','baseFinishedAt'):source_policy_time(plan[key])
+ else:
+  need(plan['state']=='BASELINE_REQUIRED' and type(plan['chainDepth']) is int and plan['chainDepth']==0 and
+   all(plan[k] is None for k in ('parentChainRef','baseFullRef','generationId','pointType','finishedAt','baseFinishedAt',
+    'basePointType','parentPointType')),'SOURCE_POLICY_EXPIRED_PLAN_CHANGED')
+def validate_source_policy_admission(transition,proof):
+ source_policy_scope(transition)
+ need(type(proof) is dict and set(proof)=={'transition','rootManifestPin','rootCreatedAt','reasonCode','plan'} and
+  proof['transition']==transition,'SOURCE_POLICY_CANDIDATE_PROOF_REQUIRED')
+ source_policy_pin(proof['rootManifestPin']);source_policy_time(proof['rootCreatedAt'])
+ need(proof['rootManifestPin']==transition['rootManifestPin'],'SOURCE_POLICY_ROOT_MANIFEST_CHANGED')
+ source_policy_plan(proof['plan'],transition,proof['reasonCode'])
+def validate_source_policy_transition(transition,observed):
+ source_policy_scope(transition)
+ need(type(observed) is dict and observed.get('physicalLockVerified') is True,'SOURCE_POLICY_PHYSICAL_LOCK_REQUIRED')
+ for key in ('sourcePlanBefore','sourcePlanBeforeLocked'):
+  source_policy_plan(observed.get(key),transition,None)
+ before=observed.get('candidateBefore');after=observed.get('candidateAfter')
+ need(type(before) is dict and before==after and before.get('sourceCaptureVerified') is True and
+  type(before.get('epoch')) is dict and before['epoch'].get('state')=='READY','SOURCE_POLICY_CANDIDATE_CHANGED')
+ proof=before.get('sourcePolicyAdmission');validate_source_policy_admission(transition,proof)
+ need(observed.get('sourcePlanAfter')==proof['plan'],'SOURCE_POLICY_ACTUAL_HTTP_CHANGED')
+'''
+exec(SOURCE_POLICY_PROGRAM)
+
+
+def make_source_policy_transition(inputs, coverage, baseline, old_owner, owner, *, root_audit=None, root_audit_pin=None):
+    # This call is made only after complete coverage validation. A caller cannot
+    # select the exception through an input flag or an unrecognized profile.
+    if not (inputs.get('schemaVersion') == 'MainProgramControlActivationInputs/v4' and
+            inputs.get('suffix') == '57' and inputs.get('role') == 'source' and
+            coverage.get('schemaVersion') == 'MainProgramControlCoverage/v2' and
+            coverage.get('profile') == 'incremental-chain-policy-admission/v1'):
+        return None
+    policy = source_policy_limits(owner)
+    need(policy == source_policy_limits(old_owner), 'SOURCE_POLICY_OWNER_LIMITS_CHANGED')
+    need(baseline.get('sourceConfigRef') == SOURCES[0], 'SOURCE_POLICY_SOURCE_CHANGED')
+    chain = baseline.get('chain')
+    need(type(chain) is list and len(chain) == 3, 'SOURCE_POLICY_ORIGINAL_CHAIN_REQUIRED')
+    root = chain[0]
+    need(type(root_audit) is dict and root_audit.get('schemaVersion') == 'AutomaticBackupChainAudit/v1' and
+        root_audit.get('status') == 'PASS' and root_audit.get('sourceConfigRef') == baseline['sourceConfigRef'] and
+        root_audit.get('operationId') == root_audit.get('generationId') == root['operationId'] and
+        root_audit.get('pointType') == 'FULL' and root_audit.get('state') == 'SUCCEEDED' and
+        type(root_audit.get('actualExitCode')) is int and root_audit['actualExitCode'] == 0 and
+        root_audit.get('sourceRestored') is True and root_audit.get('pointPin') == root['pointPin'] and
+        root_audit.get('epochBindingPin') == root['epochBindingPin'] and root_audit.get('chain') == [root] and
+        root_audit.get('parentPointPins') == [], 'SOURCE_POLICY_ROOT_AUDIT_REQUIRED')
+    value = dict(profile=coverage['profile'], coveragePin=inputs['coveragePin'],
+        sourceBaselinePin=inputs['sourceBaselinePin'], sourceConfigRef=baseline['sourceConfigRef'],
+        sourceExpected=dict(baseFullRef=chain[0]['operationId'], parentChainRef=baseline['operationId'],
+            generationId=baseline['generationId']), chain=chain, policy=policy,
+        rootAuditPin=root_audit_pin, rootManifestPin=root_audit['manifestPin'])
+    source_policy_scope(value)
+    return copy.deepcopy(value)
+
+
 def read_document(path):
     return json.loads(Path(path).read_bytes().decode('utf-8'), object_pairs_hook=contract.document)
 
@@ -881,6 +991,15 @@ def prepare(task, private, inputs_file):
         spec['helperPins'] += [file_pin(TASK / name) for name in ('main_program_control_generation.py', 'main_program_control_upgrade_plan.py')]
         spec['immutablePrivatePins'] += bundle['inputPins'] + coverage['physicalPins']
         spec['remoteAuditPath'] += '-' + inputs['revisionId']
+        if suffix == '57' and role == 'source':
+            owner = next(d['value'] for d in docs if d['pin'] == selected['ownerPin'])
+            old_owner = next(d['value'] for d in bundle['privatePlan']['documentsByHost']['57']
+                             if d['pin'] == old['ownerConfigurationPin'])
+            root_audit = records.read('automatic-full-audit.json') if coverage['coverage'].get('schemaVersion') == 'MainProgramControlCoverage/v2' else None
+            transition = make_source_policy_transition(inputs, coverage['coverage'], baseline, old_owner, owner,
+                root_audit=root_audit, root_audit_pin=records.references.get('automatic-full-audit.json'))
+            if transition is not None:
+                spec['sourcePolicyTransition'] = transition
     spec['continuation'] = validate_initial_continuation(records, private, spec) if version.endswith('/v2') else None
     if version.endswith('/v3'):
         need(suffix == '58' and role == 'target', 'PRESWITCH_CONTINUATION_SCOPE_INVALID')
@@ -935,6 +1054,8 @@ def project_core(spec, observed):
     else:
         need(observed.get('sourceCaptureVerified') is True and observed.get('sourceBaselineVerified') is True,
              'ACTUAL_SOURCE_BINDING_REQUIRED')
+        if spec.get('sourcePolicyTransition') is not None:
+            validate_source_policy_transition(spec['sourcePolicyTransition'], observed)
     need(observed.get('host') == '172.30.30.' + inputs['suffix'] and observed.get('service') == row['service'] and
          observed.get('backupDispatched') is False and observed.get('restoreDispatched') is False and
          type(observed.get('pid')) is int and observed['pid'] > 1 and observed['pid'] != spec['old']['pid'],
@@ -1009,7 +1130,11 @@ def parser():
 
 # Both subprocess gates load only the exact candidate package on the host.
 CANDIDATE_GATE = r'''
-import json,pathlib,sys
+import hashlib,json,pathlib,re,sys
+def need(value,code):
+ if not value:raise ValueError(code)
+def canonical(value):return json.dumps(value,ensure_ascii=False,sort_keys=True,separators=(',',':'),allow_nan=False).encode('utf-8')
+''' + SOURCE_POLICY_PROGRAM + r'''
 from types import SimpleNamespace
 from recovery_control_smallapp_native import Native
 from recovery_control_target_availability import available
@@ -1017,6 +1142,45 @@ from recovery_main_target import archive_view
 from recovery_program_targets import resolve_configuration
 from recovery_program_generation import resolve_capture
 from recovery_backup_epoch import read_current
+def source_policy_admission(native,owner,old,transition,epoch,engine):
+ from repository_records import incremental_chain_policy,incremental_chain_admission
+ from recovery_control_incremental_plan import validate_epoch
+ source_policy_scope(transition)
+ for name in ('repository_records','recovery_control_incremental_plan','recovery_control_smallapp_native'):
+  module=sys.modules[name]
+  need(pathlib.Path(module.__file__).resolve().is_relative_to(pathlib.Path(engine).resolve()),'SOURCE_POLICY_IMPORTED_OLD_MODULE')
+ policy=incremental_chain_policy(owner)
+ need(policy==incremental_chain_policy(old)==transition['policy'],'SOURCE_POLICY_OWNER_LIMITS_CHANGED')
+ source=transition['sourceConfigRef'];config=native.configuration()
+ need(source in config['sourceConfigurations'] and native.document(config['sourceConfigurations'][source])==owner,
+  'SOURCE_POLICY_OWNER_BINDING_CHANGED')
+ need(native.source_epoch(config,source)==epoch and epoch.get('state')=='READY','SOURCE_POLICY_EPOCH_CHANGED')
+ pins=[];evidence=[];manifest=None
+ for index,row in enumerate(transition['chain']):
+  point=native.document(row['pointPin']);bound=native.document(row['epochBindingPin'])
+  need(point.get('schemaVersion')=='RepositoryPoint/v1' and point.get('backupId')==row['operationId'] and
+   point.get('pointType')==row['pointType'] and point.get('generationId')==transition['sourceExpected']['generationId'] and
+   point.get('parentPointPins')==pins,'SOURCE_POLICY_ORIGINAL_POINT_CHANGED')
+  need(validate_epoch(epoch,bound,source_ref=source,reference=row['operationId'],point_pin=row['pointPin'],
+   result_pin=bound['resultPin']) is None,'SOURCE_POLICY_POINT_EPOCH_CHANGED')
+  evidence.extend([row['pointPin'],row['epochBindingPin']]);pins.append(row['pointPin'])
+  if index==0:
+   manifest_pin=point['manifestPin'];manifest=native.document(manifest_pin);evidence.append(manifest_pin)
+   need(manifest_pin==transition['rootManifestPin'],'SOURCE_POLICY_ROOT_MANIFEST_CHANGED')
+   need(manifest.get('schemaVersion')=='RepositoryManifest/v1' and manifest.get('backupId')==row['operationId'] and
+    manifest.get('generationId')==row['operationId'] and manifest.get('pointType')=='FULL' and manifest.get('parentPointPins')==[],
+    'SOURCE_POLICY_ROOT_MANIFEST_CHANGED')
+ reason=incremental_chain_admission(policy,manifest['createdAt'],len(pins))
+ need(reason in (None,'INCREMENTAL_CHAIN_AGE_EXPIRED'),'SOURCE_POLICY_REASON_NOT_APPROVED')
+ plan=native.incremental_plan(source)
+ proof=dict(transition=transition,rootManifestPin=manifest_pin,rootCreatedAt=manifest['createdAt'],reasonCode=reason,plan=plan)
+ validate_source_policy_admission(transition,proof)
+ # The planner preserves its own deadline/integrity checks. The installer also
+ # closes this observation over its original pins, epoch and real policy clock.
+ for ref in evidence:native.document(ref)
+ need(native.source_epoch(config,source)==epoch,'SOURCE_POLICY_EPOCH_CHANGED')
+ need(incremental_chain_admission(policy,manifest['createdAt'],len(pins))==reason,'SOURCE_POLICY_CHANGED_DURING_GATE')
+ return proof
 def validate_target_epoch_admission(owner,old,target_ref,resolved,binding,read_document,read_epoch):
  assert owner['targets']==old['targets'] and resolved['targets']==old['targets'],'ORIGINAL_TARGET_OBJECT_CHANGED'
  policy=owner.get('targetBackupEpochPolicies',{}).get(target_ref)
@@ -1067,6 +1231,9 @@ else:
  assert capture['source']['sourceIdentity']==epoch_policy['sourceIdentity'] and capture['source']['databaseUuid']==epoch_policy['databaseUuid'] and capture['sourceLockPath']==epoch_policy['sourceLockPath'],'PHYSICAL_CAPTURE_CHANGED'
  epoch=read_current(epoch_policy);assert epoch['state']=='READY','SOURCE_EPOCH_NOT_READY'
  result.update(sourceCaptureVerified=True,capturePin=capture_pin,epochPolicy=epoch_policy,epoch=epoch)
+ if value.get('sourcePolicyTransition') is not None:
+  assert value['sourcePolicyTransition']['sourceConfigRef']==source_ref,'SOURCE_POLICY_SOURCE_CHANGED'
+  result['sourcePolicyAdmission']=source_policy_admission(native,owner,old,value['sourcePolicyTransition'],epoch,value['engine'])
 print(json.dumps(result))
 '''
 
@@ -1085,7 +1252,7 @@ REMOTE_SCRIPT = r'''
 import datetime,errno,fcntl,hashlib,json,os,pathlib,re,shlex,stat,subprocess,sys,time,urllib.request,urllib.error
 def need(value,code):
  if not value:raise ValueError(code)
-''' + ENVIRONMENT_PROGRAM + r'''
+''' + ENVIRONMENT_PROGRAM + SOURCE_POLICY_PROGRAM + r'''
 def canonical(value):return json.dumps(value,ensure_ascii=False,sort_keys=True,separators=(',',':'),allow_nan=False).encode('utf-8')
 def pin(path):
  p=pathlib.Path(path);before=p.lstat();need(p.resolve(strict=True)==p and stat.S_ISREG(before.st_mode) and before.st_nlink==1,'REMOTE_FILE_ALIAS')
@@ -1212,10 +1379,17 @@ def http(control,path,process):
 def package_gate():
  args=dict(role=selected['role'],controlPin=selected['controlPin'],ownerPin=selected['ownerPin'],oldOwnerPin=old['ownerConfigurationPin'],
   engine=selected['engine'],targetConfigRef=SPEC['targetConfigRef'],sources=list(SOURCES),protections=SPEC['protections'],commit=inputs['sourceCommit'])
+ if SPEC.get('sourcePolicyTransition') is not None:args['sourcePolicyTransition']=SPEC['sourcePolicyTransition']
  return json.loads(run([control['pythonPin']['path'],'-B','-c',CANDIDATE_GATE,canonical(args).decode()],timeout=180,env=dict(os.environ,**control['environment'])))
-def source_plan(process,configuration):
+def source_plan(process,configuration,*,expected=None):
  result=http(configuration,'/incremental-plan?sourceConfigRef='+SOURCES[0],process)
- need(result.get('state')=='READY' and all(result.get(k)==v for k,v in SPEC['sourceExpected'].items()),'SOURCE_BASELINE_CHANGED')
+ if expected is None:
+  need(result.get('state')=='READY' and all(result.get(k)==v for k,v in SPEC['sourceExpected'].items()),'SOURCE_BASELINE_CHANGED')
+  if SPEC.get('sourcePolicyTransition') is not None:source_policy_plan(result,SPEC['sourcePolicyTransition'],None)
+ else:
+  transition=SPEC.get('sourcePolicyTransition');need(transition is not None,'SOURCE_POLICY_SCOPE_REQUIRED')
+  source_policy_plan(result,transition,expected['reasonCode'])
+  need(result==expected,'SOURCE_POLICY_ACTUAL_HTTP_CHANGED')
  return result
 def original_units():
  for original in SPEC['unit']['controllers']:
@@ -1345,6 +1519,8 @@ try:
  fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
  info=os.fstat(lock);need(stat.S_ISREG(info.st_mode) and info.st_nlink==1 and (info.st_dev,info.st_ino)==(p.stat().st_dev,p.stat().st_ino),'PHYSICAL_LOCK_IDENTITY_CHANGED')
  out['physicalLockVerified']=True;no_workers(rows);out['stage']='candidate-admission'
+ if SPEC.get('sourcePolicyTransition') is not None:
+  out['sourcePlanBeforeLocked']=source_plan(old,old_control)
  first=package_gate();out['candidateBefore']=first
  if selected['role']=='source':
   need(first['epochPolicy']==old_control['sourceEpochPolicies'][SOURCES[0]],'SOURCE_EPOCH_POLICY_CHANGED')
@@ -1374,13 +1550,16 @@ try:
  new=dict(candidate,pid=pid,sourceCommit=inputs['sourceCommit'],dropinPin=out['dropinPin'],environmentMode='CONFIG_EXACT')
  rows=[new if r['service']==new['service'] else r for r in rows];out['pid']=pid
  out['processAfter']=verify_process(new);out['stage']='new-api'
- if selected['role']=='source':out['sourcePlanAfter']=source_plan(new,control);out['sourceBaselineVerified']=True
+ if selected['role']=='source':
+  expected=first['sourcePolicyAdmission']['plan'] if SPEC.get('sourcePolicyTransition') is not None else None
+  out['sourcePlanAfter']=source_plan(new,control,expected=expected);out['sourceBaselineVerified']=True
  else:
   new_selection=http(control,'/selections?targetConfigRef='+SPEC['targetConfigRef'],new)
   need(any(r.get('sourceConfigRef')==SOURCES[0] and SPEC['targetConfigRef'] in r.get('freshTargetConfigRefs',[]) for r in new_selection.get('applications',[])),'NEW_EXISTING_SELECTION_UNAVAILABLE')
   out['existingRegistrationAfter']=new_selection
  out.update(controlApiQueriesPerformed=True,queryAuditWritesMayOccur=True)
  final=package_gate();need(final==first,'CANDIDATE_ADMISSION_OR_EPOCH_CHANGED');out['candidateAfter']=final
+ if SPEC.get('sourcePolicyTransition') is not None:validate_source_policy_transition(SPEC['sourcePolicyTransition'],out)
  preserve(rows);verify_package(candidate)
  if archive is not None:
   need(pin(archive['path'])==archive,'RECEIPT_ARCHIVE_CHANGED');read(SPEC['oldReceiptPin'])

@@ -309,6 +309,20 @@ def _validate(records,private,value,generation_pin,trail):
     baseline=_baseline(records,value['sourceBaselinePin'])
     if previous:need(value['sourceBaselinePin']==previous['generation']['sourceBaselinePin'],'SOURCE_BASELINE_CHANGED')
     if previous:private_pins+=_validate_upgrade_materials(records,private,upgrade_inputs,build,previous,plan,secret)
+    if previous:
+        # Coverage is fully verified above. Only this explicitly reviewed profile
+        # consumes the source-policy transition, without replanning old history.
+        from main_program_control_activation import make_source_policy_transition,validate_source_policy_transition
+        index=contract.ROLES['57'].index('source');rich=riches['57'][index]
+        inputs=records.pinned(rich['activationInputsPin']);coverage=records.pinned(inputs['coveragePin'])
+        old=previous['controllersByHost']['57'][index];current=cores['57'][index]
+        old_owner=next(row['value'] for row in previous['privatePlan']['documentsByHost']['57']
+            if row['pin']==old['ownerConfigurationPin'])
+        owner=docs['57'][current['ownerConfigurationPin']['path']]['value']
+        root_audit=records.read('automatic-full-audit.json') if coverage.get('schemaVersion')=='MainProgramControlCoverage/v2' else None
+        transition=make_source_policy_transition(inputs,coverage,baseline,old_owner,owner,
+            root_audit=root_audit,root_audit_pin=records.references.get('automatic-full-audit.json'))
+        if transition is not None:validate_source_policy_transition(transition,rich)
     pins={}
     for pin in [*records.path_pins(),*private_pins]:
         # References retain their original bytes; this physical inventory uses
