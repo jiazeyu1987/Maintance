@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "SpugResourceTransitionObservationOuter/v1",
+  "actualExitCode": 0,
+  "elapsedSeconds": 155.281,
+  "requestPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-resource-transition-observe-parent-r1.request.private.json",
+    "bytes": 1452,
+    "sha256": "d6040f9818e4bde1606c1c34ca77aecc27b0c7b74643cd5015fff0e3a5587371"
+  },
+  "stdoutPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-resource-transition-observe-parent-r1.stdout.private.log",
+    "bytes": 292,
+    "sha256": "90c7d672eecc0cd60db6ae2db8eff0291ea5813197d28963c6652ce1910f6773"
+  },
+  "stderrPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-resource-transition-observe-parent-r1.stderr.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "sourcesUnchanged": true,
+  "result": {
+    "status": "OBSERVED",
+    "observationPin": {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-resource-transition-5651efc-r1.observation.private.json",
+      "bytes": 5783,
+      "sha256": "059ebb11889b97eb19e759b38f086aeaeefca99b887bef23860e61f41ae69ab3"
+    }
+  },
+  "configurationWrites": false,
+  "resourcesInstalled": false,
+  "backupDispatched": false,
+  "restoreDispatched": false
+}

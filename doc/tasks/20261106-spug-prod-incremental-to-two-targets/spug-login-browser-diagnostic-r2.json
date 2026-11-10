@@ -1,0 +1,300 @@
+{
+  "schemaVersion": "SpugLoginBrowserDiagnostic/v1",
+  "status": "PASS",
+  "authPosts": 1,
+  "businessWrites": 0,
+  "events": [
+    {
+      "kind": "login-request",
+      "method": "POST",
+      "at": "2026-11-10T01:50:46.506Z"
+    },
+    {
+      "kind": "login-route-continue",
+      "at": "2026-11-10T01:50:46.507Z"
+    },
+    {
+      "kind": "login-route-continued",
+      "at": "2026-11-10T01:50:46.507Z"
+    },
+    {
+      "kind": "login-response",
+      "httpStatus": 200,
+      "at": "2026-11-10T01:50:47.014Z"
+    },
+    {
+      "kind": "notice-actionability-observed",
+      "beforeHasFocus": true,
+      "afterHasFocus": true,
+      "at": "2026-11-10T01:50:47.690Z"
+    }
+  ],
+  "startedAt": "2026-11-10T01:50:37.664Z",
+  "noticeBeforeFocus": {
+    "visibilityState": "visible",
+    "hasFocus": true,
+    "disabled": false,
+    "bounds": {
+      "x": 822,
+      "y": 360.390625,
+      "width": 74,
+      "height": 32,
+      "top": 360.390625,
+      "right": 896,
+      "bottom": 392.390625,
+      "left": 822
+    },
+    "display": "inline-block",
+    "visibility": "visible",
+    "opacity": "1",
+    "animations": [
+      {
+        "playState": "running",
+        "currentTime": 0,
+        "playbackRate": 1
+      },
+      {
+        "playState": "running",
+        "currentTime": 0,
+        "playbackRate": 1
+      },
+      {
+        "playState": "running",
+        "currentTime": 0,
+        "playbackRate": 1
+      },
+      {
+        "playState": "running",
+        "currentTime": 0,
+        "playbackRate": 1
+      },
+      {
+        "playState": "running",
+        "currentTime": 0,
+        "playbackRate": 1
+      },
+      {
+        "playState": "running",
+        "currentTime": 0,
+        "playbackRate": 1
+      },
+      {
+        "playState": "running",
+        "currentTime": 0,
+        "playbackRate": 1
+      },
+      {
+        "playState": "running",
+        "currentTime": 0,
+        "playbackRate": 1
+      },
+      {
+        "playState": "running",
+        "currentTime": 0,
+        "playbackRate": 1
+      },
+      {
+        "playState": "running",
+        "currentTime": 0,
+        "playbackRate": 1
+      },
+      {
+        "playState": "running",
+        "currentTime": 474.8870000168681,
+        "playbackRate": 1
+      }
+    ]
+  },
+  "noticeAfterFocus": [
+    {
+      "visibilityState": "visible",
+      "hasFocus": true,
+      "disabled": false,
+      "bounds": {
+        "x": 822,
+        "y": 360.390625,
+        "width": 74,
+        "height": 32,
+        "top": 360.390625,
+        "right": 896,
+        "bottom": 392.390625,
+        "left": 822
+      },
+      "display": "inline-block",
+      "visibility": "visible",
+      "opacity": "1",
+      "animations": [
+        {
+          "playState": "running",
+          "currentTime": 16.968000074848888,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 16.968000074848888,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 16.968000074848888,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 16.968000074848888,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 16.968000074848888,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 16.968000074848888,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 16.968000074848888,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 16.968000074848888,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 16.968000074848888,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 16.968000074848888,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 491.88700001686846,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 0,
+          "playbackRate": 1
+        }
+      ]
+    },
+    {
+      "visibilityState": "visible",
+      "hasFocus": true,
+      "disabled": false,
+      "bounds": {
+        "x": 819.679931640625,
+        "y": 359.8175354003906,
+        "width": 72.3167724609375,
+        "height": 31.272125244140625,
+        "top": 359.8175354003906,
+        "right": 891.9967041015625,
+        "bottom": 391.08966064453125,
+        "left": 819.679931640625
+      },
+      "display": "inline-block",
+      "visibility": "visible",
+      "opacity": "1",
+      "animations": [
+        {
+          "playState": "running",
+          "currentTime": 221.8680000748483,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 221.8680000748483,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 221.8680000748483,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 221.8680000748483,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 221.8680000748483,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 221.8680000748483,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 221.8680000748483,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 221.8680000748483,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 221.8680000748483,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 221.8680000748483,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 696.7870000168679,
+          "playbackRate": 1
+        },
+        {
+          "playState": "running",
+          "currentTime": 169.8570000823585,
+          "playbackRate": 1
+        }
+      ]
+    },
+    {
+      "visibilityState": "visible",
+      "hasFocus": true,
+      "disabled": false,
+      "bounds": {
+        "x": 822,
+        "y": 360.390625,
+        "width": 74,
+        "height": 32,
+        "top": 360.390625,
+        "right": 896,
+        "bottom": 392.390625,
+        "left": 822
+      },
+      "display": "inline-block",
+      "visibility": "visible",
+      "opacity": "1",
+      "animations": [
+        {
+          "playState": "running",
+          "currentTime": 916.8510000168677,
+          "playbackRate": 1
+        }
+      ]
+    }
+  ],
+  "noticeClickedNormally": true,
+  "backupPageLoaded": true,
+  "currentUrl": "http://127.0.0.1:18080/backup-center",
+  "finishedAt": "2026-11-10T01:51:09.368Z",
+  "helperSha256": "43cfcaee30bcd4eb2f3c3eee27f17bfbcd55e9777c06f1eae62caae601c72e0b"
+}

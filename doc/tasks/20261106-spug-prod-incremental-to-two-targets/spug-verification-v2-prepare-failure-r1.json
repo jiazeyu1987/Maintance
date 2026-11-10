@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "SpugVerificationPreparationFailure/v1",
+  "status": "FAILED",
+  "actualExitCode": 1,
+  "carrier": "prepare-spug-verification-v2-r1.py",
+  "inputFile": "main-program-spug-verification-inputs-45dd7dc-r6-c1-v2.json",
+  "errorCode": "SPUG_RESOURCE_TRANSITION_ATTEMPT_INPUT_SET_CHANGED",
+  "actualAttemptInputCount": 1141,
+  "reconstructedInputCount": 1142,
+  "expectedOnly": ["main-program-spug-verification-inputs-45dd7dc-r6-c1-v2.json"],
+  "actualOnly": [],
+  "samePathChanges": [],
+  "remoteDispatched": false,
+  "configurationWrites": false,
+  "backupDispatched": false,
+  "restoreDispatched": false,
+  "historicalAttemptModified": false,
+  "installationRepeated": false
+}

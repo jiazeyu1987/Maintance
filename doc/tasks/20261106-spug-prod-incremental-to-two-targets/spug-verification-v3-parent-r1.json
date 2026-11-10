@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "SpugPublicationVerificationOuter/v1",
+  "actualExitCode": 0,
+  "elapsedSeconds": 279.86,
+  "requestPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-verification-v3-parent-r1.request.private.json",
+    "bytes": 1566,
+    "sha256": "54afd11106e8724bf0fbe6eb856e6f446412d50b7b6d21fec0caf3e4d31ff495"
+  },
+  "stdoutPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-verification-v3-parent-r1.stdout.private.log",
+    "bytes": 279,
+    "sha256": "ce15319b4a7121c2a4ede41d985440a3cf0ed80cbc1c6be7811d82ac8f3bcbf2"
+  },
+  "stderrPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-verification-v3-parent-r1.stderr.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "sourcesUnchanged": true,
+  "result": {
+    "status": "PASS",
+    "report": "main-program-spug-installation-45dd7dc-r6-continuation-c1-verification-v3.json",
+    "publicationCompleted": true,
+    "configurationWrites": false,
+    "businessMutationDispatched": false,
+    "controlApiQueriesPerformed": true,
+    "queryAuditWritesMayOccur": true
+  },
+  "errorCode": null,
+  "configurationWrites": false,
+  "backupDispatched": false,
+  "restoreDispatched": false,
+  "retryPermitted": false
+}

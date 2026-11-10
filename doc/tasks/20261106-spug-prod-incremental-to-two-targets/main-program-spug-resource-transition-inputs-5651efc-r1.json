@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "MainProgramSpugResourceTransitionInputs/v1",
+  "baseVerificationInputsPin": {
+    "file": "main-program-spug-verification-inputs-45dd7dc-r6-c1-v1.json",
+    "bytes": 1789,
+    "sha256": "9a5f0ab10adf1b0fbda3e9c1dfd906f0bae3b0659c14143d7daba369fc0d1cd7"
+  },
+  "resourceBuildPin": {
+    "file": "spug-resource-build-5651efc-r3.json",
+    "bytes": 7153,
+    "sha256": "a30b1d8f3472be5e740994ad71b4eb95f2be0743defe450d82427a7bb58008a5"
+  },
+  "deploymentDeltaPin": {
+    "file": "spug-resource-deployment-delta-5651efc-r1.json",
+    "bytes": 1163,
+    "sha256": "2171f0552dab30593a55d9fd6349acabd4e577503e136406ef4ad9dd396d26c4"
+  },
+  "observationPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-program-spug-resource-transition-5651efc-r1.observation.private.json",
+    "bytes": 5783,
+    "sha256": "059ebb11889b97eb19e759b38f086aeaeefca99b887bef23860e61f41ae69ab3"
+  },
+  "operationId": "r1",
+  "outputFile": "main-program-spug-resource-transition-5651efc-r1.json"
+}

@@ -1,0 +1,4055 @@
+{
+  "schemaVersion": "SpugCompleteGoalReadonlyAudit/v1",
+  "startedAt": "2026-11-10T01:55:37.920Z",
+  "observation": "r12",
+  "status": "FAIL",
+  "browserMode": "headedChrome",
+  "helperPin": {
+    "bytes": 16764,
+    "sha256": "296470da32938a21fbc98882b889a73e0e335e063833f628e7776ebea7e846cb"
+  },
+  "authPosts": 1,
+  "businessWrites": 0,
+  "blockedRequests": [],
+  "pageErrorCount": 0,
+  "catalogueResponses": [
+    {
+      "sequence": 1,
+      "httpStatus": 200,
+      "observedAt": "2026-11-10T01:55:48.073Z",
+      "bytes": 141286,
+      "sha256": "9bbff0be367c08c1691d8d28e1d21f1459c68a6751692a6d138ee6a33594c9b0",
+      "itemCount": 145,
+      "refreshing": true,
+      "complete": true
+    },
+    {
+      "sequence": 2,
+      "httpStatus": 200,
+      "observedAt": "2026-11-10T01:55:53.517Z",
+      "bytes": 141286,
+      "sha256": "9bbff0be367c08c1691d8d28e1d21f1459c68a6751692a6d138ee6a33594c9b0",
+      "itemCount": 145,
+      "refreshing": true,
+      "complete": true
+    },
+    {
+      "sequence": 3,
+      "httpStatus": 200,
+      "observedAt": "2026-11-10T01:55:55.960Z",
+      "bytes": 141286,
+      "sha256": "9bbff0be367c08c1691d8d28e1d21f1459c68a6751692a6d138ee6a33594c9b0",
+      "itemCount": 145,
+      "refreshing": true,
+      "complete": true
+    },
+    {
+      "sequence": 4,
+      "httpStatus": 200,
+      "observedAt": "2026-11-10T01:55:58.095Z",
+      "bytes": 141286,
+      "sha256": "9bbff0be367c08c1691d8d28e1d21f1459c68a6751692a6d138ee6a33594c9b0",
+      "itemCount": 145,
+      "refreshing": true,
+      "complete": true
+    },
+    {
+      "sequence": 5,
+      "httpStatus": 200,
+      "observedAt": "2026-11-10T01:56:00.854Z",
+      "bytes": 141286,
+      "sha256": "9bbff0be367c08c1691d8d28e1d21f1459c68a6751692a6d138ee6a33594c9b0",
+      "itemCount": 145,
+      "refreshing": true,
+      "complete": true
+    },
+    {
+      "sequence": 6,
+      "httpStatus": 200,
+      "observedAt": "2026-11-10T01:56:04.055Z",
+      "bytes": 141286,
+      "sha256": "9bbff0be367c08c1691d8d28e1d21f1459c68a6751692a6d138ee6a33594c9b0",
+      "itemCount": 145,
+      "refreshing": true,
+      "complete": true
+    },
+    {
+      "sequence": 7,
+      "httpStatus": 200,
+      "observedAt": "2026-11-10T01:56:07.567Z",
+      "bytes": 141286,
+      "sha256": "9bbff0be367c08c1691d8d28e1d21f1459c68a6751692a6d138ee6a33594c9b0",
+      "itemCount": 145,
+      "refreshing": true,
+      "complete": true
+    },
+    {
+      "sequence": 8,
+      "httpStatus": 200,
+      "observedAt": "2026-11-10T01:56:10.458Z",
+      "bytes": 141286,
+      "sha256": "9bbff0be367c08c1691d8d28e1d21f1459c68a6751692a6d138ee6a33594c9b0",
+      "itemCount": 145,
+      "refreshing": true,
+      "complete": true
+    },
+    {
+      "sequence": 9,
+      "httpStatus": 200,
+      "observedAt": "2026-11-10T01:56:10.698Z",
+      "bytes": 141286,
+      "sha256": "9bbff0be367c08c1691d8d28e1d21f1459c68a6751692a6d138ee6a33594c9b0",
+      "itemCount": 145,
+      "refreshing": true,
+      "complete": true
+    },
+    {
+      "sequence": 10,
+      "httpStatus": 200,
+      "observedAt": "2026-11-10T01:56:13.100Z",
+      "bytes": 141287,
+      "sha256": "f8fc852f99f12195f64c132c7ac315df3d9dd350c3b1feb0b4c8db2eb5029273",
+      "itemCount": 145,
+      "refreshing": false,
+      "complete": true
+    }
+  ],
+  "pagination": [
+    {
+      "count": "共 145 个包 · 筛选 145 个 · 第 1 / 6 页",
+      "rows": [
+        {
+          "id": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-fbaf12b584214695b6b687e010f4773b",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-7fec29a3e132463096aec915c08acab3",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+          "kind": "backup-full"
+        },
+        {
+          "id": "2026-11-03-12-15-42",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-11-03-10-33-18",
+          "kind": "backend-patch"
+        },
+        {
+          "id": "2026-11-03-08-23-17",
+          "kind": "backend-patch"
+        },
+        {
+          "id": "2026-11-02-23-56-34",
+          "kind": "backend-patch"
+        },
+        {
+          "id": "2026-11-02-22-15-59",
+          "kind": "backend-patch"
+        },
+        {
+          "id": "2026-11-02-10-09-19",
+          "kind": "frontend-patch"
+        },
+        {
+          "id": "2026-11-01-21-48-01",
+          "kind": "frontend-patch"
+        },
+        {
+          "id": "2026-11-01-17-51-42",
+          "kind": "frontend-patch"
+        },
+        {
+          "id": "2026-11-01-13-08-35",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-31-22-23-14",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-31-19-13-08",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-30-10-19-11",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-29-16-28-18",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-29-13-43-28",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-28-23-36-26",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-28-13-12-51",
+          "kind": "frontend-patch"
+        },
+        {
+          "id": "2026-10-27-18-40-39",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-27-13-12-40",
+          "kind": "release-full"
+        }
+      ]
+    },
+    {
+      "count": "共 145 个包 · 筛选 145 个 · 第 2 / 6 页",
+      "rows": [
+        {
+          "id": "smallapp-52517f29e484496094a513962b6a6293",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-da71a229372e4353941ad269fd611432",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-6977f0ab32d84496aff6915e2abc86da",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-6b0b9a7656a942fb98636d48f1dc2551",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-1886fd1487e0460fa5581f05878dc378",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-f554f96fb8c84422986dd0078aa246aa",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-a7ab96ccafa44fae903d7beed7169571",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-e7e9c406ce884dfc915c0aecad507703",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-daadc12a3fd04c3581ea92d03a1a817e",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-0dba08db8e1146a3a15f0b65e17fadf1",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-3034a816da314c4daaf2f9855847dd59",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-b8fd2f1cc83446019fecb02402bad61e",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-3244fd6907ea438a8b97145363342f96",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-a54a05be9dab45e490a3979551536b0c",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-811ed843c29c4040be1de5bcb87258e7",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-9695bf3fb95d4ec4a19eb6fbe6329066",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-3f29a2b1324045309478a3a597654260",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-c3b76ae93ffb4453a54b097fc0d54205",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-b9c0e691bc034c8f96e9de2324e44574",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-e5c20b88027b4f999fe3c99868e4e589",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-0ecdb86a0e0d4168b5605dd993908920",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-2f273e49822a40578f6b0bbe9907c49d",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-3f928eb61627437691de6d7a812b39be",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-be7f22e83c9e439ea78284419f77be3f",
+          "kind": "backup-incremental"
+        }
+      ]
+    },
+    {
+      "count": "共 145 个包 · 筛选 145 个 · 第 3 / 6 页",
+      "rows": [
+        {
+          "id": "smallapp-e80650ecf14248aa88e451cc3f2bb092",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-a50f1ace6b21460b8fc26aa6a8fccc8f",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-543920854da447419c1d17e8ab6fb3a5",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-bfbc98aedeff4f6d90fde2553bef9a37",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-b664bd8f4954446293b151b293bf0edb",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-45342a62c1fd456086c5ac00ae6382fd",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-db2650af567b453d85a26189b8f1112a",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-416c431557c44d37bd2f00ee8324cfdb",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-7794b203ebdf4ec39c138969f81b5936",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-2e75fe12a76241698156cd379665375c",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-507bc6d72f7449a49bd377e262650da5",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-a4ce7fdf09944086ad3851f1798aa52e",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-f6ff86bb3b244edeaffe05764f270496",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-71901578b5d14b6a9356e983d960c08d",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-742d545d106943c49d40829080f8f0a7",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-dc47160694ee46678912931651d82e81",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-58ac78c7553f49d982e40021d1d59042",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-ed156add133a4902a2f937dbcfeb5763",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-faf10a7c23b448f7ba222624aaad5a94",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-cc2e7853b26a4a74aa10d8980454795d",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-c8f40ff890fa4558baf846369c313b12",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-6c260769d4a6477faaaf171dc6484095",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-83f9901142404c2a8d38304b907f467b",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "2026-10-24-03-24-24",
+          "kind": "release-full"
+        },
+        {
+          "id": "smallapp-de5f072c6ee744b59b7e2f74dd2b0350",
+          "kind": "backup-incremental"
+        }
+      ]
+    },
+    {
+      "count": "共 145 个包 · 筛选 145 个 · 第 4 / 6 页",
+      "rows": [
+        {
+          "id": "smallapp-e44362c80a7c41718d77e52727eeb4df",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-27d9fa117c0442249379a4afa531d07f",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-3dd8454849ab4d629726c7c54f7f63da",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-7280372849c249b796d6985dc820396f",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-3a22c86a27b84935bc99a88ec7d8be1c",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-231777599f9d4b5a9789f3e65f75c0f2",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-34d0fb61c391471eac8e193a3d7cc70c",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-7cd174a2a0c9496a945a69e921051f94",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-24ef6923f96e40708247b278eca71395",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-daf5045495f54e9e8b569e683d2cc461",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-9e9656eaefe843fbbeb9c7e8f2c7d754",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-4a5ee6f7d2234c0f8fa4cb57c49a2a92",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-286f37022d3246faaac1729d96c3dd77",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-5e52bf1ab0724e17b889fa039fbb1fbd",
+          "kind": "backup-full"
+        },
+        {
+          "id": "2026-10-23-16-51-17",
+          "kind": "release-full"
+        },
+        {
+          "id": "smallapp-45bb353e3d5e46f6a4b1c72053e8dbc5",
+          "kind": "backup-full"
+        },
+        {
+          "id": "2026-10-23-16-30-34",
+          "kind": "release-full"
+        },
+        {
+          "id": "smallapp-ec35b03b3d3c41539c215d763c892324",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-8188a801d41f4db198900ae778aac42f",
+          "kind": "backup-full"
+        },
+        {
+          "id": "2026-10-23-15-17-12",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-23-14-09-53",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-23-13-09-00",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-23-12-44-57",
+          "kind": "release-full"
+        },
+        {
+          "id": "smallapp-d2b6eb2db12948de83633415b4020941",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-f04a93ffe4f242ee854a55889531ed74",
+          "kind": "backup-incremental"
+        }
+      ]
+    },
+    {
+      "count": "共 145 个包 · 筛选 145 个 · 第 5 / 6 页",
+      "rows": [
+        {
+          "id": "smallapp-fafeff48e68147eeab871de3f97bee7b",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-28cf61e598ae41ed8a3410713ff25a23",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "2026-10-23-11-47-19",
+          "kind": "release-full"
+        },
+        {
+          "id": "smallapp-ee367e858e6d486b915c33413beff598",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-7cdfc77c1c3946b7bcb5443b930aec41",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-9388b8f0b95e45b6a5eac6f22c7ec7ec",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "2026-10-23-10-52-15",
+          "kind": "release-full"
+        },
+        {
+          "id": "smallapp-5da5709bf21f46d6865c9898586e7c5c",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-2326ea51c4bd4023a693eb87aec5f3bc",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-c38430fb4dca4cddb25ae0a996d2a799",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-e774fa9f6f544aea8d3cbc9208d05938",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-f15cf31a90b047f2a5f5ceb992495a80",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-4ceef17d28504be5b3a478e126dda506",
+          "kind": "backup-full"
+        },
+        {
+          "id": "2026-10-23-09-50-27",
+          "kind": "release-full"
+        },
+        {
+          "id": "smallapp-bdf766cce590419299c3acd5c684f529",
+          "kind": "backup-full"
+        },
+        {
+          "id": "2026-10-23-08-53-07",
+          "kind": "release-full"
+        },
+        {
+          "id": "smallapp-e7c46b697d07470e89795f82e20ed964",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-ae839bced8d84e3daedb3d5721fa8101",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-ab76e36228664712895ea90418200482",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-dba100893b6c4fabac6ae882360f4f64",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-d314a62839b84934934ce80bca8c66ce",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-c598382d8e134a4ea492d7d6c66e4884",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-11237140dc8447a2aecd7392dee77277",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-38a05cf3d96b4cf69a011e1fbb336fe6",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-ee58e62b22be4f33b3484b389feb2633",
+          "kind": "backup-incremental"
+        }
+      ]
+    },
+    {
+      "count": "共 145 个包 · 筛选 145 个 · 第 6 / 6 页",
+      "rows": [
+        {
+          "id": "smallapp-0e8fe1e41bbb48df8bfa7e6c0b9b665b",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-5c05f0b355cf48e4b5520c2558ceaa44",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "2026-10-23-00-13-20",
+          "kind": "release-full"
+        },
+        {
+          "id": "smallapp-9051305191ad4e27965d98abccaac553",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-74819cde8ea04ad089a239113ad26e66",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-0f8eb295a07f44f0b21e598002b29689",
+          "kind": "backup-full"
+        },
+        {
+          "id": "2026-10-22-22-48-59",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-22-21-54-25",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-22-20-45-19",
+          "kind": "release-full"
+        },
+        {
+          "id": "smallapp-84563aceae404c18a96a47ae336c4e5a",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-e98f0f55896c445dac1d4eefe31713c5",
+          "kind": "backup-incremental"
+        },
+        {
+          "id": "smallapp-9d1df93e86b549c08b0c6286f7a35b7d",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-d62276cdb402499d9586871439765989",
+          "kind": "backup-full"
+        },
+        {
+          "id": "2026-10-22-13-36-16",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-22-10-45-28",
+          "kind": "release-full"
+        },
+        {
+          "id": "2026-10-22-01-09-56",
+          "kind": "release-full"
+        },
+        {
+          "id": "smallapp-441bd02fe611461aa76e63eeffa83d3f",
+          "kind": "backup-full"
+        },
+        {
+          "id": "2026-10-21-23-10-00",
+          "kind": "release-full"
+        },
+        {
+          "id": "smallapp-355910d54890439e9e92a9893ca67119",
+          "kind": "backup-full"
+        },
+        {
+          "id": "smallapp-be26b59281a4464dac816d61f76f0443",
+          "kind": "backup-full"
+        }
+      ]
+    }
+  ],
+  "filters": [
+    {
+      "kind": "backup-full",
+      "ids": [
+        "smallapp-fbaf12b584214695b6b687e010f4773b",
+        "smallapp-7fec29a3e132463096aec915c08acab3",
+        "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+        "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+        "smallapp-6977f0ab32d84496aff6915e2abc86da",
+        "smallapp-f554f96fb8c84422986dd0078aa246aa",
+        "smallapp-daadc12a3fd04c3581ea92d03a1a817e",
+        "smallapp-b8fd2f1cc83446019fecb02402bad61e",
+        "smallapp-3244fd6907ea438a8b97145363342f96",
+        "smallapp-a54a05be9dab45e490a3979551536b0c",
+        "smallapp-811ed843c29c4040be1de5bcb87258e7",
+        "smallapp-9695bf3fb95d4ec4a19eb6fbe6329066",
+        "smallapp-3f29a2b1324045309478a3a597654260",
+        "smallapp-0eebed7726824ca5b7292ffc9b845735",
+        "smallapp-0ecdb86a0e0d4168b5605dd993908920",
+        "smallapp-a50f1ace6b21460b8fc26aa6a8fccc8f",
+        "smallapp-543920854da447419c1d17e8ab6fb3a5",
+        "smallapp-bfbc98aedeff4f6d90fde2553bef9a37",
+        "smallapp-db2650af567b453d85a26189b8f1112a",
+        "smallapp-2e75fe12a76241698156cd379665375c",
+        "smallapp-742d545d106943c49d40829080f8f0a7",
+        "smallapp-dc47160694ee46678912931651d82e81",
+        "smallapp-cc2e7853b26a4a74aa10d8980454795d",
+        "smallapp-27d9fa117c0442249379a4afa531d07f",
+        "smallapp-3dd8454849ab4d629726c7c54f7f63da",
+        "smallapp-7cd174a2a0c9496a945a69e921051f94",
+        "smallapp-286f37022d3246faaac1729d96c3dd77",
+        "smallapp-5e52bf1ab0724e17b889fa039fbb1fbd",
+        "smallapp-45bb353e3d5e46f6a4b1c72053e8dbc5",
+        "smallapp-ec35b03b3d3c41539c215d763c892324",
+        "smallapp-8188a801d41f4db198900ae778aac42f",
+        "smallapp-2326ea51c4bd4023a693eb87aec5f3bc",
+        "smallapp-e774fa9f6f544aea8d3cbc9208d05938",
+        "smallapp-4ceef17d28504be5b3a478e126dda506",
+        "smallapp-bdf766cce590419299c3acd5c684f529",
+        "smallapp-e7c46b697d07470e89795f82e20ed964",
+        "smallapp-ae839bced8d84e3daedb3d5721fa8101",
+        "smallapp-dba100893b6c4fabac6ae882360f4f64",
+        "smallapp-d314a62839b84934934ce80bca8c66ce",
+        "smallapp-11237140dc8447a2aecd7392dee77277",
+        "smallapp-9051305191ad4e27965d98abccaac553",
+        "smallapp-74819cde8ea04ad089a239113ad26e66",
+        "smallapp-0f8eb295a07f44f0b21e598002b29689",
+        "smallapp-9d1df93e86b549c08b0c6286f7a35b7d",
+        "smallapp-d62276cdb402499d9586871439765989",
+        "smallapp-441bd02fe611461aa76e63eeffa83d3f",
+        "smallapp-355910d54890439e9e92a9893ca67119",
+        "smallapp-be26b59281a4464dac816d61f76f0443"
+      ],
+      "pages": [
+        {
+          "count": "共 145 个包 · 筛选 48 个 · 第 1 / 2 页",
+          "rows": [
+            {
+              "id": "smallapp-fbaf12b584214695b6b687e010f4773b",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-7fec29a3e132463096aec915c08acab3",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-6977f0ab32d84496aff6915e2abc86da",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-f554f96fb8c84422986dd0078aa246aa",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-daadc12a3fd04c3581ea92d03a1a817e",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-b8fd2f1cc83446019fecb02402bad61e",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-3244fd6907ea438a8b97145363342f96",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-a54a05be9dab45e490a3979551536b0c",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-811ed843c29c4040be1de5bcb87258e7",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-9695bf3fb95d4ec4a19eb6fbe6329066",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-3f29a2b1324045309478a3a597654260",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-0ecdb86a0e0d4168b5605dd993908920",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-a50f1ace6b21460b8fc26aa6a8fccc8f",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-543920854da447419c1d17e8ab6fb3a5",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-bfbc98aedeff4f6d90fde2553bef9a37",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-db2650af567b453d85a26189b8f1112a",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-2e75fe12a76241698156cd379665375c",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-742d545d106943c49d40829080f8f0a7",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-dc47160694ee46678912931651d82e81",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-cc2e7853b26a4a74aa10d8980454795d",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-27d9fa117c0442249379a4afa531d07f",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-3dd8454849ab4d629726c7c54f7f63da",
+              "kind": "backup-full"
+            }
+          ]
+        },
+        {
+          "count": "共 145 个包 · 筛选 48 个 · 第 2 / 2 页",
+          "rows": [
+            {
+              "id": "smallapp-7cd174a2a0c9496a945a69e921051f94",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-286f37022d3246faaac1729d96c3dd77",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-5e52bf1ab0724e17b889fa039fbb1fbd",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-45bb353e3d5e46f6a4b1c72053e8dbc5",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-ec35b03b3d3c41539c215d763c892324",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-8188a801d41f4db198900ae778aac42f",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-2326ea51c4bd4023a693eb87aec5f3bc",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-e774fa9f6f544aea8d3cbc9208d05938",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-4ceef17d28504be5b3a478e126dda506",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-bdf766cce590419299c3acd5c684f529",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-e7c46b697d07470e89795f82e20ed964",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-ae839bced8d84e3daedb3d5721fa8101",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-dba100893b6c4fabac6ae882360f4f64",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-d314a62839b84934934ce80bca8c66ce",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-11237140dc8447a2aecd7392dee77277",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-9051305191ad4e27965d98abccaac553",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-74819cde8ea04ad089a239113ad26e66",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-0f8eb295a07f44f0b21e598002b29689",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-9d1df93e86b549c08b0c6286f7a35b7d",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-d62276cdb402499d9586871439765989",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-441bd02fe611461aa76e63eeffa83d3f",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-355910d54890439e9e92a9893ca67119",
+              "kind": "backup-full"
+            },
+            {
+              "id": "smallapp-be26b59281a4464dac816d61f76f0443",
+              "kind": "backup-full"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "backup-incremental",
+      "ids": [
+        "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+        "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+        "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+        "smallapp-52517f29e484496094a513962b6a6293",
+        "smallapp-da71a229372e4353941ad269fd611432",
+        "smallapp-6b0b9a7656a942fb98636d48f1dc2551",
+        "smallapp-1886fd1487e0460fa5581f05878dc378",
+        "smallapp-a7ab96ccafa44fae903d7beed7169571",
+        "smallapp-e7e9c406ce884dfc915c0aecad507703",
+        "smallapp-0dba08db8e1146a3a15f0b65e17fadf1",
+        "smallapp-3034a816da314c4daaf2f9855847dd59",
+        "smallapp-c3b76ae93ffb4453a54b097fc0d54205",
+        "smallapp-b9c0e691bc034c8f96e9de2324e44574",
+        "smallapp-e5c20b88027b4f999fe3c99868e4e589",
+        "smallapp-2f273e49822a40578f6b0bbe9907c49d",
+        "smallapp-3f928eb61627437691de6d7a812b39be",
+        "smallapp-be7f22e83c9e439ea78284419f77be3f",
+        "smallapp-e80650ecf14248aa88e451cc3f2bb092",
+        "smallapp-b664bd8f4954446293b151b293bf0edb",
+        "smallapp-45342a62c1fd456086c5ac00ae6382fd",
+        "smallapp-416c431557c44d37bd2f00ee8324cfdb",
+        "smallapp-7794b203ebdf4ec39c138969f81b5936",
+        "smallapp-507bc6d72f7449a49bd377e262650da5",
+        "smallapp-a4ce7fdf09944086ad3851f1798aa52e",
+        "smallapp-f6ff86bb3b244edeaffe05764f270496",
+        "smallapp-71901578b5d14b6a9356e983d960c08d",
+        "smallapp-58ac78c7553f49d982e40021d1d59042",
+        "smallapp-ed156add133a4902a2f937dbcfeb5763",
+        "smallapp-faf10a7c23b448f7ba222624aaad5a94",
+        "smallapp-c8f40ff890fa4558baf846369c313b12",
+        "smallapp-6c260769d4a6477faaaf171dc6484095",
+        "smallapp-83f9901142404c2a8d38304b907f467b",
+        "smallapp-de5f072c6ee744b59b7e2f74dd2b0350",
+        "smallapp-e44362c80a7c41718d77e52727eeb4df",
+        "smallapp-7280372849c249b796d6985dc820396f",
+        "smallapp-3a22c86a27b84935bc99a88ec7d8be1c",
+        "smallapp-231777599f9d4b5a9789f3e65f75c0f2",
+        "smallapp-34d0fb61c391471eac8e193a3d7cc70c",
+        "smallapp-24ef6923f96e40708247b278eca71395",
+        "smallapp-daf5045495f54e9e8b569e683d2cc461",
+        "smallapp-9e9656eaefe843fbbeb9c7e8f2c7d754",
+        "smallapp-4a5ee6f7d2234c0f8fa4cb57c49a2a92",
+        "smallapp-d2b6eb2db12948de83633415b4020941",
+        "smallapp-f04a93ffe4f242ee854a55889531ed74",
+        "smallapp-fafeff48e68147eeab871de3f97bee7b",
+        "smallapp-28cf61e598ae41ed8a3410713ff25a23",
+        "smallapp-ee367e858e6d486b915c33413beff598",
+        "smallapp-7cdfc77c1c3946b7bcb5443b930aec41",
+        "smallapp-9388b8f0b95e45b6a5eac6f22c7ec7ec",
+        "smallapp-5da5709bf21f46d6865c9898586e7c5c",
+        "smallapp-c38430fb4dca4cddb25ae0a996d2a799",
+        "smallapp-f15cf31a90b047f2a5f5ceb992495a80",
+        "smallapp-ab76e36228664712895ea90418200482",
+        "smallapp-c598382d8e134a4ea492d7d6c66e4884",
+        "smallapp-38a05cf3d96b4cf69a011e1fbb336fe6",
+        "smallapp-ee58e62b22be4f33b3484b389feb2633",
+        "smallapp-0e8fe1e41bbb48df8bfa7e6c0b9b665b",
+        "smallapp-5c05f0b355cf48e4b5520c2558ceaa44",
+        "smallapp-84563aceae404c18a96a47ae336c4e5a",
+        "smallapp-e98f0f55896c445dac1d4eefe31713c5"
+      ],
+      "pages": [
+        {
+          "count": "共 145 个包 · 筛选 60 个 · 第 1 / 3 页",
+          "rows": [
+            {
+              "id": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-52517f29e484496094a513962b6a6293",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-da71a229372e4353941ad269fd611432",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-6b0b9a7656a942fb98636d48f1dc2551",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-1886fd1487e0460fa5581f05878dc378",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-a7ab96ccafa44fae903d7beed7169571",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-e7e9c406ce884dfc915c0aecad507703",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-0dba08db8e1146a3a15f0b65e17fadf1",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-3034a816da314c4daaf2f9855847dd59",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-c3b76ae93ffb4453a54b097fc0d54205",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-b9c0e691bc034c8f96e9de2324e44574",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-e5c20b88027b4f999fe3c99868e4e589",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-2f273e49822a40578f6b0bbe9907c49d",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-3f928eb61627437691de6d7a812b39be",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-be7f22e83c9e439ea78284419f77be3f",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-e80650ecf14248aa88e451cc3f2bb092",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-b664bd8f4954446293b151b293bf0edb",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-45342a62c1fd456086c5ac00ae6382fd",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-416c431557c44d37bd2f00ee8324cfdb",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-7794b203ebdf4ec39c138969f81b5936",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-507bc6d72f7449a49bd377e262650da5",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-a4ce7fdf09944086ad3851f1798aa52e",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-f6ff86bb3b244edeaffe05764f270496",
+              "kind": "backup-incremental"
+            }
+          ]
+        },
+        {
+          "count": "共 145 个包 · 筛选 60 个 · 第 2 / 3 页",
+          "rows": [
+            {
+              "id": "smallapp-71901578b5d14b6a9356e983d960c08d",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-58ac78c7553f49d982e40021d1d59042",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-ed156add133a4902a2f937dbcfeb5763",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-faf10a7c23b448f7ba222624aaad5a94",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-c8f40ff890fa4558baf846369c313b12",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-6c260769d4a6477faaaf171dc6484095",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-83f9901142404c2a8d38304b907f467b",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-de5f072c6ee744b59b7e2f74dd2b0350",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-e44362c80a7c41718d77e52727eeb4df",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-7280372849c249b796d6985dc820396f",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-3a22c86a27b84935bc99a88ec7d8be1c",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-231777599f9d4b5a9789f3e65f75c0f2",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-34d0fb61c391471eac8e193a3d7cc70c",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-24ef6923f96e40708247b278eca71395",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-daf5045495f54e9e8b569e683d2cc461",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-9e9656eaefe843fbbeb9c7e8f2c7d754",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-4a5ee6f7d2234c0f8fa4cb57c49a2a92",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-d2b6eb2db12948de83633415b4020941",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-f04a93ffe4f242ee854a55889531ed74",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-fafeff48e68147eeab871de3f97bee7b",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-28cf61e598ae41ed8a3410713ff25a23",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-ee367e858e6d486b915c33413beff598",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-7cdfc77c1c3946b7bcb5443b930aec41",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-9388b8f0b95e45b6a5eac6f22c7ec7ec",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-5da5709bf21f46d6865c9898586e7c5c",
+              "kind": "backup-incremental"
+            }
+          ]
+        },
+        {
+          "count": "共 145 个包 · 筛选 60 个 · 第 3 / 3 页",
+          "rows": [
+            {
+              "id": "smallapp-c38430fb4dca4cddb25ae0a996d2a799",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-f15cf31a90b047f2a5f5ceb992495a80",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-ab76e36228664712895ea90418200482",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-c598382d8e134a4ea492d7d6c66e4884",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-38a05cf3d96b4cf69a011e1fbb336fe6",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-ee58e62b22be4f33b3484b389feb2633",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-0e8fe1e41bbb48df8bfa7e6c0b9b665b",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-5c05f0b355cf48e4b5520c2558ceaa44",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-84563aceae404c18a96a47ae336c4e5a",
+              "kind": "backup-incremental"
+            },
+            {
+              "id": "smallapp-e98f0f55896c445dac1d4eefe31713c5",
+              "kind": "backup-incremental"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "matrix": [
+    {
+      "packageId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+      "kind": "backup-incremental",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+      "kind": "backup-incremental",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+      "kind": "backup-incremental",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-7fec29a3e132463096aec915c08acab3",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-52517f29e484496094a513962b6a6293",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-da71a229372e4353941ad269fd611432",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-6977f0ab32d84496aff6915e2abc86da",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-6b0b9a7656a942fb98636d48f1dc2551",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-1886fd1487e0460fa5581f05878dc378",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-f554f96fb8c84422986dd0078aa246aa",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-a7ab96ccafa44fae903d7beed7169571",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-e7e9c406ce884dfc915c0aecad507703",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-daadc12a3fd04c3581ea92d03a1a817e",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-0dba08db8e1146a3a15f0b65e17fadf1",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-3034a816da314c4daaf2f9855847dd59",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-b8fd2f1cc83446019fecb02402bad61e",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-3244fd6907ea438a8b97145363342f96",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-811ed843c29c4040be1de5bcb87258e7",
+      "kind": "backup-full",
+      "source": "172.30.30.59",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-3f29a2b1324045309478a3a597654260",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-c3b76ae93ffb4453a54b097fc0d54205",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-b9c0e691bc034c8f96e9de2324e44574",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-e5c20b88027b4f999fe3c99868e4e589",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-0ecdb86a0e0d4168b5605dd993908920",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-2f273e49822a40578f6b0bbe9907c49d",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-3f928eb61627437691de6d7a812b39be",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-be7f22e83c9e439ea78284419f77be3f",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-e80650ecf14248aa88e451cc3f2bb092",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-a50f1ace6b21460b8fc26aa6a8fccc8f",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-543920854da447419c1d17e8ab6fb3a5",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-bfbc98aedeff4f6d90fde2553bef9a37",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-b664bd8f4954446293b151b293bf0edb",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-45342a62c1fd456086c5ac00ae6382fd",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-db2650af567b453d85a26189b8f1112a",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-416c431557c44d37bd2f00ee8324cfdb",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-7794b203ebdf4ec39c138969f81b5936",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-2e75fe12a76241698156cd379665375c",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-507bc6d72f7449a49bd377e262650da5",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-a4ce7fdf09944086ad3851f1798aa52e",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-f6ff86bb3b244edeaffe05764f270496",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-71901578b5d14b6a9356e983d960c08d",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-742d545d106943c49d40829080f8f0a7",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-dc47160694ee46678912931651d82e81",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-58ac78c7553f49d982e40021d1d59042",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-ed156add133a4902a2f937dbcfeb5763",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-faf10a7c23b448f7ba222624aaad5a94",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-cc2e7853b26a4a74aa10d8980454795d",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-c8f40ff890fa4558baf846369c313b12",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-6c260769d4a6477faaaf171dc6484095",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-83f9901142404c2a8d38304b907f467b",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-de5f072c6ee744b59b7e2f74dd2b0350",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-e44362c80a7c41718d77e52727eeb4df",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-27d9fa117c0442249379a4afa531d07f",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-3dd8454849ab4d629726c7c54f7f63da",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-7280372849c249b796d6985dc820396f",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-3a22c86a27b84935bc99a88ec7d8be1c",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-231777599f9d4b5a9789f3e65f75c0f2",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-34d0fb61c391471eac8e193a3d7cc70c",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-7cd174a2a0c9496a945a69e921051f94",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-24ef6923f96e40708247b278eca71395",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-daf5045495f54e9e8b569e683d2cc461",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-9e9656eaefe843fbbeb9c7e8f2c7d754",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-4a5ee6f7d2234c0f8fa4cb57c49a2a92",
+      "kind": "backup-incremental",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-286f37022d3246faaac1729d96c3dd77",
+      "kind": "backup-full",
+      "source": "",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-5e52bf1ab0724e17b889fa039fbb1fbd",
+      "kind": "backup-full",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-45bb353e3d5e46f6a4b1c72053e8dbc5",
+      "kind": "backup-full",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-ec35b03b3d3c41539c215d763c892324",
+      "kind": "backup-full",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-8188a801d41f4db198900ae778aac42f",
+      "kind": "backup-full",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-d2b6eb2db12948de83633415b4020941",
+      "kind": "backup-incremental",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-f04a93ffe4f242ee854a55889531ed74",
+      "kind": "backup-incremental",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-fafeff48e68147eeab871de3f97bee7b",
+      "kind": "backup-incremental",
+      "source": "172.30.30.59",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-28cf61e598ae41ed8a3410713ff25a23",
+      "kind": "backup-incremental",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-ee367e858e6d486b915c33413beff598",
+      "kind": "backup-incremental",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-7cdfc77c1c3946b7bcb5443b930aec41",
+      "kind": "backup-incremental",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-9388b8f0b95e45b6a5eac6f22c7ec7ec",
+      "kind": "backup-incremental",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-5da5709bf21f46d6865c9898586e7c5c",
+      "kind": "backup-incremental",
+      "source": "172.30.30.57",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-2326ea51c4bd4023a693eb87aec5f3bc",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-c38430fb4dca4cddb25ae0a996d2a799",
+      "kind": "backup-incremental",
+      "source": "172.30.30.59",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-e774fa9f6f544aea8d3cbc9208d05938",
+      "kind": "backup-full",
+      "source": "172.30.30.59",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-f15cf31a90b047f2a5f5ceb992495a80",
+      "kind": "backup-incremental",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-4ceef17d28504be5b3a478e126dda506",
+      "kind": "backup-full",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-bdf766cce590419299c3acd5c684f529",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-e7c46b697d07470e89795f82e20ed964",
+      "kind": "backup-full",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-ae839bced8d84e3daedb3d5721fa8101",
+      "kind": "backup-full",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-ab76e36228664712895ea90418200482",
+      "kind": "backup-incremental",
+      "source": "172.30.30.57",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-dba100893b6c4fabac6ae882360f4f64",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-d314a62839b84934934ce80bca8c66ce",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-c598382d8e134a4ea492d7d6c66e4884",
+      "kind": "backup-incremental",
+      "source": "172.30.30.57",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-11237140dc8447a2aecd7392dee77277",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-38a05cf3d96b4cf69a011e1fbb336fe6",
+      "kind": "backup-incremental",
+      "source": "172.30.30.57",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-ee58e62b22be4f33b3484b389feb2633",
+      "kind": "backup-incremental",
+      "source": "172.30.30.57",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-0e8fe1e41bbb48df8bfa7e6c0b9b665b",
+      "kind": "backup-incremental",
+      "source": "172.30.30.57",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-5c05f0b355cf48e4b5520c2558ceaa44",
+      "kind": "backup-incremental",
+      "source": "172.30.30.57",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-9051305191ad4e27965d98abccaac553",
+      "kind": "backup-full",
+      "source": "172.30.30.59",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-74819cde8ea04ad089a239113ad26e66",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-0f8eb295a07f44f0b21e598002b29689",
+      "kind": "backup-full",
+      "source": "172.30.30.58",
+      "accepted": false,
+      "targets": [],
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-84563aceae404c18a96a47ae336c4e5a",
+      "kind": "backup-incremental",
+      "source": "172.30.30.59",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-e98f0f55896c445dac1d4eefe31713c5",
+      "kind": "backup-incremental",
+      "source": "172.30.30.59",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-9d1df93e86b549c08b0c6286f7a35b7d",
+      "kind": "backup-full",
+      "source": "172.30.30.59",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-441bd02fe611461aa76e63eeffa83d3f",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-355910d54890439e9e92a9893ca67119",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    },
+    {
+      "packageId": "smallapp-be26b59281a4464dac816d61f76f0443",
+      "kind": "backup-full",
+      "source": "172.30.30.57",
+      "accepted": true,
+      "targets": [
+        {
+          "server": "172.30.30.57",
+          "targetConfigRef": "intruoyi-main-57-safe-restore-20261105-v2",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.58",
+          "targetConfigRef": "intruoyi-main-58-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        },
+        {
+          "server": "172.30.30.59",
+          "targetConfigRef": "intruoyi-main-59-safe-restore-20261104-v1",
+          "ready": true,
+          "blockedReason": "",
+          "confirmedIdentity": true,
+          "finalExecutionClicked": false
+        }
+      ]
+    }
+  ],
+  "stage": "point-smallapp-be26b59281a4464dac816d61f76f0443",
+  "loginActionability": {
+    "visibilityState": "visible",
+    "documentHasFocus": true,
+    "disabled": false,
+    "bounds": {
+      "x": 536,
+      "y": 406.140625,
+      "width": 368,
+      "height": 40,
+      "top": 406.140625,
+      "right": 904,
+      "bottom": 446.140625,
+      "left": 536
+    },
+    "display": "inline-block",
+    "visibility": "visible",
+    "opacity": "1",
+    "activeAnimationCount": 12
+  },
+  "loginResponseMs": 913,
+  "catalogue": {
+    "selectedResponse": {
+      "sequence": 10,
+      "httpStatus": 200,
+      "observedAt": "2026-11-10T01:56:13.100Z",
+      "bytes": 141287,
+      "sha256": "f8fc852f99f12195f64c132c7ac315df3d9dd350c3b1feb0b4c8db2eb5029273",
+      "itemCount": 145,
+      "refreshing": false,
+      "complete": true
+    },
+    "itemCount": 145,
+    "backups": [
+      {
+        "packageId": "smallapp-9d5ed2108497411a81bcd5ba7d1a6291",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 2106237601
+      },
+      {
+        "packageId": "smallapp-ab4fefb2bcfb4c3eb0ae5027fea35da5",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 2112641697
+      },
+      {
+        "packageId": "smallapp-fbaf12b584214695b6b687e010f4773b",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 26090620599
+      },
+      {
+        "packageId": "smallapp-ae9f83a19bb84ec28f27b5ca666bf62c",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 30877952537
+      },
+      {
+        "packageId": "smallapp-7fec29a3e132463096aec915c08acab3",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 26090542269
+      },
+      {
+        "packageId": "smallapp-73cd541a95d84d6a86f9d693e4053c75",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 26090562595
+      },
+      {
+        "packageId": "smallapp-3d4c7ab0f65841b8892e4a640a53176d",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 26090481928
+      },
+      {
+        "packageId": "smallapp-52517f29e484496094a513962b6a6293",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103490661
+      },
+      {
+        "packageId": "smallapp-da71a229372e4353941ad269fd611432",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103505884
+      },
+      {
+        "packageId": "smallapp-6977f0ab32d84496aff6915e2abc86da",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103587134
+      },
+      {
+        "packageId": "smallapp-6b0b9a7656a942fb98636d48f1dc2551",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103570737
+      },
+      {
+        "packageId": "smallapp-1886fd1487e0460fa5581f05878dc378",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103501300
+      },
+      {
+        "packageId": "smallapp-f554f96fb8c84422986dd0078aa246aa",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103571543
+      },
+      {
+        "packageId": "smallapp-a7ab96ccafa44fae903d7beed7169571",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103525389
+      },
+      {
+        "packageId": "smallapp-e7e9c406ce884dfc915c0aecad507703",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103524354
+      },
+      {
+        "packageId": "smallapp-daadc12a3fd04c3581ea92d03a1a817e",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103572059
+      },
+      {
+        "packageId": "smallapp-0dba08db8e1146a3a15f0b65e17fadf1",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103489885
+      },
+      {
+        "packageId": "smallapp-3034a816da314c4daaf2f9855847dd59",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103540711
+      },
+      {
+        "packageId": "smallapp-b8fd2f1cc83446019fecb02402bad61e",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103524283
+      },
+      {
+        "packageId": "smallapp-3244fd6907ea438a8b97145363342f96",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103578483
+      },
+      {
+        "packageId": "smallapp-a54a05be9dab45e490a3979551536b0c",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 26088446007
+      },
+      {
+        "packageId": "smallapp-811ed843c29c4040be1de5bcb87258e7",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 26381975399
+      },
+      {
+        "packageId": "smallapp-9695bf3fb95d4ec4a19eb6fbe6329066",
+        "kind": "backup-full",
+        "status": "unpublished",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 26381966893
+      },
+      {
+        "packageId": "smallapp-3f29a2b1324045309478a3a597654260",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 26088427452
+      },
+      {
+        "packageId": "smallapp-0eebed7726824ca5b7292ffc9b845735",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 26088444894
+      },
+      {
+        "packageId": "smallapp-c3b76ae93ffb4453a54b097fc0d54205",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103489652
+      },
+      {
+        "packageId": "smallapp-b9c0e691bc034c8f96e9de2324e44574",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103563362
+      },
+      {
+        "packageId": "smallapp-e5c20b88027b4f999fe3c99868e4e589",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103486739
+      },
+      {
+        "packageId": "smallapp-0ecdb86a0e0d4168b5605dd993908920",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103485713
+      },
+      {
+        "packageId": "smallapp-2f273e49822a40578f6b0bbe9907c49d",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103442604
+      },
+      {
+        "packageId": "smallapp-3f928eb61627437691de6d7a812b39be",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103440115
+      },
+      {
+        "packageId": "smallapp-be7f22e83c9e439ea78284419f77be3f",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103453583
+      },
+      {
+        "packageId": "smallapp-e80650ecf14248aa88e451cc3f2bb092",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103510446
+      },
+      {
+        "packageId": "smallapp-a50f1ace6b21460b8fc26aa6a8fccc8f",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103498562
+      },
+      {
+        "packageId": "smallapp-543920854da447419c1d17e8ab6fb3a5",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103508361
+      },
+      {
+        "packageId": "smallapp-bfbc98aedeff4f6d90fde2553bef9a37",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103481086
+      },
+      {
+        "packageId": "smallapp-b664bd8f4954446293b151b293bf0edb",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 1103455455
+      },
+      {
+        "packageId": "smallapp-45342a62c1fd456086c5ac00ae6382fd",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 1103492295
+      },
+      {
+        "packageId": "smallapp-db2650af567b453d85a26189b8f1112a",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 1103477860
+      },
+      {
+        "packageId": "smallapp-416c431557c44d37bd2f00ee8324cfdb",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103458238
+      },
+      {
+        "packageId": "smallapp-7794b203ebdf4ec39c138969f81b5936",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103456275
+      },
+      {
+        "packageId": "smallapp-2e75fe12a76241698156cd379665375c",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103461753
+      },
+      {
+        "packageId": "smallapp-507bc6d72f7449a49bd377e262650da5",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 1103495821
+      },
+      {
+        "packageId": "smallapp-a4ce7fdf09944086ad3851f1798aa52e",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 1103428128
+      },
+      {
+        "packageId": "smallapp-f6ff86bb3b244edeaffe05764f270496",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103492284
+      },
+      {
+        "packageId": "smallapp-71901578b5d14b6a9356e983d960c08d",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103488716
+      },
+      {
+        "packageId": "smallapp-742d545d106943c49d40829080f8f0a7",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 1103428044
+      },
+      {
+        "packageId": "smallapp-dc47160694ee46678912931651d82e81",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103460493
+      },
+      {
+        "packageId": "smallapp-58ac78c7553f49d982e40021d1d59042",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103592282
+      },
+      {
+        "packageId": "smallapp-ed156add133a4902a2f937dbcfeb5763",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103487863
+      },
+      {
+        "packageId": "smallapp-faf10a7c23b448f7ba222624aaad5a94",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103462545
+      },
+      {
+        "packageId": "smallapp-cc2e7853b26a4a74aa10d8980454795d",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103505589
+      },
+      {
+        "packageId": "smallapp-c8f40ff890fa4558baf846369c313b12",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103483990
+      },
+      {
+        "packageId": "smallapp-6c260769d4a6477faaaf171dc6484095",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103484484
+      },
+      {
+        "packageId": "smallapp-83f9901142404c2a8d38304b907f467b",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103496595
+      },
+      {
+        "packageId": "smallapp-de5f072c6ee744b59b7e2f74dd2b0350",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103533880
+      },
+      {
+        "packageId": "smallapp-e44362c80a7c41718d77e52727eeb4df",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103510860
+      },
+      {
+        "packageId": "smallapp-27d9fa117c0442249379a4afa531d07f",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103512919
+      },
+      {
+        "packageId": "smallapp-3dd8454849ab4d629726c7c54f7f63da",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103545956
+      },
+      {
+        "packageId": "smallapp-7280372849c249b796d6985dc820396f",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103506049
+      },
+      {
+        "packageId": "smallapp-3a22c86a27b84935bc99a88ec7d8be1c",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103440061
+      },
+      {
+        "packageId": "smallapp-231777599f9d4b5a9789f3e65f75c0f2",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103531474
+      },
+      {
+        "packageId": "smallapp-34d0fb61c391471eac8e193a3d7cc70c",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103497087
+      },
+      {
+        "packageId": "smallapp-7cd174a2a0c9496a945a69e921051f94",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103496378
+      },
+      {
+        "packageId": "smallapp-24ef6923f96e40708247b278eca71395",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103519342
+      },
+      {
+        "packageId": "smallapp-daf5045495f54e9e8b569e683d2cc461",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103464051
+      },
+      {
+        "packageId": "smallapp-9e9656eaefe843fbbeb9c7e8f2c7d754",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103497411
+      },
+      {
+        "packageId": "smallapp-4a5ee6f7d2234c0f8fa4cb57c49a2a92",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103521775
+      },
+      {
+        "packageId": "smallapp-286f37022d3246faaac1729d96c3dd77",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103487625
+      },
+      {
+        "packageId": "smallapp-5e52bf1ab0724e17b889fa039fbb1fbd",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103510658
+      },
+      {
+        "packageId": "smallapp-45bb353e3d5e46f6a4b1c72053e8dbc5",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103518223
+      },
+      {
+        "packageId": "smallapp-ec35b03b3d3c41539c215d763c892324",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103490790
+      },
+      {
+        "packageId": "smallapp-8188a801d41f4db198900ae778aac42f",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103453011
+      },
+      {
+        "packageId": "smallapp-d2b6eb2db12948de83633415b4020941",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103994696
+      },
+      {
+        "packageId": "smallapp-f04a93ffe4f242ee854a55889531ed74",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103673454
+      },
+      {
+        "packageId": "smallapp-fafeff48e68147eeab871de3f97bee7b",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 1103446280
+      },
+      {
+        "packageId": "smallapp-28cf61e598ae41ed8a3410713ff25a23",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103605118
+      },
+      {
+        "packageId": "smallapp-ee367e858e6d486b915c33413beff598",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103474211
+      },
+      {
+        "packageId": "smallapp-7cdfc77c1c3946b7bcb5443b930aec41",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103474322
+      },
+      {
+        "packageId": "smallapp-9388b8f0b95e45b6a5eac6f22c7ec7ec",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103484942
+      },
+      {
+        "packageId": "smallapp-5da5709bf21f46d6865c9898586e7c5c",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103472306
+      },
+      {
+        "packageId": "smallapp-2326ea51c4bd4023a693eb87aec5f3bc",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103464328
+      },
+      {
+        "packageId": "smallapp-c38430fb4dca4cddb25ae0a996d2a799",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 1103439243
+      },
+      {
+        "packageId": "smallapp-e774fa9f6f544aea8d3cbc9208d05938",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 1103464157
+      },
+      {
+        "packageId": "smallapp-f15cf31a90b047f2a5f5ceb992495a80",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103467882
+      },
+      {
+        "packageId": "smallapp-4ceef17d28504be5b3a478e126dda506",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103447165
+      },
+      {
+        "packageId": "smallapp-bdf766cce590419299c3acd5c684f529",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103437225
+      },
+      {
+        "packageId": "smallapp-e7c46b697d07470e89795f82e20ed964",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103495844
+      },
+      {
+        "packageId": "smallapp-ae839bced8d84e3daedb3d5721fa8101",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103484374
+      },
+      {
+        "packageId": "smallapp-ab76e36228664712895ea90418200482",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103451877
+      },
+      {
+        "packageId": "smallapp-dba100893b6c4fabac6ae882360f4f64",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103433777
+      },
+      {
+        "packageId": "smallapp-d314a62839b84934934ce80bca8c66ce",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103429961
+      },
+      {
+        "packageId": "smallapp-c598382d8e134a4ea492d7d6c66e4884",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103434628
+      },
+      {
+        "packageId": "smallapp-11237140dc8447a2aecd7392dee77277",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103458357
+      },
+      {
+        "packageId": "smallapp-38a05cf3d96b4cf69a011e1fbb336fe6",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103450829
+      },
+      {
+        "packageId": "smallapp-ee58e62b22be4f33b3484b389feb2633",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103462468
+      },
+      {
+        "packageId": "smallapp-0e8fe1e41bbb48df8bfa7e6c0b9b665b",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103483252
+      },
+      {
+        "packageId": "smallapp-5c05f0b355cf48e4b5520c2558ceaa44",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103486160
+      },
+      {
+        "packageId": "smallapp-9051305191ad4e27965d98abccaac553",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 1103455030
+      },
+      {
+        "packageId": "smallapp-74819cde8ea04ad089a239113ad26e66",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 1103430197
+      },
+      {
+        "packageId": "smallapp-0f8eb295a07f44f0b21e598002b29689",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.58"
+        ],
+        "sizeBytes": 1103430196
+      },
+      {
+        "packageId": "smallapp-84563aceae404c18a96a47ae336c4e5a",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 2090484556
+      },
+      {
+        "packageId": "smallapp-e98f0f55896c445dac1d4eefe31713c5",
+        "kind": "backup-incremental",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 2090647518
+      },
+      {
+        "packageId": "smallapp-9d1df93e86b549c08b0c6286f7a35b7d",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 26378442930
+      },
+      {
+        "packageId": "smallapp-d62276cdb402499d9586871439765989",
+        "kind": "backup-full",
+        "status": "unpublished",
+        "servers": [
+          "172.30.30.59"
+        ],
+        "sizeBytes": 26378521529
+      },
+      {
+        "packageId": "smallapp-441bd02fe611461aa76e63eeffa83d3f",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 26084181884
+      },
+      {
+        "packageId": "smallapp-355910d54890439e9e92a9893ca67119",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 26086678446
+      },
+      {
+        "packageId": "smallapp-be26b59281a4464dac816d61f76f0443",
+        "kind": "backup-full",
+        "status": "indexed",
+        "servers": [
+          "172.30.30.57"
+        ],
+        "sizeBytes": 25170288640
+      }
+    ],
+    "sources": [
+      {
+        "path": "\\\\172.30.30.4\\IT共享\\Backup\\BackupPackage",
+        "category": "backup",
+        "status": "ok",
+        "scannedDirectories": 191,
+        "packageCount": 108
+      },
+      {
+        "path": "\\\\172.30.30.4\\IT共享\\Backup\\ReleasePackage",
+        "category": "release",
+        "status": "ok",
+        "scannedDirectories": 41,
+        "packageCount": 37
+      }
+    ]
+  },
+  "pointFailures": [
+    {
+      "packageId": "smallapp-52517f29e484496094a513962b6a6293",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-da71a229372e4353941ad269fd611432",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-6977f0ab32d84496aff6915e2abc86da",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-6b0b9a7656a942fb98636d48f1dc2551",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-1886fd1487e0460fa5581f05878dc378",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-f554f96fb8c84422986dd0078aa246aa",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-a7ab96ccafa44fae903d7beed7169571",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-e7e9c406ce884dfc915c0aecad507703",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-daadc12a3fd04c3581ea92d03a1a817e",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-0dba08db8e1146a3a15f0b65e17fadf1",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-3034a816da314c4daaf2f9855847dd59",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-b8fd2f1cc83446019fecb02402bad61e",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-3244fd6907ea438a8b97145363342f96",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-c3b76ae93ffb4453a54b097fc0d54205",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-b9c0e691bc034c8f96e9de2324e44574",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-e5c20b88027b4f999fe3c99868e4e589",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-0ecdb86a0e0d4168b5605dd993908920",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-2f273e49822a40578f6b0bbe9907c49d",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-3f928eb61627437691de6d7a812b39be",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-be7f22e83c9e439ea78284419f77be3f",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-e80650ecf14248aa88e451cc3f2bb092",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-a50f1ace6b21460b8fc26aa6a8fccc8f",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-543920854da447419c1d17e8ab6fb3a5",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-bfbc98aedeff4f6d90fde2553bef9a37",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-b664bd8f4954446293b151b293bf0edb",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-45342a62c1fd456086c5ac00ae6382fd",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-db2650af567b453d85a26189b8f1112a",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-416c431557c44d37bd2f00ee8324cfdb",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-7794b203ebdf4ec39c138969f81b5936",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-2e75fe12a76241698156cd379665375c",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-507bc6d72f7449a49bd377e262650da5",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-a4ce7fdf09944086ad3851f1798aa52e",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-f6ff86bb3b244edeaffe05764f270496",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-71901578b5d14b6a9356e983d960c08d",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-742d545d106943c49d40829080f8f0a7",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-dc47160694ee46678912931651d82e81",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-58ac78c7553f49d982e40021d1d59042",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-ed156add133a4902a2f937dbcfeb5763",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-faf10a7c23b448f7ba222624aaad5a94",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-cc2e7853b26a4a74aa10d8980454795d",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-c8f40ff890fa4558baf846369c313b12",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-6c260769d4a6477faaaf171dc6484095",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-83f9901142404c2a8d38304b907f467b",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-de5f072c6ee744b59b7e2f74dd2b0350",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-e44362c80a7c41718d77e52727eeb4df",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-27d9fa117c0442249379a4afa531d07f",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-3dd8454849ab4d629726c7c54f7f63da",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-7280372849c249b796d6985dc820396f",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-3a22c86a27b84935bc99a88ec7d8be1c",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-231777599f9d4b5a9789f3e65f75c0f2",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-34d0fb61c391471eac8e193a3d7cc70c",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-7cd174a2a0c9496a945a69e921051f94",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-24ef6923f96e40708247b278eca71395",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-daf5045495f54e9e8b569e683d2cc461",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-9e9656eaefe843fbbeb9c7e8f2c7d754",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-4a5ee6f7d2234c0f8fa4cb57c49a2a92",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-286f37022d3246faaac1729d96c3dd77",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "该服务器尚未登记安全模式执行器。"
+    },
+    {
+      "packageId": "smallapp-5e52bf1ab0724e17b889fa039fbb1fbd",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-45bb353e3d5e46f6a4b1c72053e8dbc5",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-ec35b03b3d3c41539c215d763c892324",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-8188a801d41f4db198900ae778aac42f",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-d2b6eb2db12948de83633415b4020941",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-f04a93ffe4f242ee854a55889531ed74",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-fafeff48e68147eeab871de3f97bee7b",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-28cf61e598ae41ed8a3410713ff25a23",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-ee367e858e6d486b915c33413beff598",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-7cdfc77c1c3946b7bcb5443b930aec41",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-9388b8f0b95e45b6a5eac6f22c7ec7ec",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-5da5709bf21f46d6865c9898586e7c5c",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-2326ea51c4bd4023a693eb87aec5f3bc",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-c38430fb4dca4cddb25ae0a996d2a799",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-e774fa9f6f544aea8d3cbc9208d05938",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-f15cf31a90b047f2a5f5ceb992495a80",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-4ceef17d28504be5b3a478e126dda506",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-bdf766cce590419299c3acd5c684f529",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-e7c46b697d07470e89795f82e20ed964",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-ae839bced8d84e3daedb3d5721fa8101",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-ab76e36228664712895ea90418200482",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-dba100893b6c4fabac6ae882360f4f64",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-d314a62839b84934934ce80bca8c66ce",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-c598382d8e134a4ea492d7d6c66e4884",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-11237140dc8447a2aecd7392dee77277",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-38a05cf3d96b4cf69a011e1fbb336fe6",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-ee58e62b22be4f33b3484b389feb2633",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-0e8fe1e41bbb48df8bfa7e6c0b9b665b",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-5c05f0b355cf48e4b5520c2558ceaa44",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-9051305191ad4e27965d98abccaac553",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-74819cde8ea04ad089a239113ad26e66",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    },
+    {
+      "packageId": "smallapp-0f8eb295a07f44f0b21e598002b29689",
+      "errorCode": "INDEXED_BACKUP_NOT_ACCEPTED_BY_SOURCE",
+      "blockedReason": "到执行桥的网络或主机不可达。请检查路由及网络连接。（BRIDGE_NETWORK_UNREACHABLE）"
+    }
+  ],
+  "unpublished": [
+    {
+      "packageId": "smallapp-9695bf3fb95d4ec4a19eb6fbe6329066",
+      "restoreDisabled": true
+    },
+    {
+      "packageId": "smallapp-d62276cdb402499d9586871439765989",
+      "restoreDisabled": true
+    }
+  ],
+  "observedIndexedPoints": 106,
+  "coveredEligiblePoints": 17,
+  "coveredPointTargetPairs": 51,
+  "errorCode": "INCOMPLETE_POINT_TARGET_MATRIX",
+  "helperInputUnchanged": true,
+  "finishedAt": "2026-11-10T02:16:43.924Z"
+}

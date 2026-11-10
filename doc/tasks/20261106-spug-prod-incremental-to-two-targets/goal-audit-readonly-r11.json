@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "SpugCompleteGoalReadonlyAudit/v1",
+  "startedAt": "2026-11-10T01:44:59.770Z",
+  "observation": "r11",
+  "status": "FAIL",
+  "browserMode": "headedChrome",
+  "helperPin": {
+    "bytes": 16738,
+    "sha256": "37c9c305d033e18adc92f8a5c11f1285e69149d52fa78d574df06cbb5e092196"
+  },
+  "authPosts": 1,
+  "businessWrites": 0,
+  "blockedRequests": [],
+  "pageErrorCount": 0,
+  "catalogueResponses": [],
+  "pagination": [],
+  "filters": [],
+  "matrix": [],
+  "stage": "real-login-response",
+  "loginActionability": {
+    "visibilityState": "visible",
+    "documentHasFocus": true,
+    "disabled": false,
+    "bounds": {
+      "x": 536,
+      "y": 406.140625,
+      "width": 368,
+      "height": 40,
+      "top": 406.140625,
+      "right": 904,
+      "bottom": 446.140625,
+      "left": 536
+    },
+    "display": "inline-block",
+    "visibility": "visible",
+    "opacity": "1",
+    "activeAnimationCount": 12
+  },
+  "loginResponseMs": 31534,
+  "errorCode": "ACTUAL_UI_OBSERVATION_FAILED",
+  "screenshotFailed": true,
+  "helperInputUnchanged": true,
+  "finishedAt": "2026-11-10T01:47:33.112Z"
+}

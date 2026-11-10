@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "SpugUIReadonlyAuditOuter/v1",
+  "actualExitCode": 1,
+  "elapsedSeconds": 1269.391,
+  "requestPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-ui-readonly-r12-parent.request.private.json",
+    "bytes": 773,
+    "sha256": "d4884b315894b98584755cf69a792feaa263ae8ba6270b31998551580afa4de7"
+  },
+  "stdoutPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-ui-readonly-r12-parent.stdout.private.log",
+    "bytes": 11379,
+    "sha256": "db73d95211f3dd9d01c071577c500d1baf929ad2df9041b71dc5167cbb91bd93"
+  },
+  "stderrPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-ui-readonly-r12-parent.stderr.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "helperUnchanged": true,
+  "auditReportPin": {
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\goal-audit-readonly-r12.json",
+    "bytes": 130401,
+    "sha256": "175815973b3638d93b26af4aae26e49b4fba5c6c34a26e288aa80a35a02e8aec"
+  },
+  "retryPermitted": false
+}

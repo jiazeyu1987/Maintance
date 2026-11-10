@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "SpugLoginDiagnosticOuter/v1",
+  "actualExitCode": 0,
+  "elapsedSeconds": 33.422,
+  "originalHelperPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\verify-spug-login-diagnostic-r1.cjs",
+    "bytes": 4667,
+    "sha256": "d2ba818840ae7f4396417ba3abc401951484e17c81100f79dc24078651dd1e38"
+  },
+  "executedHelperPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\verify-spug-login-diagnostic-r2.cjs",
+    "bytes": 5579,
+    "sha256": "43cfcaee30bcd4eb2f3c3eee27f17bfbcd55e9777c06f1eae62caae601c72e0b"
+  },
+  "stdoutPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-login-browser-diagnostic-r2.stdout.private.log",
+    "bytes": 468,
+    "sha256": "bd93df6a7b4c07e6dc37f57b63be24cf30c9999432b096398c2f2b4db4db31af"
+  },
+  "stderrPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-login-browser-diagnostic-r2.stderr.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "originalUnchanged": true,
+  "retryPermitted": false
+}
