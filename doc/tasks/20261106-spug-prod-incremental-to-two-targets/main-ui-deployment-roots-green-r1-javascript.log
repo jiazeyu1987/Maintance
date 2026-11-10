@@ -1,0 +1,45 @@
+✔ explicit cycle and selection are paired; old arguments remain available (4.2528ms)
+✔ cycles isolate all public/private artifacts and preserve old names (487.0444ms)
+✔ MAIN gate binds actual v4 and accepts I1 with an existing READY root (563.1824ms)
+✔ MAIN deployment mismatch cannot be read through the old contract (148.2458ms)
+✔ baseline checks every immutable plan field and source/cycle/selection/age (101.4864ms)
+✔ gate reads exact selection/baseline bytes and keeps reviewed preflight immutable (154.1015ms)
+✔ MAIN receipt v3 verifies only same cycle/deployment and the original operation plan (14.767ms)
+✔ headed MAIN path uses ordinary UI actions and retains the durable one-POST guard (0.358ms)
+✔ MAIN terminal binding also rejects a changed source implementation commit (54.2432ms)
+✔ new source and retained Spug gate binds explicit selection (4.0313ms)
+✔ stage/Spug/source mismatch cannot pass as legacy (1.6072ms)
+✔ legacy receipt is limited to historical FULL and never rewritten (1.2023ms)
+✔ new submission and verify bind exact selection and Spug commit (0.804ms)
+✔ v2 admits different registered component heads via one fixed real-file CLI protocol (747.6349ms)
+✔ v2 refuses missing binding before browser (303.9901ms)
+✔ v2 refuses unknown binding field before browser (71.2721ms)
+✔ v2 refuses false clean before browser (67.8748ms)
+✔ v2 refuses string boolean before browser (29.5679ms)
+✔ v2 refuses swapped roots before browser (238.0832ms)
+✔ v2 refuses same invented HEAD before browser (87.3355ms)
+✔ v2 refuses unverified scope before browser (83.9755ms)
+✔ v2 refuses empty scope before browser (180.5193ms)
+✔ v2 refuses other build pin before browser (101.0061ms)
+✔ v2 refuses runtime mismatch before browser (71.1533ms)
+✔ v2 refuses runtime selection before browser (105.908ms)
+✔ v2 refuses runtime status before browser (42.1327ms)
+✔ formal CLI closure refuses nonzero (170.3018ms)
+✔ formal CLI closure refuses stderr (87.449ms)
+✔ formal CLI closure refuses bad schema (80.3846ms)
+✔ formal CLI closure refuses other source (270.2842ms)
+✔ formal CLI closure refuses unbound resource (108.5532ms)
+✔ formal CLI closure refuses duplicate input (83.5964ms)
+✔ formal CLI closure refuses changed input (75.0999ms)
+✔ failed CLI does not create a successful cached proof (215.0278ms)
+✔ later barrier rereads all original inputs without a second CLI (125.2437ms)
+✔ later barrier rejects selection switching instead of loading another generation (181.826ms)
+✔ v1 does not invoke the new CLI or require dual-root evidence (81.9595ms)
+ℹ tests 37
+ℹ suites 0
+ℹ pass 37
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3698.6497

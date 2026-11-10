@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "TaskMainUiDeploymentRootsPreservation/v1",
+  "status": "PASS",
+  "files": [
+    {
+      "file": "prepare_automatic_ui_preflight.py",
+      "bytes": 13716,
+      "sha256": "237e617f266579dd0190b51109f5427391d4cce5b38d4d7a8850bae2789c5abb",
+      "headUnchanged": true
+    },
+    {
+      "file": "main_program_current_installation.py",
+      "bytes": 11142,
+      "sha256": "7a4cbfef68841d2a842ecbd6c96ad99524d9d22ccd3cffbe1cb99eb37682161a",
+      "headUnchanged": true
+    },
+    {
+      "file": "main_program_installation_selection.py",
+      "bytes": 15700,
+      "sha256": "557b384234b5b38ec7c738ba3c1086d74f8c2768412399dc1680a6a5427dd786",
+      "headUnchanged": true
+    },
+    {
+      "file": "verify_automatic_backup_chain.py",
+      "bytes": 18764,
+      "sha256": "f5630403a9e0f9eb99ffda704ead3bba876bd9588f1f326b0b05b0d1260e5819",
+      "headUnchanged": true
+    },
+    {
+      "file": "verify_goal_readonly.cjs",
+      "bytes": 27682,
+      "sha256": "2b55821683ddade68c823eaf400287d4945c495f2f3dc7cb7528c3c6004ed3c9",
+      "headUnchanged": true
+    },
+    {
+      "file": "main_program_spug_publication_continuation.py",
+      "bytes": 61675,
+      "sha256": "7e530263fe988e4b2591889c84e4fb740d7e936393905797c133d8ba5c67e735",
+      "headUnchanged": true
+    },
+    {
+      "file": "spug_runtime_dependency_completion.py",
+      "bytes": 49959,
+      "sha256": "db6b9c7a3b143fe09673746c038617be941de1b5a1b41ea61586003025d7188e",
+      "headUnchanged": true
+    },
+    {
+      "file": "main_program_spug_publication_verify_only.py",
+      "bytes": 33957,
+      "sha256": "7aa3a8f6913d53f4057e7594342678a8c79cb4414f0e71d530b8b87e997990b0",
+      "headUnchanged": true
+    },
+    {
+      "file": "main_program_spug_resource_transition.py",
+      "bytes": 32860,
+      "sha256": "eb464b017a6a5a46ab6cd2e48023e398a0a89b8995fd165a019444d9c62ee712",
+      "headUnchanged": true
+    },
+    {
+      "file": "main_program_spug_historical_custody.py",
+      "bytes": 11270,
+      "sha256": "d5a66739ee5aaeb910ea43567027afea6eb1e7d2ab04f067f801ea4411bca6b3",
+      "headUnchanged": true
+    }
+  ],
+  "serversAccessed": false
+}

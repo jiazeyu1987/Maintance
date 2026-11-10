@@ -10,7 +10,7 @@ import subprocess
 from common import TASK, PRIVATE, SOURCE, now, remote
 from main_program_installation_selection import local_name
 from main_program_current_installation import load_current_installation, BoundDocuments
-from prepare_automatic_ui_preflight import verify_stage_deployment_inputs
+from prepare_automatic_ui_preflight import verify_stage_deployment_inputs, verify_deployment_inputs
 
 
 def need(value, code):
@@ -66,6 +66,73 @@ def pinned_context(verified, path):
     return checked(matches[0])
 
 
+def _deployment_directory(value):
+    need(type(value) is str and value and '\x00' not in value and
+         not any(part in ('.', '..') for part in value.replace('\\', '/').split('/')),
+         'MAIN_DEPLOYMENT_ROOT_INVALID')
+    path = Path(value)
+    need(path.is_absolute() and path.is_dir() and not path.is_symlink() and
+         path.resolve(strict=True) == path, 'MAIN_DEPLOYMENT_ROOT_INVALID')
+    return path
+
+
+def _deployment_root_state(path, commit):
+    def git(*args):
+        result = subprocess.run(['git', '-C', str(path), *args], capture_output=True, timeout=30,
+                                env=dict(os.environ, GIT_OPTIONAL_LOCKS='0'))
+        need(result.returncode == 0, 'MAIN_DEPLOYMENT_ROOT_GIT_FAILED')
+        return result.stdout.decode('utf-8').strip()
+    need(_deployment_directory(str(path)) == path and
+         Path(git('rev-parse', '--show-toplevel')) == path, 'MAIN_DEPLOYMENT_ROOT_NOT_GIT_ROOT')
+    head = git('rev-parse', 'HEAD')
+    need(head == commit, 'MAIN_DEPLOYMENT_ROOT_HEAD_CHANGED')
+    need(not git('status', '--porcelain=v1', '--untracked-files=all'), 'MAIN_DEPLOYMENT_ROOT_DIRTY')
+    info = path.stat()
+    return dict(path=path.as_posix(), headCommit=head, identity=(info.st_dev, info.st_ino))
+
+
+def verify_main_deployment_inputs(verified, default_root, *, source_deployment_root=None,
+                                  spug_deployment_root=None):
+    """Explicit registered component roots; the legacy shared-root gate is unchanged."""
+    need((source_deployment_root is None) == (spug_deployment_root is None),
+         'MAIN_DEPLOYMENT_ROOT_PAIR_REQUIRED')
+    source_commit = verified['selection']['sourceCommit']
+    resource = verified['spugRuntime']['resourceBuild']
+    files = [name.removeprefix('ops/spug/') for name in resource['files']]
+    if source_deployment_root is None:
+        return verify_stage_deployment_inputs(default_root, source_commit, resource['sourceCommit'], files)
+    reader = BoundDocuments(TASK, verified['inputPins'])
+    source_pin = verified['generation']['generation']['buildPin']
+    resource_pin = verified['spugRuntime']['resourceBuildPin']
+    build = reader.read(source_pin); actual_resource = reader.read(resource_pin)
+    need(build == verified['generation']['build'] and actual_resource == resource,
+         'MAIN_DEPLOYMENT_BUILD_CHANGED')
+    need(build.get('status') == 'PASS' and build.get('targetCommit') == source_commit and
+         build.get('allFilesShaAndCompileVerified') is True and
+         resource.get('schemaVersion') == 'MainProgramSpugResourceBuild/v2' and resource.get('status') == 'PASS' and
+         type(resource.get('fileCount')) is int and resource['fileCount'] == len(resource['files']) and
+         resource['fileCount'] > 0 and all(name.startswith('ops/spug/') for name in resource['files']),
+         'MAIN_DEPLOYMENT_BUILD_INVALID')
+    specs = {'source': (source_deployment_root, build, source_pin, source_commit),
+             'spug': (spug_deployment_root, resource, resource_pin, resource['sourceCommit'])}
+    roots = {}; before = {}; bindings = {}; result = {}
+    for component, (argument, original, reference, commit) in specs.items():
+        root = _deployment_directory(argument)
+        need(root == _deployment_directory(original['worktree']), 'MAIN_DEPLOYMENT_ROOT_NOT_REGISTERED')
+        roots[component] = root; before[component] = _deployment_root_state(root, commit)
+        bindings[component] = dict(schemaVersion='MainProgramDeploymentRoot/v1', mode='PINNED_BUILD_WORKTREE',
+            path=root.as_posix(), buildPin=reference, targetCommit=commit, headCommit=commit,
+            registeredWorktreeMatched=True, clean=True)
+    for component, (_, _, _, commit) in specs.items():
+        result[component] = verify_deployment_inputs(roots[component], commit, files, component=component)
+    for component, (_, _, _, commit) in specs.items():
+        need(_deployment_root_state(roots[component], commit) == before[component],
+             'MAIN_DEPLOYMENT_ROOT_CHANGED_DURING_CHECK')
+    need(reader.read(source_pin) == build and reader.read(resource_pin) == resource, 'MAIN_DEPLOYMENT_BUILD_CHANGED')
+    reader.finish()
+    return dict(result, deploymentRootBindings=bindings)
+
+
 def spug_observation(verified, selection):
     guard=verified['spugRuntime']['guard']
     build=verified['spugRuntime']['resourceBuild']
@@ -102,6 +169,8 @@ def main():
     parser.add_argument('--phase',required=True,choices=['preview','submit','verify'])
     parser.add_argument('--observation',required=True)
     parser.add_argument('--selection',required=True)
+    parser.add_argument('--source-deployment-root')
+    parser.add_argument('--spug-deployment-root')
     args=parser.parse_args()
     need(re.fullmatch('[a-z0-9][a-z0-9-]{0,47}',args.cycle or '') and
          re.fullmatch('[a-z0-9][a-z0-9-]{0,47}',args.observation or ''),'CYCLE_OR_OBSERVATION_INVALID')
@@ -112,9 +181,9 @@ def main():
     need(not gate_path.exists(),'OBSERVATION_ALREADY_EXISTS')
     verified=load_current_installation(TASK,PRIVATE,selection_file=args.selection)
     selection=verified['selection'];selection_pin=verified['selectionPin'];bundle=verified['generation']
+    root_args=dict(source_deployment_root=args.source_deployment_root,spug_deployment_root=args.spug_deployment_root)
+    git=verify_main_deployment_inputs(verified,TASK.parents[2],**root_args)
     spug,build=spug_observation(verified,selection)
-    git=verify_stage_deployment_inputs(TASK.parents[2],selection['sourceCommit'],build['sourceCommit'],
-         [name.removeprefix('ops/spug/') for name in build['files']])
     rows=bundle['controllersByHost']['57']
     values=dict(SUFFIX='57',SOURCE=SOURCE,TARGET=bundle['targets']['57'],ROWS=rows)
     actual=remote('172.30.30.57','\n'.join(k+'='+repr(v) for k,v in values.items())+'\n'+SCRIPT,180)
@@ -128,6 +197,7 @@ def main():
              'ORIGINAL_RECEIPT_DEPLOYMENT_CHANGED')
         original=receipt['plan'];operation=receipt['request']['operationId']
     expected=plan_for_gate(actual,args.kind,args.phase,original)
+    need(verify_main_deployment_inputs(verified,TASK.parents[2],**root_args)==git,'MAIN_DEPLOYMENT_INPUTS_CHANGED_DURING_OBSERVATION')
     BoundDocuments(TASK,verified['inputPins']).finish()
     evidence=dict(schemaVersion='MainProgramAutomaticIncrementalUiRuntime/v1',status='PASS',
          observedAt=now(),source=actual,spug=spug,gitDeploymentInputs=git,
@@ -137,7 +207,7 @@ def main():
          observedAt=now(),applicationId=SOURCE,sourceConfigRef=SOURCE,deploymentSelectionPin=selection_pin,
          expectedPlan=expected,operationId=operation)
     baseline_pin=write_new(TASK/(stem+'-baseline.json'),baseline)
-    gate=dict(schemaVersion='MainProgramAutomaticIncrementalUiPreflight/v1',status='PASS',experiencePreflight='PASS',
+    gate=dict(schemaVersion='MainProgramAutomaticIncrementalUiPreflight/v2' if args.source_deployment_root is not None else 'MainProgramAutomaticIncrementalUiPreflight/v1',status='PASS',experiencePreflight='PASS',
          cycle=args.cycle,kind=args.kind,phase=args.phase,origin='http://127.0.0.1:18080',server='172.30.30.57',mode='safe',
          applicationId=SOURCE,sourceConfigRef=SOURCE,implementationCommit=selection['sourceCommit'],
          installationCommit=selection['sourceCommit'],buildCommit=selection['sourceCommit'],spugCommit=build['sourceCommit'],

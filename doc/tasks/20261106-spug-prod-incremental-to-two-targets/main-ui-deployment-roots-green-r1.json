@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "TaskLocalDeploymentRootsTests/v1",
+  "phase": "GREEN_AND_REGRESSION",
+  "results": [
+    {
+      "suite": "javascript",
+      "command": [
+        "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.EXE",
+        "--test",
+        "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_ui_deployment_root.test.cjs",
+        "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\automatic_main_cycle_ui_contract.test.cjs",
+        "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\automatic_stage_ui_contract.test.cjs"
+      ],
+      "exitCode": 0,
+      "seconds": 3.76,
+      "logPin": {
+        "file": "main-ui-deployment-roots-green-r1-javascript.log",
+        "bytes": 2737,
+        "sha256": "824cb9b7c6218499a8a16a56923d52c7706490ce65f20de842bded8f1d886e20"
+      }
+    },
+    {
+      "suite": "python",
+      "command": [
+        "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "pytest",
+        "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_ui_deployment_root.py",
+        "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_ui_preflight.py",
+        "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_automatic_ui_preflight_git.py",
+        "-q",
+        "-p",
+        "no:cacheprovider"
+      ],
+      "exitCode": 0,
+      "seconds": 1705.61,
+      "logPin": {
+        "file": "main-ui-deployment-roots-green-r1-python.log",
+        "bytes": 114,
+        "sha256": "d7da12b5b60b47b0f79f4fa5b3781e0afcad5add2ca20ee5bc80a2adde5262db"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "file": "prepare_main_program_ui_preflight.py",
+      "bytes": 20441,
+      "sha256": "3af048633c3affdff7983ec8121929b871daa7dcca516c2cb3b4ce8b6e36e4c8"
+    },
+    {
+      "file": "automatic_incremental_ui_acceptance.cjs",
+      "bytes": 43762,
+      "sha256": "994fcd99d1e7d25ed4e39ab2206c1c785b6a0fbcb3a2c5bcebc23409895f8c91"
+    },
+    {
+      "file": "test_main_ui_deployment_root.py",
+      "bytes": 8445,
+      "sha256": "06fd680c8359c0d56590ea515f799133f5f481cf5e546034792100eedad98342"
+    },
+    {
+      "file": "main_ui_deployment_root.test.cjs",
+      "bytes": 8570,
+      "sha256": "c064f7ac5441c4f2d89f60494c29d35038ff4730833eae4dbdb31d000f8c9b8f"
+    }
+  ],
+  "inputsUnchanged": true,
+  "actualUiOrRemote": false
+}

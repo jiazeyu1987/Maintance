@@ -1,0 +1,93 @@
+{
+  "schemaVersion": "TaskMainUiDeploymentRootsDelivery/v1",
+  "status": "LOCAL_VALIDATION_PASS_FROZEN",
+  "headAtDelivery": "685e8e0e87196a18bcba84285935740d69b507c0",
+  "files": {
+    "implementationAndTests": [
+      {
+        "file": "prepare_main_program_ui_preflight.py",
+        "bytes": 20441,
+        "sha256": "3af048633c3affdff7983ec8121929b871daa7dcca516c2cb3b4ce8b6e36e4c8"
+      },
+      {
+        "file": "automatic_incremental_ui_acceptance.cjs",
+        "bytes": 43762,
+        "sha256": "994fcd99d1e7d25ed4e39ab2206c1c785b6a0fbcb3a2c5bcebc23409895f8c91"
+      },
+      {
+        "file": "test_main_ui_deployment_root.py",
+        "bytes": 8445,
+        "sha256": "06fd680c8359c0d56590ea515f799133f5f481cf5e546034792100eedad98342"
+      },
+      {
+        "file": "main_ui_deployment_root.test.cjs",
+        "bytes": 8570,
+        "sha256": "c064f7ac5441c4f2d89f60494c29d35038ff4730833eae4dbdb31d000f8c9b8f"
+      }
+    ],
+    "designAndTdd": [
+      {
+        "file": "main-ui-deployment-root-design.md",
+        "bytes": 11353,
+        "sha256": "f387ea0c00fa0a50d8d291dffae773dfe962fcdcbcd5d8aacc49ff596cd4b303"
+      },
+      {
+        "file": "main-ui-deployment-roots-design-r2.md",
+        "bytes": 11898,
+        "sha256": "857eba56d18cdcf21e8fcc814c50b70b3e4e65a3ef5af5bc4388d4e057409244"
+      },
+      {
+        "file": "main-ui-deployment-root-tdd-log.md",
+        "bytes": 6563,
+        "sha256": "a2c8b372b879053cf8849805eca066d4d0a78dea384dfeb86771a7454d2a9ccc"
+      }
+    ],
+    "evidence": [
+      {
+        "file": "main-ui-deployment-roots-red-r1.json",
+        "bytes": 1416,
+        "sha256": "ea168100d850c0866d1cc08c1156f60e117f0ab6bc94ca0fb0aa09a4223cd69d"
+      },
+      {
+        "file": "main-ui-deployment-roots-red-r1-python.log",
+        "bytes": 52842,
+        "sha256": "c0ce65b73f83c67b3c9ad646f26e36577c093c4e5cef534fa6df8d8e5c9a276e"
+      },
+      {
+        "file": "main-ui-deployment-roots-red-r1-javascript.log",
+        "bytes": 44740,
+        "sha256": "40048912bbb1e4303cff10b30fe29854b96998b7448135a35f6e47cd9e598eee"
+      },
+      {
+        "file": "main-ui-deployment-roots-green-r1.json",
+        "bytes": 2919,
+        "sha256": "6919b59e63c175586fffcc213c853a77ea7423ac884088b7a406b4dd5a56991c"
+      },
+      {
+        "file": "main-ui-deployment-roots-green-r1-python.log",
+        "bytes": 114,
+        "sha256": "d7da12b5b60b47b0f79f4fa5b3781e0afcad5add2ca20ee5bc80a2adde5262db"
+      },
+      {
+        "file": "main-ui-deployment-roots-green-r1-javascript.log",
+        "bytes": 2737,
+        "sha256": "824cb9b7c6218499a8a16a56923d52c7706490ce65f20de842bded8f1d886e20"
+      },
+      {
+        "file": "main-ui-deployment-roots-preservation-r1.json",
+        "bytes": 2148,
+        "sha256": "dc34c0cb75507b635b6fc66d8dcc2624f4b76c68a663d4862a71b72f03b720cc"
+      }
+    ]
+  },
+  "validation": {
+    "pythonPassed": 58,
+    "javascriptPassed": 37,
+    "skipped": 0,
+    "pythonExitCode": 0,
+    "javascriptExitCode": 0,
+    "inputsUnchanged": true
+  },
+  "actualUiOrRemote": false,
+  "indexWrites": false
+}

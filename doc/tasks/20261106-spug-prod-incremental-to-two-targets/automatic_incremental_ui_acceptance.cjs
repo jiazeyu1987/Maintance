@@ -100,8 +100,94 @@ function readTaskPin(reference){
   const raw=fs.readFileSync(file);check(raw.length===reference.bytes&&sha(raw)===reference.sha256,'MAIN_PIN_BYTES_CHANGED');
   return JSON.parse(raw.toString('utf8'));
 }
+const mainProofIdentity=info=>[info.dev,info.ino,info.size,info.mtimeMs,info.ctimeMs];
+const mainDeepEqual=(left,right)=>{
+  if(left===right)return true;
+  if(!left||!right||typeof left!=='object'||typeof right!=='object'||Array.isArray(left)!==Array.isArray(right))return false;
+  const keys=Object.keys(left).sort();return keys.join('\0')===Object.keys(right).sort().join('\0')&&keys.every(k=>mainDeepEqual(left[k],right[k]));
+};
+const mainKeys=(value,keys)=>value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).sort().join(',')===[...keys].sort().join(',');
+let mainInstallationProof=null,mainInstallationSelection=null;
+function verifyMainInputClosure(summary,previous){
+  const identities=[],paths=new Set();
+  try{
+    check(Array.isArray(summary.inputPins)&&summary.inputPins.length>0,'MAIN_CURRENT_INSTALLATION_INPUTS_REQUIRED');
+    for(const pin of summary.inputPins){
+      check(mainKeys(pin,['path','bytes','sha256'])&&typeof pin.path==='string'&&path.isAbsolute(pin.path)&&
+        !pin.path.replaceAll('\\','/').split('/').some(p=>p==='.'||p==='..')&&Number.isSafeInteger(pin.bytes)&&pin.bytes>=0&&/^[a-f0-9]{64}$/.test(pin.sha256),'MAIN_CURRENT_INSTALLATION_INPUT_INVALID');
+      const file=path.resolve(pin.path),before=fs.lstatSync(file);
+      check(!paths.has(file)&&before.isFile()&&!before.isSymbolicLink()&&before.nlink===1&&path.resolve(fs.realpathSync(file))===file,'MAIN_CURRENT_INSTALLATION_INPUT_INVALID');
+      paths.add(file);const raw=fs.readFileSync(file),after=fs.lstatSync(file),identity=mainProofIdentity(after);
+      check(mainDeepEqual(mainProofIdentity(before),identity)&&raw.length===pin.bytes&&sha(raw)===pin.sha256,'MAIN_CURRENT_INSTALLATION_INPUT_CHANGED');
+      identities.push({path:file,identity});
+    }
+    check(!previous||mainDeepEqual(identities,previous),'MAIN_CURRENT_INSTALLATION_INPUT_IDENTITY_CHANGED');
+  }catch(error){check(false,error.publicCode||'MAIN_CURRENT_INSTALLATION_INPUT_UNREADABLE');}
+  return identities;
+}
+function currentMainProof(deployment,selectionPin,gate){
+  check(!mainInstallationSelection||mainDeepEqual(mainInstallationSelection,selectionPin),'MAIN_CURRENT_INSTALLATION_SELECTION_CHANGED');
+  let summary=mainInstallationProof?.summary;
+  if(!summary){
+    const response=require('node:child_process').spawnSync(
+      'C:/Users/D01021/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe',
+      ['-B','-X','utf8',path.join(TASK,'main_program_current_installation.py'),'--selection',selectionPin.file,'--public-summary'],
+      {shell:false,encoding:'utf8',timeout:120000,maxBuffer:16*1024*1024,windowsHide:true});
+    check(!response.error&&response.status===0&&response.stderr==='','MAIN_CURRENT_INSTALLATION_FAILED');
+    try{summary=JSON.parse(response.stdout);}catch(error){check(false,'MAIN_CURRENT_INSTALLATION_INVALID');}
+  }
+  check(mainKeys(summary,['schemaVersion','status','selectionPin','sourceCommit','controlGenerationPin','spugInstallationPin','buildPin','build','resourceBuildPin','spugCommit','inputPins'])&&
+    summary.schemaVersion==='MainProgramCurrentInstallationSummary/v1'&&summary.status==='PASS'&&
+    mainDeepEqual(summary.selectionPin,selectionPin)&&summary.sourceCommit===deployment.sourceCommit&&summary.spugCommit===gate.spugCommit&&
+    mainDeepEqual(summary.controlGenerationPin,deployment.controlGenerationPin)&&mainDeepEqual(summary.spugInstallationPin,deployment.spugInstallationPin)&&
+    mainKeys(summary.build,['fileCount','fileManifestSha256','packageSha256'])&&summary.build.fileCount===147&&
+    /^[a-f0-9]{64}$/.test(summary.build.fileManifestSha256)&&/^[a-f0-9]{64}$/.test(summary.build.packageSha256),
+    'MAIN_CURRENT_INSTALLATION_INVALID');
+  const identities=verifyMainInputClosure(summary,mainInstallationProof?.identities);
+  for(const ref of [selectionPin,summary.controlGenerationPin,summary.buildPin,summary.resourceBuildPin]){
+    check(localPin(ref)&&summary.inputPins.some(p=>path.resolve(p.path)===path.resolve(TASK,ref.file)&&p.bytes===ref.bytes&&p.sha256===ref.sha256),
+      'MAIN_CURRENT_INSTALLATION_DOCUMENT_UNBOUND');
+  }
+  return {summary,identities};
+}
+function validateMainDeploymentRoots(gate,deployment,selectionPin){
+  try{
+    const proof=currentMainProof(deployment,selectionPin,gate),summary=proof.summary;
+    const inputs=gate.gitDeploymentInputs,bindings=inputs?.deploymentRootBindings;
+    check(mainKeys(inputs,['source','spug','deploymentRootBindings'])&&mainKeys(bindings,['source','spug']),'MAIN_ROOT_BINDINGS_REQUIRED');
+    const generation=readTaskPin(summary.controlGenerationPin);
+    check(generation.schemaVersion==='MainProgramControlGeneration/v1'&&generation.status==='PASS'&&
+      generation.sourceCommit===summary.sourceCommit&&mainDeepEqual(generation.buildPin,summary.buildPin),'MAIN_BUILD_GENERATION_CHANGED');
+    for(const [component,reference,commit] of [['source',summary.buildPin,summary.sourceCommit],['spug',summary.resourceBuildPin,summary.spugCommit]]){
+      const binding=bindings[component],original=readTaskPin(reference),git=inputs[component];
+      check(mainKeys(binding,['schemaVersion','mode','path','buildPin','targetCommit','headCommit','registeredWorktreeMatched','clean'])&&
+        binding.schemaVersion==='MainProgramDeploymentRoot/v1'&&binding.mode==='PINNED_BUILD_WORKTREE'&&
+        binding.registeredWorktreeMatched===true&&binding.clean===true&&binding.targetCommit===commit&&binding.headCommit===commit&&
+        localPin(binding.buildPin)&&mainDeepEqual(binding.buildPin,reference),'MAIN_ROOT_BINDING_INVALID');
+      check(typeof binding.path==='string'&&path.isAbsolute(binding.path)&&typeof original.worktree==='string'&&path.isAbsolute(original.worktree)&&
+        !binding.path.split('/').some(p=>p==='.'||p==='..')&&binding.path===path.resolve(binding.path).replaceAll('\\','/')&&
+        binding.path===path.resolve(original.worktree).replaceAll('\\','/'),'MAIN_ROOT_PATH_CHANGED');
+      check(original.status==='PASS'&&(component==='source'?
+        original.targetCommit===commit&&original.allFilesShaAndCompileVerified===true:
+        original.schemaVersion==='MainProgramSpugResourceBuild/v2'&&original.sourceCommit===commit&&original.files&&
+          Number.isSafeInteger(original.fileCount)&&original.fileCount>0&&original.fileCount===Object.keys(original.files).length),'MAIN_BUILD_CHANGED');
+      check(mainKeys(git,['installedCommit','headCommit','installedCommitIsAncestor','deploymentInputsUnchanged','deploymentInputScopes'])&&
+        git.installedCommit===commit&&git.headCommit===commit&&git.installedCommitIsAncestor===true&&git.deploymentInputsUnchanged===true&&
+        Array.isArray(git.deploymentInputScopes)&&git.deploymentInputScopes.length>0&&
+        git.deploymentInputScopes.every(p=>typeof p==='string'&&p&&!p.startsWith('/')&&!p.includes('\\')&&!p.includes(':')&&!p.split('/').some(x=>!x||x==='.'||x==='..'))&&
+        mainDeepEqual(git.deploymentInputScopes,[...new Set(git.deploymentInputScopes)].sort()),'MAIN_COMPONENT_GIT_INVALID');
+      if(component==='spug')check(mainDeepEqual(git.deploymentInputScopes,Object.keys(original.files).sort()),'MAIN_COMPONENT_SCOPE_CHANGED');
+      else check(git.deploymentInputScopes.includes('ops/backup_engine')&&git.deploymentInputScopes.includes('ops/recovery'),'MAIN_COMPONENT_SCOPE_CHANGED');
+    }
+    let runtime;try{runtime=readTaskPin(gate.runtimeEvidencePin);}catch(error){check(false,'MAIN_RUNTIME_PIN_CHANGED');}
+    check(runtime.schemaVersion==='MainProgramAutomaticIncrementalUiRuntime/v1'&&runtime.status==='PASS'&&
+      mainDeepEqual(runtime.deploymentSelectionPin,selectionPin)&&mainDeepEqual(runtime.gitDeploymentInputs,inputs),'MAIN_RUNTIME_BINDING_CHANGED');
+    verifyMainInputClosure(summary,proof.identities);
+    mainInstallationProof=proof;mainInstallationSelection=JSON.parse(JSON.stringify(selectionPin));
+  }catch(error){mainInstallationProof=null;throw error;}
+}
 function validateMainDeploymentContract(gate,options,deployment,selectionPin){
-  check(gate.schemaVersion==='MainProgramAutomaticIncrementalUiPreflight/v1'&&CYCLE.test(options.cycle||'')&&gate.cycle===options.cycle,'MAIN_PREFLIGHT_CYCLE_MISMATCH');
+  check(['MainProgramAutomaticIncrementalUiPreflight/v1','MainProgramAutomaticIncrementalUiPreflight/v2'].includes(gate.schemaVersion)&&CYCLE.test(options.cycle||'')&&gate.cycle===options.cycle,'MAIN_PREFLIGHT_CYCLE_MISMATCH');
   check(deployment.schemaVersion==='TaskMainProgramInstallations/v4'&&
     Object.keys(deployment).sort().join(',')===['schemaVersion','sourceCommit','controlGenerationPin','spugInstallationPin','verificationInputsPin'].sort().join(','),'MAIN_V4_SELECTION_REQUIRED');
   check(/^[a-f0-9]{40}$/.test(deployment.sourceCommit||'')&&gate.implementationCommit===deployment.sourceCommit&&
@@ -109,6 +195,7 @@ function validateMainDeploymentContract(gate,options,deployment,selectionPin){
   check(localPin(selectionPin)&&localPin(gate.deploymentSelectionPin)&&exact(gate.deploymentSelectionPin,selectionPin),'MAIN_SELECTION_PIN_CHANGED');
   for(const name of ['controlGenerationPin','spugInstallationPin'])check(localPin(deployment[name])&&localPin(gate[name])&&exact(deployment[name],gate[name]),'MAIN_DEPLOYMENT_PIN_CHANGED');
   check(localPin(deployment.verificationInputsPin)&&remotePin(gate.sourceCaptureConfigurationPin)&&remotePin(gate.sourceOwnerConfigurationPin)&&gate.mainDeploymentVerified===true,'MAIN_DEPLOYMENT_NOT_VERIFIED');
+  if(gate.schemaVersion==='MainProgramAutomaticIncrementalUiPreflight/v2')validateMainDeploymentRoots(gate,deployment,selectionPin);
 }
 function validateMainBaseline(gate,options,expected,baseline){
   const fields=['schemaVersion','status','cycle','observedAt','applicationId','sourceConfigRef','deploymentSelectionPin','expectedPlan','operationId'];

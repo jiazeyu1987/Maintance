@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "TaskLocalDeploymentRootsTests/v1",
+  "phase": "RED",
+  "results": [
+    {
+      "suite": "python",
+      "exitCode": 1,
+      "seconds": 235.29,
+      "logPin": {
+        "file": "main-ui-deployment-roots-red-r1-python.log",
+        "bytes": 52842,
+        "sha256": "c0ce65b73f83c67b3c9ad646f26e36577c093c4e5cef534fa6df8d8e5c9a276e"
+      }
+    },
+    {
+      "suite": "javascript",
+      "exitCode": 1,
+      "seconds": 3.11,
+      "logPin": {
+        "file": "main-ui-deployment-roots-red-r1-javascript.log",
+        "bytes": 44740,
+        "sha256": "40048912bbb1e4303cff10b30fe29854b96998b7448135a35f6e47cd9e598eee"
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "file": "prepare_main_program_ui_preflight.py",
+      "bytes": 15757,
+      "sha256": "53ba5b2de1febb1591db9df635e1c9230c4d419b32d07fc5c9824fefe095f4d7"
+    },
+    {
+      "file": "automatic_incremental_ui_acceptance.cjs",
+      "bytes": 35640,
+      "sha256": "45f937900498f5054983d87b527ed939b9c59733ebdb9e30542f544d3a904b30"
+    },
+    {
+      "file": "test_main_ui_deployment_root.py",
+      "bytes": 8445,
+      "sha256": "06fd680c8359c0d56590ea515f799133f5f481cf5e546034792100eedad98342"
+    },
+    {
+      "file": "main_ui_deployment_root.test.cjs",
+      "bytes": 8570,
+      "sha256": "c064f7ac5441c4f2d89f60494c29d35038ff4730833eae4dbdb31d000f8c9b8f"
+    }
+  ],
+  "inputsUnchanged": true,
+  "actualUiOrRemote": false
+}

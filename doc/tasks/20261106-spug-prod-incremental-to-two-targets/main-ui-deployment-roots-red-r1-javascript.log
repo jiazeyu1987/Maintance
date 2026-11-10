@@ -1,0 +1,700 @@
+✖ v2 admits different registered component heads via one fixed real-file CLI protocol (646.647ms)
+✖ v2 refuses missing binding before browser (192.1891ms)
+✖ v2 refuses unknown binding field before browser (36.9733ms)
+✖ v2 refuses false clean before browser (38.4028ms)
+✖ v2 refuses string boolean before browser (91.9829ms)
+✖ v2 refuses swapped roots before browser (83.2865ms)
+✖ v2 refuses same invented HEAD before browser (198.5769ms)
+✖ v2 refuses unverified scope before browser (96.1381ms)
+✖ v2 refuses empty scope before browser (93.2215ms)
+✖ v2 refuses other build pin before browser (45.3652ms)
+✖ v2 refuses runtime mismatch before browser (56.8901ms)
+✖ v2 refuses runtime selection before browser (57.8177ms)
+✖ v2 refuses runtime status before browser (148.2893ms)
+✖ formal CLI closure refuses nonzero (42.169ms)
+✖ formal CLI closure refuses stderr (67.1246ms)
+✖ formal CLI closure refuses bad schema (62.1336ms)
+✖ formal CLI closure refuses other source (72.1989ms)
+✖ formal CLI closure refuses unbound resource (50.4333ms)
+✖ formal CLI closure refuses duplicate input (94.8232ms)
+✖ formal CLI closure refuses changed input (500.9246ms)
+✖ failed CLI does not create a successful cached proof (97.3095ms)
+✖ later barrier rereads all original inputs without a second CLI (59.1304ms)
+✖ later barrier rejects selection switching instead of loading another generation (41.512ms)
+✔ v1 does not invoke the new CLI or require dual-root evidence (83.2294ms)
+ℹ tests 24
+ℹ suites 0
+ℹ pass 1
+ℹ fail 23
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3039.0261
+
+✖ failing tests:
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:38:1
+✖ v2 admits different registered component heads via one fixed real-file CLI protocol (646.647ms)
+  Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+      at check (evalmachine.<anonymous>:13:51)
+      at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+      at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:39:21)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.start (node:internal/test_runner/test:1242:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    publicCode: 'MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:3
+✖ v2 refuses missing binding before browser (192.1891ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:3
+✖ v2 refuses unknown binding field before browser (36.9733ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:3
+✖ v2 refuses false clean before browser (38.4028ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:3
+✖ v2 refuses string boolean before browser (91.9829ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:3
+✖ v2 refuses swapped roots before browser (83.2865ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:3
+✖ v2 refuses same invented HEAD before browser (198.5769ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:3
+✖ v2 refuses unverified scope before browser (96.1381ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:3
+✖ v2 refuses empty scope before browser (93.2215ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:3
+✖ v2 refuses other build pin before browser (45.3652ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:3
+✖ v2 refuses runtime mismatch before browser (56.8901ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:3
+✖ v2 refuses runtime selection before browser (57.8177ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:3
+✖ v2 refuses runtime status before browser (148.2893ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:58:83)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_(ROOT|COMPONENT|RUNTIME|BUILD|GIT)/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:3
+✖ formal CLI closure refuses nonzero (42.169ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_CURRENT_INSTALLATION/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:81)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:81)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_CURRENT_INSTALLATION/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:3
+✖ formal CLI closure refuses stderr (67.1246ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_CURRENT_INSTALLATION/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:81)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:81)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_CURRENT_INSTALLATION/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:3
+✖ formal CLI closure refuses bad schema (62.1336ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_CURRENT_INSTALLATION/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:81)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:81)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_CURRENT_INSTALLATION/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:3
+✖ formal CLI closure refuses other source (72.1989ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_CURRENT_INSTALLATION/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:81)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:81)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_CURRENT_INSTALLATION/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:3
+✖ formal CLI closure refuses unbound resource (50.4333ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_CURRENT_INSTALLATION/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:81)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:81)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_CURRENT_INSTALLATION/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:3
+✖ formal CLI closure refuses duplicate input (94.8232ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_CURRENT_INSTALLATION/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:81)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:81)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_CURRENT_INSTALLATION/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:3
+✖ formal CLI closure refuses changed input (500.9246ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_CURRENT_INSTALLATION/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:81)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:67:81)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_CURRENT_INSTALLATION/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:68:1
+✖ failed CLI does not create a successful cached proof (97.3095ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /MAIN_CURRENT_INSTALLATION/. Input:
+  
+  'Error: MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:69:67)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+        at check (evalmachine.<anonymous>:13:51)
+        at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+        at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:69:67)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1382:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+        at Test.postRun (node:internal/test_runner/test:1522:19),
+    expected: /MAIN_CURRENT_INSTALLATION/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:72:1
+✖ later barrier rereads all original inputs without a second CLI (59.1304ms)
+  Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+      at check (evalmachine.<anonymous>:13:51)
+      at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+      at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:73:21)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    publicCode: 'MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  }
+
+test at doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:76:1
+✖ later barrier rejects selection switching instead of loading another generation (41.512ms)
+  Error: MAIN_PREFLIGHT_CYCLE_MISMATCH
+      at check (evalmachine.<anonymous>:13:51)
+      at Object.validateMainDeploymentContract (evalmachine.<anonymous>:104:3)
+      at f.check (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:35:31)
+      at TestContext.<anonymous> (C:\Users\D01021\.codex\worktrees\spug-restore-targets\Maintance\doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_ui_deployment_root.test.cjs:77:21)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    publicCode: 'MAIN_PREFLIGHT_CYCLE_MISMATCH'
+  }

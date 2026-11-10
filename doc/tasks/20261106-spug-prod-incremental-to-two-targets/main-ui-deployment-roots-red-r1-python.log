@@ -1,0 +1,657 @@
+FFFFFFFFFFFFFFFFFFFFFFF                                                  [100%]
+================================== FAILURES ===================================
+_____ test_two_registered_roots_keep_real_different_heads_and_full_scopes _____
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_two_registered_roots_ke...'}]}, source_commit='f477b9d7aecf37cf497d00f836530722b4cd8cd6', spug_commit='46ef118b1a6266bfe47bc4295681b2f96a74b221')
+
+    def test_two_registered_roots_keep_real_different_heads_and_full_scopes(roots):
+        put(roots.dev, 'backend/capture.py', 'uncommitted development\n')
+        before = (roots.dev / 'backend/capture.py').read_bytes()
+>       value = check(roots)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:63: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_two_registered_roots_ke...'}]}, source_commit='f477b9d7aecf37cf497d00f836530722b4cd8cd6', spug_commit='46ef118b1a6266bfe47bc4295681b2f96a74b221')
+changes = {}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_two_registered...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_two_registered_roots_keep0\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+____ test_default_and_original_shared_root_still_reject_real_app_js_drift _____
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_default_and_original_sh...'}]}, source_commit='556e5b589057118aafd0508a68bcf6ee2c14e9d6', spug_commit='3b6d5ad8e0e09065eed726cba8c4bc753ad480d3')
+
+    def test_default_and_original_shared_root_still_reject_real_app_js_drift(roots):
+        with pytest.raises(RuntimeError, match='AUTOMATIC_DEPLOYMENT_INPUTS_CHANGED'):
+>           ui.verify_main_deployment_inputs(roots.verified, roots.source)
+E           AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:79: AttributeError
+_______ test_only_one_explicit_root_is_rejected[source_deployment_root] _______
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_only_one_explicit_root_...'}]}, source_commit='afbfd1998e8c428b9e16ee7ea09e22b86e404b6b', spug_commit='e6a052bb8b21cbc5fcf0ce83524b4ad3de2c7a1a')
+missing = 'source_deployment_root'
+
+    @pytest.mark.parametrize('missing', ['source_deployment_root', 'spug_deployment_root'])
+    def test_only_one_explicit_root_is_rejected(roots, missing):
+        with pytest.raises(ValueError, match='MAIN_DEPLOYMENT_ROOT_PAIR_REQUIRED'):
+>           check(roots, **{missing: None})
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_only_one_explicit_root_...'}]}, source_commit='afbfd1998e8c428b9e16ee7ea09e22b86e404b6b', spug_commit='e6a052bb8b21cbc5fcf0ce83524b4ad3de2c7a1a')
+changes = {'source_deployment_root': None}
+args = {'source_deployment_root': None, 'spug_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_only_one_explicit_root_is0\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+________ test_only_one_explicit_root_is_rejected[spug_deployment_root] ________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_only_one_explicit_root_...'}]}, source_commit='608ad06525fc7d6e7705ba9903b279627b00f099', spug_commit='271dba528e6150e86710409c731ae13da02ebb3e')
+missing = 'spug_deployment_root'
+
+    @pytest.mark.parametrize('missing', ['source_deployment_root', 'spug_deployment_root'])
+    def test_only_one_explicit_root_is_rejected(roots, missing):
+        with pytest.raises(ValueError, match='MAIN_DEPLOYMENT_ROOT_PAIR_REQUIRED'):
+>           check(roots, **{missing: None})
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:87: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_only_one_explicit_root_...'}]}, source_commit='608ad06525fc7d6e7705ba9903b279627b00f099', spug_commit='271dba528e6150e86710409c731ae13da02ebb3e')
+changes = {'spug_deployment_root': None}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_only_one_explicit_root_is1\\source-release', 'spug_deployment_root': None}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+_______ test_explicit_root_must_be_exact_registered_directory[relative] _______
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_explicit_root_must_be_e...'}]}, source_commit='764754555a4ea65833d647aa0e9cfec9425c4588', spug_commit='693baed119f3f40c80b4d6148762b801ee90fd69')
+kind = 'relative'
+
+    @pytest.mark.parametrize('kind', ['relative', 'missing', 'alias', 'other', 'swapped'])
+    def test_explicit_root_must_be_exact_registered_directory(roots, kind):
+        value = {'relative': 'source-release', 'missing': str(roots.task/'missing'),
+                 'alias': str(roots.source/'..'/'source-release'), 'other': str(roots.dev),
+                 'swapped': str(roots.spug)}[kind]
+        with pytest.raises((ValueError, FileNotFoundError), match='MAIN_DEPLOYMENT_ROOT|No such file|cannot find'):
+>           check(roots, source_deployment_root=value)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:96: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_explicit_root_must_be_e...'}]}, source_commit='764754555a4ea65833d647aa0e9cfec9425c4588', spug_commit='693baed119f3f40c80b4d6148762b801ee90fd69')
+changes = {'source_deployment_root': 'source-release'}
+args = {'source_deployment_root': 'source-release', 'spug_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_explicit_root_must_be_exa0\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+_______ test_explicit_root_must_be_exact_registered_directory[missing] ________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_explicit_root_must_be_e...'}]}, source_commit='9163f9740ea372769cd82b287118cb972c313c00', spug_commit='fad0acde39d9592ef640d57f1c7d8d32fb1498d9')
+kind = 'missing'
+
+    @pytest.mark.parametrize('kind', ['relative', 'missing', 'alias', 'other', 'swapped'])
+    def test_explicit_root_must_be_exact_registered_directory(roots, kind):
+        value = {'relative': 'source-release', 'missing': str(roots.task/'missing'),
+                 'alias': str(roots.source/'..'/'source-release'), 'other': str(roots.dev),
+                 'swapped': str(roots.spug)}[kind]
+        with pytest.raises((ValueError, FileNotFoundError), match='MAIN_DEPLOYMENT_ROOT|No such file|cannot find'):
+>           check(roots, source_deployment_root=value)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:96: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_explicit_root_must_be_e...'}]}, source_commit='9163f9740ea372769cd82b287118cb972c313c00', spug_commit='fad0acde39d9592ef640d57f1c7d8d32fb1498d9')
+changes = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_explicit_root_must_be_exa1\\task\\missing'}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_explicit_root_...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_explicit_root_must_be_exa1\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+________ test_explicit_root_must_be_exact_registered_directory[alias] _________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_explicit_root_must_be_e...'}]}, source_commit='5616a7775da6aca62f95546973eeb53b6db7861d', spug_commit='de583f83104370c3bf6b0682c9ef217b4c2b7bac')
+kind = 'alias'
+
+    @pytest.mark.parametrize('kind', ['relative', 'missing', 'alias', 'other', 'swapped'])
+    def test_explicit_root_must_be_exact_registered_directory(roots, kind):
+        value = {'relative': 'source-release', 'missing': str(roots.task/'missing'),
+                 'alias': str(roots.source/'..'/'source-release'), 'other': str(roots.dev),
+                 'swapped': str(roots.spug)}[kind]
+        with pytest.raises((ValueError, FileNotFoundError), match='MAIN_DEPLOYMENT_ROOT|No such file|cannot find'):
+>           check(roots, source_deployment_root=value)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:96: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_explicit_root_must_be_e...'}]}, source_commit='5616a7775da6aca62f95546973eeb53b6db7861d', spug_commit='de583f83104370c3bf6b0682c9ef217b4c2b7bac')
+changes = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_explicit_root_must_be_exa2\\source-release\\..\\source-release'}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_explicit_root_...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_explicit_root_must_be_exa2\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+________ test_explicit_root_must_be_exact_registered_directory[other] _________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_explicit_root_must_be_e...'}]}, source_commit='b5ed8e6c55961ce5e2333ea96e14cd67a0f6af73', spug_commit='ade6ef93018b7b59f8cbb91f25f46913391cff72')
+kind = 'other'
+
+    @pytest.mark.parametrize('kind', ['relative', 'missing', 'alias', 'other', 'swapped'])
+    def test_explicit_root_must_be_exact_registered_directory(roots, kind):
+        value = {'relative': 'source-release', 'missing': str(roots.task/'missing'),
+                 'alias': str(roots.source/'..'/'source-release'), 'other': str(roots.dev),
+                 'swapped': str(roots.spug)}[kind]
+        with pytest.raises((ValueError, FileNotFoundError), match='MAIN_DEPLOYMENT_ROOT|No such file|cannot find'):
+>           check(roots, source_deployment_root=value)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:96: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_explicit_root_must_be_e...'}]}, source_commit='b5ed8e6c55961ce5e2333ea96e14cd67a0f6af73', spug_commit='ade6ef93018b7b59f8cbb91f25f46913391cff72')
+changes = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_explicit_root_must_be_exa3\\development'}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_explicit_root_...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_explicit_root_must_be_exa3\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+_______ test_explicit_root_must_be_exact_registered_directory[swapped] ________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_explicit_root_must_be_e...'}]}, source_commit='2f1d7ba4a073020fed617d688c296c349d9f91c4', spug_commit='d34f6a5759886841ed1115b2dfaeb03149c968fd')
+kind = 'swapped'
+
+    @pytest.mark.parametrize('kind', ['relative', 'missing', 'alias', 'other', 'swapped'])
+    def test_explicit_root_must_be_exact_registered_directory(roots, kind):
+        value = {'relative': 'source-release', 'missing': str(roots.task/'missing'),
+                 'alias': str(roots.source/'..'/'source-release'), 'other': str(roots.dev),
+                 'swapped': str(roots.spug)}[kind]
+        with pytest.raises((ValueError, FileNotFoundError), match='MAIN_DEPLOYMENT_ROOT|No such file|cannot find'):
+>           check(roots, source_deployment_root=value)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:96: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_explicit_root_must_be_e...'}]}, source_commit='2f1d7ba4a073020fed617d688c296c349d9f91c4', spug_commit='d34f6a5759886841ed1115b2dfaeb03149c968fd')
+changes = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_explicit_root_must_be_exa4\\spug-release'}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_explicit_root_...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_explicit_root_must_be_exa4\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+_________ test_each_root_rejects_dirty_or_other_head[unstaged-source] _________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='2e371c4e8d667ef16a9d872a8e0495083c1c4b1a', spug_commit='0b56effe4837321a95a40e20488fd8e71f2de016')
+component = 'source', state = 'unstaged'
+
+    @pytest.mark.parametrize('component', ['source', 'spug'])
+    @pytest.mark.parametrize('state', ['unstaged', 'staged', 'untracked', 'head'])
+    def test_each_root_rejects_dirty_or_other_head(roots, component, state):
+        root = getattr(roots, component)
+        name = 'backend/capture.py' if component == 'source' else 'ops/spug/smallapp-ui/app.js'
+        if state == 'untracked': name = 'untracked-evidence.txt'
+        put(root, name, 'uninstalled change\n')
+        if state == 'staged': git(root, 'add', name)
+        if state == 'head': commit(root, 'other checkout generation')
+        with pytest.raises(ValueError, match='MAIN_DEPLOYMENT_ROOT_(DIRTY|HEAD_CHANGED)'):
+>           check(roots)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:109: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='2e371c4e8d667ef16a9d872a8e0495083c1c4b1a', spug_commit='0b56effe4837321a95a40e20488fd8e71f2de016')
+changes = {}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_reje...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_rejects_dirty_o0\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+__________ test_each_root_rejects_dirty_or_other_head[unstaged-spug] __________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='2b8334a0abe2f2a63812fcce2ec8577c524775f0', spug_commit='047511f44640c1d8c5090896c8abdfa4fb4319fe')
+component = 'spug', state = 'unstaged'
+
+    @pytest.mark.parametrize('component', ['source', 'spug'])
+    @pytest.mark.parametrize('state', ['unstaged', 'staged', 'untracked', 'head'])
+    def test_each_root_rejects_dirty_or_other_head(roots, component, state):
+        root = getattr(roots, component)
+        name = 'backend/capture.py' if component == 'source' else 'ops/spug/smallapp-ui/app.js'
+        if state == 'untracked': name = 'untracked-evidence.txt'
+        put(root, name, 'uninstalled change\n')
+        if state == 'staged': git(root, 'add', name)
+        if state == 'head': commit(root, 'other checkout generation')
+        with pytest.raises(ValueError, match='MAIN_DEPLOYMENT_ROOT_(DIRTY|HEAD_CHANGED)'):
+>           check(roots)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:109: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='2b8334a0abe2f2a63812fcce2ec8577c524775f0', spug_commit='047511f44640c1d8c5090896c8abdfa4fb4319fe')
+changes = {}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_reje...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_rejects_dirty_o1\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+__________ test_each_root_rejects_dirty_or_other_head[staged-source] __________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='a33caf96218405be3a3ccdfc3df78b250343aade', spug_commit='005599f28304eaea5fcce02845bd6b5c851bb6a5')
+component = 'source', state = 'staged'
+
+    @pytest.mark.parametrize('component', ['source', 'spug'])
+    @pytest.mark.parametrize('state', ['unstaged', 'staged', 'untracked', 'head'])
+    def test_each_root_rejects_dirty_or_other_head(roots, component, state):
+        root = getattr(roots, component)
+        name = 'backend/capture.py' if component == 'source' else 'ops/spug/smallapp-ui/app.js'
+        if state == 'untracked': name = 'untracked-evidence.txt'
+        put(root, name, 'uninstalled change\n')
+        if state == 'staged': git(root, 'add', name)
+        if state == 'head': commit(root, 'other checkout generation')
+        with pytest.raises(ValueError, match='MAIN_DEPLOYMENT_ROOT_(DIRTY|HEAD_CHANGED)'):
+>           check(roots)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:109: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='a33caf96218405be3a3ccdfc3df78b250343aade', spug_commit='005599f28304eaea5fcce02845bd6b5c851bb6a5')
+changes = {}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_reje...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_rejects_dirty_o2\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+___________ test_each_root_rejects_dirty_or_other_head[staged-spug] ___________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='40b3b090ab042fb790a483e941e7238e06bd7fbb', spug_commit='9a734873fd1df17957e5f6017c5731651ed31b2a')
+component = 'spug', state = 'staged'
+
+    @pytest.mark.parametrize('component', ['source', 'spug'])
+    @pytest.mark.parametrize('state', ['unstaged', 'staged', 'untracked', 'head'])
+    def test_each_root_rejects_dirty_or_other_head(roots, component, state):
+        root = getattr(roots, component)
+        name = 'backend/capture.py' if component == 'source' else 'ops/spug/smallapp-ui/app.js'
+        if state == 'untracked': name = 'untracked-evidence.txt'
+        put(root, name, 'uninstalled change\n')
+        if state == 'staged': git(root, 'add', name)
+        if state == 'head': commit(root, 'other checkout generation')
+        with pytest.raises(ValueError, match='MAIN_DEPLOYMENT_ROOT_(DIRTY|HEAD_CHANGED)'):
+>           check(roots)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:109: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='40b3b090ab042fb790a483e941e7238e06bd7fbb', spug_commit='9a734873fd1df17957e5f6017c5731651ed31b2a')
+changes = {}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_reje...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_rejects_dirty_o3\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+________ test_each_root_rejects_dirty_or_other_head[untracked-source] _________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='f337eba7aa9dbda3a9fe1f337385f432215fbcd5', spug_commit='331fefcd1f2ecf022cacacc7e2f4f78ba50f1c2d')
+component = 'source', state = 'untracked'
+
+    @pytest.mark.parametrize('component', ['source', 'spug'])
+    @pytest.mark.parametrize('state', ['unstaged', 'staged', 'untracked', 'head'])
+    def test_each_root_rejects_dirty_or_other_head(roots, component, state):
+        root = getattr(roots, component)
+        name = 'backend/capture.py' if component == 'source' else 'ops/spug/smallapp-ui/app.js'
+        if state == 'untracked': name = 'untracked-evidence.txt'
+        put(root, name, 'uninstalled change\n')
+        if state == 'staged': git(root, 'add', name)
+        if state == 'head': commit(root, 'other checkout generation')
+        with pytest.raises(ValueError, match='MAIN_DEPLOYMENT_ROOT_(DIRTY|HEAD_CHANGED)'):
+>           check(roots)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:109: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='f337eba7aa9dbda3a9fe1f337385f432215fbcd5', spug_commit='331fefcd1f2ecf022cacacc7e2f4f78ba50f1c2d')
+changes = {}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_reje...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_rejects_dirty_o4\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+_________ test_each_root_rejects_dirty_or_other_head[untracked-spug] __________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='646284e427d8393bf84b0b82f26e79d52fb13124', spug_commit='a299ab07a63849a8f461ea03fe5fe1a8ffce5878')
+component = 'spug', state = 'untracked'
+
+    @pytest.mark.parametrize('component', ['source', 'spug'])
+    @pytest.mark.parametrize('state', ['unstaged', 'staged', 'untracked', 'head'])
+    def test_each_root_rejects_dirty_or_other_head(roots, component, state):
+        root = getattr(roots, component)
+        name = 'backend/capture.py' if component == 'source' else 'ops/spug/smallapp-ui/app.js'
+        if state == 'untracked': name = 'untracked-evidence.txt'
+        put(root, name, 'uninstalled change\n')
+        if state == 'staged': git(root, 'add', name)
+        if state == 'head': commit(root, 'other checkout generation')
+        with pytest.raises(ValueError, match='MAIN_DEPLOYMENT_ROOT_(DIRTY|HEAD_CHANGED)'):
+>           check(roots)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:109: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='646284e427d8393bf84b0b82f26e79d52fb13124', spug_commit='a299ab07a63849a8f461ea03fe5fe1a8ffce5878')
+changes = {}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_reje...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_rejects_dirty_o5\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+___________ test_each_root_rejects_dirty_or_other_head[head-source] ___________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='54632cf562fe106ba62a3c295660583e6c6436f7', spug_commit='ef2c3faa954fb916820611698525c912f9b3984c')
+component = 'source', state = 'head'
+
+    @pytest.mark.parametrize('component', ['source', 'spug'])
+    @pytest.mark.parametrize('state', ['unstaged', 'staged', 'untracked', 'head'])
+    def test_each_root_rejects_dirty_or_other_head(roots, component, state):
+        root = getattr(roots, component)
+        name = 'backend/capture.py' if component == 'source' else 'ops/spug/smallapp-ui/app.js'
+        if state == 'untracked': name = 'untracked-evidence.txt'
+        put(root, name, 'uninstalled change\n')
+        if state == 'staged': git(root, 'add', name)
+        if state == 'head': commit(root, 'other checkout generation')
+        with pytest.raises(ValueError, match='MAIN_DEPLOYMENT_ROOT_(DIRTY|HEAD_CHANGED)'):
+>           check(roots)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:109: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='54632cf562fe106ba62a3c295660583e6c6436f7', spug_commit='ef2c3faa954fb916820611698525c912f9b3984c')
+changes = {}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_reje...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_rejects_dirty_o6\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+____________ test_each_root_rejects_dirty_or_other_head[head-spug] ____________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='cf62b1fb695f3071f1cd0f455b4d9da4b8273df7', spug_commit='6be4737f9a9a4d09b7dd6c84e66b653940bb05aa')
+component = 'spug', state = 'head'
+
+    @pytest.mark.parametrize('component', ['source', 'spug'])
+    @pytest.mark.parametrize('state', ['unstaged', 'staged', 'untracked', 'head'])
+    def test_each_root_rejects_dirty_or_other_head(roots, component, state):
+        root = getattr(roots, component)
+        name = 'backend/capture.py' if component == 'source' else 'ops/spug/smallapp-ui/app.js'
+        if state == 'untracked': name = 'untracked-evidence.txt'
+        put(root, name, 'uninstalled change\n')
+        if state == 'staged': git(root, 'add', name)
+        if state == 'head': commit(root, 'other checkout generation')
+        with pytest.raises(ValueError, match='MAIN_DEPLOYMENT_ROOT_(DIRTY|HEAD_CHANGED)'):
+>           check(roots)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:109: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_each_root_rejects_dirty...'}]}, source_commit='cf62b1fb695f3071f1cd0f455b4d9da4b8273df7', spug_commit='6be4737f9a9a4d09b7dd6c84e66b653940bb05aa')
+changes = {}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_reje...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_each_root_rejects_dirty_o7\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+__________ test_full_build_object_not_only_its_path_is_bound[source] __________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_full_build_object_not_o...'}]}, source_commit='44cff6f111171f860ab30a23d1449f24bde63b16', spug_commit='026e6e83480040ec750674bc6277073c2cad2eb6')
+component = 'source'
+
+    @pytest.mark.parametrize('component', ['source', 'spug'])
+    def test_full_build_object_not_only_its_path_is_bound(roots, component):
+        container = roots.verified['generation'] if component == 'source' else roots.verified['spugRuntime']
+        key = 'build' if component == 'source' else 'resourceBuild'
+        container[key] = dict(container[key], unexpected=True)
+        with pytest.raises(ValueError, match='MAIN_DEPLOYMENT_BUILD_CHANGED'):
+>           check(roots)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:118: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_full_build_object_not_o...'}]}, source_commit='44cff6f111171f860ab30a23d1449f24bde63b16', spug_commit='026e6e83480040ec750674bc6277073c2cad2eb6')
+changes = {}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_full_build_obj...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_full_build_object_not_onl0\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+___________ test_full_build_object_not_only_its_path_is_bound[spug] ___________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_full_build_object_not_o...'}]}, source_commit='ddf47a66efb53f18659ea7d2cab3cd363716f3a6', spug_commit='f79d0962d9bb3fadd4a45d9dd2e09452adea2ccf')
+component = 'spug'
+
+    @pytest.mark.parametrize('component', ['source', 'spug'])
+    def test_full_build_object_not_only_its_path_is_bound(roots, component):
+        container = roots.verified['generation'] if component == 'source' else roots.verified['spugRuntime']
+        key = 'build' if component == 'source' else 'resourceBuild'
+        container[key] = dict(container[key], unexpected=True)
+        with pytest.raises(ValueError, match='MAIN_DEPLOYMENT_BUILD_CHANGED'):
+>           check(roots)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:118: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_full_build_object_not_o...'}]}, source_commit='ddf47a66efb53f18659ea7d2cab3cd363716f3a6', spug_commit='f79d0962d9bb3fadd4a45d9dd2e09452adea2ccf')
+changes = {}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_full_build_obj...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_full_build_object_not_onl1\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+____________________ test_build_bytes_changed_is_rejected _____________________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_build_bytes_changed_is_...'}]}, source_commit='bf3ac9945a567a75f6d31fc16ddee84cc2f1e39f', spug_commit='d98065947cb686022d95cb915d60fb7dbe83b321')
+
+    def test_build_bytes_changed_is_rejected(roots):
+        with (roots.task/'spug-build.json').open('ab') as handle: handle.write(b' ')
+        with pytest.raises((ValueError, AssertionError)):
+>           check(roots)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:124: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_build_bytes_changed_is_...'}]}, source_commit='bf3ac9945a567a75f6d31fc16ddee84cc2f1e39f', spug_commit='d98065947cb686022d95cb915d60fb7dbe83b321')
+changes = {}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_build_bytes_ch...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_build_bytes_changed_is_re0\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+________ test_final_recheck_rejects_a_real_change_after_initial_proof _________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_final_recheck_rejects_a...'}]}, source_commit='7e4a69a09ee2a052b136601b1eace4579eaa8f44', spug_commit='8305a9c6fc40b40a399dd398d4117ece6dfde469')
+
+    def test_final_recheck_rejects_a_real_change_after_initial_proof(roots):
+>       check(roots)
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:128: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_final_recheck_rejects_a...'}]}, source_commit='7e4a69a09ee2a052b136601b1eace4579eaa8f44', spug_commit='8305a9c6fc40b40a399dd398d4117ece6dfde469')
+changes = {}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_final_recheck_...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_final_recheck_rejects_a_r0\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+____ test_git_root_must_be_top_level_even_if_build_registers_subdirectory _____
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_git_root_must_be_top_le...'}]}, source_commit='a101352b417ec15517cc6d68b0ed1bfa08fefa14', spug_commit='d2a8f7a2f8f0c0391c44f581dbe9f8a0c4447375')
+
+    def test_git_root_must_be_top_level_even_if_build_registers_subdirectory(roots):
+        build = roots.verified['generation']['build']; build['worktree'] = str(roots.source/'backend')
+        raw = json.dumps(build).encode('utf-8'); (roots.task/'source-build.json').write_bytes(raw)
+        ref = dict(file='source-build.json', bytes=len(raw), sha256=hashlib.sha256(raw).hexdigest())
+        roots.verified['generation']['generation']['buildPin'] = ref
+        roots.verified['inputPins'][0] = dict(path=str(roots.task/'source-build.json'), bytes=len(raw), sha256=ref['sha256'])
+        with pytest.raises(ValueError, match='MAIN_DEPLOYMENT_ROOT_NOT_GIT_ROOT'):
+>           check(roots, source_deployment_root=build['worktree'])
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:141: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+r = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_git_root_must_be_top_le...'}]}, source_commit='a101352b417ec15517cc6d68b0ed1bfa08fefa14', spug_commit='d2a8f7a2f8f0c0391c44f581dbe9f8a0c4447375')
+changes = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_git_root_must_be_top_leve0\\source-release\\backend'}
+args = {'source_deployment_root': 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_git_root_must_...'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_git_root_must_be_top_leve0\\spug-release'}
+
+    def check(r, **changes):
+        args = dict(source_deployment_root=str(r.source), spug_deployment_root=str(r.spug))
+        args.update(changes)
+>       return ui.verify_main_deployment_inputs(r.verified, r.dev, **args)
+E       AttributeError: module 'prepare_main_program_ui_preflight' has no attribute 'verify_main_deployment_inputs'. Did you mean: 'verify_stage_deployment_inputs'?
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:57: AttributeError
+___________ test_invalid_roots_fail_before_any_external_observation ___________
+
+roots = namespace(dev=WindowsPath('C:/Users/D01021/AppData/Local/Temp/pytest-of-D01021/pytest-441/test_invalid_roots_fail_befo...'}]}, source_commit='4e9fce0c781ebfdc4526dfe27727cbc961ca9e40', spug_commit='4a42aa3860749409956fd615bf8d9eb76228864d')
+monkeypatch = <_pytest.monkeypatch.MonkeyPatch object at 0x000002890B441AF0>
+
+    def test_invalid_roots_fail_before_any_external_observation(roots, monkeypatch):
+        monkeypatch.setattr(sys, 'argv', ['preflight', '--cycle', 'local-test', '--kind', 'I1', '--phase',
+            'preview', '--observation', 'once', '--selection', 'selection.json',
+            '--source-deployment-root', str(roots.dev), '--spug-deployment-root', str(roots.spug)])
+        monkeypatch.setattr(ui, 'load_current_installation', lambda *a, **k: dict(roots.verified, selectionPin={}))
+        def forbidden(*a, **k): pytest.fail('external observation must not be reached')
+        monkeypatch.setattr(ui, 'spug_observation', forbidden); monkeypatch.setattr(ui, 'remote', forbidden)
+        with pytest.raises(ValueError, match='MAIN_DEPLOYMENT_ROOT'):
+>           ui.main()
+
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_ui_deployment_root.py:152: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\prepare_main_program_ui_preflight.py:105: in main
+    args=parser.parse_args()
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:1908: in parse_args
+    self.error(msg)
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2650: in error
+    self.exit(2, _('%(prog)s: error: %(message)s\n') % args)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = ArgumentParser(prog='preflight', usage=None, description='Fresh MAIN/v4 gates for a named real UI acceptance cycle; no dispatch.', formatter_class=<class 'argparse.HelpFormatter'>, conflict_handler='error', add_help=True)
+status = 2
+message = 'preflight: error: unrecognized arguments: --source-deployment-root C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of...C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-441\\test_invalid_roots_fail_before0\\spug-release\n'
+
+    def exit(self, status=0, message=None):
+        if message:
+            self._print_message(message, _sys.stderr)
+>       _sys.exit(status)
+E       SystemExit: 2
+
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\argparse.py:2637: SystemExit
+---------------------------- Captured stderr call -----------------------------
+usage: preflight [-h] --cycle CYCLE --kind {FULL,I1,I2} --phase
+                 {preview,submit,verify} --observation OBSERVATION --selection
+                 SELECTION
+preflight: error: unrecognized arguments: --source-deployment-root C:\Users\D01021\AppData\Local\Temp\pytest-of-D01021\pytest-441\test_invalid_roots_fail_before0\development --spug-deployment-root C:\Users\D01021\AppData\Local\Temp\pytest-of-D01021\pytest-441\test_invalid_roots_fail_before0\spug-release
+=========================== short test summary info ===========================
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_two_registered_roots_keep_real_different_heads_and_full_scopes
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_default_and_original_shared_root_still_reject_real_app_js_drift
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_only_one_explicit_root_is_rejected[source_deployment_root]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_only_one_explicit_root_is_rejected[spug_deployment_root]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_explicit_root_must_be_exact_registered_directory[relative]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_explicit_root_must_be_exact_registered_directory[missing]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_explicit_root_must_be_exact_registered_directory[alias]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_explicit_root_must_be_exact_registered_directory[other]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_explicit_root_must_be_exact_registered_directory[swapped]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_each_root_rejects_dirty_or_other_head[unstaged-source]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_each_root_rejects_dirty_or_other_head[unstaged-spug]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_each_root_rejects_dirty_or_other_head[staged-source]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_each_root_rejects_dirty_or_other_head[staged-spug]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_each_root_rejects_dirty_or_other_head[untracked-source]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_each_root_rejects_dirty_or_other_head[untracked-spug]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_each_root_rejects_dirty_or_other_head[head-source]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_each_root_rejects_dirty_or_other_head[head-spug]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_full_build_object_not_only_its_path_is_bound[source]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_full_build_object_not_only_its_path_is_bound[spug]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_build_bytes_changed_is_rejected
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_final_recheck_rejects_a_real_change_after_initial_proof
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_git_root_must_be_top_level_even_if_build_registers_subdirectory
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_ui_deployment_root.py::test_invalid_roots_fail_before_any_external_observation
+23 failed in 210.70s (0:03:30)
