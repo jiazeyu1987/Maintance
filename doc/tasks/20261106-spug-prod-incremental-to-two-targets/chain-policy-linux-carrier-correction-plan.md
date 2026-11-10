@@ -28,3 +28,9 @@ BDD：Given 同提交完整必要源快照，When 收集六文件回归，Then �
 ## 验证结果
 
 RED：新增4项中2 FAIL / 2 PASS / 103 deselected；实际缺adapter与父模块集合声明不符均复现。最小修正后同4项PASS。父独立完整回归107 PASS / 0 failure/error/skip，159.88秒，输入前后全部pin保持；原始stdout/JUnit见chain-policy-parent-new-20261110-r2.json。尚未据此声明交付包验证完成。
+
+## 实际variant职责修正
+
+a4c279f真实Linux：source-policy54 PASS；source-regression123 PASS / 6 FAIL。六项均来自旧根目录身份测试：当前源码明确为LIGHTWEIGHT，root_identities为空且current仅检查deadline；STANDARD冻包的同类真实实现包含完整根目录身份核验。不能将该SAFE专属合同要求在LIGHT源码，亦不能删除这八项测试或放宽断言。
+
+BDD：Given 原八项根目录身份测试，When 验证实际STANDARD包，Then 原文件完整执行并通过且实际repository_minimal来自该包；源码回归和LIGHT保持各自合同。正式suite_files按variant显式选择：source-regression保留另外五个文件，actual-package-policy的STANDARD包含原根目录测试，LIGHT不冒称拥有SAFE语义。所有输入仍来自同一提交，原a4失败保持；四组总原测试覆盖不减少。先路由RED，再最小接线、完整合同回归及新同提交真实四组验证。

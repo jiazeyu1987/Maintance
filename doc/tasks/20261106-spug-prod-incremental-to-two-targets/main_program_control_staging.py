@@ -164,6 +164,31 @@ def prepare_materials(*,inputs,predecessor,public,private,coverage,plan_document
         requiredRuntimeGates=list(RUNTIME_GATES)))
 
 
+def read_covered_package(coverage):
+    """Read the build artifact; evidence-runtime paths remain immutable."""
+    from main_program_control_activation import file_pin
+    delta,build=coverage['delta'],coverage['build']
+    rows=[row for row in delta['packages'] if row['variant']=='standard']
+    need(len(rows)==1,'STANDARD_PACKAGE_REQUIRED')
+    if delta['schemaVersion']=='MainProgramChainPolicyPackageDelta/v1':
+        expected=build['variants']['standard']['packagePin']
+        covered=rows[0]['packagePin']
+        need(type(expected) is dict and set(expected)=={'path','bytes','sha256'} and
+            all(expected[key]==covered[key] for key in ('bytes','sha256')),'PACKAGE_BUILD_CHANGED')
+        package_path=Path(expected['path'])
+    else:
+        need(delta['schemaVersion']=='ArchiveCataloguePackageDelta/v2','PACKAGE_SCHEMA_INVALID')
+        expected=None
+        package_path=Path(rows[0]['path'])
+    actual=file_pin(package_path)
+    need((expected is None or actual==expected) and actual['bytes']<=MAX_PACKAGE_BYTES and
+         actual['sha256']==build['packageSha256'],'PACKAGE_BUILD_CHANGED')
+    raw=package_path.read_bytes()
+    need(file_pin(package_path)==actual and len(raw)==actual['bytes'] and digest(raw)==actual['sha256'],
+         'PACKAGE_CHANGED_DURING_READ')
+    return actual,raw
+
+
 def prepare_materials_from_records(records,private,inputs):
     """Load original files through the generation, coverage and observation APIs."""
     import main_program_control_activation as activation
@@ -207,13 +232,7 @@ def prepare_materials_from_records(records,private,inputs):
         controllers=[dict({key:old[key] for key in generation.SELECTION_CONTROLLER_KEYS},
             **{key:observed[key] for key in extra}) for old,observed in zip(originals,environment['controllers'])])
     build_material=material(inputs['buildPin']);delta_material=material(public['packageDeltaPin'])
-    package_rows=[row for row in coverage['delta']['packages'] if row['variant']=='standard']
-    need(len(package_rows)==1,'STANDARD_PACKAGE_REQUIRED')
-    package_path=Path(package_rows[0]['path']);package_pin=activation.file_pin(package_path)
-    need(package_pin['bytes']<=MAX_PACKAGE_BYTES and package_pin['sha256']==coverage['build']['packageSha256'],
-        'PACKAGE_BUILD_CHANGED')
-    package_raw=package_path.read_bytes()
-    need(activation.file_pin(package_path)==package_pin,'PACKAGE_CHANGED_DURING_READ')
+    package_pin,package_raw=read_covered_package(coverage)
     prepared=prepare_materials(inputs=inputs,predecessor=bundle,public=public,private=secret,coverage=coverage,
         plan_document=plan_material,build_document=build_material,delta_document=delta_material,
         package_raw=package_raw,host_identity=identity)

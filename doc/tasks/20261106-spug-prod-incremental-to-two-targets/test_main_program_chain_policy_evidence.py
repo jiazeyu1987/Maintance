@@ -174,6 +174,17 @@ def test_source_policy_records_only_the_modules_it_actually_exercises(executed_r
     assert len(validate_run(executed_run)) >= 8
 
 
+@pytest.mark.parametrize('suite,mode,expected',[
+    ('source-regression','source',False),
+    ('actual-package-policy','standard',True),
+    ('actual-package-policy','lightweight',False),
+])
+def test_original_root_identity_contract_runs_on_the_standard_payload(suite,mode,expected):
+    filename='scripts/tests/test_repository_root_identity.py'
+    assert (filename in subject().suite_files(suite,mode)) is expected
+    assert filename in subject().REQUIRED_SOURCE_FILES
+
+
 @pytest.mark.parametrize('missing', ['common/repository_records.py', 'control/recovery_control_incremental_plan.py'])
 def test_source_policy_still_requires_both_exercised_modules(executed_run, missing):
     executed_run['run']['loadedModulePins'].pop(missing)

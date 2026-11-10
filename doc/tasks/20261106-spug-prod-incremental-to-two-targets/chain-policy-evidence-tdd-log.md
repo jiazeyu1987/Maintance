@@ -92,3 +92,5 @@ REGRESSION：父保留原PRIVATE历史文件并修正旧纯planner测试的过�
 真实e4e862b提交双包已从新专用干净LF worktree构建。Linux source-policy54 PASS，但source-regression因源快照遗漏真实Spug adapter依赖而collection exit2，保留失败原件，未宣称真实四组成功。另实际source-policy的父进程只加载records/planner，原验收错误地要求未在该进程加载的repository_minimal。
 
 BDD：快照显式包含实际adapter；source-policy核实际职责的两个模块及所有已记录pin，其他三组仍要求全部三个模块。不得以人工import补数。RED：新4项2 FAIL / 2 PASS / 103 deselected，9.96秒；GREEN：4 PASS / 103 deselected，9.83秒；REGRESSION：完整107 PASS / 0 failure/error/skip，159.88秒，父wrapper输入前后pin保持。原始stdout/JUnit及完整命令见chain-policy-parent-new-20261110-r2.json。后续须新提交、新专属worktree重新执行真实四组。
+
+实际a4c279f第二次Linux原件：source-policy54 PASS；source-regression123 PASS / 6 FAIL。源repository_minimal是明确LIGHT实现，六个SAFE根身份断言不适用于它；原STANDARD归档逐字节检查确认实际完整根身份算法存在。八项原测试完整移至STANDARD实际包组，保留原断言与同提交输入，不在LIGHT虚报SAFE功能。路由RED：2 FAIL / 1 PASS / 107 deselected，0.40秒（chunk350500）；最小variant显式路由GREEN：3 PASS / 107 deselected，0.33秒（chunk34e58d）。父完整合同REGRESSION：110 PASS / 0 failure/error/skip，197.94秒，session7655，输入前后pin保持；原件见chain-policy-parent-new-20261110-r3.json。下一轮同提交实际四组尚待运行。

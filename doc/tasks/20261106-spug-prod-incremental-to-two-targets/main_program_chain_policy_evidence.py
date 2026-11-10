@@ -33,8 +33,9 @@ SOURCE_MODULE_PATHS = dict(zip(MODULES,('ops/recovery/repository_records.py','op
 SUITES = {'source-policy':['scripts/tests/test_incremental_chain_policy_admission.py'],
     'source-regression':['scripts/tests/'+name+'.py' for name in ('test_automatic_incremental_plan',
         'test_automatic_incremental_resilience','test_automatic_incremental_async_closure',
-        'test_repository_root_identity','test_repository_operator_cancel','test_backup_variants')],
-    'actual-package-policy':[TASK_RELATIVE+'/test_main_program_chain_policy_actual_packages.py']}
+        'test_repository_operator_cancel','test_backup_variants')],
+    'actual-package-policy':[TASK_RELATIVE+'/test_main_program_chain_policy_actual_packages.py',
+        'scripts/tests/test_repository_root_identity.py']}
 SUITE_REQUIRED_MODULES = {
     'source-policy': (MODULES[0], MODULES[2]),
     'source-regression': MODULES,
@@ -53,7 +54,7 @@ REQUIRED_SOURCE_FILES = tuple(dict.fromkeys([*SOURCE_MODULE_PATHS.values(),
 def suite_files(suite_id, mode):
     need(suite_id in SUITES and ((mode == 'source' and suite_id.startswith('source-')) or
         (mode in VARIANTS and suite_id == 'actual-package-policy')),'SUITE_INVALID')
-    return SUITES[suite_id]
+    return SUITES[suite_id][:1] if suite_id=='actual-package-policy' and mode=='lightweight' else SUITES[suite_id]
 
 
 def pytest_command(python, root, files, output):
