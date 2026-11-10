@@ -169,6 +169,31 @@ def test_actual_pytest_originals_are_accepted(executed_run):
     assert len(validate_run(executed_run))>=8
 
 
+def test_source_policy_records_only_the_modules_it_actually_exercises(executed_run):
+    executed_run['run']['loadedModulePins'].pop('common/repository_minimal.py')
+    assert len(validate_run(executed_run)) >= 8
+
+
+@pytest.mark.parametrize('missing', ['common/repository_records.py', 'control/recovery_control_incremental_plan.py'])
+def test_source_policy_still_requires_both_exercised_modules(executed_run, missing):
+    executed_run['run']['loadedModulePins'].pop(missing)
+    with pytest.raises(ValueError):
+        validate_run(executed_run)
+
+
+def test_source_snapshot_includes_the_real_spug_http_adapter(committed_source):
+    root,revision,_ = committed_source
+    path = root/'ops/spug/smallapp_adapter.py'
+    if not path.exists():
+        path.parent.mkdir(parents=True,exist_ok=True)
+        path.write_bytes(b'# actual source-regression dependency\n')
+        subprocess.check_call(['git','-C',str(root),'add',str(path)])
+        subprocess.check_call(['git','-C',str(root),'-c','user.name=Protocol Fixture',
+            '-c','user.email=protocol@example.invalid','commit','-qm','include runtime dependency'])
+        revision=subprocess.check_output(['git','-C',str(root),'rev-parse','HEAD']).decode().strip()
+    assert subject().committed_files(root,revision)['ops/spug/smallapp_adapter.py'] == path.read_bytes()
+
+
 @pytest.mark.parametrize('change',['nonzero','timeout','skip','empty','missing-node','bad-junit','wrong-module',
     'foreign-module','wrong-input','filtered-command','input-drift','log-drift','wrong-suite'])
 def test_actual_pytest_evidence_rejects_incomplete_or_unbound_claim(executed_run,change):

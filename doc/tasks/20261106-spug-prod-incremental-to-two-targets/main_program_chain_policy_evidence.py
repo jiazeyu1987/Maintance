@@ -35,13 +35,18 @@ SUITES = {'source-policy':['scripts/tests/test_incremental_chain_policy_admissio
         'test_automatic_incremental_resilience','test_automatic_incremental_async_closure',
         'test_repository_root_identity','test_repository_operator_cancel','test_backup_variants')],
     'actual-package-policy':[TASK_RELATIVE+'/test_main_program_chain_policy_actual_packages.py']}
+SUITE_REQUIRED_MODULES = {
+    'source-policy': (MODULES[0], MODULES[2]),
+    'source-regression': MODULES,
+    'actual-package-policy': MODULES,
+}
 RUN_FIELDS = {'suiteId','mode','commandPin','inputPin','collectionPin','resultPin','stdoutPin','stderrPin',
               'exitReceiptPin','loadedModulePins','executionInputRoot'}
 REQUIRED_SOURCE_FILES = tuple(dict.fromkeys([*SOURCE_MODULE_PATHS.values(),
     *(name for files in SUITES.values() for name in files),
     TASK_RELATIVE+'/main_program_chain_policy_evidence.py',TASK_RELATIVE+'/run_main_program_chain_policy_verification.py',
     'ops/backup_engine/build_variants.py','ops/backup_engine/files.json','ops/backup_engine/entry_lightweight.py',
-    'ops/backup_engine/standard_fixes.py',
+    'ops/backup_engine/standard_fixes.py','ops/spug/smallapp_adapter.py',
     'ops/backup_engine/baselines/backup-restore-standard-20261021.tgz']))
 
 
@@ -338,7 +343,9 @@ def validate_run(reader, run, *, source_commit, input_pin, module_files, source_
         need(len(properties) == 1 and not any(case.find(n) is not None for n in ('failure','error','skipped')),
              'JUNIT_NODE_INVALID');junit_nodes.extend(properties)
     need(len(set(junit_nodes)) == len(nodes) and set(junit_nodes) == set(nodes),'JUNIT_COLLECTION_CHANGED')
-    need(type(run['loadedModulePins']) is dict and set(run['loadedModulePins']) == set(MODULES),'LOADED_MODULE_SET_CHANGED')
+    need(type(run['loadedModulePins']) is dict and
+         set(SUITE_REQUIRED_MODULES[run['suiteId']]) <= set(run['loadedModulePins']) <= set(MODULES),
+         'LOADED_MODULE_SET_CHANGED')
     for name,expected in run['loadedModulePins'].items():
         need(type(expected) is dict and set(expected) == {'path','bytes','sha256'} and type(expected['bytes']) is int and
              expected['bytes'] > 0 and sha(expected['sha256']),'LOADED_MODULE_PIN_INVALID')

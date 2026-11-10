@@ -84,3 +84,11 @@ RED: 窄阶段24项（pytest同一文件 -k 'real_prior_delta or canonical_separ
 GREEN: 同24项 -> 24 passed / 79 deselected / 0 skipped / exit0 / 0.69s。新profile的Windows路径接受纯前斜杠或纯反斜杠规范写法；二者通过PureWindowsPath做物理规范比较，同时严格核完整长度/SHA。旧delta没有长度字段时，以新pin长度+旧原SHA读取原真实文件证明；不补写旧原件。POSIX仍原严格规则。混用、UNC、设备、流、点/尾空格别名及路径穿越拒绝。
 
 REGRESSION: 完整同一新合同文件 -> 103 passed / 0 skipped / exit0 / 123.57s，工具会话23594 / 终态chunk b36216。此前79项和新增24项均通过；runner/实包载体及planner/activation两分派本窄阶段未改。测试和helper冻结，仅日志补记终态。父继续负责已接管的旧测试回归及最终同commit发布产物验证。
+
+## 父独立验证与真实Linux载体修正
+
+REGRESSION：父保留原PRIVATE历史文件并修正旧纯planner测试的过时“不存在”断言为前后完整身份与SHA不变；5个旧测试文件172 PASS / 0 failure/error/skip。新合同103项也独立PASS。原件分别见chain-policy-parent-old-20261110-r1.json及chain-policy-parent-new-20261110-r1.json。
+
+真实e4e862b提交双包已从新专用干净LF worktree构建。Linux source-policy54 PASS，但source-regression因源快照遗漏真实Spug adapter依赖而collection exit2，保留失败原件，未宣称真实四组成功。另实际source-policy的父进程只加载records/planner，原验收错误地要求未在该进程加载的repository_minimal。
+
+BDD：快照显式包含实际adapter；source-policy核实际职责的两个模块及所有已记录pin，其他三组仍要求全部三个模块。不得以人工import补数。RED：新4项2 FAIL / 2 PASS / 103 deselected，9.96秒；GREEN：4 PASS / 103 deselected，9.83秒；REGRESSION：完整107 PASS / 0 failure/error/skip，159.88秒，父wrapper输入前后pin保持。原始stdout/JUnit及完整命令见chain-policy-parent-new-20261110-r2.json。后续须新提交、新专属worktree重新执行真实四组。
