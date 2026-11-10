@@ -30,7 +30,7 @@ function exclusive(file,value){
 }
 function args(){
   const value={},flags=new Set(['execute','expect-terminal']);
-  const fields=new Set(['kind','phase','observation','preflight','cycle','selection','expected-application','expected-source','expected-state','expected-parent','expected-base','expected-plan']);
+  const fields=new Set(['kind','phase','observation','preflight','cycle','selection','browser-mode','expected-application','expected-source','expected-state','expected-parent','expected-base','expected-plan']);
   for(let i=2;i<process.argv.length;i++){
     const key=process.argv[i].replace(/^--/,'');
     check(process.argv[i].startsWith('--')&&!Object.hasOwn(value,key),'INVALID_OR_DUPLICATE_ARGUMENT');
@@ -51,7 +51,13 @@ function args(){
     check(selected&&!selected.startsWith('..')&&!path.isAbsolute(selected)&&selected.endsWith('.json'),'TASK_MAIN_SELECTION_REQUIRED');
     value.selection=path.resolve(value.selection);
   }
+  browserPolicy(value);
   return value;
+}
+function browserPolicy(options){
+  const mode=options['browser-mode']??(options.cycle?'headed':'headless');
+  check(['headed','headless'].includes(mode),'EXPLICIT_BROWSER_MODE_INVALID');
+  return {mode,headless:mode==='headless'};
 }
 function artifactPaths(options){
   check(!options.cycle||CYCLE.test(options.cycle),'EXPLICIT_CYCLE_INVALID');
@@ -325,12 +331,13 @@ async function main(){
   const commonSession=path.join(PRIVATE,'spug-active-session.private.json');
   const storageState=options.phase==='verify'?(fs.existsSync(kindSession)?kindSession:fs.existsSync(commonSession)?commonSession:undefined):undefined;
   const {chromium}=require(PLAYWRIGHT);
-  const browser=await chromium.launch({channel:'chrome',headless:!options.cycle,timeout:20000});
+  const browserMode=browserPolicy(options);
+  const browser=await chromium.launch({channel:'chrome',headless:browserMode.headless,timeout:20000});
   const context=await browser.newContext({viewport:{width:1440,height:1080},...(storageState?{storageState}:{})});
   const page=await context.newPage();page.setDefaultTimeout(45000);
-  if(options.cycle)await page.bringToFront();
+  if(!browserMode.headless)await page.bringToFront();
   const report={schemaVersion:'AutomaticIncrementalUiObservation/v1',kind:options.kind,phase:options.phase,
-    observation:options.observation,startedAt:new Date().toISOString(),implementationCommit:reviewed.gate.implementationCommit,
+    observation:options.observation,browserMode:browserMode.mode,startedAt:new Date().toISOString(),implementationCommit:reviewed.gate.implementationCommit,
     spugCommit:reviewed.gate.spugCommit,deploymentSelectionPin:reviewed.gate.deploymentSelectionPin,
     ...cycleFields(reviewed.gate,options.cycle),
     preflightSha256:reviewed.hash,realBrowser:true,identityVerified:false,permissionVerified:false,loginPosts:0,businessPosts:0,

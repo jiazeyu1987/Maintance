@@ -111,7 +111,7 @@ node TASK/automatic_incremental_ui_acceptance.cjs --cycle main-20261110-r6 --sel
 node TASK/automatic_incremental_ui_acceptance.cjs --cycle main-20261110-r6 --selection TASK/main-program-current-installations-45dd7dc-r6-v4.json --kind I1 --phase verify --expect-terminal --observation terminal-1 --preflight TASK/main-i1-verify-preflight.json
 ```
 
-MAIN使用headed Chrome并bringToFront，仍通过普通Playwright点击登录、选择与最终确认，不force click、不API提交或注入页面状态。最终POST放行前wx写入并fsync原请求回执，未知结果只从页面查询同一编号。
+MAIN默认使用headed Chrome并bringToFront；可显式传 `--browser-mode headed|headless`，模式记入实际观察，非法/重复值在启动前拒绝，无失败后自动切换。两种模式均通过普通Playwright点击登录、选择与最终确认，不force click、不API提交或注入页面状态。最终POST放行前wx写入并fsync原请求回执，未知结果只从页面查询同一编号。模式不改变原超时、准入、身份和一POST保护。
 
 新产物为 `automatic-<cycle>-<kind>-ui-submission.json`、`automatic-<cycle>-<kind>-ui-terminal.json`（schema均v3）及同cycle观察结果。私密截图/响应/session位于 `PRIVATE/automatic-incremental-ui/<cycle>/`；旧路径原件不会覆盖。v3记录明确cycle及source/Spug/selection/control/capture/owner绑定；旧分支拒绝v3，新分支拒绝旧schema和错cycle。
 

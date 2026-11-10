@@ -96,8 +96,8 @@ test('MAIN receipt v3 verifies only same cycle/deployment and the original opera
  assert.throws(()=>c.validateMainBaseline(f.gate,f.options,f.expected,{...f.baseline,operationId:'another-operation'}));
  assert.throws(()=>c.validateMainBaseline(f.gate,f.options,f.expected,{...f.baseline,expectedPlan:{...f.expected.plan,parentChainRef:'advanced-current-parent'}}));
 });
-test('headed MAIN path uses ordinary UI actions and retains the durable one-POST guard',()=>{
- assert.match(source,/headless:\s*!options\.cycle/);
+test('MAIN path uses the explicit browser policy, ordinary UI actions and durable one-POST guard',()=>{
+ assert.match(source,/headless:browserMode\.headless/);
  assert.match(source,/await page\.bringToFront\(\)/);
  assert.doesNotMatch(source,/force\s*:\s*true/);
  assert.ok(source.indexOf('exclusive(receiptPath,receipt)')<source.indexOf('report.businessPosts++;'));
