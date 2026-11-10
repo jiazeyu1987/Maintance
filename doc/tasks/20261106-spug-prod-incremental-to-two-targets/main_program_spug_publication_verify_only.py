@@ -68,7 +68,7 @@ def validate_native_command(private,native,argv,program,output,pins,*,timeout):
     continuation.private_raw(private,receipt['stderrPin'],pins)
 
 
-def load_completed_dependency_activation(records,private,reference,c1,failure,source_custody):
+def load_completed_dependency_activation(records,private,reference,c1,failure,source_custody,*,historical=None):
     """Read the real A seven-stage / fifteen-native proof, never A's pre-install gate."""
     pins=[];core=records.pinned(reference)
     need(core.get('schemaVersion')=='MainProgramSpugRuntimeDependencyActivation/v1' and core.get('status')=='PASS' and
@@ -104,7 +104,8 @@ def load_completed_dependency_activation(records,private,reference,c1,failure,so
     mapping={r['originalPin']['path']:r for r in custody['entries']}
     old=source_custody['entries'][0];need(old['originalPin']['path'] not in mapping,'SOURCE_CUSTODY_OVERLAP')
     mapping[old['originalPin']['path']]=old
-    verify_historical_inputs(private,attempt['inputPins'],mapping,pins)
+    if historical is None:verify_historical_inputs(private,attempt['inputPins'],mapping,pins)
+    else:historical.verify_inputs('dependency',core['attemptPin'],attempt['inputPins'],mapping,pins)
     runtime=dependency.validate_runtime_observation(private,records.pinned(inputs['runtimeObservationPin']),c1,
                                                     core['continuationFailurePin'],pins)
     runner=records.pinned(inputs['runnerExitObservationPin'])
@@ -160,14 +161,14 @@ def c1_failure_pin(private,c1):
     return publication.file_pin(Path(private)/(c1['inputs']['outputFile'][:-5]+'.private.json'))
 
 
-def prepare_value(records,private,inputs,input_pin):
+def prepare_value(records,private,inputs,input_pin,*,historical=None):
     if type(inputs) is dict and inputs.get('schemaVersion')=='MainProgramSpugPublicationVerificationInputs/v2':
         need(set(inputs)=={'schemaVersion','baseVerificationInputsPin','resourceTransitionPin','verificationId','outputFile'} and
              type(inputs['verificationId']) is str and re.fullmatch('v[1-9][0-9]*',inputs['verificationId']),'INPUTS_INVALID')
         base_inputs=records.pinned(inputs['baseVerificationInputsPin'])
         need(base_inputs.get('schemaVersion')==INPUT_SCHEMA,'BASE_VERIFICATION_V1_REQUIRED')
-        base=prepare_value(records,private,base_inputs,inputs['baseVerificationInputsPin'])
-        return prepare_transition_verification(records,private,inputs,input_pin,base)
+        base=prepare_value(records,private,base_inputs,inputs['baseVerificationInputsPin'],historical=historical)
+        return prepare_transition_verification(records,private,inputs,input_pin,base,historical=historical)
     fields={'schemaVersion','sourceCommit','revisionId','controlGenerationPin','continuationInputsPin','continuationAttemptPin',
             'continuationFailurePin','continuationCompletionPin','dependencyActivationPin','historicalSourceCustodyPin','verificationId','outputFile'}
     need(type(inputs) is dict and set(inputs)==fields and inputs['schemaVersion']==INPUT_SCHEMA and
@@ -176,13 +177,13 @@ def prepare_value(records,private,inputs,input_pin):
     c1inputs=records.pinned(inputs['continuationInputsPin'])
     need(all(inputs[k]==c1inputs[k] for k in ('sourceCommit','revisionId','controlGenerationPin')) and
          inputs['outputFile']==c1inputs['outputFile'][:-5]+'-verification-'+inputs['verificationId']+'.json','GENERATION_OR_OUTPUT_CHANGED')
-    c1=continuation.prepare_value(records,Path(private),c1inputs,inputs['continuationInputsPin']);pins=[]
+    c1=continuation.prepare_value(records,Path(private),c1inputs,inputs['continuationInputsPin'],historical=historical);pins=[]
     need(inputs['continuationFailurePin']==c1_failure_pin(private,c1),'C1_FAILURE_FILE_CHANGED')
     failure=continuation.private_json(private,inputs['continuationFailurePin'],pins)
     need(failure['attemptPin']==inputs['continuationAttemptPin'],'C1_ATTEMPT_CHANGED')
     custody=records.pinned(inputs['historicalSourceCustodyPin'])
-    prefix=dependency.validate_failed_continuation(c1,private,failure,pins,historical_source_custody=custody)
-    completed=load_completed_dependency_activation(records,private,inputs['dependencyActivationPin'],c1,failure,custody)
+    prefix=dependency.validate_failed_continuation(c1,private,failure,pins,historical_source_custody=custody,historical=historical)
+    completed=load_completed_dependency_activation(records,private,inputs['dependencyActivationPin'],c1,failure,custody,historical=historical)
     need(completed['inputs']['continuationCompletionPin']==inputs['continuationCompletionPin'],'C1_COMPLETION_CHANGED')
     spec=deepcopy(c1['originalSpec']);spec['spugSpec']['observation']['entryPid']=completed['core']['entryAfter']['pid']
     expected=deepcopy(c1['originalSpec']);expected['spugSpec']['observation']['entryPid']=completed['core']['entryAfter']['pid']
@@ -208,7 +209,7 @@ def apply_transition_view(base,completed):
     return value
 
 
-def prepare_transition_verification(records,private,inputs,input_pin,base):
+def prepare_transition_verification(records,private,inputs,input_pin,base,*,historical=None):
     """Consume a fully read A/c1 baseline and an actual transition closure."""
     from main_program_spug_resource_transition import load_completed_transition
     need(type(inputs) is dict and set(inputs)=={'schemaVersion','baseVerificationInputsPin','resourceTransitionPin','verificationId','outputFile'} and
@@ -219,7 +220,7 @@ def prepare_transition_verification(records,private,inputs,input_pin,base):
          base_inputs['schemaVersion']==INPUT_SCHEMA,'BASE_VERIFICATION_CHANGED')
     expected=base_inputs['outputFile'].rsplit('-verification-',1)[0]+'-verification-'+inputs['verificationId']+'.json'
     need(inputs['outputFile']==expected and inputs['outputFile']!=base_inputs['outputFile'],'OUTPUT_CHANGED')
-    completed=load_completed_transition(records,private,inputs['resourceTransitionPin'],base)
+    completed=load_completed_transition(records,private,inputs['resourceTransitionPin'],base,historical=historical)
     value=apply_transition_view(base,completed)
     value['inputs']=dict(base_inputs,schemaVersion=inputs['schemaVersion'],verificationId=inputs['verificationId'],
         outputFile=inputs['outputFile'],baseVerificationInputsPin=inputs['baseVerificationInputsPin'],resourceTransitionPin=inputs['resourceTransitionPin'])
@@ -336,11 +337,11 @@ def validate_stage_native(prepared,private,stage,native_references,result,pins):
 EFFECTS=dict(configurationWrites=False,businessMutationDispatched=False,controlApiQueriesPerformed=True,queryAuditWritesMayOccur=True)
 
 
-def validate_publication_v4(records,private,selected):
+def validate_publication_v4(records,private,selected,*,historical=None):
     need(type(selected) is dict and set(selected)=={'schemaVersion','sourceCommit','controlGenerationPin','spugInstallationPin','verificationInputsPin'} and
          selected['schemaVersion']=='TaskMainProgramInstallations/v4','SELECTION_INVALID')
     inputs=records.pinned(selected['verificationInputsPin'])
-    prepared=prepare_value(records,private,inputs,selected['verificationInputsPin']);bound=binding(prepared);pins=[]
+    prepared=prepare_value(records,private,inputs,selected['verificationInputsPin'],historical=historical);bound=binding(prepared);pins=[]
     inputs=prepared['inputs']
     need(selected['sourceCommit']==inputs['sourceCommit'] and selected['controlGenerationPin']==inputs['controlGenerationPin'] and
          selected['spugInstallationPin']['file']==inputs['outputFile'],'SELECTION_BINDING_CHANGED')
@@ -356,7 +357,9 @@ def validate_publication_v4(records,private,selected):
     need(set(attempt)=={'schemaVersion',*bound,'inputPins','stageOrder','gatePin','claimPin','retryPermitted'} and
          attempt['schemaVersion']=='MainProgramSpugVerificationAttempt/v1' and attempt['stageOrder']==schedule() and
          attempt['retryPermitted'] is False and all(attempt[k]==v for k,v in bound.items()),'ATTEMPT_INVALID')
-    for reference in attempt['inputPins']:publication.verify_bytes(reference);pins.append(reference)
+    if historical is None:
+        for reference in attempt['inputPins']:publication.verify_bytes(reference);pins.append(reference)
+    else:historical.verify_inputs('verification',rich['attemptPin'],attempt['inputPins'],{},pins)
     gate=continuation.private_json(private,attempt['gatePin'],pins)
     need(gate==dict(**bound,automaticRetryPermitted=False),'GATE_CHANGED')
     claim=continuation.private_json(private,attempt['claimPin'],pins)

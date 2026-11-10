@@ -187,7 +187,7 @@ def replace_files(prepared,private,guard):
     return results
 
 
-def _prepare(records,private,inputs,input_pin,*,verify_checkout,allow_unobserved=False,base=None):
+def _prepare(records,private,inputs,input_pin,*,verify_checkout,allow_unobserved=False,base=None,historical=None):
     # A caller may already have read later publications. Their unrelated pins
     # must not enter this transition's immutable input set.
     records=contract.Records(records.task)
@@ -197,7 +197,8 @@ def _prepare(records,private,inputs,input_pin,*,verify_checkout,allow_unobserved
          type(inputs['operationId']) is str and re.fullmatch('r[1-9][0-9]*',inputs['operationId']),'INPUTS_INVALID')
     base_inputs=records.pinned(inputs['baseVerificationInputsPin'])
     need(base_inputs['schemaVersion']==verifier().INPUT_SCHEMA,'BASE_VERIFICATION_V1_REQUIRED')
-    canonical=verifier().prepare_value(records,private,base_inputs,inputs['baseVerificationInputsPin'])
+    canonical=verifier().prepare_value(records,private,base_inputs,inputs['baseVerificationInputsPin'],
+        **({} if historical is None else {'historical':historical}))
     if base is None:base=canonical
     else:
         # The caller already read the full A/c1 closure. Recheck its immutable
@@ -342,7 +343,7 @@ def execute_transition(task,private,prepared,*,transport=None):
         raise ValueError('SPUG_RESOURCE_TRANSITION_FAILED_CHECK_PRIVATE_EVIDENCE') from None
 
 
-def transition_reference(records,private,reference,pins):
+def transition_reference(records,private,reference,pins,*,historical=None):
     """Resolve one explicit reader-custody wrapper, never discover sidecars."""
     value=records.pinned(reference);custody=None
     if value.get('schemaVersion')=='MainProgramSpugResourceTransitionReaderCustody/v1':
@@ -362,8 +363,9 @@ def transition_reference(records,private,reference,pins):
     need(len(readers)==1,'READER_CUSTODY_ORIGINAL_REQUIRED')
     if custody is None:need(readers[0]==current,'READER_CUSTODY_REQUIRED')
     else:
+        bound_current=current if historical is None else historical.reader_version(custody['currentReaderPin'],current)
         need(custody['attemptPin']==value['attemptPin'] and custody['originalReaderPin']==readers[0] and
-             custody['currentReaderPin']==current,'READER_CUSTODY_BINDING_CHANGED')
+             custody['currentReaderPin']==bound_current,'READER_CUSTODY_BINDING_CHANGED')
         try:raw=continuation.private_raw(private,custody['preservedReaderPin'],pins)
         except (ValueError,OSError) as error:
             raise ValueError('SPUG_RESOURCE_TRANSITION_READER_CUSTODY_BYTES_INVALID') from error
@@ -373,11 +375,11 @@ def transition_reference(records,private,reference,pins):
     return value,reference,custody
 
 
-def load_completed_transition(records,private,reference,base):
-    pins=[];core,reference,reader_custody=transition_reference(records,private,reference,pins)
+def load_completed_transition(records,private,reference,base,*,historical=None):
+    pins=[];core,reference,reader_custody=transition_reference(records,private,reference,pins,historical=historical)
     need(type(core) is dict and core.get('schemaVersion')=='MainProgramSpugResourceTransition/v1' and core.get('status')=='PASS','COMPLETED_TRANSITION_REQUIRED')
     inputs=records.pinned(core['transitionInputsPin'])
-    prepared=_prepare(records,private,inputs,core['transitionInputsPin'],verify_checkout=False,base=base)
+    prepared=_prepare(records,private,inputs,core['transitionInputsPin'],verify_checkout=False,base=base,historical=historical)
     need(reference['file']==inputs['outputFile'],'TRANSITION_OUTPUT_CHANGED')
     rich=continuation.private_json(private,core['privateEvidencePin'],pins)
     fields={'schemaVersion','status',*binding(prepared),'attemptPin','entryBefore','entryAfter','entryEnvironmentSha256',
@@ -400,13 +402,19 @@ def load_completed_transition(records,private,reference,base):
     expected=verifier().unique_pins(prepared['inputPins']+[r['originalPin'] for r in custody['entries']])
     if reader_custody is not None:
         old=reader_custody['originalReaderPin'];current=reader_custody['currentReaderPin']
-        need([p for p in expected if p['path']==current['path']]==[current],'READER_CUSTODY_EXPECTATION_CHANGED')
+        expected_current=current if historical is None else publication.file_pin(__file__)
+        need([p for p in expected if p['path']==current['path']]==[expected_current],'READER_CUSTODY_EXPECTATION_CHANGED')
         expected=[old if p['path']==current['path'] else p for p in expected]
         need(old['path'] not in mapping,'READER_CUSTODY_SCOPE_CONFLICT')
         mapping[old['path']]=dict(originalPin=old,preservedPin=reader_custody['preservedReaderPin'])
-    need(type(attempt['inputPins']) is list and len({p['path'] for p in attempt['inputPins']})==len(attempt['inputPins']) and
-         {p['path']:p for p in attempt['inputPins']}=={p['path']:p for p in expected},'ATTEMPT_INPUT_SET_CHANGED')
-    verifier().verify_historical_inputs(private,attempt['inputPins'],mapping,pins)
+    if historical is None:
+        need(type(attempt['inputPins']) is list and len({p['path'] for p in attempt['inputPins']})==len(attempt['inputPins']) and
+             {p['path']:p for p in attempt['inputPins']}=={p['path']:p for p in expected},'ATTEMPT_INPUT_SET_CHANGED')
+        verifier().verify_historical_inputs(private,attempt['inputPins'],mapping,pins)
+    else:
+        historical.assert_expected_inputs('resourceTransition',attempt['inputPins'],expected)
+        historical.verify_inputs('resourceTransition',core['attemptPin'],attempt['inputPins'],
+            {path:{k:row[k] for k in ('originalPin','preservedPin')} for path,row in mapping.items()},pins)
     names=[r['relativePath'] for r in prepared['changes']];audit=Path(private)/(prepared['stem']+'-originals')
     originals=continuation.private_json(private,publication.file_pin(audit/'originals.json'),pins)
     need(type(originals) is list and len(originals)==len(names) and len(rich['replacements'])==len(names),'ORIGINAL_SET_CHANGED')

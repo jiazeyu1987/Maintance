@@ -155,7 +155,7 @@ def validate_checkout_observation(private,reference,source_commit,workspace):
     return pins
 
 
-def validate_failed_continuation(prepared,private,failure,pins,*,historical_source_custody=None):
+def validate_failed_continuation(prepared,private,failure,pins,*,historical_source_custody=None,historical=None):
     """Read the real successful prefix and the failed native final verification.
 
     No success object is synthesized for the frozen v3 full-success reader.
@@ -189,9 +189,13 @@ def validate_failed_continuation(prepared,private,failure,pins,*,historical_sour
              old['path']!=kept['path'] and all(old[k]==kept[k] for k in ('bytes','sha256')),
              'C1_HISTORICAL_SOURCE_MAPPING_INVALID')
         c.private_raw(private,kept,pins)
-    for pin in attempt['inputPins']:
-        if mapped is not None and pin==mapped['originalPin']:continue
-        publication.verify_bytes(pin);pins.append(pin)
+    if historical is None:
+        for pin in attempt['inputPins']:
+            if mapped is not None and pin==mapped['originalPin']:continue
+            publication.verify_bytes(pin);pins.append(pin)
+    else:
+        historical.verify_inputs('continuation',failure['attemptPin'],attempt['inputPins'],
+            {} if mapped is None else {mapped['originalPin']['path']:mapped},pins)
     for key in ('claimPin','gatePin'):
         value=c.private_json(private,attempt[key],pins)
         need(all(value.get(k)==v for k,v in binding.items()),'C1_CLAIM_CHANGED')

@@ -246,7 +246,7 @@ def check_custody_barrier(rows, expected_count):
             need(all(custody[k]==expected[k] for k in ('bytes','sha256')),'CONTINUATION_CUSTODY_BYTES_CHANGED')
 
 
-def validate_source_custody(value, attempt_pin, originals, task, private):
+def validate_source_custody(value, attempt_pin, originals, task, private, *, historical=None):
     need(type(value) is dict and set(value)=={'schemaVersion','originalAttemptPin','entries'} and
          value['schemaVersion']=='MainProgramSpugPublicationSourceCustody/v1' and
          value['originalAttemptPin']==attempt_pin and type(value['entries']) is list,
@@ -262,21 +262,25 @@ def validate_source_custody(value, attempt_pin, originals, task, private):
         need(all(old[k]==kept[k] for k in ('bytes','sha256')) and
              str(Path(kept['path']))!=path,'CONTINUATION_SOURCE_CUSTODY_CHANGED')
         mapped[path]=kept
-    for reference in originals:
-        path=str(Path(reference['path']))
-        if path not in mapped:
-            reader.verify_bytes(reference);pins.append(reference)
+    if historical is None:
+        for reference in originals:
+            path=str(Path(reference['path']))
+            if path not in mapped:
+                reader.verify_bytes(reference);pins.append(reference)
+    else:
+        historical.verify_inputs('publication',attempt_pin,originals,
+            {row['originalPin']['path']:row for row in value['entries']},pins)
     return pins
 
 
-def load_failed_originals(records, private, inputs, spec, pins):
+def load_failed_originals(records, private, inputs, spec, pins, *, historical=None):
     old=spec['inputs'];old_pin=inputs['originalPublicationInputsPin']
     failure=private_json(private,inputs['originalFailurePin'],pins)
     attempt=private_json(private,inputs['originalAttemptPin'],pins)
     stages=[private_json(private,row['resultPin'],pins) for row in failure['stages']]
     validate_failure_records(old,old_pin,failure,attempt,stages)
     custody=records.pinned(inputs['originalSourceCustodyPin'])
-    pins.extend(validate_source_custody(custody,inputs['originalAttemptPin'],attempt['inputPins'],records.task,private))
+    pins.extend(validate_source_custody(custody,inputs['originalAttemptPin'],attempt['inputPins'],records.task,private,historical=historical))
     for index,(row,stage) in enumerate(zip(failure['stages'],stages)):
         name=row['stage'];lane,phase,*hosts=name.split('-');host=hosts[0] if hosts else None
         root=old['outputFile'][:-5]+'.'+name
@@ -354,7 +358,7 @@ def prepare_continuation(task, private, inputs_file):
     return prepare_value(records,Path(private),inputs,input_pin)
 
 
-def prepare_value(records, private, inputs, input_pin):
+def prepare_value(records, private, inputs, input_pin, *, historical=None):
     fields={'schemaVersion','sourceCommit','revisionId','controlGenerationPin','spugResourceBuildPin',
         'originalPublicationInputsPin','originalAttemptPin','originalFailurePin','originalSourceCustodyPin',
         'failureStatePin','mountObservationPin','resourceActivationPin','continuationId','outputFile'}
@@ -371,7 +375,7 @@ def prepare_value(records, private, inputs, input_pin):
         bundle['targets'],[],[],context['resource'],context['resourcePins'],extra_pins=bundle['inputPins'])
     spec.update(publicationInputsPin=inputs['originalPublicationInputsPin'],
                 generationPins={k:bundle['generation'][k] for k in ('buildPin','planPin')})
-    pins=[];failure=load_failed_originals(records,private,inputs,spec,pins)
+    pins=[];failure=load_failed_originals(records,private,inputs,spec,pins,historical=historical)
     mount=load_mount_observation(records,private,inputs['mountObservationPin'],inputs['originalPublicationInputsPin'],
                                  inputs['originalFailurePin'],spec['spugSpec']['observation']);pins.extend(mount['pins'])
     routes=classify_writes(spec['spugSpec']['writes'],mount['value']['mounts'])
