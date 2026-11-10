@@ -1,0 +1,122 @@
+{
+  "schemaVersion": "LegacyOriginalSqlStaticProjection/v1",
+  "status": "BOUNDED_STATIC_INSPECTION_COMPLETE_NOT_REPLAYED",
+  "recoveryPointRef": "smallapp-e774fa9f6f544aea8d3cbc9208d05938",
+  "originalSqlGzipPin": {
+    "bytes": 1552,
+    "path": "/mnt/intruoyi-backup-nas/Backup/BackupPackage/smallapp-normal-fast-20261023/59/archives/prod-lightweight-aea4990d9a8f1a6d338f1b71948fc0ab99ea100fc3d96a2315067d8765d07bd1/payload/database.sql.gz",
+    "sha256": "6b5d759739aa4032f0c4c93df1ea19c3409c640ad89d4dc230249396fd959840"
+  },
+  "localSqlGzipPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-sql-original-read-20261110-r1.private.sql.gz",
+    "bytes": 1552,
+    "sha256": "6b5d759739aa4032f0c4c93df1ea19c3409c640ad89d4dc230249396fd959840"
+  },
+  "readbackReceiptPin": {
+    "file": "C:/Users/D01021/.codex/worktrees/spug-restore-targets/Maintance/doc/tasks/20261106-spug-prod-incremental-to-two-targets/small-registered-original-readback-20261110-r1.json",
+    "bytes": 3001,
+    "sha256": "46e397bf6f4431b4d87ac62db1bc430cae6d60378c49d850d1ad113883dd0329"
+  },
+  "originalReadbackNativeExitCode": 0,
+  "originalReadbackStderrPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-sql-original-read-20261110-r1.stderr.private.log",
+    "bytes": 84,
+    "sha256": "15054c8e33cc4e6c6bff7199159176772581deadee0d11c3270ff1064e1368ef"
+  },
+  "expansion": {
+    "limitBytes": 262144,
+    "expandedBytes": 4514,
+    "singleGzipMember": true,
+    "crc32Verified": true,
+    "trailerIsizeVerified": true,
+    "completeEofVerified": true,
+    "utf8DecodedStrictly": true,
+    "sqlBytesUnmodified": true,
+    "privateSqlPin": {
+      "path": "C:/Spug/runtime/private/prod-incremental-to-two-targets-20261106/legacy-e774fa9-sql-original-expanded-20261111-r1.private.sql",
+      "bytes": 4514,
+      "sha256": "ba80438b813a18c7838865081f3cce121c8233d944cd25cd78ad09978c02562b"
+    }
+  },
+  "declarations": {
+    "mysqldumpHeader": "MySQL dump 10.13  Distrib 8.0.39, for Linux (x86_64)",
+    "serverVersionHeader": "8.0.39",
+    "headerDatabase": "rehearsal",
+    "createTableNames": [
+      "lab_attachment",
+      "lab_record",
+      "lab_user"
+    ],
+    "createTableDeclarationCount": 3,
+    "useDatabaseNames": [],
+    "databaseDdlStatements": [],
+    "statementHeadCounts": {
+      "SET": 27,
+      "DROP": 3,
+      "CREATE": 3,
+      "LOCK": 3,
+      "ALTER": 6,
+      "INSERT": 3,
+      "UNLOCK": 3
+    },
+    "setVariableNames": [
+      "CHARACTER_SET_CLIENT",
+      "CHARACTER_SET_RESULTS",
+      "COLLATION_CONNECTION",
+      "FOREIGN_KEY_CHECKS",
+      "OLD_CHARACTER_SET_CLIENT",
+      "OLD_CHARACTER_SET_RESULTS",
+      "OLD_COLLATION_CONNECTION",
+      "OLD_FOREIGN_KEY_CHECKS",
+      "OLD_SQL_MODE",
+      "OLD_SQL_NOTES",
+      "OLD_TIME_ZONE",
+      "OLD_UNIQUE_CHECKS",
+      "SQL_MODE",
+      "SQL_NOTES",
+      "TIME_ZONE",
+      "UNIQUE_CHECKS",
+      "character_set_client",
+      "saved_cs_client"
+    ],
+    "externalClientOrFileOrDynamicDirectives": [],
+    "clientSourceOrShellEscapeAtLineStart": false,
+    "explicitQualifiedTableNames": [],
+    "allDirectDumpTableReferenceNames": [
+      "lab_attachment",
+      "lab_record",
+      "lab_user"
+    ],
+    "qualifiedDirectDumpTableReferences": [],
+    "externalDirectiveAbsenceScope": "Inspected finite dump statement categories and MySQL executable comments; quoted literals excluded. This is not a general-purpose SQL policy approval."
+  },
+  "limitsOfProof": [
+    "Static declarations and successful gzip integrity only; no SQL executed or schema/data observed.",
+    "No claim about source snapshot, replay success, table-count completeness after execution, or MAIN compatibility.",
+    "Static tokenizer retains MySQL executable-version comments and masks quoted literals; it is not a general SQL security validator."
+  ],
+  "sqlExecuted": false,
+  "dockerInvoked": false,
+  "networkReads": 0,
+  "restoreDispatched": false,
+  "sourceSnapshotVerified": false,
+  "mainCompatibilityProven": false,
+  "runtimePrerequisite": {
+    "sourceMaterialLocalPin": {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-database-originals-r4\\smallapp-e774fa9f6f544aea8d3cbc9208d05938\\material.json",
+      "bytes": 44034,
+      "sha256": "db3b1e53bb5583c0413b171c01ce6df4b73760a5e80df7f5c565f54f00c1f606"
+    },
+    "originalVersionPins": [
+      {
+        "bytes": 602,
+        "path": "/mnt/intruoyi-data/smallapp-safe-20261022/configuration/images.json",
+        "sha256": "2a7f56897cd7c3789a36c038ddcc5abcca762fa4d9b0cf764d36ff14314d2fae"
+      }
+    ],
+    "captureEndPositionServerVersion": "8.0.39",
+    "exactMySqlImageId": null,
+    "exactImageIdReason": "This exact 602-byte original version pin has no local raw copy or exact role binding in the explicitly reviewed historical-program-inputs record. SQL header and same-version/group 050 metadata do not identify the MySQL role image. Read that pinned original version document with explicit mysql versionPath before selecting an image; do not choose mysql:8.0.39 by tag.",
+    "actualRuntimeVersionStillMustBeMeasured": true
+  }
+}

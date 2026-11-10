@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "SmallRegisteredOriginalReadback/v1",
+  "observedAt": "2026-11-10T17:07:03.100936+00:00",
+  "status": "CONTENT_PINS_VERIFIED",
+  "remoteWrites": false,
+  "sqlExecuted": false,
+  "restoreDispatched": false,
+  "copies": [
+    {
+      "label": "legacy-e774fa9-images",
+      "originalPin": {
+        "bytes": 602,
+        "path": "/mnt/intruoyi-data/smallapp-safe-20261022/configuration/images.json",
+        "sha256": "2a7f56897cd7c3789a36c038ddcc5abcca762fa4d9b0cf764d36ff14314d2fae"
+      },
+      "localCopyPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-images-original-read-20261110-r1.private.json",
+        "bytes": 602,
+        "sha256": "2a7f56897cd7c3789a36c038ddcc5abcca762fa4d9b0cf764d36ff14314d2fae"
+      },
+      "native": {
+        "host": "172.30.30.59",
+        "returnCode": 0,
+        "streams": {
+          "stdout": {
+            "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-images-original-read-20261110-r1.stdout.private.log",
+            "bytes": 1006,
+            "sha256": "b1a02ae3e1f95774d8b1f6f2cef2b999f72316e05661f60a5d119d275d3e9df0"
+          },
+          "stderr": {
+            "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-images-original-read-20261110-r1.stderr.private.log",
+            "bytes": 84,
+            "sha256": "bb14af4bdf0d2884dcd65dc72ee10f4ea7e609c8f68a76f35f85de6aadd73fc4"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,224 @@
+{
+  "schemaVersion": "OriginalBackupProgressObservation/v1",
+  "operationId": "smallapp-3c2395ff88bd474e9fc007649565b848",
+  "observedAt": "2026-11-10T16:58:51.181154+00:00",
+  "remoteWrites": false,
+  "native": {
+    "returncode": 0,
+    "elapsedSeconds": 0.35999999986961484,
+    "streams": {
+      "stdout": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-progress-20261110-r6.stdout.private.log",
+        "bytes": 8529,
+        "sha256": "ac414a903004a8c3ef53ff802a5177d3137ab04bc0b3bf3e507bf39104c8c282"
+      },
+      "stderr": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-progress-20261110-r6.stderr.private.log",
+        "bytes": 84,
+        "sha256": "4ac992a3e0db751a7a4477180ef156cb89e0f046916205e5e664693aa2af344a"
+      }
+    }
+  },
+  "ownerFiles": [
+    "start.json",
+    "worker-process.json",
+    "timing-archive-admission-end.json",
+    "timing-source-capture-start.json",
+    "timing-archive-admission-start.json"
+  ],
+  "captureFiles": [
+    {
+      "name": "worker-stderr.log",
+      "bytes": 0
+    },
+    {
+      "name": "event-0009.json",
+      "bytes": 84
+    },
+    {
+      "name": "event-0004.json",
+      "bytes": 86
+    },
+    {
+      "name": "job-request.json",
+      "bytes": 239
+    },
+    {
+      "name": "event-0008.json",
+      "bytes": 311
+    },
+    {
+      "name": "event-0002.json",
+      "bytes": 82
+    },
+    {
+      "name": "job-stderr.log",
+      "bytes": 0
+    },
+    {
+      "name": "job-configuration.json",
+      "bytes": 4770
+    },
+    {
+      "name": "event-0006.json",
+      "bytes": 311
+    },
+    {
+      "name": "worker-started.json",
+      "bytes": 54
+    },
+    {
+      "name": "event-0007.json",
+      "bytes": 148
+    },
+    {
+      "name": "job-started.json",
+      "bytes": 54
+    },
+    {
+      "name": "event-0003.json",
+      "bytes": 112
+    },
+    {
+      "name": "event-0005.json",
+      "bytes": 148
+    },
+    {
+      "name": "event-0001.json",
+      "bytes": 78
+    },
+    {
+      "name": "operation.json",
+      "bytes": 835
+    }
+  ],
+  "active": [
+    {
+      "pid": 27811,
+      "state": "S",
+      "commandSha256": "04bf40be5c4a7805d43c5bc50ca126cf9e024fa5a8faa8a1485e69d8ae1016e9",
+      "io": "rchar: 1568807138\nwchar: 930930\nsyscr: 151497\nsyscw: 1737\nread_bytes: 62357504\nwrite_bytes: 7110656\ncancelled_write_bytes: 0\n"
+    },
+    {
+      "pid": 28783,
+      "state": "S",
+      "commandSha256": "658f78ddf0ad384a797098c5df8e46d2504a24365d8e4a7032140ac21bfd1e7f",
+      "io": "rchar: 2715701\nwchar: 5063\nsyscr: 250\nsyscw: 3\nread_bytes: 0\nwrite_bytes: 16384\ncancelled_write_bytes: 0\n"
+    },
+    {
+      "pid": 28800,
+      "state": "S",
+      "commandSha256": "286153ba5ec9f3545f1aa2ab1694b276e97eb7cceca8cc04b7ef4ce0b5798e0d",
+      "io": "rchar: 28793814002\nwchar: 30446876338\nsyscr: 1754569\nsyscw: 722035\nread_bytes: 2109714432\nwrite_bytes: 17924411392\ncancelled_write_bytes: 1464012800\n"
+    },
+    {
+      "pid": 30579,
+      "state": "R",
+      "commandSha256": "b87087f06412c65616bfea5d19858a5e66976b87869ca72a70fc4d1d2a08133b",
+      "io": "rchar: 2657481\nwchar: 0\nsyscr: 225\nsyscw: 0\nread_bytes: 0\nwrite_bytes: 0\ncancelled_write_bytes: 0\n"
+    }
+  ],
+  "captureStages": {
+    "operation.json": {
+      "startedAt": "2026-11-10T16:05:54.402914+00:00"
+    },
+    "worker-started.json": {
+      "pid": 28800
+    },
+    "job-started.json": {
+      "pid": 28783
+    },
+    "event-0009.json": {
+      "stage": "WRITERS_STOPPED_DATABASE_FENCED"
+    },
+    "event-0004.json": {
+      "stage": "CONFIGURATION_AND_IMAGES_CAPTURED"
+    },
+    "event-0008.json": {
+      "stage": "CONTAINER_COMMAND_EXIT"
+    },
+    "event-0002.json": {
+      "stage": "CAPTURE_DEPENDENCIES_VERIFIED"
+    },
+    "event-0006.json": {
+      "stage": "CONTAINER_COMMAND_EXIT"
+    },
+    "event-0007.json": {
+      "stage": "STOP_REQUESTED"
+    },
+    "event-0003.json": {
+      "stage": "IMAGE_EXPORT_COMPLETE"
+    },
+    "event-0005.json": {
+      "stage": "STOP_REQUESTED"
+    },
+    "event-0001.json": {
+      "stage": "SOURCE_PREFLIGHT_VERIFIED"
+    }
+  },
+  "capturePayloadFiles": [
+    {
+      "name": "050-original-images.json",
+      "bytes": 666
+    },
+    {
+      "name": "database-log-mode.json",
+      "bytes": 50
+    },
+    {
+      "name": "original-application-images.tar",
+      "bytes": 2081399296
+    },
+    {
+      "name": "database.sql.gz",
+      "bytes": 6128179902
+    }
+  ],
+  "originalProcessTree": [
+    {
+      "pid": 25408,
+      "parentPid": 28800,
+      "state": "S",
+      "commandSha256": "89f4a4678547c6bd2b08ddd203d71ffe46a4d1c8165f117dc2d89a9c655f7325",
+      "executable": "/usr/bin/docker",
+      "io": "rchar: 22885\nwchar: 3480\nsyscr: 49\nsyscw: 6\nread_bytes: 0\nwrite_bytes: 0\ncancelled_write_bytes: 0\n",
+      "openPayloadFiles": []
+    },
+    {
+      "pid": 27811,
+      "parentPid": 1,
+      "state": "S",
+      "commandSha256": "04bf40be5c4a7805d43c5bc50ca126cf9e024fa5a8faa8a1485e69d8ae1016e9",
+      "executable": "/usr/local/libexec/spug-source-control-20261105/python/bin/python3.12",
+      "io": "rchar: 1568807138\nwchar: 930930\nsyscr: 151497\nsyscw: 1737\nread_bytes: 62357504\nwrite_bytes: 7110656\ncancelled_write_bytes: 0\n",
+      "openPayloadFiles": []
+    },
+    {
+      "pid": 28783,
+      "parentPid": 1,
+      "state": "S",
+      "commandSha256": "658f78ddf0ad384a797098c5df8e46d2504a24365d8e4a7032140ac21bfd1e7f",
+      "executable": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/python/bin/python3.12",
+      "io": "rchar: 2715701\nwchar: 5063\nsyscr: 250\nsyscw: 3\nread_bytes: 0\nwrite_bytes: 16384\ncancelled_write_bytes: 0\n",
+      "openPayloadFiles": []
+    },
+    {
+      "pid": 28800,
+      "parentPid": 28783,
+      "state": "S",
+      "commandSha256": "286153ba5ec9f3545f1aa2ab1694b276e97eb7cceca8cc04b7ef4ce0b5798e0d",
+      "executable": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/python/bin/python3.12",
+      "io": "rchar: 28793814002\nwchar: 30446876338\nsyscr: 1754569\nsyscw: 722035\nread_bytes: 2109714432\nwrite_bytes: 17924411392\ncancelled_write_bytes: 1464012800\n",
+      "openPayloadFiles": []
+    },
+    {
+      "pid": 30579,
+      "parentPid": 27811,
+      "state": "R",
+      "commandSha256": "b87087f06412c65616bfea5d19858a5e66976b87869ca72a70fc4d1d2a08133b",
+      "executable": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/python/bin/python3.12",
+      "io": "rchar: 2710876\nwchar: 0\nsyscr: 244\nsyscw: 0\nread_bytes: 0\nwrite_bytes: 0\ncancelled_write_bytes: 0\n",
+      "openPayloadFiles": []
+    }
+  ]
+}

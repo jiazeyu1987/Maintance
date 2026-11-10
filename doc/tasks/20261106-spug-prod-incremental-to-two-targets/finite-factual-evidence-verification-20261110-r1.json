@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "FiniteTaskEvidenceVerification/v1",
+  "status": "PASS",
+  "scope": "15 bounded factual reports and reviewed designs; no product or restore admission",
+  "utf8": true,
+  "sensitiveValueKeyScan": true,
+  "files": [
+    {
+      "file": "legacy-settings-local-prerequisites-20261111-r1.json",
+      "bytes": 438026,
+      "sha256": "7ef801925b56ad841cd9c413e4dd0083cf826919472ca23d2e15149a9815fac2"
+    },
+    {
+      "file": "legacy-settings-local-prerequisites-execution.md",
+      "bytes": 6178,
+      "sha256": "65e4a5e6b4cd9684a2ebaf0e87456d10357fa1fe243e7a4868b5b51c5822ac4d"
+    },
+    {
+      "file": "small-registered-original-readback-20261110-r1.json",
+      "bytes": 3001,
+      "sha256": "46e397bf6f4431b4d87ac62db1bc430cae6d60378c49d850d1ad113883dd0329"
+    },
+    {
+      "file": "small-registered-program-version-readback-20261110-r1.json",
+      "bytes": 1547,
+      "sha256": "a50161435f0deb0677799b2adadfb8622c5fe6fc4301de2d7e8a63885bfef0dd"
+    },
+    {
+      "file": "legacy-e774fa9-sql-static-projection-20261111-r1.json",
+      "bytes": 5202,
+      "sha256": "9344902d9a61dbcf1672abe0f569a1db045131c34fb2641c75d24a5e25e04d84"
+    },
+    {
+      "file": "legacy-e774fa9-sql-static-reference-plan.md",
+      "bytes": 9590,
+      "sha256": "01ae3917a72f131c96c65326687d72ad20e3576cd73ca56b1856086969c4d45d"
+    },
+    {
+      "file": "legacy-e774fa9-isolated-reference-execution-plan.md",
+      "bytes": 15376,
+      "sha256": "6324bdd1bb4c111d138762a59e18d27bc8c11ab9880f9045b9528cd1785cca58"
+    },
+    {
+      "file": "main-target-preservation-layout-addendum.md",
+      "bytes": 15077,
+      "sha256": "e9daf116817cc869a8076ae3ba3c5667f72064e3a01097971083b96e851c81a5"
+    },
+    {
+      "file": "main-target-preservation-mount-layout-20261110-r1.json",
+      "bytes": 7908,
+      "sha256": "c02bf3d74aa14e11c3bd8cc8d0bf0500a2734c94578ae3a5bfb1733fb64c6ba8"
+    },
+    {
+      "file": "main-target-preservation-mount-layout-20261110-r2.json",
+      "bytes": 13547,
+      "sha256": "a1614485fb0d9aa87416902949b7d3abc9a3f945a533dca10b7b25280a8e6df8"
+    },
+    {
+      "file": "automatic-main-r7-20261110-full-progress-r4.json",
+      "bytes": 6413,
+      "sha256": "956b75bcecdf34769c70a18fa3e79636ac1e46a57fdbafff472d9cd27a0da9a6"
+    },
+    {
+      "file": "automatic-main-r7-20261110-full-progress-r5.json",
+      "bytes": 6292,
+      "sha256": "6e7271f3964338ddafffe7999788072a9aed720feb5f907092eed285c1bf7066"
+    },
+    {
+      "file": "automatic-main-r7-20261110-full-progress-r6.json",
+      "bytes": 6632,
+      "sha256": "371fe40c9ca12aa6b4c276e54878e94d4e008a71008b0d859266f80a75889977"
+    },
+    {
+      "file": "automatic-main-r7-20261110-full-progress-r7.json",
+      "bytes": 6599,
+      "sha256": "ea1a2664050b37af2aac749e46a768e5eac1f5887b100d6c9d917e0579a77692"
+    },
+    {
+      "file": "automatic-main-r7-20261110-full-progress-r8.json",
+      "bytes": 6301,
+      "sha256": "2bde8dd11de0e964b269a830e6842ce2d0bbf9b73ad81b362e7721904f462e65"
+    }
+  ],
+  "sqlExecuted": false,
+  "remoteWrites": false
+}

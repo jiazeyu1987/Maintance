@@ -1,0 +1,264 @@
+{
+  "schemaVersion": "TargetPreservationMountLayoutObservation/v1",
+  "status": "READ_ONLY_MOUNT_FACTS_NOT_WRITE_ADMISSION",
+  "remoteWrites": false,
+  "dockerInvoked": false,
+  "pathStatPerformed": false,
+  "hosts": [
+    {
+      "host": "172.30.30.57",
+      "observedAt": "2026-11-10T17:19:34.732456+00:00",
+      "uid": 0,
+      "gid": 0,
+      "groups": [
+        0
+      ],
+      "candidates": [
+        {
+          "candidateParent": "/mnt/nas",
+          "exactMountPoint": false,
+          "coveringMount": {
+            "mountId": 93,
+            "parentId": 0,
+            "majorMinor": "253:0",
+            "root": "/",
+            "mountPoint": "/",
+            "viewMode": [
+              "rw"
+            ],
+            "filesystem": "xfs",
+            "source": "/dev/mapper/cl-root",
+            "superMode": [
+              "rw"
+            ]
+          }
+        },
+        {
+          "candidateParent": "/mnt/intruoyi-backup-nas",
+          "exactMountPoint": true,
+          "coveringMount": {
+            "mountId": 290,
+            "parentId": 93,
+            "majorMinor": "0:46",
+            "root": "/",
+            "mountPoint": "/mnt/intruoyi-backup-nas",
+            "viewMode": [
+              "ro"
+            ],
+            "filesystem": "cifs",
+            "source": "//172.30.30.4/IT共享",
+            "superMode": [
+              "ro"
+            ]
+          }
+        },
+        {
+          "candidateParent": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas",
+          "exactMountPoint": true,
+          "coveringMount": {
+            "mountId": 432,
+            "parentId": 120,
+            "majorMinor": "0:50",
+            "root": "/",
+            "mountPoint": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas",
+            "viewMode": [
+              "rw"
+            ],
+            "filesystem": "cifs",
+            "source": "//172.30.30.4/IT共享",
+            "superMode": [
+              "rw"
+            ]
+          }
+        }
+      ],
+      "native": {
+        "host": "172.30.30.57",
+        "returnCode": 0,
+        "elapsedSeconds": 3.25,
+        "streams": {
+          "stdout": {
+            "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-mount-layout-20261110-r1-57.stdout.private.log",
+            "bytes": 20503,
+            "sha256": "79fa54482d208231ebdd6b4e94d9da7f1058fc0854d0c217d48fc56129dcf462"
+          },
+          "stderr": {
+            "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-mount-layout-20261110-r1-57.stderr.private.log",
+            "bytes": 84,
+            "sha256": "962271877cf9b814babf31b04a08d0fb769cb4fef65e744eca7b7e9c1ddf4f01"
+          }
+        }
+      }
+    },
+    {
+      "host": "172.30.30.58",
+      "observedAt": "2026-11-10T17:19:37.235526+00:00",
+      "uid": 0,
+      "gid": 0,
+      "groups": [
+        0
+      ],
+      "candidates": [
+        {
+          "candidateParent": "/mnt/nas",
+          "exactMountPoint": false,
+          "coveringMount": {
+            "mountId": 93,
+            "parentId": 0,
+            "majorMinor": "253:0",
+            "root": "/",
+            "mountPoint": "/",
+            "viewMode": [
+              "rw"
+            ],
+            "filesystem": "xfs",
+            "source": "/dev/mapper/cl-root",
+            "superMode": [
+              "rw"
+            ]
+          }
+        },
+        {
+          "candidateParent": "/mnt/intruoyi-backup-nas",
+          "exactMountPoint": true,
+          "coveringMount": {
+            "mountId": 45,
+            "parentId": 93,
+            "majorMinor": "0:43",
+            "root": "/",
+            "mountPoint": "/mnt/intruoyi-backup-nas",
+            "viewMode": [
+              "rw"
+            ],
+            "filesystem": "autofs",
+            "source": "systemd-1",
+            "superMode": [
+              "rw"
+            ]
+          }
+        },
+        {
+          "candidateParent": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas",
+          "exactMountPoint": true,
+          "coveringMount": {
+            "mountId": 1206,
+            "parentId": 119,
+            "majorMinor": "0:212",
+            "root": "/",
+            "mountPoint": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas",
+            "viewMode": [
+              "ro"
+            ],
+            "filesystem": "cifs",
+            "source": "//172.30.30.4/IT共享",
+            "superMode": [
+              "rw"
+            ]
+          }
+        }
+      ],
+      "native": {
+        "host": "172.30.30.58",
+        "returnCode": 0,
+        "elapsedSeconds": 0.875,
+        "streams": {
+          "stdout": {
+            "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-mount-layout-20261110-r1-58.stdout.private.log",
+            "bytes": 21223,
+            "sha256": "248c55c9ad2231b87a347897e919950b84c2b594a6bf6b3ea0102b3f765a0f54"
+          },
+          "stderr": {
+            "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-mount-layout-20261110-r1-58.stderr.private.log",
+            "bytes": 84,
+            "sha256": "0620261b1c7b9f5caa2195506ecf76209d636d180806bb974d63fc2650b27738"
+          }
+        }
+      }
+    },
+    {
+      "host": "172.30.30.59",
+      "observedAt": "2026-11-10T17:19:38.419991+00:00",
+      "uid": 0,
+      "gid": 0,
+      "groups": [
+        0
+      ],
+      "candidates": [
+        {
+          "candidateParent": "/mnt/nas",
+          "exactMountPoint": false,
+          "coveringMount": {
+            "mountId": 40,
+            "parentId": 0,
+            "majorMinor": "253:0",
+            "root": "/",
+            "mountPoint": "/",
+            "viewMode": [
+              "rw"
+            ],
+            "filesystem": "xfs",
+            "source": "/dev/mapper/centos-root",
+            "superMode": [
+              "rw"
+            ]
+          }
+        },
+        {
+          "candidateParent": "/mnt/intruoyi-backup-nas",
+          "exactMountPoint": true,
+          "coveringMount": {
+            "mountId": 268,
+            "parentId": 40,
+            "majorMinor": "0:39",
+            "root": "/",
+            "mountPoint": "/mnt/intruoyi-backup-nas",
+            "viewMode": [
+              "rw"
+            ],
+            "filesystem": "cifs",
+            "source": "//172.30.30.4/IT共享",
+            "superMode": [
+              "rw"
+            ]
+          }
+        },
+        {
+          "candidateParent": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas",
+          "exactMountPoint": true,
+          "coveringMount": {
+            "mountId": 511,
+            "parentId": 40,
+            "majorMinor": "0:39",
+            "root": "/",
+            "mountPoint": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas",
+            "viewMode": [
+              "ro"
+            ],
+            "filesystem": "cifs",
+            "source": "//172.30.30.4/IT共享",
+            "superMode": [
+              "rw"
+            ]
+          }
+        }
+      ],
+      "native": {
+        "host": "172.30.30.59",
+        "returnCode": 0,
+        "elapsedSeconds": 0.609,
+        "streams": {
+          "stdout": {
+            "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-mount-layout-20261110-r1-59.stdout.private.log",
+            "bytes": 24131,
+            "sha256": "aac0fbaee9bef785be7a4524e5fccddd7d05d6de634affd4237eef4f48b769c9"
+          },
+          "stderr": {
+            "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-mount-layout-20261110-r1-59.stderr.private.log",
+            "bytes": 84,
+            "sha256": "51cc69a35eaab37686c6743ca667ab919add0267bce0be131c04a4329826e85a"
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "schemaVersion": "SmallRegisteredOriginalReadback/v1",
+  "observedAt": "2026-11-10T16:54:36.414933+00:00",
+  "status": "CONTENT_PINS_VERIFIED",
+  "remoteWrites": false,
+  "sqlExecuted": false,
+  "restoreDispatched": false,
+  "copies": [
+    {
+      "label": "source-57-capture",
+      "originalPin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/capture-binlog-tmpfs-20261107-v3.json",
+        "bytes": 4753,
+        "sha256": "0c00504b14ca5715ab205d2c43ad7c958f6014ab205f80e4e511df0a241f1c6f"
+      },
+      "localCopyPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\source-57-capture-original-read-20261110-r1.private.json",
+        "bytes": 4753,
+        "sha256": "0c00504b14ca5715ab205d2c43ad7c958f6014ab205f80e4e511df0a241f1c6f"
+      },
+      "native": {
+        "host": "172.30.30.57",
+        "returnCode": 0,
+        "streams": {
+          "stdout": {
+            "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\source-57-capture-original-read-20261110-r1.stdout.private.log",
+            "bytes": 6591,
+            "sha256": "7c213d51fafca8d05d5c7f70f04b39bfc51f599544d2a726a1f310ac372d0f94"
+          },
+          "stderr": {
+            "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\source-57-capture-original-read-20261110-r1.stderr.private.log",
+            "bytes": 84,
+            "sha256": "71b51f16ebaf72446ba9082fce4cf075647d9b1913ddf7fa05a1804db4090392"
+          }
+        }
+      }
+    },
+    {
+      "label": "legacy-e774fa9-sql",
+      "originalPin": {
+        "bytes": 1552,
+        "path": "/mnt/intruoyi-backup-nas/Backup/BackupPackage/smallapp-normal-fast-20261023/59/archives/prod-lightweight-aea4990d9a8f1a6d338f1b71948fc0ab99ea100fc3d96a2315067d8765d07bd1/payload/database.sql.gz",
+        "sha256": "6b5d759739aa4032f0c4c93df1ea19c3409c640ad89d4dc230249396fd959840"
+      },
+      "localCopyPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-sql-original-read-20261110-r1.private.sql.gz",
+        "bytes": 1552,
+        "sha256": "6b5d759739aa4032f0c4c93df1ea19c3409c640ad89d4dc230249396fd959840"
+      },
+      "native": {
+        "host": "172.30.30.59",
+        "returnCode": 0,
+        "streams": {
+          "stdout": {
+            "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-sql-original-read-20261110-r1.stdout.private.log",
+            "bytes": 2401,
+            "sha256": "545323eb25782d9bc7038d9ad63b95d2fb2b2aeb813dc734bb8e7aa7c7f6407d"
+          },
+          "stderr": {
+            "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-sql-original-read-20261110-r1.stderr.private.log",
+            "bytes": 84,
+            "sha256": "15054c8e33cc4e6c6bff7199159176772581deadee0d11c3270ff1064e1368ef"
+          }
+        }
+      }
+    }
+  ]
+}
