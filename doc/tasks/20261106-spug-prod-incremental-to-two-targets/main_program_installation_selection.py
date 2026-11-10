@@ -187,6 +187,15 @@ def select_main_program_installation(suffix, task, *, selection_file, private=No
     need(suffix in HOSTS, 'HOST_REQUIRED')
     records = Records(task)
     selected = records.read(selection_file)
+    if selected.get('schemaVersion') == 'TaskMainProgramInstallations/v4':
+        from main_program_spug_publication_verify_only import PRIVATE, validate_publication_v4
+        verified=validate_publication_v4(records,Path(PRIVATE if private is None else private),selected)
+        bundle=verified['generation'];rows=bundle['controllersByHost'][suffix]
+        return dict(host='172.30.30.'+suffix,suffix=suffix,sourceCommit=selected['sourceCommit'],
+            currentSourceCommit=selected['sourceCommit'],currentInstallationSelectionPin=records.references[selection_file],
+            controllers=[{key:row[key] for key in CONTROLLER_KEYS} for row in rows],
+            targetConfigRef=bundle['targets'][suffix],activeReceiptPin=None if suffix=='57' else rows[0]['currentReceiptPin'],
+            localInstallationPins=verified['inputPins'])
     if selected.get('schemaVersion') == 'TaskMainProgramInstallations/v2':
         return _select_v2(suffix,records,selected,selection_file,private)
     if selected.get('schemaVersion') == 'TaskMainProgramInstallations/v3':

@@ -146,7 +146,8 @@ def actual_continuation():
 
 def test_actual_seven_applied_and_three_host_verifications_remain_proven(actual_continuation):
     prepared,failure=actual_continuation;pins=[]
-    result=subject().validate_failed_continuation(prepared,PRIVATE,failure,pins)
+    custody=json.loads((TASK/'spug-verification-source-custody-r1.json').read_text(encoding='utf-8'))
+    result=subject().validate_failed_continuation(prepared,PRIVATE,failure,pins,historical_source_custody=custody)
     assert result['appliedCount']==7 and result['hostVerifications']==3
     assert result['lastNativeError']=='SIMPLE_CONFIGURATION_INVALID' and result['lastNativeExitCode']==0
     assert len(pins)>50
@@ -159,8 +160,9 @@ def test_changed_c1_summary_cannot_authorize_simple_installation(actual_continua
     if change=='stage':failure['stages']=failure['stages'][:-1]
     if change=='failure':failure['status']='PASS'
     if change=='generation':failure['sourceCommit']='0'*40
+    custody=json.loads((TASK/'spug-verification-source-custody-r1.json').read_text(encoding='utf-8'))
     with pytest.raises(ValueError,match='DEPENDENCY_'):
-        subject().validate_failed_continuation(prepared,PRIVATE,failure,[])
+        subject().validate_failed_continuation(prepared,PRIVATE,failure,[],historical_source_custody=custody)
 
 
 def test_actual_runner_exit_binds_the_original_dispatch_and_native_absence(actual_continuation):

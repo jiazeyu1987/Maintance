@@ -155,7 +155,7 @@ def validate_checkout_observation(private,reference,source_commit,workspace):
     return pins
 
 
-def validate_failed_continuation(prepared,private,failure,pins):
+def validate_failed_continuation(prepared,private,failure,pins,*,historical_source_custody=None):
     """Read the real successful prefix and the failed native final verification.
 
     No success object is synthesized for the frozen v3 full-success reader.
@@ -170,7 +170,28 @@ def validate_failed_continuation(prepared,private,failure,pins):
          all(attempt.get(k)==v for k,v in binding.items()) and attempt.get('stageOrder')==c.continuation_schedule() and
          attempt.get('originalAttemptPin')==prepared['inputs']['originalAttemptPin'] and attempt.get('retryPermitted') is False,
          'C1_ATTEMPT_INVALID')
-    for pin in attempt['inputPins']:publication.verify_bytes(pin);pins.append(pin)
+    mapped=None
+    if historical_source_custody is not None:
+        custody=historical_source_custody
+        need(type(custody) is dict and set(custody)=={'schemaVersion','continuationAttemptPin','dependencyAttemptPin','entries'} and
+             custody['schemaVersion']=='MainProgramSpugVerificationSourceCustody/v1' and
+             custody['continuationAttemptPin']==failure['attemptPin'] and
+             type(custody['entries']) is list and len(custody['entries'])==1 and
+             set(custody['entries'][0])=={'originalPin','preservedPin'},'C1_HISTORICAL_SOURCE_CUSTODY_INVALID')
+        mapped=custody['entries'][0];old=mapped['originalPin'];kept=mapped['preservedPin']
+        dependency_attempt=c.private_json(private,custody['dependencyAttemptPin'],pins)
+        need(dependency_attempt.get('schemaVersion')=='MainProgramSpugRuntimeDependencyAttempt/v1' and
+             dependency_attempt.get('continuationFailurePin') is not None and
+             c.private_json(private,dependency_attempt['continuationFailurePin'],pins)==failure and
+             old in attempt['inputPins'] and old in dependency_attempt['inputPins'] and
+             Path(old['path']).is_absolute() and Path(old['path']).parts[-4:]==
+             ('doc','tasks','20261106-spug-prod-incremental-to-two-targets','main_program_installation_selection.py') and
+             old['path']!=kept['path'] and all(old[k]==kept[k] for k in ('bytes','sha256')),
+             'C1_HISTORICAL_SOURCE_MAPPING_INVALID')
+        c.private_raw(private,kept,pins)
+    for pin in attempt['inputPins']:
+        if mapped is not None and pin==mapped['originalPin']:continue
+        publication.verify_bytes(pin);pins.append(pin)
     for key in ('claimPin','gatePin'):
         value=c.private_json(private,attempt[key],pins)
         need(all(value.get(k)==v for k,v in binding.items()),'C1_CLAIM_CHANGED')

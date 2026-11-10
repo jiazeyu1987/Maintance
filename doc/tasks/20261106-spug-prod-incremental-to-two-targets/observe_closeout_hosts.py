@@ -63,6 +63,8 @@ def controller_selection(suffix, task=TASK, *, selection_file='automatic-current
     from main_program_installation_selection import local_name, select_main_program_installation
     local_name(selection_file)
     selected,selected_pin=read_pinned(task/selection_file)
+    if selected.get('schemaVersion') == 'TaskMainProgramInstallations/v4':
+        return select_main_program_installation(suffix, task, selection_file=selection_file,private=private)
     if selected.get('schemaVersion') == 'TaskMainProgramInstallations/v1':
         return select_main_program_installation(suffix, task, selection_file=selection_file)
     if selected.get('schemaVersion') == 'TaskMainProgramInstallations/v2':

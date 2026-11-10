@@ -2,6 +2,8 @@
 
 ## Goal and Current Status
 
+2026-11-10 阶段A正式安装已PASS，见核心e71d33ce与实现938b625。父已读完整spug-verification-only-seams.md（15885B/a4409ec4691c76f0145c1aa70e58a85180c535dee8126f97ac9c4241395db16b），批准阶段B最小范围：新增只验收模块/专属测试/TDD日志，selection与collector仅显式v4分派，A仅validate_failed_continuation增加严格唯一selection历史源码托管参数及该输入循环校验。默认旧路径行为不变，原HOST/SPUG正文、publication/v2/c1及其它349项保持。父先逐原pin验证c1/A并排他保存唯一d119原selection；A050c/测试835f/候选14原执行字节复用现有16托管。禁止复制验证器或动态执行/猴补旧源码；先BDD及RED再实现。真实UI r9另因登录180秒未响应失败，与本次只验收接缝分开诊断，不能以B成功替代UI。
+
 in_progress。已提交192ba38的唯一c1实际运行109.875秒、exit1：七配置均APPLIED，三服原HOST verify均PASS；最终Spug verify实际原生exit0但结果FAILED/SIMPLE_CONFIGURATION_INVALID，未生成成功核心。原v2和c1失败、claim、全部原件保持，禁止重派配置写入。
 
 已证实根因线索：同一已提交c7728ad的smallapp_simple.py支持catalogueRestoreBindings，当前宿主运行文件仍是只接受nas/servers/bindings的旧版本。原PRODUCT_FILES只有11项，未包含被smallapp_entry/verify实际导入的smallapp_simple.py；因此原构建/安装的11项通过不能证明全部运行依赖已更新。先查完整实际依赖闭包和精确差异，不能仅手动覆盖一个文件后宣称修复完成。
