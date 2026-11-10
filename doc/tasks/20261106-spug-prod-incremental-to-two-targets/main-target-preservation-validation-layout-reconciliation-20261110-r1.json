@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "TargetPreservationValidationLayoutReconciliation/v1",
+  "remoteWrites": false,
+  "native": {
+    "returnCode": 0,
+    "timedOut": false,
+    "elapsedSeconds": 0.48400000017136335,
+    "streams": {
+      "stdout": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-layout-reconciliation-20261110-r1.stdout.private.log",
+        "bytes": 92224,
+        "sha256": "828adf77d7c8d13a1eacc49b731429b8e87d46acb6e74f6368f568b25e7c47c1"
+      },
+      "stderr": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-layout-reconciliation-20261110-r1.stderr.private.log",
+        "bytes": 84,
+        "sha256": "30bd1fa2878fc9d27b63719ff589e3c2dcb250390d18023ec2a06b996f19e402"
+      }
+    }
+  },
+  "observation": {
+    "observedAt": "2026-11-10T18:39:39.529706+00:00",
+    "remoteWrites": false,
+    "fstabPin": {
+      "path": "/etc/fstab",
+      "bytes": 957,
+      "sha256": "5c03cd5d634876c4637a5abdb629a7fff5edd7935b45a559904611e2d7d7c134"
+    },
+    "ownerPin": {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-program-b5fa4c5-r7/main-recovery.json",
+      "bytes": 30048,
+      "sha256": "e2444f7cbc449512d6e83bfaa6e8c7fddf578f9988d21592d7b4c02583bacaff"
+    },
+    "mountCredentialPin": {
+      "path": "/root/intruoyi-nas-default-20261021/mount.credentials",
+      "bytes": 31,
+      "sha256": "38f5f49c874cc51bb1e896a91d96e00bc29bc92f16609997e94b2fbb4a941e72"
+    },
+    "formalCredentialPin": {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-3a1-20261110/private/smb-credential.json",
+      "bytes": 127,
+      "sha256": "7e39473dd7a1d05b71acec2bbed4af1a683089db3515c55bfd2b89511e83f7a4"
+    },
+    "probePin": {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-view-3a1-20261110/.validation-probe.json",
+      "bytes": 171,
+      "sha256": "3a40e17db8c380da7b729fdae6ffa9094f439d19561003fc808119ad4860274c"
+    },
+    "view": {
+      "mountId": 1296,
+      "line": "1296 119 0:212 /Backup/BackupPackage/spug-target-preservation/validation-20261110-3a1-58 /var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-view-3a1-20261110 rw,relatime - cifs //172.30.30.4/IT共享 rw,vers=3.0,cache=strict,username=int,uid=0,noforceuid,gid=0,noforcegid,addr=172.30.30.4,file_mode=0755,dir_mode=0755,soft,nounix,mapposix,rsize=4194304,wsize=4194304,bsize=1048576,echo_interval=60,actimeo=1",
+      "device": 212,
+      "inode": 536417,
+      "mode": "0o40755",
+      "uid": 0,
+      "gid": 0
+    }
+  },
+  "businessDifferences": [
+    {
+      "containerId": "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115",
+      "fields": {
+        "mountsSha256": {
+          "before": "7a2ff44d7e6d005c423b0f74769edb53dccb6035005471e0ce3ddcadbf4ba706",
+          "current": "d9862867b6ad91206045346b6876852348995443525eb799e1ec8db60c5622f9"
+        }
+      },
+      "mountOrderOnlyProven": true
+    }
+  ],
+  "mountOrderProofs": [
+    {
+      "containerId": "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115",
+      "mountCount": 4,
+      "matchingOriginalOrder": [
+        1,
+        2,
+        3,
+        0
+      ],
+      "canonicalMountsSha256": "d9862867b6ad91206045346b6876852348995443525eb799e1ec8db60c5622f9"
+    }
+  ],
+  "businessFieldsUnchangedIgnoringProvenMountOrder": true,
+  "fstabUnchanged": true,
+  "ownerUnchanged": true,
+  "mountCredentialUnchanged": true,
+  "originalExecutionRewritten": false
+}

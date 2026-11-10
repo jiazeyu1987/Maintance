@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "PostCaptureSourceHealthObservation/v1",
+  "observedAt": "2026-11-10T17:36:52.549975+00:00",
+  "source": "172.30.30.57",
+  "businessWrites": false,
+  "backupSuccessClaimed": false,
+  "endpoints": [
+    {
+      "url": "http://172.30.30.57:8081/",
+      "httpStatus": 200,
+      "elapsedSeconds": 8.203,
+      "bytes": 3838
+    },
+    {
+      "url": "http://172.30.30.57:48081/actuator/health",
+      "httpStatus": 200,
+      "elapsedSeconds": 0.031,
+      "bytes": 15,
+      "backendStatus": "UP"
+    }
+  ]
+}

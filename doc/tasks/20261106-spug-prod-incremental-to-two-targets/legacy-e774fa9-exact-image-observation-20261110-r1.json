@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "ExactLegacyMySqlImageObservation/v1",
+  "imageId": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+  "localDockerContext": "desktop-linux",
+  "contextReceipts": [
+    {
+      "returnCode": 0,
+      "elapsedSeconds": 0.922,
+      "streams": {
+        "stdout": {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-image-context-20261110-r1-show.stdout.private.log",
+          "bytes": 14,
+          "sha256": "75270b95abcf0516180e80ce1a2b6f98e42b13765c38de5239be80925439ba63"
+        },
+        "stderr": {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-image-context-20261110-r1-show.stderr.private.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    },
+    {
+      "returnCode": 0,
+      "elapsedSeconds": 0.281,
+      "streams": {
+        "stdout": {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-image-context-20261110-r1-inspect.stdout.private.log",
+          "bytes": 849,
+          "sha256": "1e0d010985a390a7059e4e909c85f35d55472034a040424d7eb1c77422e6ca81"
+        },
+        "stderr": {
+          "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-image-context-20261110-r1-inspect.stderr.private.log",
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      }
+    }
+  ],
+  "containersCreated": 0,
+  "sqlExecuted": false,
+  "imagesPulled": 0,
+  "native": {
+    "returnCode": 1,
+    "elapsedSeconds": 0.078,
+    "streams": {
+      "stdout": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-image-inspect-20261110-r1.stdout.private.log",
+        "bytes": 3,
+        "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+      },
+      "stderr": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-image-inspect-20261110-r1.stderr.private.log",
+        "bytes": 115,
+        "sha256": "1a459b8a1351a24863e45af50521a98c722771c34d082ca49ba116a6246335d0"
+      }
+    }
+  },
+  "status": "EXACT_IMAGE_NOT_VERIFIED_AVAILABLE"
+}

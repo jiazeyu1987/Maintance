@@ -1,0 +1,255 @@
+{
+  "schemaVersion": "OriginalBackupLocalTerminalObservation/v1",
+  "operationId": "smallapp-3c2395ff88bd474e9fc007649565b848",
+  "remoteWrites": false,
+  "native": {
+    "returnCode": 0,
+    "timedOut": false,
+    "elapsedSeconds": 0.3279999999795109,
+    "streams": {
+      "stdout": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-local-terminal-20261110-r2.stdout.private.log",
+        "bytes": 9107,
+        "sha256": "75b7c873d520d3a46bbf1d92b4ca74742490e0c44bd600f8384c417d6e453ba0"
+      },
+      "stderr": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-local-terminal-20261110-r2.stderr.private.log",
+        "bytes": 84,
+        "sha256": "399cd02dbfe9e93a423bf2919eafb03ec8481223ad91498fa15cc2404c370c7a"
+      }
+    }
+  },
+  "completed": true,
+  "events": [
+    {
+      "stage": "START",
+      "observedAt": "2026-11-10T18:42:56.030723+00:00"
+    },
+    {
+      "stage": "OWNER_RESOLVED",
+      "observedAt": "2026-11-10T18:42:56.031538+00:00",
+      "ownerDirectory": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade"
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.036897+00:00",
+      "name": "start.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/start.json",
+        "bytes": 448,
+        "sha256": "3ba98fcd38575599247b304bca4fcf89842b95583ab460265f21cd975b512328"
+      },
+      "observedFields": {
+        "startedAt": "2026-11-10T16:05:52.934698Z"
+      }
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.037029+00:00",
+      "name": "worker-process.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/worker-process.json",
+        "bytes": 113,
+        "sha256": "6b672b20dd36fef511affd7946f141ac24ceeb8fd7175a9f5b3c4e3325c9ddc5"
+      },
+      "observedFields": {
+        "operationId": "smallapp-3c2395ff88bd474e9fc007649565b848",
+        "pid": 27811,
+        "startedAt": "2026-11-10T16:05:52.952473Z"
+      }
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.037152+00:00",
+      "name": "timing-capture-validation-start.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/timing-capture-validation-start.json",
+        "bytes": 72,
+        "sha256": "071f5478469b08294355888983796eae92795953ee1b57a0075e19826ff6c085"
+      },
+      "observedFields": {
+        "startedAt": "2026-11-10T17:22:22.064633Z"
+      }
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.037231+00:00",
+      "name": "timing-archive-admission-end.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/timing-archive-admission-end.json",
+        "bytes": 112,
+        "sha256": "3e0ddfe8b3b158c0ae57c40bc6f5711161e664f6a59549107ebdd4baea14141d"
+      },
+      "observedFields": {
+        "finishedAt": "2026-11-10T16:05:53.940870Z"
+      }
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.037318+00:00",
+      "name": "timing-nas-readback-start.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/timing-nas-readback-start.json",
+        "bytes": 66,
+        "sha256": "1373b39289dc2b4c881a4f505e91cf6bdc8d72361f4ae73330a7a21ec528201f"
+      },
+      "observedFields": {
+        "startedAt": "2026-11-10T17:54:44.354790Z"
+      }
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.037389+00:00",
+      "name": "timing-source-capture-start.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/timing-source-capture-start.json",
+        "bytes": 68,
+        "sha256": "cceb3ae6d81f581fd18dedca0ec8f6a09b966cd0b23ba8aa22cf9b220d6caa87"
+      },
+      "observedFields": {
+        "startedAt": "2026-11-10T16:05:53.943776Z"
+      }
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.037453+00:00",
+      "name": "timing-source-capture-end.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/timing-source-capture-end.json",
+        "bytes": 111,
+        "sha256": "b0525ef37f81783845bcceb0a3a21a803f7558c83a019db644d40d1e56eab004"
+      },
+      "observedFields": {
+        "finishedAt": "2026-11-10T17:22:22.053494Z"
+      }
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.037520+00:00",
+      "name": "timing-nas-upload-end.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/timing-nas-upload-end.json",
+        "bytes": 108,
+        "sha256": "8cbdca7f16e678dc9fad4926506728088a1ee05328cdaee497ab87a06af4266d"
+      },
+      "observedFields": {
+        "finishedAt": "2026-11-10T17:54:43.603019Z"
+      }
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.037594+00:00",
+      "name": "timing-archive-metadata-start.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/timing-archive-metadata-start.json",
+        "bytes": 70,
+        "sha256": "9430056b2938b6cb23c4e8ea7a6958aa3c0063f6462eb29b9241ae2f2b392d87"
+      },
+      "observedFields": {
+        "startedAt": "2026-11-10T17:54:43.614014Z"
+      }
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.037656+00:00",
+      "name": "timing-nas-upload-start.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/timing-nas-upload-start.json",
+        "bytes": 64,
+        "sha256": "bd468dfbfef32b8bfc1f68db0e3c4a793f7333ffbd83a52021c926afdd0db098"
+      },
+      "observedFields": {
+        "startedAt": "2026-11-10T17:24:25.560986Z"
+      }
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.037718+00:00",
+      "name": "timing-capture-validation-end.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/timing-capture-validation-end.json",
+        "bytes": 114,
+        "sha256": "ac277d0d99f54c0a01eb18c1afcd3e2a0803495e15badd80c50ec3c933737fd7"
+      },
+      "observedFields": {
+        "finishedAt": "2026-11-10T17:24:25.554331Z"
+      }
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.037794+00:00",
+      "name": "timing-archive-final-verification-start.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/timing-archive-final-verification-start.json",
+        "bytes": 80,
+        "sha256": "5b275c11eea471f4caa67854636e2e813bd997750ee2d4efc5df1578ce84c806"
+      },
+      "observedFields": {
+        "startedAt": "2026-11-10T18:22:47.015478Z"
+      }
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.037876+00:00",
+      "name": "timing-nas-readback-end.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/timing-nas-readback-end.json",
+        "bytes": 110,
+        "sha256": "55eb8be5749543dfe13b774362314fe916511e7de9e13f3c6380961d19ee8605"
+      },
+      "observedFields": {
+        "finishedAt": "2026-11-10T18:22:45.418231Z"
+      }
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.037942+00:00",
+      "name": "timing-archive-metadata-end.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/timing-archive-metadata-end.json",
+        "bytes": 111,
+        "sha256": "1bf6ce2b1d6f25a863975a6907b799e2990eb25ff75e0e1e29cd278c0f956e15"
+      },
+      "observedFields": {
+        "finishedAt": "2026-11-10T17:54:44.351761Z"
+      }
+    },
+    {
+      "stage": "OWNER_FILE",
+      "observedAt": "2026-11-10T18:42:56.038009+00:00",
+      "name": "timing-archive-admission-start.json",
+      "pin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3aa8ea5333736613433743b6b935180d4ad68ad8a6d7377ef129c97d8c634ade/timing-archive-admission-start.json",
+        "bytes": 71,
+        "sha256": "7d77139446c7407f9bd8f91e465fc4877b7f309631e5e2c9c946da87da14e68c"
+      },
+      "observedFields": {
+        "startedAt": "2026-11-10T16:05:53.091822Z"
+      }
+    },
+    {
+      "stage": "PROCESS",
+      "observedAt": "2026-11-10T18:42:56.039007+00:00",
+      "pid": 27811,
+      "state": "D",
+      "commandSha256": "04bf40be5c4a7805d43c5bc50ca126cf9e024fa5a8faa8a1485e69d8ae1016e9",
+      "io": "rchar: 187826137508\nwchar: 26151827197\nsyscr: 4030021\nsyscw: 38746\nread_bytes: 54231113728\nwrite_bytes: 39432192\ncancelled_write_bytes: 0\n"
+    },
+    {
+      "stage": "PROCESS_ABSENT",
+      "observedAt": "2026-11-10T18:42:56.039087+00:00",
+      "pid": 28783
+    },
+    {
+      "stage": "PROCESS_ABSENT",
+      "observedAt": "2026-11-10T18:42:56.039130+00:00",
+      "pid": 28800
+    },
+    {
+      "stage": "FINISHED",
+      "observedAt": "2026-11-10T18:42:56.039147+00:00",
+      "operationId": "smallapp-3c2395ff88bd474e9fc007649565b848",
+      "remoteWrites": false
+    }
+  ]
+}

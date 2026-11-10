@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "ExactLegacyMySqlRemoteImageObservation/v1",
+  "host": "172.30.30.59",
+  "imageId": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+  "observedAt": "2026-11-10T17:46:02.185276+00:00",
+  "remoteWrites": false,
+  "sqlExecuted": false,
+  "containersCreated": 0,
+  "imageSavedOrLoaded": false,
+  "native": {
+    "returnCode": 0,
+    "elapsedSeconds": 0.719,
+    "streams": {
+      "stdout": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-remote-image-20261110-r1-ssh-stdout.private.log",
+        "bytes": 6076,
+        "sha256": "6c9d54a6a5ba2eab70515ad90a190df7f7c840fc8c15205cf1d90f8a60255a89"
+      },
+      "stderr": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-remote-image-20261110-r1-ssh-stderr.private.log",
+        "bytes": 84,
+        "sha256": "9c860a34c41522a303c5120f36b1de45047238c6cd1fb621fcaeedf15a1ce779"
+      }
+    }
+  },
+  "dockerNative": {
+    "returnCode": 0,
+    "streams": {
+      "stdout": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-remote-image-20261110-r1-docker-stdout.private.log",
+        "bytes": 4474,
+        "sha256": "2089753bfbb5ae7cbcda2c1f82fe383d0adefb954c8656202b3548d88e589754"
+      },
+      "stderr": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-remote-image-20261110-r1-docker-stderr.private.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "status": "EXACT_REMOTE_IMAGE_PRESENT",
+  "operatingSystem": "linux",
+  "architecture": "amd64",
+  "repositoryDigests": [
+    "mysql@sha256:ccb8f749bb5e59f9f8f03bf7282c7ef27a93a1814a24f0a8a926fb4e19b7fb97"
+  ]
+}

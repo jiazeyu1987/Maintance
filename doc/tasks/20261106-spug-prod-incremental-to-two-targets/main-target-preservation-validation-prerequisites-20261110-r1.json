@@ -1,0 +1,259 @@
+{
+  "schemaVersion": "TargetPreservationValidationPrerequisites/v1",
+  "host": "172.30.30.58",
+  "remoteWrites": false,
+  "native": {
+    "returnCode": 0,
+    "timedOut": false,
+    "elapsedSeconds": 11.0,
+    "streams": {
+      "stdout": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-prerequisites-20261110-r1.stdout.private.log",
+        "bytes": 719952,
+        "sha256": "fd554be340fdebec1a0a369c9c8c82f36125807ea6ee9045d69294e6e270e71a"
+      },
+      "stderr": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-prerequisites-20261110-r1.stderr.private.log",
+        "bytes": 84,
+        "sha256": "de6740cb63e9f711cc71143a88bb6674a67909158959629f748626ca6146de14"
+      }
+    }
+  },
+  "stages": [
+    "START",
+    "BASELINE",
+    "BASELINE",
+    "REGISTERED_REPOSITORY",
+    "LSTAT",
+    "LSTAT",
+    "LSTAT",
+    "LSTAT",
+    "LSTAT",
+    "LSTAT",
+    "LSTAT",
+    "LSTAT",
+    "LSTAT",
+    "LSTAT",
+    "LSTAT",
+    "LSTAT",
+    "LSTAT",
+    "LSTAT",
+    "LSTAT",
+    "VISIBLE_PATH",
+    "VISIBLE_PATH",
+    "COMMAND",
+    "MOUNT_TOOL",
+    "COMMAND",
+    "FINISHED"
+  ],
+  "completed": true,
+  "registeredRepository": {
+    "stage": "REGISTERED_REPOSITORY",
+    "observedAt": "2026-11-10T18:19:47.217731+00:00",
+    "pin": {
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/source-repository.json",
+      "bytes": 1910,
+      "sha256": "80791fba68084c26385cb4097d793836fc3b774d5b3879d1ff9c8345ea75ddc9"
+    },
+    "shape": {
+      "captureBinderPath": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/formal/formal_capture_recovery_inputs.py",
+      "maxChainAgeSeconds": "<int>",
+      "maxChainPoints": "<int>",
+      "maximumArchiveBytes": "<int>",
+      "minimumFreeBytes": "<int>",
+      "operationRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations",
+      "parentChains": {},
+      "readback": {
+        "authProtocol": "<str>",
+        "credentialPath": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/private/nas-smb-v1.private.json",
+        "maximumRecordBytes": "<int>",
+        "maximumTotalRecordBytes": "<int>",
+        "port": "<int>",
+        "repositoryRelativePath": "<str>",
+        "schemaVersion": "RepositoryMinimumSmb/v1",
+        "uncRoot": "<str>"
+      },
+      "recoveryPoints": {},
+      "repositoryId": "<str>",
+      "repositoryRoot": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57",
+      "responseTimeoutMilliseconds": "<int>",
+      "schemaVersion": "RepositoryMinimumConfiguration/v1",
+      "sources": {
+        "intruoyi-57-safe-20261024-v1": {
+          "captureCommand": [
+            "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/python/bin/python3.12",
+            "<str>",
+            "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/formal/minimal_capture_entry.py"
+          ],
+          "configurationPath": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/capture.json",
+          "sourceIdentityPath": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-identity.json",
+          "stagingRoot": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging",
+          "toolPaths": [
+            "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/python/bin/python3.12",
+            "/usr/bin/docker",
+            "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine/formal/formal_capture_recovery_inputs.py"
+          ]
+        }
+      },
+      "timeoutMilliseconds": "<int>"
+    }
+  },
+  "paths": [
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.217854+00:00",
+      "path": "/",
+      "exists": true,
+      "device": 64768,
+      "inode": 128,
+      "mode": "0o40555",
+      "uid": 0,
+      "gid": 0,
+      "symlink": false
+    },
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.218001+00:00",
+      "path": "/mnt",
+      "exists": true,
+      "device": 64768,
+      "inode": 33555023,
+      "mode": "0o40755",
+      "uid": 0,
+      "gid": 0,
+      "symlink": false
+    },
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.218065+00:00",
+      "path": "/mnt/nas",
+      "exists": true,
+      "device": 64768,
+      "inode": 75364981,
+      "mode": "0o40755",
+      "uid": 0,
+      "gid": 0,
+      "symlink": false
+    },
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.219433+00:00",
+      "path": "/mnt/intruoyi-backup-nas",
+      "exists": true,
+      "device": 212,
+      "inode": 256,
+      "mode": "0o40755",
+      "uid": 0,
+      "gid": 0,
+      "symlink": false
+    },
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.219921+00:00",
+      "path": "/mnt/intruoyi-backup-nas/Backup",
+      "exists": true,
+      "device": 212,
+      "inode": 3,
+      "mode": "0o40755",
+      "uid": 0,
+      "gid": 0,
+      "symlink": false
+    },
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.220265+00:00",
+      "path": "/mnt/intruoyi-backup-nas/Backup/BackupPackage",
+      "exists": true,
+      "device": 212,
+      "inode": 4,
+      "mode": "0o40755",
+      "uid": 0,
+      "gid": 0,
+      "symlink": false
+    },
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.220654+00:00",
+      "path": "/mnt/intruoyi-backup-nas/Backup/BackupPackage/spug-target-preservation",
+      "exists": false
+    },
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.220699+00:00",
+      "path": "/mnt/intruoyi-backup-nas/Backup/BackupPackage/spug-target-preservation/validation-20261110-3a1-58",
+      "exists": false
+    },
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.220769+00:00",
+      "path": "/var",
+      "exists": true,
+      "device": 64768,
+      "inode": 133,
+      "mode": "0o40755",
+      "uid": 0,
+      "gid": 0,
+      "symlink": false
+    },
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.220802+00:00",
+      "path": "/var/lib",
+      "exists": true,
+      "device": 64768,
+      "inode": 33554562,
+      "mode": "0o40755",
+      "uid": 0,
+      "gid": 0,
+      "symlink": false
+    },
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.220825+00:00",
+      "path": "/var/lib/docker",
+      "exists": true,
+      "device": 64528,
+      "inode": 2,
+      "mode": "0o40710",
+      "uid": 0,
+      "gid": 0,
+      "symlink": false
+    },
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.220847+00:00",
+      "path": "/var/lib/docker/intruoyi-data",
+      "exists": true,
+      "device": 64528,
+      "inode": 117702657,
+      "mode": "0o40755",
+      "uid": 0,
+      "gid": 0,
+      "symlink": false
+    },
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.220870+00:00",
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3",
+      "exists": true,
+      "device": 64528,
+      "inode": 122814465,
+      "mode": "0o40700",
+      "uid": 0,
+      "gid": 0,
+      "symlink": false
+    },
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.220929+00:00",
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-view-3a1-20261110",
+      "exists": false
+    },
+    {
+      "stage": "LSTAT",
+      "observedAt": "2026-11-10T18:19:47.220996+00:00",
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-3a1-20261110",
+      "exists": false
+    }
+  ]
+}

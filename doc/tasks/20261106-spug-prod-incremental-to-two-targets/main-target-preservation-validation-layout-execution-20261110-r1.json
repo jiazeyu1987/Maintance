@@ -1,0 +1,275 @@
+{
+  "schemaVersion": "TargetPreservationValidationLayoutExecution/v1",
+  "host": "172.30.30.58",
+  "remoteScriptPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\setup_preservation_validation_layout_remote_20261110_r1.py",
+    "bytes": 10628,
+    "sha256": "e69459d1ca464bf84e4a6f9caa264e866c222f462856480077c0de306677aebf"
+  },
+  "planPin": {
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main-target-preservation-validation-layout-plan.md",
+    "bytes": 7290,
+    "sha256": "ac3c5bbfcf725276181caafab8dd88ab29356e3123f6283f9d26ce47a609f75f"
+  },
+  "native": {
+    "returnCode": 1,
+    "timedOut": false,
+    "elapsedSeconds": 2.8910000000614673,
+    "streams": {
+      "stdout": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-layout-20261110-r1.stdout.private.log",
+        "bytes": 8773,
+        "sha256": "0f72d49febb3cab2799c05cd281a284bebf0a6f101cedd9e881502c23bf54192"
+      },
+      "stderr": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-layout-20261110-r1.stderr.private.log",
+        "bytes": 193,
+        "sha256": "2c116d823225ea75e5682494291bb3c267a195f478ab8cf790e4fc84fd0da68e"
+      }
+    }
+  },
+  "events": [
+    {
+      "stage": "START",
+      "observedAt": "2026-11-10T18:37:32.631958+00:00",
+      "host": "172.30.30.58",
+      "businessActions": false
+    },
+    {
+      "stage": "PREFLIGHT_PASS",
+      "observedAt": "2026-11-10T18:37:32.684359+00:00",
+      "ownerPin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/configuration/main-program-b5fa4c5-r7/main-recovery.json",
+        "bytes": 30048,
+        "sha256": "e2444f7cbc449512d6e83bfaa6e8c7fddf578f9988d21592d7b4c02583bacaff"
+      },
+      "mountCredentialPin": {
+        "path": "/root/intruoyi-nas-default-20261021/mount.credentials",
+        "bytes": 31,
+        "sha256": "38f5f49c874cc51bb1e896a91d96e00bc29bc92f16609997e94b2fbb4a941e72"
+      },
+      "sourceView": {
+        "mountId": 1192,
+        "parentId": 45,
+        "device": "0:212",
+        "root": "/",
+        "mountPoint": "/mnt/intruoyi-backup-nas",
+        "options": [
+          "rw",
+          "relatime"
+        ],
+        "filesystem": "cifs",
+        "source": "//172.30.30.4/IT共享",
+        "line": "1192 45 0:212 / /mnt/intruoyi-backup-nas rw,relatime shared:385 - cifs //172.30.30.4/IT共享 rw,vers=3.0,cache=strict,username=int,uid=0,noforceuid,gid=0,noforcegid,addr=172.30.30.4,file_mode=0755,dir_mode=0755,soft,nounix,mapposix,rsize=4194304,wsize=4194304,bsize=1048576,echo_interval=60,actimeo=1",
+        "rootIdentity": {
+          "device": 212,
+          "inode": 256,
+          "mode": 16877,
+          "uid": 0,
+          "gid": 0
+        }
+      },
+      "businessBefore": {
+        "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79": {
+          "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+          "name": "/brlab-prod57-nas-test58-20261020-r3-mysql",
+          "running": true,
+          "status": "running",
+          "startedAt": "2026-11-05T01:51:30.916478688Z",
+          "restartCount": 0,
+          "configurationSha256": "dc60968da8602223f1f1c280d9f7accd3a35dab5bdce9b694285f5401f4634b0",
+          "hostConfigurationSha256": "ffbb3c30cca5f98611a303d607e1c350a0d6fb757fe8f1e99bc022e47e89ca7a",
+          "mountsSha256": "9648900fef7793f4ebbde4a641b4ee54eb2582c7c1b7dc292996f0c6100e17c8"
+        },
+        "98216faac1ae2fc1508bd4076962bf4cfcb3a47f2f1bd5d5e42c7ba819e83115": {
+          "image": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+          "name": "/brlab-prod57-nas-test58-20261020-r3-minio",
+          "running": true,
+          "status": "running",
+          "startedAt": "2026-11-07T11:39:14.449860514Z",
+          "restartCount": 0,
+          "configurationSha256": "dc61a96669026ae125eeec5b570b140d4fc6cbda293cf8709033fe2cc9131b03",
+          "hostConfigurationSha256": "d71d4c785bde38719424fa71281ae1044694bf415c50814a35c074a0192d5f94",
+          "mountsSha256": "7a2ff44d7e6d005c423b0f74769edb53dccb6035005471e0ce3ddcadbf4ba706"
+        },
+        "028bb0541d3216c283c5f1822338462545fa7cd63fad55c462ae20a01526e225": {
+          "image": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+          "name": "/brlab-prod57-nas-test58-20261020-r3-redis",
+          "running": true,
+          "status": "running",
+          "startedAt": "2026-11-05T01:52:49.476812788Z",
+          "restartCount": 0,
+          "configurationSha256": "468836d05f5f53747e14fc6754d48641a0954fc92b7f4de30cfdc09a0ee51f99",
+          "hostConfigurationSha256": "aab4d090f5b65c1913ea752b086c77fe5eca5c8d595eb180e51f104f93cf7d80",
+          "mountsSha256": "1316f0f9f608210b13c1884fdb6cda4532f5a5abd4748568c3a88b0c2e3d4e68"
+        },
+        "6f70e67078d086d7f08c1ae75a80bb0feab28c5a1f92c91d655ac258f34988eb": {
+          "image": "sha256:d72ca84e5fb30168881d57269f686ced4a9795a3e5bf198cdab3347d7166b0c6",
+          "name": "/brlab-prod57-nas-test58-20261020-r3-backend",
+          "running": true,
+          "status": "running",
+          "startedAt": "2026-11-07T11:52:37.619769097Z",
+          "restartCount": 0,
+          "configurationSha256": "da2559440c03b8c78177df23c85253b84097aead34ea9744e52f19940afb38a6",
+          "hostConfigurationSha256": "62cf44c935f2ea68a11158252207f92462305e203f9a8888e4681fb9d371aedd",
+          "mountsSha256": "30e1758dfe1aa0de453ed20f9665c14185e6cf7aba3488e36f0a66a4e61db66f"
+        },
+        "4f9775e6f0a1d86b2d06c69e40504a91cf44a613de458b76e69fa04805ca5d73": {
+          "image": "sha256:359ab3f931c3da4c2e3b1b4a6a439b41686520debaaf955e55c08a80ce4bd44a",
+          "name": "/intruoyi-july-unified-58-frontend",
+          "running": true,
+          "status": "running",
+          "startedAt": "2026-11-07T11:56:02.907211298Z",
+          "restartCount": 0,
+          "configurationSha256": "86b493e97388cdb952fbd40fd7e5d6d0f85cd3f9a252f89a2f7c11a2cbb232be",
+          "hostConfigurationSha256": "6736e9a8d209025ca601bca357e4dfab74deb65f831c95b53bf037357ab753e3",
+          "mountsSha256": "55e72557f58395410167934e9a3b7a0b9db0ca4b8317a4710cd15fd4e7ec9553"
+        }
+      },
+      "mountinfoBeforeSha256": "d7233a4f3dc7a156d56889c886d2d36e4def21eb1c91f397397a7454d4dedc2e",
+      "fstabBeforeSha256": "5c03cd5d634876c4637a5abdb629a7fff5edd7935b45a559904611e2d7d7c134"
+    },
+    {
+      "stage": "DIRECTORY_CREATED",
+      "observedAt": "2026-11-10T18:37:32.684650+00:00",
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-3a1-20261110"
+    },
+    {
+      "stage": "DIRECTORY_CREATED",
+      "observedAt": "2026-11-10T18:37:32.684814+00:00",
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-3a1-20261110/private"
+    },
+    {
+      "stage": "DIRECTORY_CREATED",
+      "observedAt": "2026-11-10T18:37:32.684926+00:00",
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-3a1-20261110/records"
+    },
+    {
+      "stage": "DIRECTORY_CREATED",
+      "observedAt": "2026-11-10T18:37:32.686990+00:00",
+      "path": "/mnt/intruoyi-backup-nas/Backup/BackupPackage/spug-target-preservation"
+    },
+    {
+      "stage": "DIRECTORY_CREATED",
+      "observedAt": "2026-11-10T18:37:32.689172+00:00",
+      "path": "/mnt/intruoyi-backup-nas/Backup/BackupPackage/spug-target-preservation/validation-20261110-3a1-58"
+    },
+    {
+      "stage": "DIRECTORY_CREATED",
+      "observedAt": "2026-11-10T18:37:32.689730+00:00",
+      "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-view-3a1-20261110"
+    },
+    {
+      "stage": "COMMAND",
+      "observedAt": "2026-11-10T18:37:32.693555+00:00",
+      "argv": [
+        "/usr/bin/mount",
+        "-i",
+        "-n",
+        "-o",
+        "bind",
+        "--",
+        "/mnt/intruoyi-backup-nas/Backup/BackupPackage/spug-target-preservation/validation-20261110-3a1-58",
+        "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-view-3a1-20261110"
+      ],
+      "returnCode": 0,
+      "stdoutBase64": "",
+      "stderrBase64": ""
+    },
+    {
+      "stage": "COMMAND",
+      "observedAt": "2026-11-10T18:37:32.697358+00:00",
+      "argv": [
+        "/usr/bin/mount",
+        "-i",
+        "-n",
+        "--make-private",
+        "--",
+        "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-view-3a1-20261110"
+      ],
+      "returnCode": 0,
+      "stdoutBase64": "",
+      "stderrBase64": ""
+    },
+    {
+      "stage": "SMB_PROBE_PASS",
+      "observedAt": "2026-11-10T18:37:34.230217+00:00",
+      "probePin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-view-3a1-20261110/.validation-probe.json",
+        "bytes": 171,
+        "sha256": "3a40e17db8c380da7b729fdae6ffa9094f439d19561003fc808119ad4860274c"
+      },
+      "credentialPin": {
+        "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-3a1-20261110/private/smb-credential.json",
+        "bytes": 127,
+        "sha256": "7e39473dd7a1d05b71acec2bbed4af1a683089db3515c55bfd2b89511e83f7a4"
+      },
+      "libraryPins": [
+        {
+          "path": "/var/lib/docker/intruoyi-data/backup-restore-lab/test58-20261016/installed/runtime/lib/python3.12/site-packages/smbclient/__init__.py",
+          "bytes": 873,
+          "sha256": "4c46a07c9abfcfe19ad51e24440a08bfce2c78f0d3069a997f889a1447e6cdf9"
+        },
+        {
+          "path": "/var/lib/docker/intruoyi-data/backup-restore-lab/test58-20261016/installed/runtime/lib/python3.12/site-packages/smbprotocol/__init__.py",
+          "bytes": 592,
+          "sha256": "2a01ffeb793a409da706e74ca5438df211bc13b5e687536a399fa8e13924a2da"
+        }
+      ],
+      "signed": true,
+      "encrypted": true,
+      "connectionId": "952f7b02-adb8-44c8-bebb-b06345e413af:3935357180",
+      "crossClientExclusionVerified": false,
+      "serverDurabilityVerified": false
+    },
+    {
+      "stage": "FAILED",
+      "observedAt": "2026-11-10T18:37:34.261643+00:00",
+      "errorType": "AssertionError",
+      "error": "ORIGINALS_CHANGED",
+      "createdPaths": [
+        "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-3a1-20261110",
+        "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-3a1-20261110/private",
+        "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-3a1-20261110/records",
+        "/mnt/intruoyi-backup-nas/Backup/BackupPackage/spug-target-preservation",
+        "/mnt/intruoyi-backup-nas/Backup/BackupPackage/spug-target-preservation/validation-20261110-3a1-58",
+        "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-view-3a1-20261110",
+        "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-3a1-20261110/private/smb-credential.json",
+        "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-view-3a1-20261110/.validation-probe.json"
+      ],
+      "commands": [
+        {
+          "argv": [
+            "/usr/bin/mount",
+            "-i",
+            "-n",
+            "-o",
+            "bind",
+            "--",
+            "/mnt/intruoyi-backup-nas/Backup/BackupPackage/spug-target-preservation/validation-20261110-3a1-58",
+            "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-view-3a1-20261110"
+          ],
+          "returnCode": 0,
+          "stdoutBase64": "",
+          "stderrBase64": ""
+        },
+        {
+          "argv": [
+            "/usr/bin/mount",
+            "-i",
+            "-n",
+            "--make-private",
+            "--",
+            "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-view-3a1-20261110"
+          ],
+          "returnCode": 0,
+          "stdoutBase64": "",
+          "stderrBase64": ""
+        }
+      ],
+      "businessActions": false
+    }
+  ],
+  "businessActions": false,
+  "actualProductPrepare": false
+}

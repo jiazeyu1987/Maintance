@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "ExactLegacyImageDependencyAcquisition/v1",
+  "imageId": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+  "repositoryDigest": "mysql@sha256:ccb8f749bb5e59f9f8f03bf7282c7ef27a93a1814a24f0a8a926fb4e19b7fb97",
+  "localDockerContext": "desktop-linux",
+  "containersCreated": 0,
+  "sqlExecuted": false,
+  "remoteServerWrites": false,
+  "pull": {
+    "returnCode": null,
+    "timedOut": true,
+    "elapsedSeconds": 150.062,
+    "streams": {
+      "stdout": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-exact-image-fetch-20261110-r1-pull.stdout.private.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-exact-image-fetch-20261110-r1-pull.stderr.private.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "status": "FAILED_OR_UNKNOWN_IMAGE_ACQUISITION"
+}

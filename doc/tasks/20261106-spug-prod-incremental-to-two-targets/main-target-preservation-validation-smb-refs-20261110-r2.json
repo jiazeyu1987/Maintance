@@ -1,0 +1,57 @@
+{
+  "schemaVersion": "TargetPreservationValidationSmbReferences/v1",
+  "host": "172.30.30.58",
+  "remoteWrites": false,
+  "predecessor": "main-target-preservation-validation-smb-refs-20261110-r1.json",
+  "native": {
+    "returnCode": 0,
+    "timedOut": false,
+    "elapsedSeconds": 0.7340000001713634,
+    "streams": {
+      "stdout": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-smb-refs-20261110-r2.stdout.private.log",
+        "bytes": 796,
+        "sha256": "603a51ed5cf5967eb5f1c49495ae7c2bec0fba9af1f697b9cb9e7814a39f3af7"
+      },
+      "stderr": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-smb-refs-20261110-r2.stderr.private.log",
+        "bytes": 84,
+        "sha256": "582426915e8c97f75f9e2f65753d4ae81725df90e8b94c8048ac3f5839aec600"
+      }
+    }
+  },
+  "observation": {
+    "observedAt": "2026-11-10T18:27:41.619735+00:00",
+    "remoteWrites": false,
+    "python": "/usr/local/libexec/spug-main-restore-20261104/python/bin/python3.12",
+    "pythonPin": {
+      "path": "/usr/local/libexec/spug-main-restore-20261104/python/bin/python3.12",
+      "bytes": 2123240,
+      "sha256": "c7c1a234ed39ceef4bde5ee8d29db37f55b0f7de6339b82eff5812944ccb74da"
+    },
+    "libraries": [
+      {
+        "name": "smbclient",
+        "available": false,
+        "pin": null
+      },
+      {
+        "name": "smbprotocol",
+        "available": false,
+        "pin": null
+      }
+    ],
+    "mountCredentialPin": {
+      "path": "/root/intruoyi-nas-default-20261021/mount.credentials",
+      "bytes": 31,
+      "sha256": "38f5f49c874cc51bb1e896a91d96e00bc29bc92f16609997e94b2fbb4a941e72"
+    },
+    "mountCredentialMode": "0o100600",
+    "mountCredentialKeys": [
+      "password",
+      "username"
+    ],
+    "hasNonEmptyUsername": true,
+    "hasNonEmptyPassword": true
+  }
+}

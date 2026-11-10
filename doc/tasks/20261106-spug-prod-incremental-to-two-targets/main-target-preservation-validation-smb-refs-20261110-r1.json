@@ -1,0 +1,23 @@
+{
+  "schemaVersion": "TargetPreservationValidationSmbReferences/v1",
+  "host": "172.30.30.58",
+  "remoteWrites": false,
+  "native": {
+    "returnCode": 1,
+    "timedOut": false,
+    "elapsedSeconds": 2.7350000001024455,
+    "streams": {
+      "stdout": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-smb-refs-20261110-r1.stdout.private.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "stderr": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-smb-refs-20261110-r1.stderr.private.log",
+        "bytes": 734,
+        "sha256": "607df71db833a911170dd83c1fbca02cfdd8ba5cec5000395ba9f4df4109c5f4"
+      }
+    }
+  },
+  "observation": null
+}

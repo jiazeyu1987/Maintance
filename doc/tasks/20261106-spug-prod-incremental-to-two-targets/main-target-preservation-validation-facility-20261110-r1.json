@@ -1,0 +1,66 @@
+{
+  "schemaVersion": "TaskTargetPreservationValidationFacility/v1",
+  "status": "ENVIRONMENT_READBACK_VERIFIED_PRODUCT_PREPARE_PENDING",
+  "host": "172.30.30.58",
+  "repositoryRoot": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-view-3a1-20261110",
+  "repositoryRelativePath": "Backup/BackupPackage/spug-target-preservation/validation-20261110-3a1-58",
+  "uncRoot": "\\\\172.30.30.4\\IT共享",
+  "localRoot": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-3a1-20261110",
+  "python": "/usr/local/libexec/spug-main-restore-20261104/python/bin/python3.12",
+  "libraryRoot": "/var/lib/docker/intruoyi-data/backup-restore-lab/test58-20261016/installed/runtime/lib/python3.12/site-packages",
+  "credentialPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-3a1-20261110/private/smb-credential.json",
+    "bytes": 127,
+    "sha256": "7e39473dd7a1d05b71acec2bbed4af1a683089db3515c55bfd2b89511e83f7a4"
+  },
+  "libraryPins": [
+    {
+      "path": "/var/lib/docker/intruoyi-data/backup-restore-lab/test58-20261016/installed/runtime/lib/python3.12/site-packages/smbclient/__init__.py",
+      "bytes": 873,
+      "sha256": "4c46a07c9abfcfe19ad51e24440a08bfce2c78f0d3069a997f889a1447e6cdf9"
+    },
+    {
+      "path": "/var/lib/docker/intruoyi-data/backup-restore-lab/test58-20261016/installed/runtime/lib/python3.12/site-packages/smbprotocol/__init__.py",
+      "bytes": 592,
+      "sha256": "2a01ffeb793a409da706e74ca5438df211bc13b5e687536a399fa8e13924a2da"
+    }
+  ],
+  "probePin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-main-restore-20261104-v3/validation-view-3a1-20261110/.validation-probe.json",
+    "bytes": 171,
+    "sha256": "3a40e17db8c380da7b729fdae6ffa9094f439d19561003fc808119ad4860274c"
+  },
+  "smbSigned": true,
+  "smbEncrypted": true,
+  "mountObserved": {
+    "mountId": 1296,
+    "filesystem": "cifs",
+    "mountSource": "//172.30.30.4/IT共享",
+    "mountRoot": "/Backup/BackupPackage/spug-target-preservation/validation-20261110-3a1-58",
+    "viewMode": "rw",
+    "superMode": "rw",
+    "identity": {
+      "device": 212,
+      "inode": 536417,
+      "mode": "0o40755",
+      "uid": 0,
+      "gid": 0
+    }
+  },
+  "originalExecutionPin": {
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main-target-preservation-validation-layout-execution-20261110-r1.json",
+    "bytes": 12197,
+    "sha256": "2bd25f38ea00db2b452e751dbcba6032518e324e6e034af8c9d2c987f63a001f"
+  },
+  "reconciliationPin": {
+    "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main-target-preservation-validation-layout-reconciliation-20261110-r1.json",
+    "bytes": 3606,
+    "sha256": "33c9976ffa97c17989633b5d8d2fa8de120321d5d39d41725a8924903ea097ed"
+  },
+  "originalExecutionStatus": "FAILED_PRESERVED",
+  "repeatedLayout": false,
+  "actualProductPrepare": false,
+  "businessActions": false,
+  "serverDurabilityVerified": false,
+  "crossClientExclusionVerified": false
+}

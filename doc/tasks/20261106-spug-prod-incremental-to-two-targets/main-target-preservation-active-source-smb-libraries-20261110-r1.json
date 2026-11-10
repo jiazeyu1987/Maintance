@@ -1,0 +1,108 @@
+{
+  "schemaVersion": "ActiveSourceSmbLibraryObservation/v1",
+  "host": "172.30.30.57",
+  "remoteWrites": false,
+  "native": {
+    "returnCode": 0,
+    "timedOut": false,
+    "elapsedSeconds": 0.7969999997876585,
+    "streams": {
+      "stdout": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\active-source-smb-libraries-20261110-r1.stdout.private.log",
+        "bytes": 2904,
+        "sha256": "a2b75bdabc1ffc1b4b30d28aa42f549aa899b92481e17f1548cdc117427e869c"
+      },
+      "stderr": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\active-source-smb-libraries-20261110-r1.stderr.private.log",
+        "bytes": 84,
+        "sha256": "8dce40e949f8dd5f1ec70f20737668c35bee4b755d1afcdf099073d7a133dc55"
+      }
+    }
+  },
+  "observation": {
+    "python": "/usr/local/libexec/spug-source-control-20261105/python/bin/python3.12",
+    "pythonPath": [
+      "",
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-main-program-b5fa4c5/control",
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-main-program-b5fa4c5/common",
+      "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/engine-main-program-b5fa4c5/formal",
+      "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/runtime/lib/python3.12/site-packages",
+      "/usr/local/libexec/spug-source-control-20261105/python/lib/python312.zip",
+      "/usr/local/libexec/spug-source-control-20261105/python/lib/python3.12",
+      "/usr/local/libexec/spug-source-control-20261105/python/lib/python3.12/lib-dynload",
+      "/usr/local/libexec/spug-source-control-20261105/python/lib/python3.12/site-packages"
+    ],
+    "libraries": [
+      {
+        "module": "smbclient",
+        "package": "smbprotocol",
+        "available": true,
+        "version": "1.17.0",
+        "pin": {
+          "path": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/runtime/lib/python3.12/site-packages/smbclient/__init__.py",
+          "bytes": 873,
+          "sha256": "4c46a07c9abfcfe19ad51e24440a08bfce2c78f0d3069a997f889a1447e6cdf9"
+        }
+      },
+      {
+        "module": "smbprotocol",
+        "package": "smbprotocol",
+        "available": true,
+        "version": "1.17.0",
+        "pin": {
+          "path": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/runtime/lib/python3.12/site-packages/smbprotocol/__init__.py",
+          "bytes": 592,
+          "sha256": "2a01ffeb793a409da706e74ca5438df211bc13b5e687536a399fa8e13924a2da"
+        }
+      },
+      {
+        "module": "spnego",
+        "package": "pyspnego",
+        "available": true,
+        "version": "0.12.4",
+        "pin": {
+          "path": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/runtime/lib/python3.12/site-packages/spnego/__init__.py",
+          "bytes": 1479,
+          "sha256": "87a3e4f4e248220d4e696c4f048f2f828551ba8ea4975a056103861ab9504f6d"
+        }
+      },
+      {
+        "module": "cryptography",
+        "package": "cryptography",
+        "available": true,
+        "version": "46.0.5",
+        "pin": {
+          "path": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/runtime/lib/python3.12/site-packages/cryptography/__init__.py",
+          "bytes": 364,
+          "sha256": "9ad86e52b4dde0544e0a9518ad322a863cfab3a4fd763019ad5ee7675a0c9b6a"
+        }
+      },
+      {
+        "module": "cffi",
+        "package": "cffi",
+        "available": true,
+        "version": "2.0.0",
+        "pin": {
+          "path": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/runtime/lib/python3.12/site-packages/cffi/__init__.py",
+          "bytes": 511,
+          "sha256": "fa4b0143b31f0f356f6c1955fdfb5805602612a7c0f3a963233331cda65e0252"
+        }
+      },
+      {
+        "module": "pycparser",
+        "package": "pycparser",
+        "available": true,
+        "version": "3.0",
+        "pin": {
+          "path": "/var/lib/docker/intruoyi-data/prod-spug-backup-20261019/runtime/lib/python3.12/site-packages/pycparser/__init__.py",
+          "bytes": 2829,
+          "sha256": "a6156247202e52682a13890d99a0aaa66e56544048bf351215aa41bf85d7df1a"
+        }
+      }
+    ],
+    "observedAt": "2026-11-10T18:29:06.664738+00:00",
+    "remoteWrites": false,
+    "pid": 27811,
+    "commandSha256": "04bf40be5c4a7805d43c5bc50ca126cf9e024fa5a8faa8a1485e69d8ae1016e9"
+  }
+}

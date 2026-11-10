@@ -1,0 +1,288 @@
+{
+  "schemaVersion": "TaskBoundedFactualArtifactVerification/v1",
+  "status": "PASS",
+  "artifactCount": 21,
+  "artifacts": [
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-main-r7-20261110-full-progress-r9.json",
+      "bytes": 372409,
+      "sha256": "5299c1b60dcdd6e1f43ccfac57fdca516aae67ea342ca8e535f871715ae80b0e"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-main-r7-20261110-full-progress-r10.json",
+      "bytes": 8297,
+      "sha256": "cbe00ef5bdd36b7a838f1d0a1a22f1317af99ffd88390f88e3964624cd64d841"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-main-r7-20261110-full-progress-r11.json",
+      "bytes": 8061,
+      "sha256": "fcd44510ac9666c1e753640d23d2cf7028527047af04ebb844719576595cffa0"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-main-r7-20261110-full-local-terminal-r1.json",
+      "bytes": 9458,
+      "sha256": "0d7b28e488da0845dac4c3c057c4b4f7fae97744e03a1034ff65967e7a65245f"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/automatic-main-r7-20261110-full-local-terminal-r2.json",
+      "bytes": 10609,
+      "sha256": "5b25d8956810a973f312fcc7ec31b3b093214f4af9f5f15d70d54dfbf83d1eb7"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/main-r7-post-capture-source-health-20261110-r1.json",
+      "bytes": 529,
+      "sha256": "ba633fd6b3791a2958fca3cb054e557ef9da76b2eefd3f09fd661f3151733925"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/main-target-preservation-bind-view-review.md",
+      "bytes": 17814,
+      "sha256": "6168d719b9b94973d090b68b124522e32d287c1cf521c01e5862fbded450aa6c"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/legacy-e774fa9-runner-static-supplement.md",
+      "bytes": 9815,
+      "sha256": "6fa7797350c11ef41341f2dab5a5693980fcc5fc5e6a1265857e8ae05aa38ec7"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/legacy-e774fa9-exact-image-observation-20261110-r1.json",
+      "bytes": 2372,
+      "sha256": "f93bb0ccb4beb2e1400dd65be9867d16a4797514f2f50fa366bb2769885c8964"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/legacy-e774fa9-remote-image-observation-20261110-r1.json",
+      "bytes": 1860,
+      "sha256": "79deee585011f57135c334b9c8856dbc150f9f8a94b394699b2458a397f01dea"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/legacy-e774fa9-exact-image-acquisition-20261110-r1.json",
+      "bytes": 1126,
+      "sha256": "99a5e43cb4e8ebbf8a35379fb26938bee6b82bde120f41f5686df86d33961e0c"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/legacy-e774fa9-post-fetch-image-observation-20261110-r1.json",
+      "bytes": 774,
+      "sha256": "d9a8ad9e731b4dc83179c8599ed9e98657804f64f455c4d57eabc6e82ed02511"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/main-target-preservation-validation-layout-plan.md",
+      "bytes": 7290,
+      "sha256": "ac3c5bbfcf725276181caafab8dd88ab29356e3123f6283f9d26ce47a609f75f"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/main-target-preservation-validation-prerequisites-20261110-r1.json",
+      "bytes": 7767,
+      "sha256": "c9559dfc0be7ec87b4bd911817d59b6eed4ffb860d3661d287f06988ce17ae2f"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/main-target-preservation-validation-smb-refs-20261110-r1.json",
+      "bytes": 843,
+      "sha256": "089be7f44d44331a3a4f2ec29bc08d1b5be1c957cd50064f757adc47e3a8e72e"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/main-target-preservation-validation-smb-refs-20261110-r2.json",
+      "bytes": 1909,
+      "sha256": "c2328fcae105b37d52fb18e5977401fc3a06c523f0ca5c2435fa78d75ee286f0"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/main-target-preservation-active-source-smb-libraries-20261110-r1.json",
+      "bytes": 4388,
+      "sha256": "cb6c64071f6965a61521d0f95f063c5f95fd00b3e924695931be5eec311abec9"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/main-target-preservation-active-target-smb-libraries-20261110-r1.json",
+      "bytes": 4408,
+      "sha256": "4e165a3f05e0f59349b1212588e7f408137f153cff54291f66efdeee9c0cd935"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/main-target-preservation-validation-layout-execution-20261110-r1.json",
+      "bytes": 12197,
+      "sha256": "2bd25f38ea00db2b452e751dbcba6032518e324e6e034af8c9d2c987f63a001f"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/main-target-preservation-validation-layout-reconciliation-20261110-r1.json",
+      "bytes": 3606,
+      "sha256": "33c9976ffa97c17989633b5d8d2fa8de120321d5d39d41725a8924903ea097ed"
+    },
+    {
+      "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/main-target-preservation-validation-facility-20261110-r1.json",
+      "bytes": 3137,
+      "sha256": "80e818db33b1d0d21317dfa0f77c508bb0d10acf90b80a471c2be79d1175e369"
+    }
+  ],
+  "localPhysicalPinCount": 42,
+  "localPhysicalPins": {
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-progress-20261110-r9.stdout.private.log": {
+      "bytes": 1189985,
+      "sha256": "7f98fe48a2613345fa07d92124f8abf2e0a62b9dcbc310ec6bca48ab845fb71c"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-progress-20261110-r9.stderr.private.log": {
+      "bytes": 84,
+      "sha256": "892d79aa9a8666eaa13da53bcba739d9dd2c07e9b80fd8b823f09199882ebff2"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-progress-20261110-r10.stdout.private.log": {
+      "bytes": 17123,
+      "sha256": "0675e90e53ecd28e3ae976518ea955c980a8aa804ec9dfdcd131a9b6d48fadd4"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-progress-20261110-r10.stderr.private.log": {
+      "bytes": 84,
+      "sha256": "5c48dc9b44e96b11068a39b785c88d5b89789544766ec4e54a52046c35b70ace"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-progress-20261110-r11.stdout.private.log": {
+      "bytes": 16669,
+      "sha256": "cc2d22dc67a19d901a6c4726a9aa664fecc1408da330355028aa00a23232951f"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-progress-20261110-r11.stderr.private.log": {
+      "bytes": 84,
+      "sha256": "e77c9eb49e026b7867b372e6f9a55eb0885bbc45c002ac428a347fc695fd9af7"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-local-terminal-20261110-r1.stdout.private.log": {
+      "bytes": 8042,
+      "sha256": "ffa27ddd7dc6991a3de57083cf6a8dd0f4f8aeb3a51359fc05d325ad6f2cb779"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-local-terminal-20261110-r1.stderr.private.log": {
+      "bytes": 84,
+      "sha256": "fe8ef27d446421ec62ab28d7bef2c84ad3b124a384803fc6159ffc90925cb3ff"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-local-terminal-20261110-r2.stdout.private.log": {
+      "bytes": 9107,
+      "sha256": "75b7c873d520d3a46bbf1d92b4ca74742490e0c44bd600f8384c417d6e453ba0"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-local-terminal-20261110-r2.stderr.private.log": {
+      "bytes": 84,
+      "sha256": "399cd02dbfe9e93a423bf2919eafb03ec8481223ad91498fa15cc2404c370c7a"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-image-context-20261110-r1-show.stdout.private.log": {
+      "bytes": 14,
+      "sha256": "75270b95abcf0516180e80ce1a2b6f98e42b13765c38de5239be80925439ba63"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-image-context-20261110-r1-show.stderr.private.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-image-context-20261110-r1-inspect.stdout.private.log": {
+      "bytes": 849,
+      "sha256": "1e0d010985a390a7059e4e909c85f35d55472034a040424d7eb1c77422e6ca81"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-image-context-20261110-r1-inspect.stderr.private.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-image-inspect-20261110-r1.stdout.private.log": {
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-image-inspect-20261110-r1.stderr.private.log": {
+      "bytes": 115,
+      "sha256": "1a459b8a1351a24863e45af50521a98c722771c34d082ca49ba116a6246335d0"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-remote-image-20261110-r1-ssh-stdout.private.log": {
+      "bytes": 6076,
+      "sha256": "6c9d54a6a5ba2eab70515ad90a190df7f7c840fc8c15205cf1d90f8a60255a89"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-remote-image-20261110-r1-ssh-stderr.private.log": {
+      "bytes": 84,
+      "sha256": "9c860a34c41522a303c5120f36b1de45047238c6cd1fb621fcaeedf15a1ce779"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-remote-image-20261110-r1-docker-stdout.private.log": {
+      "bytes": 4474,
+      "sha256": "2089753bfbb5ae7cbcda2c1f82fe383d0adefb954c8656202b3548d88e589754"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-remote-image-20261110-r1-docker-stderr.private.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-exact-image-fetch-20261110-r1-pull.stdout.private.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-exact-image-fetch-20261110-r1-pull.stderr.private.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-post-fetch-inspect-20261110-r1.stdout.private.log": {
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-post-fetch-inspect-20261110-r1.stderr.private.log": {
+      "bytes": 115,
+      "sha256": "1a459b8a1351a24863e45af50521a98c722771c34d082ca49ba116a6246335d0"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-prerequisites-20261110-r1.stdout.private.log": {
+      "bytes": 719952,
+      "sha256": "fd554be340fdebec1a0a369c9c8c82f36125807ea6ee9045d69294e6e270e71a"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-prerequisites-20261110-r1.stderr.private.log": {
+      "bytes": 84,
+      "sha256": "de6740cb63e9f711cc71143a88bb6674a67909158959629f748626ca6146de14"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-smb-refs-20261110-r1.stdout.private.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-smb-refs-20261110-r1.stderr.private.log": {
+      "bytes": 734,
+      "sha256": "607df71db833a911170dd83c1fbca02cfdd8ba5cec5000395ba9f4df4109c5f4"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-smb-refs-20261110-r2.stdout.private.log": {
+      "bytes": 796,
+      "sha256": "603a51ed5cf5967eb5f1c49495ae7c2bec0fba9af1f697b9cb9e7814a39f3af7"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-smb-refs-20261110-r2.stderr.private.log": {
+      "bytes": 84,
+      "sha256": "582426915e8c97f75f9e2f65753d4ae81725df90e8b94c8048ac3f5839aec600"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\active-source-smb-libraries-20261110-r1.stdout.private.log": {
+      "bytes": 2904,
+      "sha256": "a2b75bdabc1ffc1b4b30d28aa42f549aa899b92481e17f1548cdc117427e869c"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\active-source-smb-libraries-20261110-r1.stderr.private.log": {
+      "bytes": 84,
+      "sha256": "8dce40e949f8dd5f1ec70f20737668c35bee4b755d1afcdf099073d7a133dc55"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\active-target-smb-libraries-20261110-r1.stdout.private.log": {
+      "bytes": 2930,
+      "sha256": "66d7a0d706a711a1d7cf14b887eec89b994ec9abf24643493c4b646e99b11502"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\active-target-smb-libraries-20261110-r1.stderr.private.log": {
+      "bytes": 84,
+      "sha256": "6c95aa9b4863e05e407aefff43529447ef88c66f63784df7d265eeb3a8afcae9"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\setup_preservation_validation_layout_remote_20261110_r1.py": {
+      "bytes": 10628,
+      "sha256": "e69459d1ca464bf84e4a6f9caa264e866c222f462856480077c0de306677aebf"
+    },
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main-target-preservation-validation-layout-plan.md": {
+      "bytes": 7290,
+      "sha256": "ac3c5bbfcf725276181caafab8dd88ab29356e3123f6283f9d26ce47a609f75f"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-layout-20261110-r1.stdout.private.log": {
+      "bytes": 8773,
+      "sha256": "0f72d49febb3cab2799c05cd281a284bebf0a6f101cedd9e881502c23bf54192"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-layout-20261110-r1.stderr.private.log": {
+      "bytes": 193,
+      "sha256": "2c116d823225ea75e5682494291bb3c267a195f478ab8cf790e4fc84fd0da68e"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-layout-reconciliation-20261110-r1.stdout.private.log": {
+      "bytes": 92224,
+      "sha256": "828adf77d7c8d13a1eacc49b731429b8e87d46acb6e74f6368f568b25e7c47c1"
+    },
+    "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\preservation-validation-layout-reconciliation-20261110-r1.stderr.private.log": {
+      "bytes": 84,
+      "sha256": "30bd1fa2878fc9d27b63719ff589e3c2dcb250390d18023ec2a06b996f19e402"
+    },
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main-target-preservation-validation-layout-execution-20261110-r1.json": {
+      "bytes": 12197,
+      "sha256": "2bd25f38ea00db2b452e751dbcba6032518e324e6e034af8c9d2c987f63a001f"
+    },
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main-target-preservation-validation-layout-reconciliation-20261110-r1.json": {
+      "bytes": 3606,
+      "sha256": "33c9976ffa97c17989633b5d8d2fa8de120321d5d39d41725a8924903ea097ed"
+    }
+  },
+  "utf8": true,
+  "trailingWhitespaceAbsent": true,
+  "productTestsRun": false,
+  "remoteActions": 0,
+  "priorFailuresRewritten": false
+}

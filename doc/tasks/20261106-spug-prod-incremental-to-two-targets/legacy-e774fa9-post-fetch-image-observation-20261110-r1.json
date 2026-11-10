@@ -1,0 +1,21 @@
+{
+  "returnCode": 1,
+  "timedOut": false,
+  "schemaVersion": "PostFetchExactImageObservation/v1",
+  "elapsedSeconds": 2.031,
+  "streams": {
+    "stdout": {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-post-fetch-inspect-20261110-r1.stdout.private.log",
+      "bytes": 3,
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    "stderr": {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\legacy-e774fa9-post-fetch-inspect-20261110-r1.stderr.private.log",
+      "bytes": 115,
+      "sha256": "1a459b8a1351a24863e45af50521a98c722771c34d082ca49ba116a6246335d0"
+    }
+  },
+  "imagePresent": false,
+  "pullRetried": false,
+  "containersCreated": 0
+}
