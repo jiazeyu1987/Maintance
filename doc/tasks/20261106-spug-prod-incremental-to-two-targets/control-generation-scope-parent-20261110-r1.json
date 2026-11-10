@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "TaskControlGenerationScopeParentVerification/v1",
+  "command": [
+    "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "pytest",
+    "doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_generation_scope.py",
+    "-q",
+    "-k",
+    "not leaf_symlink",
+    "--tb=short",
+    "--junitxml=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\control-generation-scope-parent-20261110-r1.xml"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 35.25,
+  "counts": {
+    "tests": 15,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "inputPinsBefore": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_generation_scope.py",
+      "bytes": 6090,
+      "sha256": "2cb1267f8f2f947838948bc9e100112edcf2d3073cbba353f0a625603660d321"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_control_activation.py",
+      "bytes": 121760,
+      "sha256": "ef070f77fd7c8f5753a5eead343d2e49e20e52e45cc4aabc5601f7e1d0726f69"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_control_generation.py",
+      "bytes": 24452,
+      "sha256": "f853dc6b3b5e4de7c58e6f732aa76641eefd344810c70504c15638b817de6c12"
+    }
+  ],
+  "inputPinsAfter": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_control_generation_scope.py",
+      "bytes": 6090,
+      "sha256": "2cb1267f8f2f947838948bc9e100112edcf2d3073cbba353f0a625603660d321"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_control_activation.py",
+      "bytes": 121760,
+      "sha256": "ef070f77fd7c8f5753a5eead343d2e49e20e52e45cc4aabc5601f7e1d0726f69"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_control_generation.py",
+      "bytes": 24452,
+      "sha256": "f853dc6b3b5e4de7c58e6f732aa76641eefd344810c70504c15638b817de6c12"
+    }
+  ],
+  "rawLogPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\control-generation-scope-parent-20261110-r1.log",
+    "bytes": 254,
+    "sha256": "6817afd8dbbcc7984ccab1472907a81aa74c0a5f4d5d93bd6617ba939b852689"
+  },
+  "junitPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\control-generation-scope-parent-20261110-r1.xml",
+    "bytes": 3489,
+    "sha256": "21bc01aa016381d1ac1bfe7a04fe48d7e617055004fdac6be908c912e9d54b3b"
+  },
+  "remoteActions": 0,
+  "businessWrites": 0
+}

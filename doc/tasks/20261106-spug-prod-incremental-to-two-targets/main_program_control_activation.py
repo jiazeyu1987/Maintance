@@ -878,8 +878,10 @@ def prepare(task, private, inputs_file):
              inputs['previousControlGenerationPin' if generation else 'previousAutomaticSelectionPin'], 'ORIGINAL_SELECTION_CHANGED')
         for item in selected['localInstallationPins']:
             path = Path(item['path'])
-            need(path.resolve().parent in ({Path(task).resolve(), Path(private).resolve()} if generation else {Path(task).resolve()}),
-                 'ORIGINAL_EVIDENCE_SCOPE')
+            if generation:
+                need(item in bundle['inputPins'], 'ORIGINAL_EVIDENCE_SCOPE')
+            else:
+                need(path.resolve().parent == Path(task).resolve(), 'ORIGINAL_EVIDENCE_SCOPE')
             verify_local_pin(path, item)
     def fixed(name, reference):
         need(reference['file'] == name, 'INPUT_REVISION_REQUIRED')

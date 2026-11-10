@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "TaskCaptureSessionVerification/v1",
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--name",
+    "spug-capture-archive-scope-linux-20261110-r9",
+    "--network",
+    "none",
+    "--read-only",
+    "--cap-drop",
+    "ALL",
+    "--security-opt",
+    "no-new-privileges",
+    "--memory",
+    "512m",
+    "--cpus",
+    "1",
+    "--pids-limit",
+    "128",
+    "--tmpfs",
+    "/work:rw,exec,nosuid,nodev,size=256m",
+    "--tmpfs",
+    "/tmp:rw,nosuid,nodev,size=128m",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\capture-archive-scope-linux-20261110-r9.tar,target=/inputs/source.tar,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\capture-archive-scope-linux-20261110-r9-runner.py,target=/inputs/runner.py,readonly",
+    "--mount",
+    "type=bind,source=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\linux-test-wheels,target=/inputs/wheels,readonly",
+    "sha256:14a4933e6cef421424f7a66d89a3f4eafcbd0d90e0a822251f298e05132dc735",
+    "python",
+    "-B",
+    "/inputs/runner.py"
+  ],
+  "exitCode": 0,
+  "counts": {
+    "tests": 18,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "elapsedSeconds": 37.64,
+  "sourceSnapshotPin": {
+    "file": "capture-archive-scope-linux-20261110-r9.tar",
+    "bytes": 7843840,
+    "sha256": "49702a14ee6487854809e8c3e4d0e7a5ad537d1034be5513dd28d3951a8ab9c1"
+  },
+  "rawLogPin": {
+    "file": "capture-archive-scope-linux-20261110-r9.log",
+    "bytes": 4939,
+    "sha256": "704b3e008ff6658e7ab2d6976d5dec03613e07847dd6b5597828f85843287fc7"
+  },
+  "inputsUnchanged": true,
+  "runtimeInputsUnchanged": true,
+  "containerRemoved": true,
+  "remoteActions": 0,
+  "businessWrites": 0
+}
