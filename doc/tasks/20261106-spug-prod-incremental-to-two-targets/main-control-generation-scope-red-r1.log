@@ -1,0 +1,83 @@
+FFFFFFFFF.F....F                                                         [100%]
+================================== FAILURES ===================================
+___ test_generation_accepts_exact_verified_external_closure_member[source] ____
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_program_control_generation_scope.py:46: in test_generation_accepts_exact_verified_external_closure_member
+    scope(layout['task'], layout['private'], [reference], generation=True, bundle=dict(inputPins=[reference]))
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_program_control_generation_scope.py:26: in scope
+    exec(compile(code, '<actual-prepare-evidence-scope>', 'exec'), namespace)
+<actual-prepare-evidence-scope>:881: in <module>
+    ???
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_program_control_activation.py:61: in need
+    raise ValueError('MAIN_ACTIVATION_' + code)
+E   ValueError: MAIN_ACTIVATION_ORIGINAL_EVIDENCE_SCOPE
+_ test_generation_accepts_exact_verified_external_closure_member[private-release] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_program_control_generation_scope.py:46: in test_generation_accepts_exact_verified_external_closure_member
+    scope(layout['task'], layout['private'], [reference], generation=True, bundle=dict(inputPins=[reference]))
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_program_control_generation_scope.py:26: in scope
+    exec(compile(code, '<actual-prepare-evidence-scope>', 'exec'), namespace)
+<actual-prepare-evidence-scope>:881: in <module>
+    ???
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_program_control_activation.py:61: in need
+    raise ValueError('MAIN_ACTIVATION_' + code)
+E   ValueError: MAIN_ACTIVATION_ORIGINAL_EVIDENCE_SCOPE
+_ test_generation_accepts_exact_verified_external_closure_member[private-package] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_program_control_generation_scope.py:46: in test_generation_accepts_exact_verified_external_closure_member
+    scope(layout['task'], layout['private'], [reference], generation=True, bundle=dict(inputPins=[reference]))
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_program_control_generation_scope.py:26: in scope
+    exec(compile(code, '<actual-prepare-evidence-scope>', 'exec'), namespace)
+<actual-prepare-evidence-scope>:881: in <module>
+    ???
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_program_control_activation.py:61: in need
+    raise ValueError('MAIN_ACTIVATION_' + code)
+E   ValueError: MAIN_ACTIVATION_ORIGINAL_EVIDENCE_SCOPE
+_ test_generation_rejects_nonmember_even_inside_old_allowed_task_directory[missing] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_program_control_generation_scope.py:57: in test_generation_rejects_nonmember_even_inside_old_allowed_task_directory
+    with pytest.raises(ValueError, match='ORIGINAL_EVIDENCE_SCOPE'):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+_ test_generation_rejects_nonmember_even_inside_old_allowed_task_directory[path] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_program_control_generation_scope.py:57: in test_generation_rejects_nonmember_even_inside_old_allowed_task_directory
+    with pytest.raises(ValueError, match='ORIGINAL_EVIDENCE_SCOPE'):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+_ test_generation_rejects_nonmember_even_inside_old_allowed_task_directory[bytes] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_program_control_generation_scope.py:57: in test_generation_rejects_nonmember_even_inside_old_allowed_task_directory
+    with pytest.raises(ValueError, match='ORIGINAL_EVIDENCE_SCOPE'):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+_ test_generation_rejects_nonmember_even_inside_old_allowed_task_directory[sha256] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_program_control_generation_scope.py:57: in test_generation_rejects_nonmember_even_inside_old_allowed_task_directory
+    with pytest.raises(ValueError, match='ORIGINAL_EVIDENCE_SCOPE'):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+_ test_generation_rejects_nonmember_even_inside_old_allowed_task_directory[extra-field] _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_program_control_generation_scope.py:57: in test_generation_rejects_nonmember_even_inside_old_allowed_task_directory
+    with pytest.raises(ValueError, match='ORIGINAL_EVIDENCE_SCOPE'):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+___________ test_generation_rejects_lexical_alias_not_exact_member ____________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_program_control_generation_scope.py:66: in test_generation_rejects_lexical_alias_not_exact_member
+    with pytest.raises(ValueError, match='ORIGINAL_EVIDENCE_SCOPE'):
+E   Failed: DID NOT RAISE <class 'ValueError'>
+_____________ test_generation_rejects_leaf_symlink_even_if_member _____________
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_program_control_generation_scope.py:80: in test_generation_rejects_leaf_symlink_even_if_member
+    alias.symlink_to(target)
+..\..\..\..\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\Lib\pathlib.py:1386: in symlink_to
+    os.symlink(target, self, target_is_directory)
+E   OSError: [WinError 1314] 客户端没有所需的特权。: 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-422\\test_generation_rejects_leaf_s0\\task\\target.bin' -> 'C:\\Users\\D01021\\AppData\\Local\\Temp\\pytest-of-D01021\\pytest-422\\test_generation_rejects_leaf_s0\\task\\alias.bin'
+_ test_real_r7_default_prepare_is_readonly_and_accepts_verified_generation_closure _
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\test_main_program_control_generation_scope.py:107: in test_real_r7_default_prepare_is_readonly_and_accepts_verified_generation_closure
+    spec, payload = subject.prepare(task, private, name)
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_program_control_activation.py:881: in prepare
+    need(path.resolve().parent in ({Path(task).resolve(), Path(private).resolve()} if generation else {Path(task).resolve()}),
+doc\tasks\20261106-spug-prod-incremental-to-two-targets\main_program_control_activation.py:61: in need
+    raise ValueError('MAIN_ACTIVATION_' + code)
+E   ValueError: MAIN_ACTIVATION_ORIGINAL_EVIDENCE_SCOPE
+=========================== short test summary info ===========================
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_program_control_generation_scope.py::test_generation_accepts_exact_verified_external_closure_member[source]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_program_control_generation_scope.py::test_generation_accepts_exact_verified_external_closure_member[private-release]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_program_control_generation_scope.py::test_generation_accepts_exact_verified_external_closure_member[private-package]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_program_control_generation_scope.py::test_generation_rejects_nonmember_even_inside_old_allowed_task_directory[missing]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_program_control_generation_scope.py::test_generation_rejects_nonmember_even_inside_old_allowed_task_directory[path]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_program_control_generation_scope.py::test_generation_rejects_nonmember_even_inside_old_allowed_task_directory[bytes]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_program_control_generation_scope.py::test_generation_rejects_nonmember_even_inside_old_allowed_task_directory[sha256]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_program_control_generation_scope.py::test_generation_rejects_nonmember_even_inside_old_allowed_task_directory[extra-field]
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_program_control_generation_scope.py::test_generation_rejects_lexical_alias_not_exact_member
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_program_control_generation_scope.py::test_generation_rejects_leaf_symlink_even_if_member
+FAILED doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_program_control_generation_scope.py::test_real_r7_default_prepare_is_readonly_and_accepts_verified_generation_closure
+11 failed, 5 passed in 34.32s
