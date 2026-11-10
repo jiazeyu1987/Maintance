@@ -1,0 +1,218 @@
+{
+  "schemaVersion": "MainProgramSpugResourceBuild/v2",
+  "status": "PASS",
+  "sourceCommit": "5651efc5b9972b20bcacb50d0774e5862cbe8e6b",
+  "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-spug-5651efc",
+  "fileCount": 14,
+  "files": {
+    "ops/spug/smallapp-entry.locations.conf": {
+      "bytes": 1619,
+      "sha256": "c8c2ce3a39483007b4041c09c1c460d21a3fd7e0e0d1da6c0f2be5664e3b9ae7"
+    },
+    "ops/spug/smallapp-ui/app.js": {
+      "bytes": 32439,
+      "sha256": "37d9593b1eea327e5bfd1b4df2b3f04f984d4c0077460a36121944a33f0d1be9"
+    },
+    "ops/spug/smallapp-ui/embedded.css": {
+      "bytes": 294,
+      "sha256": "2444c102474801e9b1326424d392d2258a791bdb7404d001038a17f18972be2a"
+    },
+    "ops/spug/smallapp-ui/embedded.js": {
+      "bytes": 526,
+      "sha256": "74d68630f1d3dca5d5b9d955c4546848166889ccfdf0506b4145cfcb900ee075"
+    },
+    "ops/spug/smallapp-ui/index.html": {
+      "bytes": 13662,
+      "sha256": "2f70a7e09c631d9cf16a94368cdfc4dec9f4fe4acc4b5e9ac26461adb0c73a07"
+    },
+    "ops/spug/smallapp-ui/package-catalog.css": {
+      "bytes": 5542,
+      "sha256": "6c5a692d91887ecacda2733be1008fb66fdd3d80674429c51ae8f6842b2fcc98"
+    },
+    "ops/spug/smallapp-ui/package-catalog.js": {
+      "bytes": 14878,
+      "sha256": "a1a0b8db2ff04a669c7d1910f330e5ddc1a6838d7681cca04fb975d26d9dd81a"
+    },
+    "ops/spug/smallapp-ui/preview/style.css": {
+      "bytes": 4469,
+      "sha256": "77d95f2e3642840a38bd1c40aa3dc493b37090f835438cfd718c5ee741130593"
+    },
+    "ops/spug/smallapp-ui/simple.css": {
+      "bytes": 3002,
+      "sha256": "41330aef7aa3ff7ad0ac6da9866577d745482caa1566fdd84df937629daaaec1"
+    },
+    "ops/spug/smallapp-ui/simple.js": {
+      "bytes": 33146,
+      "sha256": "daee08ca825fc9978334306b58679d308b59228b5d7c9f7482d29a2dab1d2ec5"
+    },
+    "ops/spug/smallapp_adapter.py": {
+      "bytes": 37636,
+      "sha256": "3240e06390ba005ebf4319bdc97c1e82e3dcd4a7efa3fb58f97c689c09d6874c"
+    },
+    "ops/spug/smallapp_entry.py": {
+      "bytes": 43914,
+      "sha256": "58f5b25118e102c24d30daedfbb71ca7f7570d8b6bbe1be317f638a16becbff2"
+    },
+    "ops/spug/smallapp_progress_remote.py": {
+      "bytes": 2945,
+      "sha256": "82873a4d3816d0d3713e4e0b38e86144e427472fa0868e807d40bc1d2e2e86fb"
+    },
+    "ops/spug/smallapp_simple.py": {
+      "bytes": 7137,
+      "sha256": "c89fe4f805af53f784188ba98f061f34cad68d9f100d6cfef573d06bc3970bc0"
+    }
+  },
+  "dependencyGraph": {
+    "roots": [
+      "smallapp_entry.py",
+      "smallapp-entry.locations.conf",
+      "smallapp-ui/index.html"
+    ],
+    "edges": [
+      {
+        "from": "smallapp-ui/index.html",
+        "kind": "WEB_RESOURCE",
+        "to": "smallapp-ui/app.js"
+      },
+      {
+        "from": "smallapp-ui/index.html",
+        "kind": "WEB_RESOURCE",
+        "to": "smallapp-ui/embedded.css"
+      },
+      {
+        "from": "smallapp-ui/index.html",
+        "kind": "WEB_RESOURCE",
+        "to": "smallapp-ui/embedded.js"
+      },
+      {
+        "from": "smallapp-ui/index.html",
+        "kind": "WEB_RESOURCE",
+        "to": "smallapp-ui/package-catalog.css"
+      },
+      {
+        "from": "smallapp-ui/index.html",
+        "kind": "WEB_RESOURCE",
+        "to": "smallapp-ui/package-catalog.js"
+      },
+      {
+        "from": "smallapp-ui/index.html",
+        "kind": "WEB_RESOURCE",
+        "to": "smallapp-ui/preview/style.css"
+      },
+      {
+        "from": "smallapp-ui/index.html",
+        "kind": "WEB_RESOURCE",
+        "to": "smallapp-ui/simple.css"
+      },
+      {
+        "from": "smallapp-ui/index.html",
+        "kind": "WEB_RESOURCE",
+        "to": "smallapp-ui/simple.js"
+      },
+      {
+        "from": "smallapp_adapter.py",
+        "kind": "LOCAL_IMPORT",
+        "to": "smallapp_entry.py"
+      },
+      {
+        "from": "smallapp_entry.py",
+        "kind": "LOCAL_IMPORT",
+        "to": "smallapp_adapter.py"
+      },
+      {
+        "from": "smallapp_entry.py",
+        "kind": "LOCAL_IMPORT",
+        "to": "smallapp_simple.py"
+      },
+      {
+        "from": "smallapp_simple.py",
+        "kind": "EXECUTED_FILE",
+        "to": "smallapp_progress_remote.py"
+      },
+      {
+        "from": "smallapp_simple.py",
+        "kind": "LOCAL_IMPORT",
+        "to": "smallapp_adapter.py"
+      }
+    ],
+    "files": {
+      "smallapp-entry.locations.conf": {
+        "bytes": 1619,
+        "sha256": "c8c2ce3a39483007b4041c09c1c460d21a3fd7e0e0d1da6c0f2be5664e3b9ae7"
+      },
+      "smallapp-ui/app.js": {
+        "bytes": 32439,
+        "sha256": "37d9593b1eea327e5bfd1b4df2b3f04f984d4c0077460a36121944a33f0d1be9"
+      },
+      "smallapp-ui/embedded.css": {
+        "bytes": 294,
+        "sha256": "2444c102474801e9b1326424d392d2258a791bdb7404d001038a17f18972be2a"
+      },
+      "smallapp-ui/embedded.js": {
+        "bytes": 526,
+        "sha256": "74d68630f1d3dca5d5b9d955c4546848166889ccfdf0506b4145cfcb900ee075"
+      },
+      "smallapp-ui/index.html": {
+        "bytes": 13662,
+        "sha256": "2f70a7e09c631d9cf16a94368cdfc4dec9f4fe4acc4b5e9ac26461adb0c73a07"
+      },
+      "smallapp-ui/package-catalog.css": {
+        "bytes": 5542,
+        "sha256": "6c5a692d91887ecacda2733be1008fb66fdd3d80674429c51ae8f6842b2fcc98"
+      },
+      "smallapp-ui/package-catalog.js": {
+        "bytes": 14878,
+        "sha256": "a1a0b8db2ff04a669c7d1910f330e5ddc1a6838d7681cca04fb975d26d9dd81a"
+      },
+      "smallapp-ui/preview/style.css": {
+        "bytes": 4469,
+        "sha256": "77d95f2e3642840a38bd1c40aa3dc493b37090f835438cfd718c5ee741130593"
+      },
+      "smallapp-ui/simple.css": {
+        "bytes": 3002,
+        "sha256": "41330aef7aa3ff7ad0ac6da9866577d745482caa1566fdd84df937629daaaec1"
+      },
+      "smallapp-ui/simple.js": {
+        "bytes": 33146,
+        "sha256": "daee08ca825fc9978334306b58679d308b59228b5d7c9f7482d29a2dab1d2ec5"
+      },
+      "smallapp_adapter.py": {
+        "bytes": 37636,
+        "sha256": "3240e06390ba005ebf4319bdc97c1e82e3dcd4a7efa3fb58f97c689c09d6874c"
+      },
+      "smallapp_entry.py": {
+        "bytes": 43914,
+        "sha256": "58f5b25118e102c24d30daedfbb71ca7f7570d8b6bbe1be317f638a16becbff2"
+      },
+      "smallapp_progress_remote.py": {
+        "bytes": 2945,
+        "sha256": "82873a4d3816d0d3713e4e0b38e86144e427472fa0868e807d40bc1d2e2e86fb"
+      },
+      "smallapp_simple.py": {
+        "bytes": 7137,
+        "sha256": "c89fe4f805af53f784188ba98f061f34cad68d9f100d6cfef573d06bc3970bc0"
+      }
+    },
+    "additionalFiles": [
+      "smallapp-ui/preview/style.css",
+      "smallapp_progress_remote.py",
+      "smallapp_simple.py"
+    ],
+    "externalPlatformRoots": [
+      "apps",
+      "django",
+      "libs"
+    ]
+  },
+  "testEvidencePin": {
+    "file": "spug-resource-validation-5651efc-r3.json",
+    "bytes": 19663,
+    "sha256": "073b0ab8a25b647c4a4a3445ec73b65ee3ea13e389a95c9c6aa7fb68237a6544"
+  },
+  "sourceCustodyPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-resource-5651efc-r3-source-custody.private.json",
+    "bytes": 109506,
+    "sha256": "814014a12e46e4e6cc90d57711ee6c399278623c19d2f6d1e47c15e3a29956fe"
+  },
+  "selectionReadBudgetSeconds": 50
+}

@@ -161,6 +161,13 @@ def c1_failure_pin(private,c1):
 
 
 def prepare_value(records,private,inputs,input_pin):
+    if type(inputs) is dict and inputs.get('schemaVersion')=='MainProgramSpugPublicationVerificationInputs/v2':
+        need(set(inputs)=={'schemaVersion','baseVerificationInputsPin','resourceTransitionPin','verificationId','outputFile'} and
+             type(inputs['verificationId']) is str and re.fullmatch('v[1-9][0-9]*',inputs['verificationId']),'INPUTS_INVALID')
+        base_inputs=records.pinned(inputs['baseVerificationInputsPin'])
+        need(base_inputs.get('schemaVersion')==INPUT_SCHEMA,'BASE_VERIFICATION_V1_REQUIRED')
+        base=prepare_value(records,private,base_inputs,inputs['baseVerificationInputsPin'])
+        return prepare_transition_verification(records,private,inputs,input_pin,base)
     fields={'schemaVersion','sourceCommit','revisionId','controlGenerationPin','continuationInputsPin','continuationAttemptPin',
             'continuationFailurePin','continuationCompletionPin','dependencyActivationPin','historicalSourceCustodyPin','verificationId','outputFile'}
     need(type(inputs) is dict and set(inputs)==fields and inputs['schemaVersion']==INPUT_SCHEMA and
@@ -186,6 +193,41 @@ def prepare_value(records,private,inputs,input_pin):
                 spec=spec,inputPins=unique_pins(pins))
 
 
+def apply_transition_view(base,completed):
+    from main_program_spug_resource_transition import runtime_view
+    value=deepcopy(base);identity=completed['entryAfter'];files=completed['afterFiles']
+    products=[dict(path='/opt/intruoyi-spug/'+name,**files[name]) for name in publication.PRODUCT_FILES]
+    value['spec']['spugSpec']['observation']['entryPid']=identity['pid']
+    value['spec']['spugSpec']['observation']['productPins']=deepcopy(products)
+    context=deepcopy(base['c1']['context'])
+    context['resource']['files']={'ops/spug/'+name:deepcopy(files[name]) for name in publication.PRODUCT_FILES}
+    context['observation']['spug']['productPins']=deepcopy(products)
+    value['verificationContext']=context
+    value['runtimeView']=runtime_view(base,files,identity,completed['entryEnvironmentSha256'])
+    value['resourceTransition']=deepcopy(completed)
+    return value
+
+
+def prepare_transition_verification(records,private,inputs,input_pin,base):
+    """Consume a fully read A/c1 baseline and an actual transition closure."""
+    from main_program_spug_resource_transition import load_completed_transition
+    need(type(inputs) is dict and set(inputs)=={'schemaVersion','baseVerificationInputsPin','resourceTransitionPin','verificationId','outputFile'} and
+         inputs['schemaVersion']=='MainProgramSpugPublicationVerificationInputs/v2' and
+         type(inputs['verificationId']) is str and re.fullmatch('v[1-9][0-9]*',inputs['verificationId']),'INPUTS_INVALID')
+    base_inputs=records.pinned(inputs['baseVerificationInputsPin'])
+    need(base_inputs==base['inputs'] and base['inputPin']==inputs['baseVerificationInputsPin'] and
+         base_inputs['schemaVersion']==INPUT_SCHEMA,'BASE_VERIFICATION_CHANGED')
+    expected=base_inputs['outputFile'].rsplit('-verification-',1)[0]+'-verification-'+inputs['verificationId']+'.json'
+    need(inputs['outputFile']==expected and inputs['outputFile']!=base_inputs['outputFile'],'OUTPUT_CHANGED')
+    completed=load_completed_transition(records,private,inputs['resourceTransitionPin'],base)
+    value=apply_transition_view(base,completed)
+    value['inputs']=dict(base_inputs,schemaVersion=inputs['schemaVersion'],verificationId=inputs['verificationId'],
+        outputFile=inputs['outputFile'],baseVerificationInputsPin=inputs['baseVerificationInputsPin'],resourceTransitionPin=inputs['resourceTransitionPin'])
+    value['inputPin']=input_pin
+    value['inputPins']=unique_pins(base['inputPins']+completed['inputPins']+records.path_pins())
+    return value
+
+
 def prepare_verification(task,private,inputs_file):
     records=contract.Records(task);value=records.read(inputs_file)
     return prepare_value(records,Path(private),value,records.references[inputs_file])
@@ -194,6 +236,9 @@ def prepare_verification(task,private,inputs_file):
 def stage_program(prepared,stage):
     need(stage in schedule(),'STAGE_NOT_ALLOWED')
     if stage in ('spug-guard-before','spug-guard-after'):
+        if 'resourceTransition' in prepared:
+            completed=prepared['resourceTransition']
+            return dependency.runtime_program(prepared['runtimeView'],'after',completed['entryAfter'],completed['entryEnvironmentSha256'])
         completed=prepared['dependency'];core=completed['core']
         return dependency.runtime_program(completed['prepared'],'after',core['entryAfter'],core['entryEnvironmentSha256'])
     if stage.startswith('host-verify-'):
@@ -206,19 +251,29 @@ def command_arguments(prepared,stage):
     need(stage in schedule(),'STAGE_NOT_ALLOWED')
     if stage.startswith('host-verify-'):return prepared['c1']['hostCommands'][stage.rsplit('-',1)[1]],600
     nonce='spug-verification-'+prepared['inputs']['continuationFailurePin']['sha256'][:24]
-    return [publication.DOCKER,'exec','-i',publication.CONTAINER,'python3','-B','-',nonce],120
+    timeout=120
+    if stage=='spug-verify' and 'resourceTransition' in prepared:
+        budget=prepared['resourceTransition']['selectionReadBudgetSeconds']
+        need(type(budget) is int and 1<=budget<=60,'READ_BUDGET_INVALID')
+        timeout=len(contract.HOSTS)*len(publication.SOURCES)*budget+120
+    return [publication.DOCKER,'exec','-i',publication.CONTAINER,'python3','-B','-',nonce],timeout
 
 
 def validate_stage_result(prepared,stage,result):
     need(stage in schedule() and type(result) is dict and result.get('status')=='PASS','STAGE_NOT_SUCCESSFUL')
     if stage.startswith('spug-guard-'):
-        completed=prepared['dependency'];core=completed['core']
-        dependency.validate_runtime_result(completed['prepared'],result,'after',core['entryAfter'],core['entryEnvironmentSha256'])
+        if 'resourceTransition' in prepared:
+            completed=prepared['resourceTransition']
+            dependency.validate_runtime_result(prepared['runtimeView'],result,'after',completed['entryAfter'],completed['entryEnvironmentSha256'])
+        else:
+            completed=prepared['dependency'];core=completed['core']
+            dependency.validate_runtime_result(completed['prepared'],result,'after',core['entryAfter'],core['entryEnvironmentSha256'])
     else:
         need(result.get('phase')=='verify' and result.get('sourceCommit')==prepared['inputs']['sourceCommit'] and
              result.get('backupDispatched') is False and result.get('restoreDispatched') is False,'VERIFY_RESULT_CHANGED')
         host=stage.rsplit('-',1)[1] if stage.startswith('host-verify-') else None
-        publication.validate_verify_stage(prepared['c1']['context'],prepared['c1']['context']['generation'],host,result)
+        context=prepared.get('verificationContext',prepared['c1']['context'])
+        publication.validate_verify_stage(context,context['generation'],host,result)
     return result
 
 
@@ -242,8 +297,10 @@ class VerificationTransport:
 
 def binding(prepared):
     inputs=prepared['inputs']
-    return dict(verificationInputsPin=prepared['inputPin'],**{k:inputs[k] for k in
+    value=dict(verificationInputsPin=prepared['inputPin'],**{k:inputs[k] for k in
         ('sourceCommit','revisionId','controlGenerationPin','continuationFailurePin','dependencyActivationPin','verificationId')})
+    if 'resourceTransition' in prepared:value['resourceTransitionPin']=inputs['resourceTransitionPin']
+    return value
 
 
 def aggregate(prepared,stages):
@@ -284,6 +341,7 @@ def validate_publication_v4(records,private,selected):
          selected['schemaVersion']=='TaskMainProgramInstallations/v4','SELECTION_INVALID')
     inputs=records.pinned(selected['verificationInputsPin'])
     prepared=prepare_value(records,private,inputs,selected['verificationInputsPin']);bound=binding(prepared);pins=[]
+    inputs=prepared['inputs']
     need(selected['sourceCommit']==inputs['sourceCommit'] and selected['controlGenerationPin']==inputs['controlGenerationPin'] and
          selected['spugInstallationPin']['file']==inputs['outputFile'],'SELECTION_BINDING_CHANGED')
     core=records.pinned(selected['spugInstallationPin']);stem=inputs['outputFile'][:-5]

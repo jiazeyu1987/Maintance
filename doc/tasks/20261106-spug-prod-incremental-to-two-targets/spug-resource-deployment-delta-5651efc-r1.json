@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "MainProgramSpugResourceDeploymentDelta/v2",
+  "resourceBuildPin": {
+    "file": "spug-resource-build-5651efc-r3.json",
+    "bytes": 7153,
+    "sha256": "a30b1d8f3472be5e740994ad71b4eb95f2be0743defe450d82427a7bb58008a5"
+  },
+  "changes": [
+    {
+      "relativePath": "smallapp-ui/app.js",
+      "beforePin": {
+        "path": "/opt/intruoyi-spug/smallapp-ui/app.js",
+        "bytes": 31951,
+        "sha256": "217eb1232b0c3a73484a8db5fe7f9282f1b49acb7b6054a9b2a3653982763adc"
+      },
+      "afterPin": {
+        "path": "/opt/intruoyi-spug/smallapp-ui/app.js",
+        "bytes": 32439,
+        "sha256": "37d9593b1eea327e5bfd1b4df2b3f04f984d4c0077460a36121944a33f0d1be9"
+      }
+    },
+    {
+      "relativePath": "smallapp_adapter.py",
+      "beforePin": {
+        "path": "/opt/intruoyi-spug/smallapp_adapter.py",
+        "bytes": 32224,
+        "sha256": "bf62dcab47679b19d74d1b398caf6588bb9cabfd6dfe54a35ec76ace71fe2075"
+      },
+      "afterPin": {
+        "path": "/opt/intruoyi-spug/smallapp_adapter.py",
+        "bytes": 37636,
+        "sha256": "3240e06390ba005ebf4319bdc97c1e82e3dcd4a7efa3fb58f97c689c09d6874c"
+      }
+    }
+  ]
+}

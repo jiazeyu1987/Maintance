@@ -1,0 +1,29 @@
+{
+  "schemaVersion": "SpugResourceBuildFormalReaderValidation/v1",
+  "status": "PASS",
+  "resourceBuildPin": {
+    "file": "spug-resource-build-5651efc-r3.json",
+    "bytes": 7153,
+    "sha256": "a30b1d8f3472be5e740994ad71b4eb95f2be0743defe450d82427a7bb58008a5"
+  },
+  "sourceCommit": "5651efc5b9972b20bcacb50d0774e5862cbe8e6b",
+  "runtimeFiles": 14,
+  "readPinCount": 324,
+  "elapsedSeconds": 26.172,
+  "readerPins": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_resource_transition.py",
+      "bytes": 29106,
+      "sha256": "dc3d9f01bc3e52204d6801683d3d05033c57afec7a3f89427091c8b0a7357a0b"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication_verify_only.py",
+      "bytes": 33479,
+      "sha256": "b4619ef30c12dc7754256b87b753fc0932f1007e8925ca2a1df0cfe047229ebe"
+    }
+  ],
+  "sourcesUnchanged": true,
+  "configurationWrites": false,
+  "backupDispatched": false,
+  "restoreDispatched": false
+}

@@ -1,0 +1,100 @@
+{
+  "schemaVersion": "SpugResourceBuildExecution/v1",
+  "status": "PASS",
+  "originalCarrierTerminalPin": {
+    "file": "spug-resource-build-5651efc-r2-terminal.json",
+    "bytes": 566,
+    "sha256": "846ccaaa52faa90434f768adbb37a2832f5fc76fce19b65ec93fd0fb2091bb55"
+  },
+  "originalCarrierExitCode": 1,
+  "requestPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-resource-5651efc-r2.request.private.json",
+    "bytes": 53442,
+    "sha256": "1ef0d3c31eb05efd3c299ef6b533204e18639539e441dff2c3829930c6f1c202"
+  },
+  "sourceCommit": "5651efc5b9972b20bcacb50d0774e5862cbe8e6b",
+  "worktree": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-spug-5651efc",
+  "workingTreeClean": true,
+  "sourcesUnchanged": true,
+  "actualPythonPassed": 114,
+  "actualUiPassed": 92,
+  "actualSkipped": 0,
+  "results": [
+    {
+      "index": 0,
+      "actualExitCode": 0,
+      "elapsedSeconds": 47.063,
+      "passed": 114,
+      "skipped": 0,
+      "argv": [
+        "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "-X",
+        "utf8",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "--tb=short",
+        "-p",
+        "no:cacheprovider",
+        "--rootdir",
+        "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-spug-5651efc",
+        "--confcutdir",
+        "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-spug-5651efc",
+        "ops/spug/test_smallapp_selection_budget.py",
+        "ops/spug/test_smallapp_cross_route.py",
+        "ops/spug/test_smallapp_bridge_errors.py",
+        "ops/spug/test_smallapp_safety.py",
+        "ops/spug/test_smallapp_source_rotation.py",
+        "ops/spug/test_smallapp_display_context.py",
+        "ops/spug/test_automatic_incremental_entry.py",
+        "ops/spug/test_automatic_incremental_proxy.py",
+        "ops/spug/test_automatic_incremental_http.py",
+        "doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_archived_source_catalogue_routing.py"
+      ],
+      "cwd": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-spug-5651efc",
+      "logPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-resource-5651efc-r2-0.private.log",
+        "bytes": 184,
+        "sha256": "b4eff187150102c41e11e9287d0298b7766a0699d735b1635e891b0b23017789"
+      }
+    },
+    {
+      "index": 1,
+      "actualExitCode": 0,
+      "elapsedSeconds": 3.406,
+      "passed": 92,
+      "skipped": 0,
+      "argv": [
+        "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "--test",
+        "--test-timeout=15000",
+        "ops/spug/smallapp_ui_safety.test.cjs",
+        "ops/spug/smallapp_restore_result.test.cjs",
+        "ops/spug/smallapp-ui/package-catalog.test.cjs",
+        "ops/spug/smallapp-ui/package-catalog-dialog.test.cjs",
+        "ops/spug/smallapp-ui/embedded.test.cjs"
+      ],
+      "cwd": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\release-spug-5651efc",
+      "logPin": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-resource-5651efc-r2-1.private.log",
+        "bytes": 9016,
+        "sha256": "b0aff8648d2654f5749349ffc41bc416142000b947c39f7076958e258376cedc"
+      }
+    }
+  ],
+  "sourceCustodyPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-resource-5651efc-r3-source-custody.private.json",
+    "bytes": 109506,
+    "sha256": "814014a12e46e4e6cc90d57711ee6c399278623c19d2f6d1e47c15e3a29956fe"
+  },
+  "buildPin": {
+    "file": "spug-resource-build-5651efc-r3.json",
+    "bytes": 7153,
+    "sha256": "a30b1d8f3472be5e740994ad71b4eb95f2be0743defe450d82427a7bb58008a5"
+  },
+  "testsRerun": false,
+  "newCommits": false,
+  "mergedToIntMain": false,
+  "worktreeDeleted": false
+}

@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "SpugResourceBuildSetupFailure/v1",
+  "status": "FAILED",
+  "actualExitCode": 1,
+  "stage": "INPUT_ENUMERATION_BEFORE_TESTS",
+  "errorCode": "OLD_VALIDATION_TEMPLATE_NOT_COMMITTED",
+  "carrierPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\build-spug-resource-5651efc-r1.py",
+    "bytes": 6364,
+    "sha256": "4878b4a134f2416511edfe0db6dd058fca7eb13496a993bbc53dd157257f5fba"
+  },
+  "testsDispatched": false,
+  "buildCreated": false,
+  "runtimeWrites": false
+}

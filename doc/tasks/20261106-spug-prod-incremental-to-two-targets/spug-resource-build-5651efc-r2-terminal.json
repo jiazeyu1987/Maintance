@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "SpugResourceBuildCarrierTerminal/v1",
+  "originalSessionId": 45983,
+  "actualOuterExitCode": 1,
+  "failureStage": "NODE_REPORTER_PARSING_AFTER_BOTH_TESTS",
+  "errorCode": "EXPECTED_TAP_RECEIVED_NODE_SPEC_REPORTER",
+  "observedTestResults": [
+    {"index": 0, "actualExitCode": 0, "elapsedSeconds": 47.063, "passed": 114, "skipped": 0},
+    {"index": 1, "actualExitCode": 0, "elapsedSeconds": 3.406, "passed": 92, "skipped": 0}
+  ],
+  "originalFailurePreserved": true,
+  "runtimeWrites": false,
+  "testsMustNotBeClaimedAsCarrierSuccess": true
+}

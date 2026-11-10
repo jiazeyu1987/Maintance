@@ -1,0 +1,117 @@
+{
+  "schemaVersion": "SpugResourceTransitionParentRegression/v1",
+  "actualExitCode": 0,
+  "elapsedSeconds": 263.156,
+  "sourcesUnchanged": true,
+  "requestPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-resource-transition-parent-r1.request.private.json",
+    "bytes": 5970,
+    "sha256": "7f51d9671886231e4ada3091ab24aa823759a5cda26c512417df1fef60e81899"
+  },
+  "inputPins": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication_verify_only.py",
+      "bytes": 33479,
+      "sha256": "b4619ef30c12dc7754256b87b753fc0932f1007e8925ca2a1df0cfe047229ebe"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_publication_verify_only.py",
+      "bytes": 14724,
+      "sha256": "f949a88ae6e8d169a54d72a2e90671a5cae9686d53c05afa2f984cf16cf9b1ba"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\spug_runtime_dependency_completion.py",
+      "bytes": 49719,
+      "sha256": "4c4477b301a0058681944c815ce63533852230ce768a9b640b26f1dd9ac938d4"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_spug_runtime_dependency_completion.py",
+      "bytes": 19073,
+      "sha256": "64204dd327fc04da89ee7d3756ec5d760b5780ec4a9a8bd7a5e81f59caa94c0b"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_installation_selection.py",
+      "bytes": 15700,
+      "sha256": "557b384234b5b38ec7c738ba3c1086d74f8c2768412399dc1680a6a5427dd786"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\observe_closeout_hosts.py",
+      "bytes": 16656,
+      "sha256": "436edc7e36f68c965eb21f392c80d2618a6e5cf0305698da8d86fe30fc2f736d"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication.py",
+      "bytes": 83007,
+      "sha256": "01077433077cda8a44619215fc234a40240b7a013ab880e4c334622b88dde740"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication_continuation.py",
+      "bytes": 61369,
+      "sha256": "2a4be50c1592edc561673f5771a16def5bc38044e2a1c17c3ef232e08a969dc1"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication_v2.py",
+      "bytes": 12313,
+      "sha256": "0915b324db982f1213289a35a8148833f69c141fa080d91671fee00696eb37fa"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_publication_continuation.py",
+      "bytes": 25677,
+      "sha256": "70cb36c12db98297962493be5ea6f3bace8f7845740903e8615ab600a6300b37"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_publication.py",
+      "bytes": 53739,
+      "sha256": "e510124381979c38f9e451d93cac49594cbaaf4ad1c0af566b001c6413e7adf0"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_publication_v2.py",
+      "bytes": 17902,
+      "sha256": "f90eb908bb0029538006ce45df7dd50c03da1b0c0b4b6c5ab8bba0c2bbe6525e"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_installation_selection.py",
+      "bytes": 13081,
+      "sha256": "fdb134504d6654d504d8a2eb4a1300e31697bec03043690ae17e8984fca692e5"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_closeout_host_snapshot.py",
+      "bytes": 11035,
+      "sha256": "3507f5b0d94d17a8503e7151ba615aadd97b4cfa7a8c2c647083d0393ec4cad7"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_resource_transition.py",
+      "bytes": 29103,
+      "sha256": "fbc63f9e0f968a1151f9ecfcdcf08426fb7dbea868828299fd944fe968d060ea"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_resource_transition.py",
+      "bytes": 19592,
+      "sha256": "9f021738b62bb42b44742eade049fce369f0aefbda6d45957de907b575f27772"
+    }
+  ],
+  "logPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-resource-transition-parent-r1.private.log",
+    "bytes": 194,
+    "sha256": "7fd853fa8c8a317e275c1faf6ea344f78e359ef4f2329ca490f1dcc43ee1ac6e"
+  },
+  "argv": [
+    "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "-X",
+    "utf8",
+    "-B",
+    "-m",
+    "pytest",
+    "-q",
+    "--tb=short",
+    "-p",
+    "no:cacheprovider",
+    "--rootdir",
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance",
+    "--confcutdir",
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance",
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_publication_verify_only.py",
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_spug_runtime_dependency_completion.py",
+    "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_resource_transition.py"
+  ]
+}

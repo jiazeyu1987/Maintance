@@ -97,6 +97,33 @@ def test_actual_prepare_changes_only_verified_entry_pid(prepared):
     assert prepared['dependency']['nativeDiagnosticPins'] and prepared['prefix']['appliedCount']==7
 
 
+def test_v2_runtime_projection_updates_both_products_and_preserves_history(prepared):
+    # Projection-only protocol fixture. It never asserts an actual installation.
+    before=deepcopy(prepared);files={p['path'].removeprefix('/opt/intruoyi-spug/'):
+        {k:p[k] for k in ('bytes','sha256')} for p in prepared['dependency']['core']['filePinsAfter']}
+    files['smallapp-ui/app.js']=dict(bytes=3,sha256='a'*64)
+    identity=dict(prepared['dependency']['core']['entryAfter'],pid=160001,startTicks='130000000')
+    completed=dict(afterFiles=files,entryAfter=identity,
+        entryEnvironmentSha256=prepared['dependency']['core']['entryEnvironmentSha256'],
+        selectionReadBudgetSeconds=50,inputPins=[])
+    value=subject().apply_transition_view(prepared,completed)
+    assert prepared==before and value['spec']['spugSpec']['observation']['entryPid']==160001
+    assert next(p for p in value['spec']['spugSpec']['observation']['productPins'] if p['path'].endswith('/app.js'))['sha256']=='a'*64
+    assert value['verificationContext']['resource']['files']['ops/spug/smallapp-ui/app.js']['sha256']=='a'*64
+    assert value['verificationContext']['observation']['spug']['productPins']==value['spec']['spugSpec']['observation']['productPins']
+    assert value['spec']['hostSpecs']==before['spec']['hostSpecs']
+    assert subject().stage_program(value,'spug-guard-before')==subject().stage_program(value,'spug-guard-after')
+
+
+def test_v2_verify_budget_envelopes_all_source_target_pairs_only(prepared):
+    value=deepcopy(prepared)
+    value['resourceTransition']=dict(selectionReadBudgetSeconds=50)
+    assert subject().command_arguments(value,'spug-verify')[1]==570
+    assert subject().command_arguments(value,'spug-guard-before')[1]==120
+    assert subject().command_arguments(value,'spug-guard-after')[1]==120
+    assert subject().command_arguments(prepared,'spug-verify')[1]==120
+
+
 @pytest.mark.parametrize('stage',['host-publish-57','spug-custody','spug-configuration-publish','host-verify-60','unknown'])
 def test_dispatch_plan_has_no_write_lane(prepared,stage):
     with pytest.raises(ValueError,match='STAGE_NOT_ALLOWED'):subject().stage_program(prepared,stage)
