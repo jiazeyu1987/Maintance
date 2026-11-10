@@ -210,7 +210,7 @@ def test_real_local_transition_native_journal_and_historical_b_view(local_build,
     The seam redirects only Docker Popen to a local Python protocol peer. It does
     not execute the generated Linux guard and proves no actual container update.
     """
-    module=subject();task,private,root,report,buildref=local_build
+    module=subject();task,private,root,report,buildref=local_build;historical_runtime=publication.RUNTIME
     for pin in prepared['inputPins']:
         path=Path(pin['path'])
         if path.parent==Path(__file__).parent and path.suffix=='.json':
@@ -268,6 +268,20 @@ print(json.dumps(out))
     # Reuse the already fully read real A/c1 fixture. Only its input reference
     # is supplied here; the actual bytes are identical to the committed B input.
     prepared=deepcopy(prepared);prepared['inputPin']=base.references[base_name]
+    # This protocol fixture keeps old historical originals in their actual
+    # TASK/PRIVATE, while all new transition files live in temp/task+private.
+    # Invoke the real baseline reader with that explicit original scope; never fabricate
+    # a successful baseline or widen the product reader's private boundary.
+    import main_program_spug_publication_verify_only as verify
+    read_baseline=verify.prepare_value
+    def original_history_scope(records,private_scope,base_inputs,input_pin):
+        assert base_inputs['schemaVersion']==verify.INPUT_SCHEMA
+        historical=contract.Records(Path(__file__).resolve().parent)
+        assert historical.pinned(input_pin)==base_inputs
+        with monkeypatch.context() as original_paths:
+            original_paths.setattr(publication,'RUNTIME',historical_runtime)
+            return read_baseline(historical,Path('C:/Spug/runtime/private/prod-incremental-to-two-targets-20261106'),base_inputs,input_pin)
+    monkeypatch.setattr(verify,'prepare_value',original_history_scope)
     # Exact external bind protocol maps only this test's product directory.
     for context in (prepared['c1'],prepared['dependency']['prepared']['c1']):
         for mount in context['mountObservation']['mounts']:
@@ -304,3 +318,102 @@ print(json.dumps(out))
         archive=private/(value['stem']+'-originals')/'0-before.py'
         assert archive.exists();archive.write_bytes(b'tampered')
         with pytest.raises(ValueError):module.load_completed_transition(contract.Records(task),private,reference,prepared)
+
+
+# The following cases read the real completed installation, never synthesize a
+# PASS installation. Only new consumer metadata lives in exclusive test files.
+@pytest.fixture(scope='module')
+def installed_reader_history():
+    import main_program_spug_publication_verify_only as verify
+    task=Path(__file__).resolve().parent;private=Path('C:/Spug/runtime/private/prod-incremental-to-two-targets-20261106')
+    records=contract.Records(task);name='main-program-spug-resource-transition-5651efc-r1.json'
+    core=records.read(name);reference=records.references[name]
+    attempt=json.loads(publication.verify_bytes(core['attemptPin']))
+    old=next(p for p in attempt['inputPins'] if p['path']==str(Path(subject().__file__).resolve()))
+    kept=private/('spug-resource-transition-reader-'+old['sha256']+'.py')
+    assert publication.verify_bytes(publication.file_pin(kept))==publication.verify_bytes(dict(old,path=str(kept)))
+    base=verify.prepare_verification(task,private,'main-program-spug-verification-inputs-45dd7dc-r6-c1-v1.json')
+    return task,private,core,reference,attempt,old,publication.file_pin(kept),base
+
+
+def consumer_metadata(task,wrapper,base_pin):
+    import uuid
+    from contextlib import contextmanager
+    @contextmanager
+    def files():
+        names=['test-reader-custody-'+uuid.uuid4().hex+'.json','test-reader-inputs-'+uuid.uuid4().hex+'.json']
+        try:
+            raw=publication.canonical(wrapper)
+            with (task/names[0]).open('xb') as stream:stream.write(raw)
+            ref=dict(file=names[0],**content(raw))
+            value=dict(schemaVersion='MainProgramSpugPublicationVerificationInputs/v2',baseVerificationInputsPin=base_pin,
+                resourceTransitionPin=ref,verificationId='v3',
+                outputFile='main-program-spug-installation-45dd7dc-r6-continuation-c1-verification-v3.json')
+            with (task/names[1]).open('xb') as stream:stream.write(publication.canonical(value))
+            yield names,ref
+        finally:
+            for name in names:
+                path=task/name
+                if path.exists():path.unlink()
+    return files()
+
+
+def reader_custody(history):
+    _,_,core,ref,_,old,kept,_=history
+    return dict(schemaVersion='MainProgramSpugResourceTransitionReaderCustody/v1',transitionCorePin=ref,
+        attemptPin=core['attemptPin'],originalReaderPin=old,preservedReaderPin=kept,
+        currentReaderPin=publication.file_pin(subject().__file__))
+
+
+def test_actual_nested_b_scope_matches_the_exact_original_attempt(installed_reader_history):
+    # The old direct reader remains valid only before its physical source changes.
+    # This exact real v2 entry first reproduces the 1142/1141 scope defect; the
+    # post-upgrade explicit rejection is separately checked below.
+    import main_program_spug_publication_verify_only as verify
+    task,private,_,_,_,old,_,_=installed_reader_history
+    if publication.file_pin(subject().__file__)!=old:
+        with pytest.raises(ValueError,match='READER_CUSTODY_REQUIRED'):
+            verify.prepare_verification(task,private,'main-program-spug-verification-inputs-45dd7dc-r6-c1-v2.json')
+    else:
+        value=verify.prepare_verification(task,private,'main-program-spug-verification-inputs-45dd7dc-r6-c1-v2.json')
+        assert value['resourceTransition']['entryAfter']['pid']==152321
+
+
+def test_explicit_reader_custody_real_nested_b_entry_and_complete_closure(installed_reader_history):
+    import main_program_spug_publication_verify_only as verify
+    task,private,core,reference,attempt,old,kept,base=installed_reader_history
+    wrapper=reader_custody(installed_reader_history)
+    original_raw=publication.verify_bytes(old if old==publication.file_pin(subject().__file__) else dict(old,path=kept['path']))
+    before={p['path']:publication.verify_bytes(p) for p in [core['attemptPin'],core['privateEvidencePin'],attempt['gatePin']]}
+    with consumer_metadata(task,wrapper,core['baseVerificationInputsPin']) as (names,ref):
+        value=verify.prepare_verification(task,private,names[1])
+        assert value['resourceTransition']['entryAfter']==core['entryAfter']
+        pins={p['path']:p for p in value['inputPins']}
+        for pin in [kept,wrapper['currentReaderPin'],core['attemptPin'],core['privateEvidencePin']]:assert pins[pin['path']]==pin
+        assert pins[str(task/names[0])]['sha256']==ref['sha256'] and str(task/names[1]) in pins
+        assert verify.binding(value)['resourceTransitionPin']==ref
+        assert verify.command_arguments(value,'spug-verify')[1]==570
+        assert all(publication.verify_bytes(dict(path=p,**content(raw)))==raw for p,raw in before.items())
+        assert publication.verify_bytes(kept)==original_raw
+
+
+@pytest.mark.parametrize('bad',['extra','recursive','attempt','original-path','original-pin','preserved','current'])
+def test_reader_custody_rejects_cross_binding_and_byte_drift(installed_reader_history,bad,tmp_path):
+    task,private,core,ref,_,old,kept,base=installed_reader_history
+    wrapper=reader_custody(installed_reader_history)
+    if bad=='extra':wrapper['extra']=True
+    elif bad=='attempt':wrapper['attemptPin']=core['privateEvidencePin']
+    elif bad=='original-path':wrapper['originalReaderPin']=dict(old,path=str(task/'main_program_spug_publication_verify_only.py'))
+    elif bad=='original-pin':wrapper['originalReaderPin']=dict(old,sha256='0'*64)
+    elif bad=='preserved':wrapper['preservedReaderPin']=dict(kept,sha256='0'*64)
+    elif bad=='current':wrapper['currentReaderPin']=dict(wrapper['currentReaderPin'],sha256='0'*64)
+    with consumer_metadata(task,wrapper,core['baseVerificationInputsPin']) as (names,reference):
+        if bad=='recursive':
+            # A second public wrapper is an actual file; no recursive resolution.
+            nested=dict(wrapper,transitionCorePin=reference)
+            with consumer_metadata(task,nested,core['baseVerificationInputsPin']) as (_,recursive_ref):
+                with pytest.raises(ValueError,match='READER_CUSTODY_CORE_INVALID'):
+                    subject().load_completed_transition(contract.Records(task),private,recursive_ref,base)
+        else:
+            with pytest.raises(ValueError,match='READER_CUSTODY_'):
+                subject().load_completed_transition(contract.Records(task),private,reference,base)

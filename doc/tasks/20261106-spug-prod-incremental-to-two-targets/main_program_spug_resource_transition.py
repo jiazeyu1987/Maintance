@@ -197,12 +197,19 @@ def _prepare(records,private,inputs,input_pin,*,verify_checkout,allow_unobserved
          type(inputs['operationId']) is str and re.fullmatch('r[1-9][0-9]*',inputs['operationId']),'INPUTS_INVALID')
     base_inputs=records.pinned(inputs['baseVerificationInputsPin'])
     need(base_inputs['schemaVersion']==verifier().INPUT_SCHEMA,'BASE_VERIFICATION_V1_REQUIRED')
-    if base is None:base=verifier().prepare_value(records,private,base_inputs,inputs['baseVerificationInputsPin'])
+    canonical=verifier().prepare_value(records,private,base_inputs,inputs['baseVerificationInputsPin'])
+    if base is None:base=canonical
     else:
         # The caller already read the full A/c1 closure. Recheck its immutable
         # physical inputs and exact input document, without reinterpreting it.
         need(base['inputs']==base_inputs and base['inputPin']==inputs['baseVerificationInputsPin'],'BASE_CHANGED')
         for pin in base['inputPins']:publication.verify_bytes(pin)
+        # The B reader includes its caller's Records in derived provenance.
+        # Compare every runtime field, while the installation provenance is
+        # independently reconstructed above and never taken from that caller.
+        need(dict(base['spec'],inputPins=canonical['spec']['inputPins'])==canonical['spec'] and
+             base['dependency']['core']==canonical['dependency']['core'],
+             'BASE_AUTHORITY_CHANGED')
     build,pins=validate_build(records,private,inputs['resourceBuildPin'],verify_checkout=verify_checkout)
     before=before_files(base);after={n:build['files']['ops/spug/'+n] for n in sorted(dependency.ALLOWED)}
     changes=validate_delta(records.pinned(inputs['deploymentDeltaPin']),before,after,inputs['resourceBuildPin'])
@@ -211,7 +218,7 @@ def _prepare(records,private,inputs,input_pin,*,verify_checkout,allow_unobserved
     core=base['dependency']['core']
     value=dict(inputs=inputs,inputPin=input_pin,base=base,build=build,beforeFiles=before,afterFiles=after,changes=changes,
         stem=stem,runtime=publication.RUNTIME,entryBefore=core['entryAfter'],environment=core['entryEnvironmentSha256'])
-    value['inputPins']=verifier().unique_pins(pins+base['inputPins']+records.path_pins()+
+    value['inputPins']=verifier().unique_pins(pins+canonical['inputPins']+records.path_pins()+
         [publication.file_pin(__file__),publication.file_pin(verifier().__file__)])
     observation=None
     if inputs['observationPin'] is not None:
@@ -335,8 +342,39 @@ def execute_transition(task,private,prepared,*,transport=None):
         raise ValueError('SPUG_RESOURCE_TRANSITION_FAILED_CHECK_PRIVATE_EVIDENCE') from None
 
 
+def transition_reference(records,private,reference,pins):
+    """Resolve one explicit reader-custody wrapper, never discover sidecars."""
+    value=records.pinned(reference);custody=None
+    if value.get('schemaVersion')=='MainProgramSpugResourceTransitionReaderCustody/v1':
+        custody=value
+        need(set(custody)=={'schemaVersion','transitionCorePin','attemptPin','originalReaderPin',
+                           'preservedReaderPin','currentReaderPin'},'READER_CUSTODY_FIELDS_INVALID')
+        reference=custody['transitionCorePin'];value=records.pinned(reference)
+        need(value.get('schemaVersion')=='MainProgramSpugResourceTransition/v1' and value.get('status')=='PASS',
+             'READER_CUSTODY_CORE_INVALID')
+    need(value.get('schemaVersion')=='MainProgramSpugResourceTransition/v1' and value.get('status')=='PASS',
+         'COMPLETED_TRANSITION_REQUIRED')
+    attempt=continuation.private_json(private,value['attemptPin'],pins)
+    current=publication.file_pin(__file__)
+    originals=attempt.get('inputPins')
+    need(type(originals) is list and all(type(p) is dict and 'path' in p for p in originals),'ATTEMPT_INPUT_SET_CHANGED')
+    readers=[p for p in originals if p['path']==current['path']]
+    need(len(readers)==1,'READER_CUSTODY_ORIGINAL_REQUIRED')
+    if custody is None:need(readers[0]==current,'READER_CUSTODY_REQUIRED')
+    else:
+        need(custody['attemptPin']==value['attemptPin'] and custody['originalReaderPin']==readers[0] and
+             custody['currentReaderPin']==current,'READER_CUSTODY_BINDING_CHANGED')
+        try:raw=continuation.private_raw(private,custody['preservedReaderPin'],pins)
+        except (ValueError,OSError) as error:
+            raise ValueError('SPUG_RESOURCE_TRANSITION_READER_CUSTODY_BYTES_INVALID') from error
+        need(dict(path=current['path'],bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest())==readers[0],
+             'READER_CUSTODY_BYTES_CHANGED')
+        pins.append(current)
+    return value,reference,custody
+
+
 def load_completed_transition(records,private,reference,base):
-    core=records.pinned(reference);pins=[]
+    pins=[];core,reference,reader_custody=transition_reference(records,private,reference,pins)
     need(type(core) is dict and core.get('schemaVersion')=='MainProgramSpugResourceTransition/v1' and core.get('status')=='PASS','COMPLETED_TRANSITION_REQUIRED')
     inputs=records.pinned(core['transitionInputsPin'])
     prepared=_prepare(records,private,inputs,core['transitionInputsPin'],verify_checkout=False,base=base)
@@ -360,6 +398,12 @@ def load_completed_transition(records,private,reference,base):
     custody=continuation.private_json(private,prepared['build']['sourceCustodyPin'],pins)
     mapping={r['originalPin']['path']:r for r in custody['entries']}
     expected=verifier().unique_pins(prepared['inputPins']+[r['originalPin'] for r in custody['entries']])
+    if reader_custody is not None:
+        old=reader_custody['originalReaderPin'];current=reader_custody['currentReaderPin']
+        need([p for p in expected if p['path']==current['path']]==[current],'READER_CUSTODY_EXPECTATION_CHANGED')
+        expected=[old if p['path']==current['path'] else p for p in expected]
+        need(old['path'] not in mapping,'READER_CUSTODY_SCOPE_CONFLICT')
+        mapping[old['path']]=dict(originalPin=old,preservedPin=reader_custody['preservedReaderPin'])
     need(type(attempt['inputPins']) is list and len({p['path'] for p in attempt['inputPins']})==len(attempt['inputPins']) and
          {p['path']:p for p in attempt['inputPins']}=={p['path']:p for p in expected},'ATTEMPT_INPUT_SET_CHANGED')
     verifier().verify_historical_inputs(private,attempt['inputPins'],mapping,pins)

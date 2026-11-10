@@ -2,6 +2,34 @@
 
 ## Current Status
 
+历史 reader 接缝修复 ready_for_closeout。新增9项通过，联合回归104项通过+2项旧协议载体失败，精确修正载体后两项均通过，全部零skip；父正式v3 prepare亦已通过。源helper冻结b483f0d、B仍b4619e，等待父独立验证/限定提交。实际安装成功不重派，本组件没有业务写入或重跑安装。
+
+## 嵌套 B / 显式历史 reader 托管（本轮先行 BDD）
+
+只读诊断：实际 attempt 1141 项，nested B prepare expected 1142 项；唯一 expectedOnly 为失败 v2 输入 550B/9d37b3df8136924571c4d24afcaf77d9eaf86d4e8615c03f7684ffbdfed2b5bb，无 actualOnly/changed。共享 Records 的 B v1 baseline.inputPins 夹带外层 v2，原安装原件无缺失。
+
+正式入口：原 B 五字段不改，resourceTransitionPin 明确支持 direct Transition/v1 或 ReaderCustody/v1。custody 仅六字段 schemaVersion/transitionCorePin/attemptPin/originalReaderPin/preservedReaderPin/currentReaderPin，只包原 direct core；core/attempt/原 helper 唯一路径 pin/显式 PRIVATE 原 raw/当前实际 reader 全核。旧 direct core 在 reader 变更后拒绝；无 wrapper 自动发现。父后续生成新 verificationId v3 输入，失败 v2 保持。本轮不生成实际安装或新 B 元数据。
+
+BDD-1：Given 已完成正式转换原件与实际 nested B prepare_value 入口，When 外层输入已读入 Records，Then 不污染原安装 exact expected 集合，外层及 custody 留在新验收闭包。
+
+BDD-2：Given 安装源 pin 已过时，When 读取 direct core，Then 显式 READER_CUSTODY_REQUIRED；Given 精确 typed custody，Then 完整原件逐项读回成功。
+
+BDD-3：Given 错 core/attempt/原路径/原 pin/保全字节/current pin、额外字段或递归 wrapper，When 读取，Then 拒绝，禁止通用源 pin 替换。
+
+先保全原 helper 29106B/dc3d9f01bc3e52204d6801683d3d05033c57afec7a3f89427091c8b0a7357a0b，再写失败测试；RED/GREEN/回归原日志将在实际终态后附记。测试使用真实 Records/私有原件/子进程，协议 seam 不称真实业务安装。
+
+本轮保全实际 exit0：PRIVATE/spug-resource-transition-reader-dc3d9f01bc3e52204d6801683d3d05033c57afec7a3f89427091c8b0a7357a0b.py，排他 xb 写入/fsync 后完整原字节读回相等。没有修改真实 attempt/core/gate/native/observer、失败 v2 输入、build/proof 或 B 源码。
+
+RED：`python -X utf8 -B -m pytest TASK/test_main_program_spug_resource_transition.py -q --tb=short -k "actual_nested_b_scope or reader_custody"`，原 session65136 实际 exit1、9 FAIL / 26 deselected / 0 skip、15.97秒；真实 nested B 的 scope 场景精确 ATTEMPT_INPUT_SET_CHANGED，新的 wrapper 不被旧模块接受，7种负例缺相应正式 custody 拒绝。原日志 spug-resource-transition-reader-red-r1.log。
+
+第一最小实现后 GREEN-r1 原 session20753 实际 exit1、8 PASS / 1 FAIL / 26 deselected / 0 skip、19.87秒。新增严格 base authority 比较暴露第二个同源污染：只读逐字段差异仅 spec.inputPins[0].path/bytes/sha256。它是 Records 派生 provenance，而非 runtime spec/配置变化。保留原失败日志 spug-resource-transition-reader-green-r1.log。
+
+正式处理：独立 Records 从原 transition inputs 读取完整 B v1，作为安装 expected 输入集合唯一 authority；传入 B baseline 的物理 pins 仍全部验证，其 spec 除派生 inputPins provenance 以外字段和 A core 与 canonical 全等。原 native 程序、argv、timeout、退出/输出、完整原件仍逐项严格重建比较。wrapper 仅将 expected 中当前 helper 这一条替为原 attempt 已固定 pin，再用显式 PRIVATE raw 验原字节；新 wrapper/consumer 输入/current reader 只进入新验收闭包，不混入原 attempt。
+
+GREEN-r2：原 session33700 实际 exit0、9 PASS / 26 deselected / 0 skip、26.60秒；原日志 spug-resource-transition-reader-green-r2.log。成功场景使用真实已完成转换与真实 B.prepare_verification 嵌套入口，全量原件读取；只新增独占临时 consumer JSON 并 finally 删除，未人工构造安装成功。源码变化后 direct 原 core 明确 READER_CUSTODY_REQUIRED。所有新 wrapper 六字段及 core/attempt/原 pin/保全 raw/current pin、单层限制均验证。
+
+生产/测试当前冻结：helper 32123B/b483f0db726992ee10764046d4a594418b77feb05c63fc96aaf9624a7a43dd11；test 27170B/cca0b9f6f6255caaca0de2d3910ea2949bce0344a39838a7530d6108dcfdd7cb；B 33479B/b4619ef30c12dc7754256b87b753fc0932f1007e8925ca2a1df0cfe047229ebe 保持。联合受影响回归原 session11541 运行中；不把旧96项与当前新SHA混记。父后续创建正式 wrapper/v3并独立实际完整prepare，本组件未创建真实新验收输入或派发 gate。
+
 ready_for_closeout（父96项已验收，实际Windows日志接缝已精准RED/GREEN，等待父161输入reader复核及限定提交）。本阶段仅本机实现/测试，不生成实际候选 build，不安装、不访问 Docker/服务器、不提交。整个自动增量/三服恢复任务仍由父继续。
 
 ## 接口与边界
@@ -71,3 +99,15 @@ RED：原 session73931 exit1，1 FAIL / 24 deselected，35.55秒；真实临时 
 GREEN：原 session72968 exit0，2 PASS / 24 deselected / 0 skip，74.33秒，原件 `spug-resource-transition-crlf-green-r1.log`。未重跑旧96项，也不把旧96的冻结SHA改记为本次SHA。只读核实际565/r3原日志摘要字节确为 `114 passed in 46.62s\r\n`，新表达式匹配114；未改实际日志/proof/report，完整161输入reader仍由父复核。新helper/test/TDD冻结，B及旧helpers保持。
 
 父实际最终接入：原session97601实际exit0，正式validate_build读取已提交565/r3全部161输入、Git blob、完整14依赖、实际原日志和保全字节；324 pins，26.172秒，最终helper29106B/dc3d9f01bc3e52204d6801683d3d05033c57afec7a3f89427091c8b0a7357a0b与B33479B/b4619ef30c12dc7754256b87b753fc0932f1007e8925ca2a1df0cfe047229ebe前后保持。报告spug-resource-build-5651efc-parent-reader-r2.json；原reader-r1失败保持。实现必要验证已通过，准备精确提交与实际只读观察；尚未安装或执行B现场验收。
+
+联合回归原 session11541 实际 exit1，104 PASS / 2 FAIL / 0 skip，257.66秒，原日志 spug-resource-transition-reader-regression-r1.log 保留。仅两个旧本地 native 协议用例的正式 PRIVATE 路径不满足：原 A/c1 私密原件仍在真实 PRIVATE，新 transition 用 temp/private；canonical 新增真实历史实读正确报 MAIN_SPUG_PRIVATE_PATH_CHANGED。产品不放宽 private 范围，不改变该严格门禁。已向父提出仅测试 seam 显式调用原真实 B reader、将旧历史读取绑定其真实 PRIVATE，新安装/协议文件仍用临时目录，等待确认；未改业务断言。
+
+父批准仅这两旧协议用例的真实scope适配。精确复跑r2实际 exit1、2 FAIL / 33 deselected、17.41秒：将private绑定原根后，更深的旧activation原attempt仍固定实际TASK路径，载体复制到temp/task不能冒充该物理路径。r3实际 exit1、2 FAIL / 33 deselected、31.90秒：TASK/PRIVATE成对绑定后，fixture全局RUNTIME投影仍与旧实际bind定义不同。两轮原日志 spug-resource-transition-reader-protocol-regression-r2.log/r3.log 保持。
+
+最终只修这两个协议测试的明确scope seam：新建原TASK的真实Records并逐pin读取同一B v1原输入，原真实B.prepare_value在原PRIVATE和临时恢复原RUNTIME的context中完整实读；返回原真实reader结果，不返回预存/合成成功、不跳过任一历史门禁。新transition的安装原件/native/替换仍处于temp/task+private，原全部成功/失败业务断言不改；生产helper和B始终未再变化。
+
+REGRESSION-r4：原 session6234 实际 exit0、2 PASS / 33 deselected / 0 skip、92.50秒，原日志 spug-resource-transition-reader-protocol-regression-r4.log。与联合原104 PASS组合覆盖35转换+32B+39A共106项；这是分轮证据，绝不声称最终一次106全通过。没有再重跑原104项。
+
+父实际接入：独占正式 wrapper main-program-spug-resource-transition-reader-custody-5651efc-r1.json、原五字段新verificationId v3输入；原 session95173 实际完整prepare exit0、14.281秒、1079物理pins，两11产品投影/14runtime/entry152321/570秒预算全等。原attempt、失败v2和B源保持。该正式metadata由父生成，本组件只负责本机helper/测试，不派发B gate、不重装、不观察或操作服务器。
+
+最终正式读取入口仍为load_completed_transition(records,private,reference,base)：reference只能是direct Transition/v1或明确的ReaderCustody/v1；wrapper精确六字段、单层directcore、attempt/原helper逻辑pin/保全raw/当前实际reader全绑。原安装expected严格全等；新consumer/custody/current reader是新的B验收闭包。原逻辑源pin保留于wrapper和原attempt，当前同路径physical pin只表示当前reader，旧raw由PRIVATE保全pin承接，无同路径双pin冲突或无约束fallback。

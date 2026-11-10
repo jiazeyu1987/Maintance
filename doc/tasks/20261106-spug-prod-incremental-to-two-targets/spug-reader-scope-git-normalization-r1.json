@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "GitSourceNormalization/v1",
+  "status": "PASS",
+  "files": [
+    {
+      "file": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/main_program_spug_resource_transition.py",
+      "rawBytes": 32123,
+      "rawSha256": "b483f0db726992ee10764046d4a594418b77feb05c63fc96aaf9624a7a43dd11",
+      "stagedBytes": 32123,
+      "stagedSha256": "b483f0db726992ee10764046d4a594418b77feb05c63fc96aaf9624a7a43dd11",
+      "onlyGitCRLFNormalization": false
+    },
+    {
+      "file": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/test_main_program_spug_resource_transition.py",
+      "rawBytes": 28239,
+      "rawSha256": "8271f9acf5a8a73e72e4bf7a8bc797a4c08678b8bf9838f4a8141145b1ff79e2",
+      "stagedBytes": 28239,
+      "stagedSha256": "8271f9acf5a8a73e72e4bf7a8bc797a4c08678b8bf9838f4a8141145b1ff79e2",
+      "onlyGitCRLFNormalization": false
+    },
+    {
+      "file": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/spug-resource-transition-plan.md",
+      "rawBytes": 8670,
+      "rawSha256": "f82fa2bd244a2857bd714264648d432a12ab9756a3b07c5b3c6f11b0a69eb0db",
+      "stagedBytes": 8670,
+      "stagedSha256": "f82fa2bd244a2857bd714264648d432a12ab9756a3b07c5b3c6f11b0a69eb0db",
+      "onlyGitCRLFNormalization": false
+    },
+    {
+      "file": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/spug-resource-transition-tdd-log.md",
+      "rawBytes": 18362,
+      "rawSha256": "a26f2eb20bf7913d86c9a3c044d514be0232a689cb9355716ed14c6b31f10c58",
+      "stagedBytes": 18362,
+      "stagedSha256": "a26f2eb20bf7913d86c9a3c044d514be0232a689cb9355716ed14c6b31f10c58",
+      "onlyGitCRLFNormalization": false
+    },
+    {
+      "file": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/verify_goal_readonly.cjs",
+      "rawBytes": 16764,
+      "rawSha256": "296470da32938a21fbc98882b889a73e0e335e063833f628e7776ebea7e846cb",
+      "stagedBytes": 16764,
+      "stagedSha256": "296470da32938a21fbc98882b889a73e0e335e063833f628e7776ebea7e846cb",
+      "onlyGitCRLFNormalization": false
+    }
+  ]
+}

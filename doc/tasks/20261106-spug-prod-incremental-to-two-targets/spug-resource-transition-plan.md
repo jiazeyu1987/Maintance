@@ -2,6 +2,20 @@
 
 ## Current Status
 
+本轮历史读取接缝修复 ready_for_closeout：新增9项实际GREEN；联合106项原轮104 PASS/2旧载体FAIL，精确修正其历史scope后2项复跑PASS（92.50秒），全部零skip。父正式typed wrapper/v3实际完整prepare已exit0（14.281秒/1079pins），两11项投影、14资源、新entry152321和570秒预算一致。helper冻结32123B/b483f0db726992ee10764046d4a594418b77feb05c63fc96aaf9624a7a43dd11；B保持安装时b4619e。等待父独立验证/限定提交，整个业务目标仍在继续；没有重派安装、观察或业务写入。
+
+## 显式历史 reader 托管与集合边界
+
+父已批准 `resourceTransitionPin` 支持两个明确 schema：原 `MainProgramSpugResourceTransition/v1`，或 `MainProgramSpugResourceTransitionReaderCustody/v1`。后者精确字段为 schemaVersion、transitionCorePin、attemptPin、originalReaderPin、preservedReaderPin、currentReaderPin；只包直接原 Transition/v1，禁止递归 wrapper 或额外字段。原 helper path 必须是本模块唯一实际路径，原 pin 必须出现在对应实际 attempt；PRIVATE 内显式保全的原 raw 必须逐字节吻合，currentReaderPin 必须等于当前实际本模块。托管记录/core/attempt/原 pin/保全 pin/当前 reader pin 全部交叉绑定，进入新 B 的闭包。旧 direct core 在 reader 改变后明确拒绝，不能查找隐式 sidecar 或回退。
+
+修复前保全安装时 29106B/dc3d9f01bc3e52204d6801683d3d05033c57afec7a3f89427091c8b0a7357a0b 原 raw。历史 preparation 使用局部 Records 从原 transition inputs 重建 B v1 权威集合；外层 v2/v3 输入和新 custody 仅进入新验收闭包，不改原 attempt 集合。候选 build 原有源码 custody 不扩权。原失败 v2 输入保持；父后续另建 verificationId v3 的原五字段输入，resourceTransitionPin 显式引用新 typed custody。此处不生成实际 v3、core 或安装证据。
+
+BDD：Given 实际嵌套 B 入口及外层新输入，When 读取已完成安装，Then 原安装集合与原 attempt 严格全等，外层仅留新验收闭包。Given reader 已变更，When 直接旧 core 或错 core/attempt/原 pin/保全 raw/current pin/递归 wrapper，Then 明确拒绝。Given 正确显式 custody，When 新 B prepare，Then 完整原事件/命令/原件逐项核验且所有新旧绑定入闭包，原回执不改写。
+
+设计约束检查：无 fallback/降级/吞异常；从独立 authority 集合与显式历史来源解决；无临时路径发现、改 pin 或空壳工作区绕过。经验门禁沿用本计划“Spug 运行资源依赖闭包”：旧成功写入只独立验收，原失败保留，所有原生命令与完整资源核验保持。
+
+最新：转换实现已提交38c28df。实际只读观察75005 exit0、唯一安装49775 exit0/79.14秒，两个候选文件替换并读回成功，entry152321/startTicks121191318，完整14资源/七配置/155历史路由保持。原件及唯一gate保留。下一步为绑定真实转换核心的B v2六阶段只读验收；此处不等同完整目标完成。
+
 in_progress。必要实现验证通过：父原96项零skip通过；最后CRLF解析修复先精确RED、后2项GREEN并保留原失败；父最终正式reader已实际核565/r3完整161输入/14图/324pins，26.172秒PASS。新候选已在专属565提交checkout完成实际114 Python/92 UI；准备精确实现提交及正式只读观察。尚未安装或派发B现场验收；完整自动增量/三服恢复目标仍未完成。
 
 ## 目标、里程碑与预期验证
