@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "MainUiStdlibPreflightVerification/v1",
+  "status": "PASS",
+  "observedAt": "2026-11-10T14:29:48.765781+00:00",
+  "change": "Spug stdlib-only observation uses python3 -B -S -; original 50 second timeout and all checks unchanged",
+  "red": {
+    "originalRound": "r5",
+    "returnCode": 1,
+    "reason": "Spug docker exec stdlib bootstrap exceeded original 50 second budget",
+    "nativePin": {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-preflight-20261110-r5-native.private.json",
+      "bytes": 847,
+      "sha256": "9ddb5e177aa3a1d719acfab97faf99694c2c7f49c24e98302c32aa1693e5ffbe"
+    }
+  },
+  "green": {
+    "originalRound": "r6",
+    "returnCode": 0,
+    "seconds": 112.031,
+    "nativePin": {
+      "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-preflight-20261110-r6-native.private.json",
+      "bytes": 846,
+      "sha256": "03e328875c1cd2668e885c0bc0a856758ca2f51cd7412998e2d6711e230ab1fe"
+    },
+    "sourcePin": {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\prepare_main_program_ui_preflight.py",
+      "bytes": 20446,
+      "sha256": "e7bb6624fe46f0e5831e696ff665febeb2cc222871482d828dde8a9a3350dc90"
+    },
+    "gatePin": {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\automatic-main-r7-20261110-full-submit-r6-preflight.json",
+      "bytes": 13460,
+      "sha256": "4bf20983dbaa72e6c7ba9fb1d6721cbe6a386afd14a594a634b72fcbb10cdfd1"
+    }
+  },
+  "priorRegression": {
+    "commit": "fcd8034cb3d0e6fe7728c3f50ec2d926eaea178f",
+    "pythonPassed": 58,
+    "javascriptPassed": 37
+  },
+  "backupDispatched": false,
+  "restoreDispatched": false
+}

@@ -139,7 +139,7 @@ def spug_observation(verified, selection):
     script='EXPECTED='+repr(guard)+'\n'+SPUG_SCRIPT
     result=subprocess.run([str(Path(os.environ['LOCALAPPDATA'])/'Programs/DockerDesktop/resources/bin/docker.exe'),
         'exec','-i','f615a60c76f46e4f6ae20ea6298f737fb9786684ce941fcc15763654461265bf',
-        'python3','-B','-'],input=script.encode('utf-8'),capture_output=True,timeout=50)
+        'python3','-B','-S','-'],input=script.encode('utf-8'),capture_output=True,timeout=50)
     if result.returncode:
         path=PRIVATE/('main-ui-spug-preflight-error-'+hashlib.sha256(result.stderr).hexdigest()[:16]+'.private.log')
         if not path.exists():path.write_bytes(result.stdout+result.stderr)
