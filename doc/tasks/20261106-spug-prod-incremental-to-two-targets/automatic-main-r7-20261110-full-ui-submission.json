@@ -1,0 +1,73 @@
+{
+  "schemaVersion": "AutomaticIncrementalUiSubmission/v3",
+  "kind": "FULL",
+  "attemptReservedAt": "2026-11-10T16:05:07.164Z",
+  "applicationId": "intruoyi-57-safe-20261024-v1",
+  "implementationCommit": "b5fa4c581f011f022cb9cde86a11b9b0ee0defd3",
+  "preflightSha256": "d0f30d7bb6fa4f6ec6d0d03efd14363c9c78bce708b2a7a313e6ddd10012d98c",
+  "spugCommit": "5651efc5b9972b20bcacb50d0774e5862cbe8e6b",
+  "deploymentSelectionPin": {
+    "file": "main-program-current-installations-b5fa4c5-r7-v4.json",
+    "bytes": 728,
+    "sha256": "71571705bdd0e5430c41edf34f377d9f535113897d1f111ed651fd27ff6ee930"
+  },
+  "cycle": "main-r7-20261110",
+  "controlGenerationPin": {
+    "bytes": 2562,
+    "file": "main-program-control-generation-b5fa4c5-r7.json",
+    "sha256": "753afb01b7ffa8c176e6aff60303133897e4856ba440bf89a8b4435dcc433f1b"
+  },
+  "spugInstallationPin": {
+    "file": "main-program-spug-control-acceptance-b5fa4c5-r7-r1.json",
+    "bytes": 2392,
+    "sha256": "1a3c484241f1c54f8d01221edad9f396f7052fcb43eca7a526ba44e4fc8e770c"
+  },
+  "sourceCaptureConfigurationPin": {
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/capture-binlog-tmpfs-20261107-v3.json",
+    "bytes": 4753,
+    "sha256": "0c00504b14ca5715ab205d2c43ad7c958f6014ab205f80e4e511df0a241f1c6f"
+  },
+  "sourceOwnerConfigurationPin": {
+    "bytes": 1998,
+    "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/main-program-b5fa4c5-r7/repository-source.json",
+    "sha256": "de38481d7dd342b27439ba5268e3751425e187e72b73147790db5a83f41c73c3"
+  },
+  "baselineEvidencePin": {
+    "file": "automatic-main-r7-20261110-full-submit-r10-baseline.json",
+    "bytes": 699,
+    "sha256": "e3fe1d054f6dd15666d24fec392bf4ec31c38ba666dd05a54788107df60e6a30"
+  },
+  "request": {
+    "schemaVersion": "SmallAppBackupUiRequest/v1",
+    "operationId": "smallapp-3c2395ff88bd474e9fc007649565b848",
+    "action": "FULL",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "parentChainRef": null,
+    "recoveryPointRef": null,
+    "targetConfigRef": null
+  },
+  "intent": {
+    "schemaVersion": "AutomaticIncrementalRequest/v1",
+    "operationId": "smallapp-3c2395ff88bd474e9fc007649565b848",
+    "applicationId": "intruoyi-57-safe-20261024-v1",
+    "planDigest": "5cc05816fad33b56e19ba80141e5973ca2624c7a2c505470976dfc5e4aafd1b7"
+  },
+  "plan": {
+    "schemaVersion": "AutomaticIncrementalPlan/v1",
+    "sourceConfigRef": "intruoyi-57-safe-20261024-v1",
+    "state": "BASELINE_REQUIRED",
+    "reasonCode": "INCREMENTAL_CHAIN_AGE_EXPIRED",
+    "parentChainRef": null,
+    "baseFullRef": null,
+    "generationId": null,
+    "chainDepth": 0,
+    "pointType": null,
+    "parentPointType": null,
+    "basePointType": null,
+    "finishedAt": null,
+    "baseFinishedAt": null,
+    "evidenceDigest": "d4e12b10bb52c8a38c626a4940862448339a211392a08f5388d24a24b2f9928e",
+    "planDigest": "5cc05816fad33b56e19ba80141e5973ca2624c7a2c505470976dfc5e4aafd1b7"
+  },
+  "status": "POST_ATTEMPT_RESERVED_OUTCOME_UNKNOWN"
+}

@@ -1,0 +1,159 @@
+{
+  "schemaVersion": "OriginalBackupProgressObservation/v1",
+  "operationId": "smallapp-3c2395ff88bd474e9fc007649565b848",
+  "observedAt": "2026-11-10T16:22:11.084149+00:00",
+  "remoteWrites": false,
+  "native": {
+    "returncode": 0,
+    "elapsedSeconds": 0.375,
+    "streams": {
+      "stdout": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-progress-20261110-r1.stdout.private.log",
+        "bytes": 5838,
+        "sha256": "1da4fee5a48a224a4508ca2e4112c1558baaf09560e1e613f1aa61a312b5dab2"
+      },
+      "stderr": {
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\main-r7-full-progress-20261110-r1.stderr.private.log",
+        "bytes": 84,
+        "sha256": "045defd52562b974f8311e28c628eef8e1458291556f7ffec19e0707248994a1"
+      }
+    }
+  },
+  "ownerFiles": [
+    "start.json",
+    "worker-process.json",
+    "timing-archive-admission-end.json",
+    "timing-source-capture-start.json",
+    "timing-archive-admission-start.json"
+  ],
+  "captureFiles": [
+    {
+      "name": "worker-stderr.log",
+      "bytes": 0
+    },
+    {
+      "name": "event-0009.json",
+      "bytes": 84
+    },
+    {
+      "name": "event-0004.json",
+      "bytes": 86
+    },
+    {
+      "name": "job-request.json",
+      "bytes": 239
+    },
+    {
+      "name": "event-0008.json",
+      "bytes": 311
+    },
+    {
+      "name": "event-0002.json",
+      "bytes": 82
+    },
+    {
+      "name": "job-stderr.log",
+      "bytes": 0
+    },
+    {
+      "name": "job-configuration.json",
+      "bytes": 4770
+    },
+    {
+      "name": "event-0006.json",
+      "bytes": 311
+    },
+    {
+      "name": "worker-started.json",
+      "bytes": 54
+    },
+    {
+      "name": "event-0007.json",
+      "bytes": 148
+    },
+    {
+      "name": "job-started.json",
+      "bytes": 54
+    },
+    {
+      "name": "event-0003.json",
+      "bytes": 112
+    },
+    {
+      "name": "event-0005.json",
+      "bytes": 148
+    },
+    {
+      "name": "event-0001.json",
+      "bytes": 78
+    },
+    {
+      "name": "operation.json",
+      "bytes": 835
+    }
+  ],
+  "active": [
+    {
+      "pid": 4237,
+      "state": "S",
+      "commandSha256": "ef01ae8839c9e5ae78be9080c403444be7a53c965529077fdcd192fe731ad70c",
+      "io": "rchar: 2710876\nwchar: 0\nsyscr: 244\nsyscw: 0\nread_bytes: 0\nwrite_bytes: 0\ncancelled_write_bytes: 0\n"
+    },
+    {
+      "pid": 27811,
+      "state": "S",
+      "commandSha256": "04bf40be5c4a7805d43c5bc50ca126cf9e024fa5a8faa8a1485e69d8ae1016e9",
+      "io": "rchar: 482274593\nwchar: 285985\nsyscr: 46697\nsyscw: 537\nread_bytes: 35012608\nwrite_bytes: 2195456\ncancelled_write_bytes: 0\n"
+    },
+    {
+      "pid": 28783,
+      "state": "S",
+      "commandSha256": "658f78ddf0ad384a797098c5df8e46d2504a24365d8e4a7032140ac21bfd1e7f",
+      "io": "rchar: 2715701\nwchar: 5063\nsyscr: 250\nsyscw: 3\nread_bytes: 0\nwrite_bytes: 16384\ncancelled_write_bytes: 0\n"
+    },
+    {
+      "pid": 28800,
+      "state": "S",
+      "commandSha256": "286153ba5ec9f3545f1aa2ab1694b276e97eb7cceca8cc04b7ef4ce0b5798e0d",
+      "io": "rchar: 7776038960\nwchar: 13843900869\nsyscr: 601272\nsyscw: 110166\nread_bytes: 2090196992\nwrite_bytes: 13849280512\ncancelled_write_bytes: 1464012800\n"
+    }
+  ],
+  "captureStages": {
+    "operation.json": {
+      "startedAt": "2026-11-10T16:05:54.402914+00:00"
+    },
+    "worker-started.json": {
+      "pid": 28800
+    },
+    "job-started.json": {
+      "pid": 28783
+    },
+    "event-0009.json": {
+      "stage": "WRITERS_STOPPED_DATABASE_FENCED"
+    },
+    "event-0004.json": {
+      "stage": "CONFIGURATION_AND_IMAGES_CAPTURED"
+    },
+    "event-0008.json": {
+      "stage": "CONTAINER_COMMAND_EXIT"
+    },
+    "event-0002.json": {
+      "stage": "CAPTURE_DEPENDENCIES_VERIFIED"
+    },
+    "event-0006.json": {
+      "stage": "CONTAINER_COMMAND_EXIT"
+    },
+    "event-0007.json": {
+      "stage": "STOP_REQUESTED"
+    },
+    "event-0003.json": {
+      "stage": "IMAGE_EXPORT_COMPLETE"
+    },
+    "event-0005.json": {
+      "stage": "STOP_REQUESTED"
+    },
+    "event-0001.json": {
+      "stage": "SOURCE_PREFLIGHT_VERIFIED"
+    }
+  }
+}
