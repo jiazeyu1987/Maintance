@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "TaskSpugControlAcceptanceParentVerification/v1",
+  "command": [
+    "C:\\Users\\D01021\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "pytest",
+    "doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_control_generation_acceptance.py",
+    "-q",
+    "--tb=short",
+    "--junitxml=C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-control-acceptance-parent-20261110-r1.xml"
+  ],
+  "exitCode": 0,
+  "elapsedSeconds": 99.657,
+  "counts": {
+    "tests": 39,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "inputPinsBefore": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_control_generation_acceptance.py",
+      "bytes": 20948,
+      "sha256": "d0e6af24f5cc57eb185126c750fb43a85a93ac5754e9381e2c33e037130d4b0d"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_control_generation_acceptance.py",
+      "bytes": 14076,
+      "sha256": "77b89137a1012ca9c5cba59a50f8a8425bde5473fd67b05dc68597d2a8f14e1a"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_historical_custody.py",
+      "bytes": 11270,
+      "sha256": "d5a66739ee5aaeb910ea43567027afea6eb1e7d2ab04f067f801ea4411bca6b3"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication_continuation.py",
+      "bytes": 61675,
+      "sha256": "7e530263fe988e4b2591889c84e4fb740d7e936393905797c133d8ba5c67e735"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication_verify_only.py",
+      "bytes": 33957,
+      "sha256": "7aa3a8f6913d53f4057e7594342678a8c79cb4414f0e71d530b8b87e997990b0"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_resource_transition.py",
+      "bytes": 32860,
+      "sha256": "eb464b017a6a5a46ab6cd2e48023e398a0a89b8995fd165a019444d9c62ee712"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\spug_runtime_dependency_completion.py",
+      "bytes": 49959,
+      "sha256": "db6b9c7a3b143fe09673746c038617be941de1b5a1b41ea61586003025d7188e"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_installation_selection.py",
+      "bytes": 15700,
+      "sha256": "557b384234b5b38ec7c738ba3c1086d74f8c2768412399dc1680a6a5427dd786"
+    }
+  ],
+  "inputPinsAfter": [
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_control_generation_acceptance.py",
+      "bytes": 20948,
+      "sha256": "d0e6af24f5cc57eb185126c750fb43a85a93ac5754e9381e2c33e037130d4b0d"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\test_main_program_spug_control_generation_acceptance.py",
+      "bytes": 14076,
+      "sha256": "77b89137a1012ca9c5cba59a50f8a8425bde5473fd67b05dc68597d2a8f14e1a"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_historical_custody.py",
+      "bytes": 11270,
+      "sha256": "d5a66739ee5aaeb910ea43567027afea6eb1e7d2ab04f067f801ea4411bca6b3"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication_continuation.py",
+      "bytes": 61675,
+      "sha256": "7e530263fe988e4b2591889c84e4fb740d7e936393905797c133d8ba5c67e735"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_publication_verify_only.py",
+      "bytes": 33957,
+      "sha256": "7aa3a8f6913d53f4057e7594342678a8c79cb4414f0e71d530b8b87e997990b0"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_spug_resource_transition.py",
+      "bytes": 32860,
+      "sha256": "eb464b017a6a5a46ab6cd2e48023e398a0a89b8995fd165a019444d9c62ee712"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\spug_runtime_dependency_completion.py",
+      "bytes": 49959,
+      "sha256": "db6b9c7a3b143fe09673746c038617be941de1b5a1b41ea61586003025d7188e"
+    },
+    {
+      "path": "C:\\Users\\D01021\\.codex\\worktrees\\spug-restore-targets\\Maintance\\doc\\tasks\\20261106-spug-prod-incremental-to-two-targets\\main_program_installation_selection.py",
+      "bytes": 15700,
+      "sha256": "557b384234b5b38ec7c738ba3c1086d74f8c2768412399dc1680a6a5427dd786"
+    }
+  ],
+  "rawLogPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-control-acceptance-parent-20261110-r1.log",
+    "bytes": 249,
+    "sha256": "610957317c3a1e3d61b9dd3f5b035492c19e8c39d496e669148323ec798686e6"
+  },
+  "junitPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\spug-control-acceptance-parent-20261110-r1.xml",
+    "bytes": 8708,
+    "sha256": "662ee0f81feaf472604e49668d21febab8752057322ea97e6a78868adb8a3c26"
+  },
+  "remoteActions": 0,
+  "businessWrites": 0
+}

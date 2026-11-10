@@ -2,7 +2,7 @@
 
 ## Current Status
 
-in_progress。b5fa4c5 同提交干净 worktree 双包构建与实际 Linux 四组已全部通过（54+121+53+45=273，零失败/错误/跳过）；源策略激活接缝已提交297524e，父214项通过。r7正式coverage371物理pins及8新/27保留配置计划已验证，三服新鲜只读观察和候选实际构造全部通过，新组件三服均STAGED_NOT_ACTIVATED。现网控制仍45dd7dc，Spug产品565及七配置保持。激活前先闭合已发布Spug证明的历史helper托管及相同连接payload的正式代次验收；无需重复写七配置。e4/a4与采集测试的原失败保持；本轮没有新成功备份。
+in_progress。b5fa4c5 同提交干净 worktree 双包构建与实际 Linux 四组已全部通过（54+121+53+45=273，零失败/错误/跳过）；源策略激活接缝已提交297524e，父214项通过。r7正式coverage371物理pins及8新/27保留配置计划已验证，三服新鲜只读观察和候选实际构造全部通过，新组件三服均STAGED_NOT_ACTIVATED。现网控制仍45dd7dc，Spug产品565及七配置保持。历史helper托管已由b88bfb4及原五attempt/1164物理pins实读闭合；激活前完成相同连接payload验收的本机合同，实际新generation与六阶段验收按r7-control-activation-run-plan.md在四控制激活后进行，无需重复写七配置。e4/a4与采集测试的原失败保持；本轮没有新成功备份。
 
 ## 目标与里程碑
 
