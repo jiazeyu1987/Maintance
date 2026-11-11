@@ -82,3 +82,48 @@ test('v1 does not invoke the new CLI or require dual-root evidence',t=>{
  const f=setup(t);f.gate.schemaVersion='MainProgramAutomaticIncrementalUiPreflight/v1';delete f.gate.gitDeploymentInputs;delete f.gate.runtimeEvidencePin;
  f.check();assert.equal(f.calls.length,0);
 });
+
+// Parser contracts only: the existing subprocess boundary above supplies a
+// summary. Actual activation evidence is checked separately by the real CLI.
+function activatedSetup(t){
+ const f=setup(t),oldCommit=f.selection.sourceCommit,oldBuildPin=f.summary.buildPin;
+ const basePin=save(f.root,'base-selection.json',f.selection),sourceCommit='6'.repeat(40);
+ const build={...f.build,targetCommit:sourceCommit,worktree:path.join(f.root,'new-source-release')};fs.mkdirSync(build.worktree);
+ const buildPin=save(f.root,'activated-build.json',build);
+ const bindings={57:{source:{buildPin,sourceCommit},target:{buildPin:oldBuildPin,sourceCommit:oldCommit}},
+  58:{target:{buildPin:oldBuildPin,sourceCommit:oldCommit}},59:{target:{buildPin:oldBuildPin,sourceCommit:oldCommit}}};
+ f.selection={schemaVersion:'TaskMainProgramSourceControlSelection/v2',baseSelectionPin:basePin,
+  activationEvidencePins:[{path:path.join(f.root,'actual-receipt.private.json'),bytes:1,sha256:'e'.repeat(64)}]};
+ f.selectionPin=save(f.root,'selection.json',f.selection);f.options['source-activation']=true;
+ Object.assign(f.gate,{schemaVersion:'MainProgramAutomaticIncrementalUiPreflight/v3',implementationCommit:sourceCommit,
+  installationCommit:sourceCommit,buildCommit:sourceCommit,deploymentSelectionPin:f.selectionPin,
+  baseSelectionPin:basePin,controllerBuildBindings:structuredClone(bindings)});
+ Object.assign(f.gate.gitDeploymentInputs.source,{installedCommit:sourceCommit,headCommit:sourceCommit});
+ Object.assign(f.gate.gitDeploymentInputs.deploymentRootBindings.source,{path:build.worktree.replaceAll('\\','/'),
+  buildPin,targetCommit:sourceCommit,headCommit:sourceCommit});
+ Object.assign(f.runtime,{deploymentSelectionPin:f.selectionPin,gitDeploymentInputs:structuredClone(f.gate.gitDeploymentInputs)});
+ f.gate.runtimeEvidencePin=save(f.root,'runtime.json',f.runtime);
+ Object.assign(f.summary,{schemaVersion:'MainProgramSourceInstallationSummary/v1',selectionPin:f.selectionPin,
+  sourceCommit,buildPin,baseSelectionPin:basePin,baseSourceCommit:oldCommit,baseBuildPin:oldBuildPin,
+  controllerBuildBindings:bindings,installationVerified:true,runtimeVerified:false});
+ f.summary.inputPins=f.summary.inputPins.filter(p=>!p.path.endsWith('selection.json'));
+ for(const ref of [f.selectionPin,basePin,buildPin])f.summary.inputPins.push({path:path.join(f.root,ref.file),bytes:ref.bytes,sha256:ref.sha256});
+ return f;
+}
+test('v3 explicitly accepts activated source and retains base target builds',t=>{
+ const f=activatedSetup(t);f.check();assert.equal(f.calls.length,1);
+ assert.equal(f.calls[0][1][3],path.join(f.root,'main_program_source_control_activated.py'));
+ f.check();assert.equal(f.calls.length,1);
+});
+for(const [name,change] of [
+ ['missing explicit option',f=>delete f.options['source-activation']],
+ ['legacy gate',f=>f.gate.schemaVersion='MainProgramAutomaticIncrementalUiPreflight/v2'],
+ ['wrong base pin',f=>f.gate.baseSelectionPin={...f.gate.baseSelectionPin,sha256:'0'.repeat(64)}],
+ ['wrong source binding',f=>f.gate.controllerBuildBindings[57].source.sourceCommit='0'.repeat(40)],
+ ['changed target binding',f=>f.gate.controllerBuildBindings[59].target.buildPin=f.summary.buildPin],
+ ['unknown role',f=>f.summary.controllerBuildBindings[58].source=f.summary.controllerBuildBindings[57].source],
+ ['claimed live health',f=>f.summary.runtimeVerified=true],
+ ['bound only',f=>f.summary.installationVerified=false],
+ ['other base generation',f=>f.summary.baseSourceCommit=f.summary.sourceCommit],
+ ['unbound base build',f=>f.summary.inputPins=f.summary.inputPins.filter(p=>!p.path.endsWith('source-build.json'))],
+])test('v3 refuses '+name,t=>{const f=activatedSetup(t);change(f);assert.throws(f.check,/MAIN_/);});

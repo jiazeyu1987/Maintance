@@ -29,7 +29,7 @@ function exclusive(file,value){
   try{fs.writeFileSync(descriptor,JSON.stringify(value,null,2),'utf8');fs.fsyncSync(descriptor);}finally{fs.closeSync(descriptor);}
 }
 function args(){
-  const value={},flags=new Set(['execute','expect-terminal']);
+  const value={},flags=new Set(['execute','expect-terminal','source-activation']);
   const fields=new Set(['kind','phase','observation','preflight','cycle','selection','historical-source-custody','browser-mode','expected-application','expected-source','expected-state','expected-parent','expected-base','expected-plan']);
   for(let i=2;i<process.argv.length;i++){
     const key=process.argv[i].replace(/^--/,'');
@@ -51,7 +51,8 @@ function args(){
     check(selected&&!selected.startsWith('..')&&!path.isAbsolute(selected)&&selected.endsWith('.json'),'TASK_MAIN_SELECTION_REQUIRED');
     value.selection=path.resolve(value.selection);
   }
-  if(Object.hasOwn(value,'historical-source-custody'))check(value.cycle==='main-r7-20261110'&&
+  if(value['source-activation'])check(value.cycle&&value.selection,'MAIN_ACTIVATION_EXPLICIT_SELECTION_REQUIRED');
+  if(Object.hasOwn(value,'historical-source-custody'))check(value['source-activation']===true||value.cycle==='main-r7-20261110'&&
     path.basename(value.selection||'')==='main-program-current-installations-b5fa4c5-r7-v4.json','MAIN_HISTORICAL_CUSTODY_SCOPE_INVALID');
   browserPolicy(value);
   return value;
@@ -119,11 +120,22 @@ const mainDeepEqual=(left,right)=>{
 };
 const mainKeys=(value,keys)=>value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).sort().join(',')===[...keys].sort().join(',');
 let mainInstallationProof=null,mainInstallationSelection=null;
+function activationBase(deployment){
+  check(mainKeys(deployment,['schemaVersion','baseSelectionPin','activationEvidencePins'])&&
+    deployment.schemaVersion==='TaskMainProgramSourceControlSelection/v2'&&localPin(deployment.baseSelectionPin)&&
+    Array.isArray(deployment.activationEvidencePins)&&deployment.activationEvidencePins.length>0&&
+    deployment.activationEvidencePins.length<=16,'MAIN_ACTIVATION_SELECTION_INVALID');
+  const base=readTaskPin(deployment.baseSelectionPin);
+  check(mainKeys(base,['schemaVersion','sourceCommit','controlGenerationPin','spugInstallationPin','verificationInputsPin'])&&
+    base.schemaVersion==='TaskMainProgramInstallations/v4','MAIN_ACTIVATION_BASE_INVALID');
+  return base;
+}
 function historicalCustodyInput(selectionPin,options,previous){
   if(!Object.hasOwn(options,'historical-source-custody')){check(!previous,'MAIN_HISTORICAL_CUSTODY_CHANGED');return null;}
   let descriptor;
   try{
-    check(options.cycle==='main-r7-20261110'&&localPin(selectionPin)&&
+    if(options['source-activation']===true){const selected=readTaskPin(selectionPin);activationBase(selected);selectionPin=selected.baseSelectionPin;}
+    check((options.cycle==='main-r7-20261110'||options['source-activation']===true)&&localPin(selectionPin)&&
       selectionPin.file==='main-program-current-installations-b5fa4c5-r7-v4.json','MAIN_HISTORICAL_CUSTODY_SCOPE_INVALID');
     const input=options['historical-source-custody'];
     check(typeof input==='string'&&path.isAbsolute(input)&&!input.startsWith('\\\\')&&!input.startsWith('//')&&
@@ -185,7 +197,7 @@ function runMainInstallationCli(selectionPin,options){
     check(path.resolve(fs.realpathSync(directory))===path.resolve(directory),'MAIN_CURRENT_INSTALLATION_EVIDENCE_WRITE_FAILED');
   }catch(error){check(false,error.publicCode||(error.code==='EEXIST'?'MAIN_CURRENT_INSTALLATION_OBSERVATION_EXISTS':'MAIN_CURRENT_INSTALLATION_EVIDENCE_WRITE_FAILED'));}
   const executable='C:/Users/D01021/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe';
-  const argv=['-B','-X','utf8',path.join(TASK,'main_program_current_installation.py'),'--selection',selectionPin.file,'--public-summary'];
+  const argv=['-B','-X','utf8',path.join(TASK,options['source-activation']===true?'main_program_source_control_activated.py':'main_program_current_installation.py'),'--selection',selectionPin.file,'--public-summary'];
   if(custody)argv.push('--historical-source-custody',custody.pin.path);
   const timeoutMs=600000,clock=require('node:perf_hooks').performance,startedAt=new Date().toISOString(),start=clock.now();
   let response,thrown=null;
@@ -232,15 +244,30 @@ function currentMainProof(deployment,selectionPin,gate,options){
   }
   historicalCustodyInput(selectionPin,options,custody);
   bindHistoricalCustody(summary,custody);
-  check(mainKeys(summary,['schemaVersion','status','selectionPin','sourceCommit','controlGenerationPin','spugInstallationPin','buildPin','build','resourceBuildPin','spugCommit','inputPins'])&&
-    summary.schemaVersion==='MainProgramCurrentInstallationSummary/v1'&&summary.status==='PASS'&&
-    mainDeepEqual(summary.selectionPin,selectionPin)&&summary.sourceCommit===deployment.sourceCommit&&summary.spugCommit===gate.spugCommit&&
-    mainDeepEqual(summary.controlGenerationPin,deployment.controlGenerationPin)&&mainDeepEqual(summary.spugInstallationPin,deployment.spugInstallationPin)&&
+  const activated=options['source-activation']===true,base=activated?activationBase(deployment):deployment;
+  const fields=['schemaVersion','status','selectionPin','sourceCommit','controlGenerationPin','spugInstallationPin','buildPin','build','resourceBuildPin','spugCommit','inputPins'];
+  if(activated)fields.push('baseSelectionPin','baseSourceCommit','baseBuildPin','controllerBuildBindings','installationVerified','runtimeVerified');
+  check(mainKeys(summary,fields)&&
+    summary.schemaVersion===(activated?'MainProgramSourceInstallationSummary/v1':'MainProgramCurrentInstallationSummary/v1')&&summary.status==='PASS'&&
+    mainDeepEqual(summary.selectionPin,selectionPin)&&summary.sourceCommit===(activated?gate.buildCommit:deployment.sourceCommit)&&summary.spugCommit===gate.spugCommit&&
+    mainDeepEqual(summary.controlGenerationPin,base.controlGenerationPin)&&mainDeepEqual(summary.spugInstallationPin,base.spugInstallationPin)&&
     mainKeys(summary.build,['fileCount','fileManifestSha256','packageSha256'])&&summary.build.fileCount===147&&
     /^[a-f0-9]{64}$/.test(summary.build.fileManifestSha256)&&/^[a-f0-9]{64}$/.test(summary.build.packageSha256),
     'MAIN_CURRENT_INSTALLATION_INVALID');
+  if(activated){
+    check(mainDeepEqual(summary.baseSelectionPin,deployment.baseSelectionPin)&&summary.baseSourceCommit===base.sourceCommit&&
+      localPin(summary.baseBuildPin)&&summary.installationVerified===true&&summary.runtimeVerified===false&&
+      mainDeepEqual(summary.controllerBuildBindings,gate.controllerBuildBindings)&&
+      mainKeys(summary.controllerBuildBindings,['57','58','59']),'MAIN_ACTIVATION_BINDINGS_INVALID');
+    for(const host of ['57','58','59']){
+      const roles=summary.controllerBuildBindings[host];check(mainKeys(roles,host==='57'?['source','target']:['target']),'MAIN_ACTIVATION_ROLES_INVALID');
+      for(const [role,binding] of Object.entries(roles))check(mainKeys(binding,['buildPin','sourceCommit'])&&
+        mainDeepEqual(binding.buildPin,role==='source'?summary.buildPin:summary.baseBuildPin)&&
+        binding.sourceCommit===(role==='source'?summary.sourceCommit:summary.baseSourceCommit),'MAIN_ACTIVATION_ROLE_BUILD_CHANGED');
+    }
+  }
   const identities=verifyMainInputClosure(summary,mainInstallationProof?.identities);
-  for(const ref of [selectionPin,summary.controlGenerationPin,summary.buildPin,summary.resourceBuildPin]){
+  for(const ref of [selectionPin,summary.controlGenerationPin,summary.buildPin,summary.resourceBuildPin,...(activated?[summary.baseSelectionPin,summary.baseBuildPin]:[])]){
     check(localPin(ref)&&summary.inputPins.some(p=>path.resolve(p.path)===path.resolve(TASK,ref.file)&&p.bytes===ref.bytes&&p.sha256===ref.sha256),
       'MAIN_CURRENT_INSTALLATION_DOCUMENT_UNBOUND');
   }
@@ -252,8 +279,10 @@ function validateMainDeploymentRoots(gate,deployment,selectionPin,options){
     const inputs=gate.gitDeploymentInputs,bindings=inputs?.deploymentRootBindings;
     check(mainKeys(inputs,['source','spug','deploymentRootBindings'])&&mainKeys(bindings,['source','spug']),'MAIN_ROOT_BINDINGS_REQUIRED');
     const generation=readTaskPin(summary.controlGenerationPin);
+    const activated=options['source-activation']===true;
     check(generation.schemaVersion==='MainProgramControlGeneration/v1'&&generation.status==='PASS'&&
-      generation.sourceCommit===summary.sourceCommit&&mainDeepEqual(generation.buildPin,summary.buildPin),'MAIN_BUILD_GENERATION_CHANGED');
+      generation.sourceCommit===(activated?summary.baseSourceCommit:summary.sourceCommit)&&
+      mainDeepEqual(generation.buildPin,activated?summary.baseBuildPin:summary.buildPin),'MAIN_BUILD_GENERATION_CHANGED');
     for(const [component,reference,commit] of [['source',summary.buildPin,summary.sourceCommit],['spug',summary.resourceBuildPin,summary.spugCommit]]){
       const binding=bindings[component],original=readTaskPin(reference),git=inputs[component];
       check(mainKeys(binding,['schemaVersion','mode','path','buildPin','targetCommit','headCommit','registeredWorktreeMatched','clean'])&&
@@ -284,6 +313,20 @@ function validateMainDeploymentRoots(gate,deployment,selectionPin,options){
   }catch(error){mainInstallationProof=null;throw error;}
 }
 function validateMainDeploymentContract(gate,options,deployment,selectionPin){
+  if(options['source-activation']===true||gate.schemaVersion==='MainProgramAutomaticIncrementalUiPreflight/v3'){
+    check(options['source-activation']===true&&gate.schemaVersion==='MainProgramAutomaticIncrementalUiPreflight/v3'&&
+      CYCLE.test(options.cycle||'')&&gate.cycle===options.cycle,'MAIN_ACTIVATION_PREFLIGHT_REQUIRED');
+    const base=activationBase(deployment);
+    check(localPin(selectionPin)&&mainDeepEqual(gate.deploymentSelectionPin,selectionPin)&&
+      mainDeepEqual(gate.baseSelectionPin,deployment.baseSelectionPin),'MAIN_ACTIVATION_SELECTION_CHANGED');
+    check(/^[a-f0-9]{40}$/.test(gate.buildCommit||'')&&gate.buildCommit===gate.implementationCommit&&
+      gate.buildCommit===gate.installationCommit&&/^[a-f0-9]{40}$/.test(gate.spugCommit||''),'MAIN_ACTIVATION_COMMIT_CHANGED');
+    for(const name of ['controlGenerationPin','spugInstallationPin'])check(localPin(base[name])&&
+      mainDeepEqual(gate[name],base[name]),'MAIN_ACTIVATION_BASE_CHANGED');
+    check(localPin(base.verificationInputsPin)&&remotePin(gate.sourceCaptureConfigurationPin)&&
+      remotePin(gate.sourceOwnerConfigurationPin)&&gate.mainDeploymentVerified===true,'MAIN_ACTIVATION_NOT_VERIFIED');
+    validateMainDeploymentRoots(gate,deployment,selectionPin,options);return;
+  }
   check(['MainProgramAutomaticIncrementalUiPreflight/v1','MainProgramAutomaticIncrementalUiPreflight/v2'].includes(gate.schemaVersion)&&CYCLE.test(options.cycle||'')&&gate.cycle===options.cycle,'MAIN_PREFLIGHT_CYCLE_MISMATCH');
   check(deployment.schemaVersion==='TaskMainProgramInstallations/v4'&&
     Object.keys(deployment).sort().join(',')===['schemaVersion','sourceCommit','controlGenerationPin','spugInstallationPin','verificationInputsPin'].sort().join(','),'MAIN_V4_SELECTION_REQUIRED');

@@ -67,3 +67,24 @@ test('cached explicit input cannot be removed from later verification',t=>{
  const f=setup(t);const before=f.api.historicalCustodyInput(f.selectionPin,f.options);delete f.options['historical-source-custody'];
  assert.throws(()=>f.api.historicalCustodyInput(f.selectionPin,f.options,before),/MAIN_HISTORICAL_CUSTODY_CHANGED/);
 });
+
+function sourceOverlay(f){
+ const save=(file,value)=>{const raw=Buffer.from(JSON.stringify(value));fs.writeFileSync(path.join(f.root,file),raw);return {file,bytes:raw.length,sha256:hash(raw)};};
+ const ref={file:'original.json',bytes:1,sha256:'a'.repeat(64)};
+ const basePin=save(f.selectionPin.file,{schemaVersion:'TaskMainProgramInstallations/v4',sourceCommit:'b'.repeat(40),
+  controlGenerationPin:ref,spugInstallationPin:ref,verificationInputsPin:ref});
+ const raw=Buffer.from(JSON.stringify({schemaVersion:'MainProgramSpugHistoricalSourceRoles/v1',selectionPin:basePin}));
+ fs.writeFileSync(f.file,raw);f.pin={path:f.file,bytes:raw.length,sha256:hash(raw)};f.summary.inputPins=[f.pin];
+ f.selectionPin=save('activated-selection.json',{schemaVersion:'TaskMainProgramSourceControlSelection/v2',
+  baseSelectionPin:basePin,activationEvidencePins:[{path:f.file,bytes:raw.length,sha256:hash(raw)}]});
+ f.options['source-activation']=true;f.options.cycle='activated-i2';return basePin;
+}
+test('explicit activated source uses custody of immutable base without rebinding it',t=>{
+ const f=setup(t),base=sourceOverlay(f);f.run();assert.equal(f.calls.length,1);
+ assert.equal(f.calls[0][1][3],path.join(f.root,'main_program_source_control_activated.py'));
+ assert.deepEqual(JSON.parse(fs.readFileSync(f.file)).selectionPin,base);
+});
+test('activated source refuses custody rebound to overlay before subprocess',t=>{
+ const f=setup(t);sourceOverlay(f);fs.writeFileSync(f.file,JSON.stringify({schemaVersion:'MainProgramSpugHistoricalSourceRoles/v1',selectionPin:f.selectionPin}));
+ assert.throws(f.run,/MAIN_HISTORICAL_CUSTODY_BINDING_INVALID/);assert.equal(f.calls.length,0);
+});

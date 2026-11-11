@@ -91,21 +91,46 @@ def _deployment_root_state(path, commit):
     return dict(path=path.as_posix(), headCommit=head, identity=(info.st_dev, info.st_ino))
 
 
+def installation_context(verified, *, source_activation=False):
+    if source_activation:
+        need(verified.get('status') == 'ACTIVATED' and
+             verified.get('installationVerified') is True and verified.get('runtimeVerified') is False and
+             verified.get('selection', {}).get('schemaVersion') == 'TaskMainProgramSourceControlSelection/v2',
+             'SOURCE_ACTIVATION_PROTOCOL_REQUIRED')
+        base = verified['baseInstallation']
+        rows = verified['effectiveControllersByHost']['57']
+        need(len(rows) == 2 and rows[0]['role'] == 'source' and rows[1]['role'] == 'target' and
+             rows[1] == base['generation']['controllersByHost']['57'][1], 'SOURCE_ACTIVATION_ROLES_CHANGED')
+        row = rows[0]
+        build_pin = row['buildPin']
+        build = BoundDocuments(TASK, verified['inputPins']).read(build_pin)
+        need(build['targetCommit'] == row['sourceCommit'] and build['status'] == 'PASS' and
+             all(build[key] == row[key] for key in ('fileCount', 'fileManifestSha256', 'packageSha256')),
+             'SOURCE_ACTIVATION_BUILD_CHANGED')
+        return dict(base=base, rows=rows, sourceCommit=row['sourceCommit'], buildPin=build_pin, build=build)
+    need('baseInstallation' not in verified and verified.get('status') != 'ACTIVATED',
+         'SOURCE_ACTIVATION_EXPLICIT_OPTION_REQUIRED')
+    return dict(base=verified, rows=verified['generation'].get('controllersByHost', {}).get('57'),
+        sourceCommit=verified['selection']['sourceCommit'],
+        buildPin=verified['generation']['generation']['buildPin'], build=verified['generation']['build'])
+
+
 def verify_main_deployment_inputs(verified, default_root, *, source_deployment_root=None,
-                                  spug_deployment_root=None):
+                                  spug_deployment_root=None, source_activation=False):
     """Explicit registered component roots; the legacy shared-root gate is unchanged."""
     need((source_deployment_root is None) == (spug_deployment_root is None),
          'MAIN_DEPLOYMENT_ROOT_PAIR_REQUIRED')
-    source_commit = verified['selection']['sourceCommit']
-    resource = verified['spugRuntime']['resourceBuild']
+    context = installation_context(verified, source_activation=source_activation)
+    source_commit = context['sourceCommit']
+    resource = context['base']['spugRuntime']['resourceBuild']
     files = [name.removeprefix('ops/spug/') for name in resource['files']]
     if source_deployment_root is None:
         return verify_stage_deployment_inputs(default_root, source_commit, resource['sourceCommit'], files)
     reader = BoundDocuments(TASK, verified['inputPins'])
-    source_pin = verified['generation']['generation']['buildPin']
-    resource_pin = verified['spugRuntime']['resourceBuildPin']
+    source_pin = context['buildPin']
+    resource_pin = context['base']['spugRuntime']['resourceBuildPin']
     build = reader.read(source_pin); actual_resource = reader.read(resource_pin)
-    need(build == verified['generation']['build'] and actual_resource == resource,
+    need(build == context['build'] and actual_resource == resource,
          'MAIN_DEPLOYMENT_BUILD_CHANGED')
     need(build.get('status') == 'PASS' and build.get('targetCommit') == source_commit and
          build.get('allFilesShaAndCompileVerified') is True and
@@ -172,6 +197,7 @@ def main():
     parser.add_argument('--historical-source-custody')
     parser.add_argument('--source-deployment-root')
     parser.add_argument('--spug-deployment-root')
+    parser.add_argument('--source-activation',action='store_true')
     args=parser.parse_args()
     need(re.fullmatch('[a-z0-9][a-z0-9-]{0,47}',args.cycle or '') and
          re.fullmatch('[a-z0-9][a-z0-9-]{0,47}',args.observation or ''),'CYCLE_OR_OBSERVATION_INVALID')
@@ -184,12 +210,20 @@ def main():
     if args.historical_source_custody:
         from main_program_spug_publication import file_pin
         source_args['historical_source_custody_pin']=file_pin(Path(args.historical_source_custody))
-    verified=load_current_installation(TASK,PRIVATE,selection_file=args.selection,**source_args)
-    selection=verified['selection'];selection_pin=verified['selectionPin'];bundle=verified['generation']
+    if args.source_activation:
+        from main_program_source_control_activated import load_activated_installation
+        need(args.source_deployment_root is not None and args.spug_deployment_root is not None,
+             'SOURCE_ACTIVATION_DEPLOYMENT_ROOTS_REQUIRED')
+        verified=load_activated_installation(TASK,PRIVATE,selection_file=args.selection,**source_args)
+    else:
+        verified=load_current_installation(TASK,PRIVATE,selection_file=args.selection,**source_args)
+    context=installation_context(verified,source_activation=args.source_activation)
+    base=context['base'];selection=base['selection'];selection_pin=verified['selectionPin'];bundle=base['generation']
     root_args=dict(source_deployment_root=args.source_deployment_root,spug_deployment_root=args.spug_deployment_root)
+    if args.source_activation:root_args['source_activation']=True
     git=verify_main_deployment_inputs(verified,TASK.parents[2],**root_args)
-    spug,build=spug_observation(verified,selection)
-    rows=bundle['controllersByHost']['57']
+    spug,build=spug_observation(base,selection)
+    rows=context['rows']
     values=dict(SUFFIX='57',SOURCE=SOURCE,TARGET=bundle['targets']['57'],ROWS=rows)
     actual=remote('172.30.30.57','\n'.join(k+'='+repr(v) for k,v in values.items())+'\n'+SCRIPT,180)
     write_new(PRIVATE/(stem+'-native.private.json'),actual)
@@ -214,8 +248,8 @@ def main():
     baseline_pin=write_new(TASK/(stem+'-baseline.json'),baseline)
     gate=dict(schemaVersion='MainProgramAutomaticIncrementalUiPreflight/v2' if args.source_deployment_root is not None else 'MainProgramAutomaticIncrementalUiPreflight/v1',status='PASS',experiencePreflight='PASS',
          cycle=args.cycle,kind=args.kind,phase=args.phase,origin='http://127.0.0.1:18080',server='172.30.30.57',mode='safe',
-         applicationId=SOURCE,sourceConfigRef=SOURCE,implementationCommit=selection['sourceCommit'],
-         installationCommit=selection['sourceCommit'],buildCommit=selection['sourceCommit'],spugCommit=build['sourceCommit'],
+         applicationId=SOURCE,sourceConfigRef=SOURCE,implementationCommit=context['sourceCommit'],
+         installationCommit=context['sourceCommit'],buildCommit=context['sourceCommit'],spugCommit=build['sourceCommit'],
          deploymentSelectionPin=selection_pin,controlGenerationPin=selection['controlGenerationPin'],
          spugInstallationPin=selection['spugInstallationPin'],sourceCaptureConfigurationPin=actual['captureConfigurationPin'],
          sourceOwnerConfigurationPin=rows[0]['ownerConfigurationPin'],mainDeploymentVerified=True,
@@ -223,6 +257,9 @@ def main():
          sourceServicesHealthy=True,archiveReady=True,capacityReady=True,noConcurrentMaintenance=True,
          sourceIdleVerified=actual['sourceIdle'],expectedPlan=expected,baselineEvidencePin=baseline_pin,
          runtimeEvidencePin=runtime_pin,gitDeploymentInputs=git)
+    if args.source_activation:
+        gate.update(schemaVersion='MainProgramAutomaticIncrementalUiPreflight/v3',
+            baseSelectionPin=base['selectionPin'],controllerBuildBindings=verified['controllerBuildBindings'])
     if operation:gate['operationId']=operation
     write_new(gate_path,gate)
     print(json.dumps(dict(status='PASS',preflight=str(gate_path),expectedPlan=expected,observedAt=gate['observedAt'])))
