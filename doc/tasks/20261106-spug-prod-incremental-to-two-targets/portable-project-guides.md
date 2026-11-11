@@ -11,3 +11,5 @@
 设计约束检查：不引入 fallback/降级/吞异常；从跨电脑维护角度统一相对来源；没有临时补丁或绕过。
 
 Current Status: verified；纳入独立文档提交。整体自动增量与三服恢复任务仍 in_progress。
+
+后续核实：已在当前电脑的实际主程序项目找到五份原指南，按 UTF-8 规范化行比较均与交接资料一致，只有 BOM/换行等原始编码差异。`portable-project-guides-provenance-r3.json` 记录该来源的完整 SHA；活动规则继续使用本维护仓相对路径，原件和登录凭据不复制。

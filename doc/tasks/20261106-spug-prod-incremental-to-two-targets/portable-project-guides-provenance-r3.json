@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "PortableProjectGuidesProvenance/v3",
+  "previousRecord": "portable-project-guides-provenance-r2.json",
+  "verifiedMainProjectRoot": "C:\\Users\\D01021\\Documents\\ChatGPT\\IntRuoyi",
+  "rules": [
+    {
+      "name": "server-access.md",
+      "sourcePath": "C:\\Users\\D01021\\Documents\\ChatGPT\\IntRuoyi\\docs\\server-access.md",
+      "sourceBytes": 5399,
+      "sourceSha256": "beac20ed1879ed17b9912694308296518e413d633aeb753519106b688ab0df4e",
+      "normalizedLineContentEqualsOriginalHandoff": true,
+      "credentialContentsCopied": false
+    },
+    {
+      "name": "release-backup-restore.md",
+      "sourcePath": "C:\\Users\\D01021\\Documents\\ChatGPT\\IntRuoyi\\docs\\release-backup-restore.md",
+      "sourceBytes": 23608,
+      "sourceSha256": "d2d980a93962526068e09c8db793b95dd04a3e0b249230ae830147a8698551d2",
+      "normalizedLineContentEqualsOriginalHandoff": true,
+      "credentialContentsCopied": false
+    },
+    {
+      "name": "powershell-memory.md",
+      "sourcePath": "C:\\Users\\D01021\\Documents\\ChatGPT\\IntRuoyi\\docs\\powershell-memory.md",
+      "sourceBytes": 64774,
+      "sourceSha256": "9aec95a50d513ec4d3c1be816df048ea2f71539db0aa690a6f3734995f6efd63",
+      "normalizedLineContentEqualsOriginalHandoff": true,
+      "credentialContentsCopied": false
+    },
+    {
+      "name": "worktree-memory.md",
+      "sourcePath": "C:\\Users\\D01021\\Documents\\ChatGPT\\IntRuoyi\\docs\\worktree-memory.md",
+      "sourceBytes": 100274,
+      "sourceSha256": "2e14fe0af02258b46dc791f3107c2af08baebddfe7f6986ca91631b556703a60",
+      "normalizedLineContentEqualsOriginalHandoff": true,
+      "credentialContentsCopied": false
+    },
+    {
+      "name": "login-access.md",
+      "sourcePath": "C:\\Users\\D01021\\Documents\\ChatGPT\\IntRuoyi\\docs\\login-access.md",
+      "sourceBytes": 43167,
+      "sourceSha256": "0194583ad7ffacd639a9a3d9d0d40bec49969ad45b15d5eb15da77c8a81a2fa4",
+      "normalizedLineContentEqualsOriginalHandoff": true,
+      "credentialContentsCopied": false
+    }
+  ],
+  "scope": "Verified user-owned main project guides equal handoff by UTF-8 normalized lines. Differences are encoding/BOM/line endings only. Existing project-relative copies and private credential boundaries remain unchanged."
+}
