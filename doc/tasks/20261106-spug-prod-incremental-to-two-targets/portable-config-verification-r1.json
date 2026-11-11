@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "PortableConfigurationVerification/v1",
+  "verifiedAt": "2026-11-11T07:13:51.884235+00:00",
+  "status": "PASS",
+  "scope": "Project-relative defaults and local contracts only",
+  "bdd": "Given existing relative runtime example, When checking configuration, Then require the same relative paths without old-machine drive letters.",
+  "red": {
+    "status": "FAIL",
+    "reason": "missing managed backend root: E:/IntRuoyi/IntRuoyiBackend",
+    "command": "runpy.run_path scripts/verify_contracts.py -> verify_scripts_and_config()"
+  },
+  "green": {
+    "status": "PASS",
+    "configurationContract": true,
+    "pendingExampleNotActivated": true,
+    "integrationDefaultAndExplicitEnvironmentPathOnly": true,
+    "applicationRouteUnitTests": 2
+  },
+  "remoteActions": 0,
+  "files": {
+    "scripts/verify_contracts.py": {
+      "bytes": 9517,
+      "sha256": "ac6fc8663e71929938fbf3939f83774296fd7fea2fa1305fb2cf0fbdae6951e6"
+    },
+    "scripts/tests/verify_recover_release_lock_remote_integration.py": {
+      "bytes": 16490,
+      "sha256": "3b9a7d8e1b25f269e02bfd6213201ab7d8ed6c1991e6c2e0dbe19dc394249a15"
+    },
+    "ops/spug/release-center/bridge.config.example.json": {
+      "bytes": 927,
+      "sha256": "178643a01a1e206bfffded366680e471700162c66a4023acb41a70761ca529b6"
+    }
+  }
+}

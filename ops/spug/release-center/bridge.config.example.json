@@ -14,7 +14,7 @@
     {
       "id": "intruoyi",
       "name": "IntRuoyi",
-      "repo": "E:/IntRuoyi",
+      "repo": "../IntRuoyi",
       "scope": "IntRuoyi · 发布接入待配置",
       "status": "pending",
       "blockers": [

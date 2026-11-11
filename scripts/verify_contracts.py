@@ -170,9 +170,9 @@ def verify_scripts_and_config() -> None:
         read_text(path)
 
     config = read_text("config/runtime-control.example.yaml")
-    assert_contains(config, "E:/IntRuoyi/IntRuoyiBackend", "managed backend root")
-    assert_contains(config, "E:/IntRuoyi/IntRuoyiFronted", "managed frontend root")
-    assert_contains(config, "D:/ProjectPackage/Website", "managed website root")
+    assert_contains(config, "repo-root: ../IntRuoyi/IntRuoyiBackend", "managed backend root")
+    assert_contains(config, "frontend-root: ../IntRuoyi/IntRuoyiFronted", "managed frontend root")
+    assert_contains(config, "website-root: ../Website", "managed website root")
 
     gitignore = read_text(".gitignore")
     assert_contains(gitignore, "runtime/runtime-control/", "runtime state ignore")

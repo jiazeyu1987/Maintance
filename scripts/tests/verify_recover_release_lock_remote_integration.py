@@ -221,7 +221,8 @@ def main() -> int:
     database = f"release_lock_it_{suffix}"
     release_tag = f"integration-{suffix}"
     lease_token = ""
-    app_backend_root = Path(os.environ.get("INTRUOYI_APP_BACKEND_ROOT", "E:/IntRuoyi/IntRuoyiBackend"))
+    app_backend_root = Path(os.environ.get(
+        "INTRUOYI_APP_BACKEND_ROOT", str(ROOT.parent / "IntRuoyi" / "IntRuoyiBackend")))
     required_sql_dir = app_backend_root / "sql/mysql"
     lease_migration = required_sql_dir / "20260921_infra_release_operation_lock_lease_fencing.sql"
     if not lease_migration.is_file():
