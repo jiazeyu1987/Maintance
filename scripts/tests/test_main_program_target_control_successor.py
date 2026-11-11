@@ -4,6 +4,7 @@ import hashlib
 import importlib
 import io
 import json
+import base64
 from pathlib import Path
 import sys
 import tarfile
@@ -52,7 +53,7 @@ def package_build(files,commit):
     return value,raw,manifest
 
 
-def successor_case(host='58'):
+def successor_case(host='58',new_commit='d'*40):
     k=old_inputs.__wrapped__()
     def scope(value):
         if type(value) is dict:return {scope(a):scope(b) for a,b in value.items()}
@@ -105,12 +106,12 @@ def successor_case(host='58'):
         baseInstallation={'keep':'Spug5651efc-and-original147'},activationReceiptPins=[pin(
             '/control/control-activation-main-target-a3121c6-r1/result-activate.private.json',b'original-activation')],inputPins=[])
     files=deepcopy(k['package_files']);files[EPOCH]=b'READER_VERSION = 2\n'
-    newbuild,newraw,_=package_build(files,'d'*40)
+    newbuild,newraw,_=package_build(files,new_commit)
     return dict(predecessor=predecessor,predecessor_selection_pin=predecessor['selectionPin'],
         predecessor_selection_raw=canonical(selection),predecessor_build_raw=canonical(current_build),
         predecessor_build=current_build,build=newbuild,predecessor_package_raw=current_raw,package_raw=newraw,
-        host=host,preservation_documents=k['preservation'],configuration_root='/control/configuration/main-target-ddddddd-r1',
-        new_engine='/control/engine-main-program-ddddddd',retained_failure_pins=[pin('/control/failed-operation.json',b'original-failure')])
+        host=host,preservation_documents=k['preservation'],configuration_root='/control/configuration/main-target-'+new_commit[:7]+'-r1',
+        new_engine='/control/engine-main-program-'+new_commit[:7],retained_failure_pins=[pin('/control/failed-operation.json',b'original-failure')])
 
 
 @pytest.fixture
@@ -307,10 +308,9 @@ def seal_successor(wrapper):
     result['activationReceiptPin']=docpin(result['createdPaths'][0]+'/result-activate.private.json',result)
 
 
-@pytest.fixture
-def activation_inputs():
+def activation_case(new_commit='d'*40):
     from test_main_program_target_control_activated import proofs as initial_proofs
-    initial=initial_proofs.__wrapped__();cases={host:successor_case(host) for host in ('57','58','59')}
+    initial=initial_proofs.__wrapped__();cases={host:successor_case(host,new_commit) for host in ('57','58','59')}
     first=cases['58'];predecessor=deepcopy(first['predecessor']);predecessor['targetRuntimeSpecs']={}
     predecessor['activationReceiptPins']=[];activations={}
     for host,k in cases.items():
@@ -355,7 +355,7 @@ def activation_inputs():
             for observation in (before,after):
                 observation['controllers'].insert(0,deepcopy(peer));observation['packagePins'].insert(0,pin('/source6968b58/package.json',b'source'))
         prior=initial['activations'][host]['result']
-        directory='/control/control-activation-main-target-ddddddd-r1'
+        directory='/control/control-activation-main-target-'+new_commit[:7]+'-r1'
         result=dict(schemaVersion='MainProgramTargetControlSuccessorActivation/v1',status='PASS',stage='complete',
             host=old['host'],role='target',targetConfigRef=candidate['targetConfigRef'],sourceCommit=k['build']['targetCommit'],
             observedAt='2026-11-12T00:00:00+00:00',candidate=candidate,predecessorSelectionPin=deepcopy(predecessor['selectionPin']),
@@ -374,6 +374,10 @@ def activation_inputs():
     return dict(predecessor=predecessor,activations=activations,build=first['build'],build_pin=localpin('new-build.json',first['build']),
         predecessor_selection_raw=first['predecessor_selection_raw'],predecessor_build_raw=first['predecessor_build_raw'],
         package_raw=first['package_raw'],previous_package_raw=first['predecessor_package_raw'])
+
+
+@pytest.fixture
+def activation_inputs():return activation_case()
 
 
 def projector():
@@ -451,8 +455,7 @@ def loader():
     return module.load_activated_target_successor_installation
 
 
-@pytest.fixture
-def local_inputs(tmp_path,activation_inputs):
+def make_local_inputs(tmp_path,activation_inputs):
     k=deepcopy(activation_inputs);task=tmp_path/'task';private=tmp_path/'private';task.mkdir();private.mkdir()
     def write(path,raw):path.write_bytes(raw);return pin(str(path),raw)
     def report(name,raw):write(task/name,raw);return dict(file=name,bytes=len(raw),sha256=digest(raw))
@@ -466,6 +469,14 @@ def local_inputs(tmp_path,activation_inputs):
         w['scriptPin']=write(private/('carrier-'+host+'.py'),b'actual-carrier')
         w['result']['predecessorSelectionPin']=deepcopy(predecessor['selectionPin'])
         w['result']['candidate']['predecessorSelectionPin']=deepcopy(predecessor['selectionPin'])
+        if host in k.get('continuations',{}):
+            context=k['continuations'][host]
+            for label in ('failure','prepare'):
+                key=label+'Wrapper'
+                if key in context:
+                    original=context[key];original['scriptPin']=write(private/(label+'-carrier-'+host+'.py'),b'actual-prior-carrier')
+                    context[label+'WrapperPin']=write(private/(label+'-'+host+'.json'),canonical(original))
+            w['continuationLocalEvidencePin']=write(private/('context-'+host+'.json'),canonical(context))
         seal_successor(w);evidence[host]=write(private/('activation-'+host+'.json'),canonical(w))
     buildpin=report('successor-build.json',canonical(k['build']))
     selection=dict(schemaVersion='TaskMainProgramTargetControlSuccessorSelection/v1',
@@ -474,6 +485,10 @@ def local_inputs(tmp_path,activation_inputs):
     report('successor.json',canonical(selection))
     predecessor['inputPins']=[pin(str(task/'predecessor.json'),original_selection)]
     return dict(task=task,private=private,selection=selection,predecessor=predecessor)
+
+
+@pytest.fixture
+def local_inputs(tmp_path,activation_inputs):return make_local_inputs(tmp_path,activation_inputs)
 
 
 def test_loader_reads_exact_files_and_formal_predecessor_then_rechecks_all_pins(local_inputs,monkeypatch):
@@ -513,3 +528,147 @@ def test_loader_rejects_incomplete_local_chain_or_input_drift(local_inputs,monke
         monkeypatch.setattr(module,'verify_target_successor_activations',drifting)
     (k['task']/'successor.json').write_bytes(canonical(selection))
     with pytest.raises(ValueError):call(k['task'],k['private'],selection_file='successor.json')
+
+
+B9='b9caa00b7eeed2b915c8855a8313521e57d06f72'
+
+
+def continuation_case(host):
+    k=activation_case(B9);w=k['activations'][host];r=w['result'];c=r['candidate']
+    before=deepcopy(r['before']);beforepin=docpin('/control/failed-'+host+'/before.private.json',before)
+    control=next(row['value'] for row in c['newDocuments'] if row['pin']==c['controller']['controlPin'])
+    badpin=dict(c['controller']['controlPin'],bytes=c['previousController']['controlConfigurationPin']['bytes'],
+        sha256=c['previousController']['controlConfigurationPin']['sha256'])
+    import shlex
+    def dropin(cp):
+        argv=[control['pythonPin']['path'],'-B',c['controller']['engine']+'/control_entry.py','serve','--config-pin',canonical(cp).decode()]
+        return ('[Unit]\nRequires=original.service\n[Service]\nExecStart=\nExecStart='+shlex.join(argv)+'\n').encode()
+    correctraw=dropin(c['controller']['controlPin']);badraw=dropin(badpin)
+    failed_drop=pin('/etc/systemd/system/'+c['previousController']['service']+'.d/zzz-reader.conf',badraw if host=='58' else correctraw)
+    failure=dict(schemaVersion=r['schemaVersion'],status='FAILED',host=r['host'],role='target',targetConfigRef=r['targetConfigRef'],
+        sourceCommit=B9,stage='new-runtime',errorType='ValueError' if host=='58' else 'AttributeError',
+        errorCode='CONTROL_PROCESS_CHANGED' if host=='58' else "'_PureTransition' object has no attribute '_new_package_pin'",
+        observedAt=r['observedAt'],createdPaths=['/control/failed-'+host,beforepin['path'],failed_drop['path']])
+    for flag in ('backupDispatched','restoreDispatched','businessMutationDispatched','oldReceiptRotated'):failure[flag]=False
+    failed_wrapper=dict(w,status='FAILED',result=failure);seal_successor(failed_wrapper)
+    fraw=canonical(failed_wrapper);fref=pin('/private/failed-'+host+'.json',fraw)
+    r.update(continuationProfile='TARGET58_BAD_DROPIN_REPLACEMENT/v1' if host=='58' else 'TARGET57_AFTER_READBACK_ONLY/v1',
+        continuationFailurePin=deepcopy(failure['activationReceiptPin']),continuationBeforePin=beforepin,
+        continuationDropinPin=failed_drop,controlServiceRestartedInPriorAttempt=True,
+        controlServiceRestartedDuringContinuation=host=='58')
+    context=dict(schemaVersion='MainTarget58ReaderContinuationEvidence/v1' if host=='58' else 'MainTarget57ReaderReadbackEvidence/v1',
+        failureWrapperPin=fref,failureWrapper=failed_wrapper,beforePin=beforepin,before=before)
+    if host=='58':
+        r['dropinPin']=pin(failed_drop['path'].replace('zzz-reader','zzzz-reader'),correctraw)
+        # Construct the explicit expected after spec without asking the yet
+        # missing continuation helper to preapprove its own fixture.
+        spec=deepcopy(r['successorRuntimeSpec']);unit=spec['unit']['controllers'][-1]
+        unit['dropinPins'].append(failed_drop);unit['existingNames'].append(Path(failed_drop['path']).name)
+        spec['current']['controllers'][-1]['dropinPin']=r['dropinPin'];r['currentController']=deepcopy(spec['current']['controllers'][-1])
+        r['successorRuntimeSpec']=spec;r['after']['controllers'][-1]['properties']['DropInPaths']=before['controllers'][-1]['properties']['DropInPaths']+' '+failed_drop['path']+' '+r['dropinPin']['path']
+        args=successor_case(host,B9);args.update(predecessor=k['predecessor'],predecessor_selection_pin=k['predecessor']['selectionPin'],
+            predecessor_selection_raw=k['predecessor_selection_raw'],predecessor_build_raw=k['predecessor_build_raw'],
+            predecessor_build=json.loads(k['predecessor_build_raw']),build=k['build'],predecessor_package_raw=k['previous_package_raw'],package_raw=k['package_raw'])
+        args['preservation_documents']=subject()._preservation_from_candidate(k['predecessor'],host,c)
+        plan=subject().build_target_successor_staging_plan(candidate=c,**args)
+        props=dict(MainPID='0',ActiveState='inactive',SubState='dead',LimitNOFILE='65536',
+            DropInPaths=before['controllers'][-1]['properties']['DropInPaths']+' '+failed_drop['path'])
+        preflight=dict(schemaVersion='MainTarget58ReaderContinuationPreflight/v1',status='PASS',serverWrites=False,
+            physicalLockVerified=True,protectedObservation={a:deepcopy(b) for a,b in before.items() if a!='controllers'},
+            peerControllers=[],targetProperties=props,retainedPins=plan['retainedPins'],successorPins=[a['pin'] for a in plan['writes']],
+            failurePins=deepcopy(r['retainedFailurePins']),failedDropinPin=failed_drop)
+        context.update(failedDropinPin=failed_drop,failedDropinRawBase64=base64.b64encode(badraw).decode(),
+            correctDropinRawBase64=base64.b64encode(correctraw).decode(),preContinuationObservation=preflight)
+        r['createdPaths']=['/control/control-activation-main-target-b9caa00-r2','/control/control-activation-main-target-b9caa00-r2/before.private.json',r['dropinPin']['path']]
+    else:
+        r['dropinPin']=failed_drop;r['currentController']['dropinPin']=deepcopy(failed_drop)
+        r['successorRuntimeSpec']['current']['controllers'][-1]['dropinPin']=deepcopy(failed_drop)
+        prepare=dict(schemaVersion=r['schemaVersion'],status='SUCCESSOR_ACTIVATION_PREPARED',host=r['host'],role='target',
+            targetConfigRef=r['targetConfigRef'],sourceCommit=B9,stage='prepared',observedAt=r['observedAt'],
+            before=before,after=deepcopy(before),nativeBefore=deepcopy(r['nativeBefore']),originalApi=deepcopy(r['originalApi']),proposedDropinPin=failed_drop,
+            serverWrites=False,controlServiceRestarted=False,createdPaths=[])
+        for flag in ('backupDispatched','restoreDispatched','businessMutationDispatched','oldReceiptRotated'):prepare[flag]=False
+        prepare_wrapper=dict(w,status='SUCCESSOR_ACTIVATION_PREPARED',mode='PREPARE',result=prepare)
+        context.update(dropinPin=failed_drop,dropinRawBase64=base64.b64encode(correctraw).decode(),
+            prepareWrapperPin=pin('/private/prepare-57.json',canonical(prepare_wrapper)),prepareWrapper=prepare_wrapper)
+        r['createdPaths']=['/control/control-activation-main-target-b9caa00-r2','/control/control-activation-main-target-b9caa00-r2/before.private.json']
+    if host=='58':
+        prepare=dict(schemaVersion=r['schemaVersion'],status='SUCCESSOR_ACTIVATION_PREPARED',host=r['host'],role='target',
+            targetConfigRef=r['targetConfigRef'],sourceCommit=B9,stage='prepared',observedAt=r['observedAt'],before=deepcopy(before),
+            after=deepcopy(before),nativeBefore=deepcopy(r['nativeBefore']),originalApi=deepcopy(r['originalApi']),
+            proposedDropinPin=failed_drop,serverWrites=False,controlServiceRestarted=False,createdPaths=[])
+        for flag in ('backupDispatched','restoreDispatched','businessMutationDispatched','oldReceiptRotated'):prepare[flag]=False
+        prepare_wrapper=dict(w,status='SUCCESSOR_ACTIVATION_PREPARED',mode='PREPARE',result=prepare)
+        context.update(prepareWrapperPin=pin('/private/prepare-58.json',canonical(prepare_wrapper)),prepareWrapper=prepare_wrapper)
+    w['continuationLocalEvidencePin']=pin('/private/context-'+host+'.json',canonical(context));seal_successor(w)
+    k['continuations']={host:context};return k
+
+
+def continuation_project(k):
+    assert hasattr(subject(),'verify_reader_continuation_evidence'),'MISSING_EXPLICIT_READER_CONTINUATION_CONTRACT'
+    return projector()(**k)
+
+
+@pytest.mark.parametrize('host',['57','58'])
+def test_two_known_continuations_preserve_failed_originals_and_distinct_runtime_semantics(host):
+    k=continuation_case(host);original=deepcopy(k);result=continuation_project(k)
+    assert k==original and result['installationVerified'] is True
+    assert k['continuations'][host]['failureWrapper']['result']['status']=='FAILED'
+    r=k['activations'][host]['result'];refs=result['targetRuntimeSpecs'][host]['successor']['unit']['controllers'][-1]['dropinPins']
+    assert (r['continuationDropinPin'] in refs)==(host=='58')
+
+
+@pytest.mark.parametrize('host,problem',[('58','wrong-error'),('57','wrong-error'),('58','wrong-host'),('57','wrong-mode'),
+    ('58','failed-receipt'),('58','before-pin'),('58','before-value'),('58','bad-pin'),('58','bad-raw'),
+    ('58','correct-raw'),('58','extra-text'),('58','preflight-pid'),('58','preflight-state'),('58','preflight-mount'),
+    ('58','retained-pin'),('58','staged-pin'),('58','failure-pin'),('58','two-dropins'),('57','prepare-api'),
+    ('57','prepare-native'),('57','prepare-before'),('57','restart-again'),('57','dropin'),('58','missing-context')])
+def test_continuation_accepts_only_the_explicit_original_failure_and_protected_transition(host,problem):
+    k=continuation_case(host);context=k['continuations'][host];r=k['activations'][host]['result']
+    if problem=='wrong-error':context['failureWrapper']['result']['errorCode']='UNKNOWN'
+    elif problem=='wrong-host':r['continuationProfile']='TARGET57_AFTER_READBACK_ONLY/v1'
+    elif problem=='wrong-mode':context['prepareWrapper']['mode']='ACTIVATE'
+    elif problem=='failed-receipt':r['continuationFailurePin']['sha256']='0'*64
+    elif problem=='before-pin':context['beforePin']['sha256']='0'*64
+    elif problem=='before-value':context['before']['mountinfoSha256']='0'*64
+    elif problem=='bad-pin':context['failedDropinPin']['sha256']='0'*64
+    elif problem=='bad-raw':context['failedDropinRawBase64']=base64.b64encode(b'unknown').decode()
+    elif problem=='correct-raw':context['correctDropinRawBase64']=context['failedDropinRawBase64']
+    elif problem=='extra-text':context['correctDropinRawBase64']=base64.b64encode(base64.b64decode(context['correctDropinRawBase64'])+b'Unknown=yes\n').decode()
+    elif problem=='preflight-pid':context['preContinuationObservation']['targetProperties']['MainPID']='1'
+    elif problem=='preflight-state':context['preContinuationObservation']['targetProperties']['ActiveState']='active'
+    elif problem=='preflight-mount':context['preContinuationObservation']['protectedObservation']['mountinfoSha256']='0'*64
+    elif problem=='retained-pin':context['preContinuationObservation']['retainedPins'].pop()
+    elif problem=='staged-pin':context['preContinuationObservation']['successorPins'].pop()
+    elif problem=='failure-pin':context['preContinuationObservation']['failurePins']=[]
+    elif problem=='two-dropins':r['after']['controllers'][-1]['properties']['DropInPaths']=r['after']['controllers'][-1]['properties']['DropInPaths'].replace(r['continuationDropinPin']['path']+' ','')
+    elif problem=='prepare-api':context['prepareWrapper']['result']['originalApi']['applications'][0]['freshTargetConfigRefs']=[]
+    elif problem=='prepare-native':context['prepareWrapper']['result']['nativeBefore']['epoch']['state']='MUTATING'
+    elif problem=='prepare-before':context['prepareWrapper']['result']['before']['mountinfoSha256']='0'*64
+    elif problem=='restart-again':r['controlServiceRestartedDuringContinuation']=True
+    elif problem=='dropin':r['dropinPin']['sha256']='0'*64
+    else:k['continuations']={}
+    k['activations'][host]['continuationLocalEvidencePin']=pin('/private/context-'+host+'.json',canonical(context))
+    seal_successor(k['activations'][host])
+    with pytest.raises(ValueError):continuation_project(k)
+
+
+@pytest.mark.parametrize('host',['57','58'])
+def test_loader_reads_continuation_context_and_prior_raw_files_under_original_pins(tmp_path,monkeypatch,host):
+    k=make_local_inputs(tmp_path,continuation_case(host));module=subject()
+    monkeypatch.setattr(module.activated,'load_activated_target_installation',lambda *args,**kw:deepcopy(k['predecessor']))
+    result=loader()(k['task'],k['private'],selection_file='successor.json')
+    assert result['installationVerified'] is True
+    paths={p['path'] for p in result['inputPins']}
+    assert str(k['private']/('context-'+host+'.json')) in paths
+    assert str(k['private']/('failure-'+host+'.json')) in paths
+    if host=='57':assert str(k['private']/'prepare-57.json') in paths
+
+
+@pytest.mark.parametrize('problem',['failure-original','prepare-original','context-pin'])
+def test_loader_continuation_never_replaces_a_changed_original(tmp_path,monkeypatch,problem):
+    k=make_local_inputs(tmp_path,continuation_case('57'));module=subject()
+    monkeypatch.setattr(module.activated,'load_activated_target_installation',lambda *args,**kw:deepcopy(k['predecessor']))
+    name={'failure-original':'failure-57.json','prepare-original':'prepare-57.json','context-pin':'context-57.json'}[problem]
+    (k['private']/name).write_bytes(b'{"changed":true}')
+    with pytest.raises(ValueError):loader()(k['task'],k['private'],selection_file='successor.json')

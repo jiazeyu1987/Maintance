@@ -3,6 +3,11 @@ const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypt
 const TASK=__dirname,PRIVATE='C:/Spug/runtime/private/prod-incremental-to-two-targets-20261106';
 const ORIGIN='http://127.0.0.1:18080',SOURCE='intruoyi-57-safe-20261024-v1';
 const POINTS=['smallapp-3c2395ff88bd474e9fc007649565b848','smallapp-20a1bb9b78ac402693289675d16c63dd','smallapp-e7b668792c8f4bce945a52f984d3c660'];
+const ORIGINAL_FAILURE='smallapp-b4f21de7a0c64d31beda7efa0204ced8';
+const GENERATIONS=Object.freeze({
+ 'TaskMainProgramTargetControlSelection/v1':Object.freeze({loaderModule:'main_program_target_control_activated',loaderFunction:'load_activated_target_installation',targetCommit:'a3121c64d46fcdc2c1a3195a2cbbf8ca1c05742e',submissionFile:'main-i2-to-test58-ui-submission.json'}),
+ 'TaskMainProgramTargetControlSuccessorSelection/v1':Object.freeze({loaderModule:'main_program_target_control_successor',loaderFunction:'load_activated_target_successor_installation',targetCommit:'b9caa00b7eeed2b915c8855a8313521e57d06f72',submissionFile:'main-i2-to-test58-ui-submission-b9caa00.json'})
+});
 const need=(value,code)=>{if(!value)throw Error(code);};
 const sha=raw=>crypto.createHash('sha256').update(raw).digest('hex');
 const equal=require('node:util').isDeepStrictEqual;
@@ -12,13 +17,45 @@ function assertPointChain(proof){
   proof.originalSourceRestored===true&&proof.originalWorkerExited===true,'ORIGINAL_I2_SUCCESS_REQUIRED');
  return [...POINTS];
 }
-function restoreWriteAllowed(phase,request,point,persisted,writes){
+function restoreWriteAllowed(phase,request,point,persisted,writes,previousOperationId=null){
  const keys=['schemaVersion','operationId','action','sourceConfigRef','parentChainRef','recoveryPointRef','targetConfigRef'];
  return phase==='submit'&&!persisted&&writes===0&&request&&typeof request==='object'&&!Array.isArray(request)&&
   Object.keys(request).sort().join(',')===keys.sort().join(',')&&request.schemaVersion==='SmallAppBackupUiRequest/v1'&&
-  /^smallapp-[0-9a-f]{32}$/.test(request.operationId)&&request.action==='RESTORE'&&request.sourceConfigRef===SOURCE&&
+  /^smallapp-[0-9a-f]{32}$/.test(request.operationId)&&request.operationId!==previousOperationId&&request.action==='RESTORE'&&request.sourceConfigRef===SOURCE&&
   request.parentChainRef===null&&point===POINTS[2]&&request.recoveryPointRef===point&&
   request.targetConfigRef==='intruoyi-main-58-safe-restore-20261104-v1';
+}
+function targetGeneration(schema){need(Object.hasOwn(GENERATIONS,schema),'UNKNOWN_TARGET_SELECTION_SCHEMA');return GENERATIONS[schema];}
+function assertInstallationGeneration(value){
+ need(value&&value.schemaVersion==='MainThreeTargetInstallationSummary/v1'&&value.status==='PASS','INSTALLATION_SUMMARY_INVALID');
+ const profile=targetGeneration(value.selectionSchemaVersion),controllers=value.controllers;
+ need(controllers&&equal(Object.keys(controllers).sort(),['57','58','59']),'THREE_TARGET_HOSTS_REQUIRED');
+ for(const host of ['57','58','59']){
+  const rr=controllers[host];need(Array.isArray(rr),'THREE_TARGET_ROLES_REQUIRED');const targets=rr.filter(r=>r.role==='target');
+  need(targets.length===1&&targets[0].host==='172.30.30.'+host&&targets[0].sourceCommit===profile.targetCommit,'TARGET_GENERATION_CHANGED');
+ }
+ return profile;
+}
+function filePinShape(value){return value&&equal(Object.keys(value).sort(),['bytes','path','sha256'])&&typeof value.path==='string'&&
+ path.isAbsolute(value.path)&&Number.isSafeInteger(value.bytes)&&value.bytes>0&&/^[0-9a-f]{64}$/.test(value.sha256);}
+function assertPreviousSubmission({installation,pointEvidencePin,previousSubmission,previousSubmissionPin}){
+ need(assertInstallationGeneration(installation).submissionFile==='main-i2-to-test58-ui-submission-b9caa00.json'&&
+  previousSubmission&&equal(Object.keys(previousSubmission).sort(),['pointEvidencePin','request','schemaVersion','selectionPin','submittedAt'])&&
+  previousSubmission.schemaVersion==='MainI2TestRestoreSubmission/v1'&&previousSubmission.request?.operationId===ORIGINAL_FAILURE&&
+  restoreWriteAllowed('submit',previousSubmission.request,POINTS[2],false,0)&&equal(previousSubmission.selectionPin,installation.predecessorSelectionPin)&&
+  equal(previousSubmission.pointEvidencePin,pointEvidencePin)&&filePinShape(previousSubmissionPin),'ORIGINAL_FAILED_SUBMISSION_REQUIRED');
+ return ORIGINAL_FAILURE;
+}
+function buildSubmissionReceipt({installation,request,pointEvidencePin,submittedAt,previousSubmission=null,previousSubmissionPin=null}){
+ const profile=assertInstallationGeneration(installation),successor=profile.submissionFile==='main-i2-to-test58-ui-submission-b9caa00.json';
+ need(restoreWriteAllowed('submit',request,POINTS[2],false,0,successor?ORIGINAL_FAILURE:null)&&filePinShape(pointEvidencePin)&&
+  typeof submittedAt==='string'&&Number.isFinite(Date.parse(submittedAt)),'SUBMISSION_INPUT_INVALID');
+ const value={schemaVersion:'MainI2TestRestoreSubmission/v1',submittedAt,selectionPin:installation.selectionPin,pointEvidencePin,request};
+ if(successor){
+  assertPreviousSubmission({installation,pointEvidencePin,previousSubmission,previousSubmissionPin});
+  Object.assign(value,{schemaVersion:'MainI2TestRestoreSuccessorSubmission/v1',previousSubmissionPin,previousOperationId:ORIGINAL_FAILURE});
+ }else need(previousSubmission===null&&previousSubmissionPin===null,'UNEXPECTED_PREDECESSOR_SUBMISSION');
+ return structuredClone(value);
 }
 function pin(file){const raw=fs.readFileSync(file);return {path:path.resolve(file),bytes:raw.length,sha256:sha(raw)};}
 function exclusive(file,value){const fd=fs.openSync(file,'wx');try{fs.writeFileSync(fd,JSON.stringify(value,null,2),'utf8');fs.fsyncSync(fd);}finally{fs.closeSync(fd);}}
@@ -31,14 +68,21 @@ function args(argv){
  return out;
 }
 const INSTALLATION_LOADER=String.raw`
-import hashlib,json,pathlib,sys
+import hashlib,importlib,json,pathlib,sys
 task=pathlib.Path(sys.argv[1]);private=pathlib.Path(sys.argv[2]);sys.path.insert(0,str(task))
-from main_program_target_control_activated import load_activated_target_installation
+from main_program_installation_selection import Records
+records=Records(task);selected=records.read(sys.argv[3]);profiles=${JSON.stringify(GENERATIONS)}
+assert selected.get('schemaVersion') in profiles,'UNKNOWN_TARGET_SELECTION_SCHEMA'
+profile=profiles[selected['schemaVersion']]
+load=getattr(importlib.import_module(profile['loaderModule']),profile['loaderFunction'])
 custody=json.loads(sys.argv[4])
-v=load_activated_target_installation(task,private,selection_file=sys.argv[3],historical_source_custody_pin=custody)
+v=load(task,private,selection_file=sys.argv[3],historical_source_custody_pin=custody)
 assert v['status']=='ACTIVATED' and v['installationVerified'] is True and v['runtimeVerified'] is False
+assert v['selectionPin']==records.references[sys.argv[3]],'SELECTION_CHANGED_DURING_DISPATCH'
 rows=v['effectiveControllersByHost']
 out=dict(schemaVersion='MainThreeTargetInstallationSummary/v1',status='PASS',selectionPin=v['selectionPin'],inputPins=v['inputPins'],
+ selectionSchemaVersion=selected['schemaVersion'],predecessorSelectionPin=selected.get('predecessorSelectionPin'),
+ effectiveControllersByHost=rows,controllerBuildBindings=v['controllerBuildBindings'],
  controllers={h:[{k:r[k] for k in ('host','role','sourceCommit','controlConfigurationPin','ownerConfigurationPin') if k in r} for r in rr] for h,rr in rows.items()})
 print(json.dumps(out,ensure_ascii=False,separators=(',',':')))
 `;
@@ -49,8 +93,7 @@ function installation(options){
   ['-B','-X','utf8','-c',INSTALLATION_LOADER,TASK,PRIVATE,options.selection,JSON.stringify(pin(custody))],
   {shell:false,encoding:'utf8',windowsHide:true,timeout:240000,maxBuffer:16*1024*1024});
  if(result.status!==0||result.error||result.stderr!==''){const e=Error('CURRENT_TARGET_INSTALLATION_FAILED');e.privateDetail={status:result.status,stdout:result.stdout,stderr:result.stderr,error:String(result.error||'')};throw e;}
- const value=JSON.parse(result.stdout);need(value.status==='PASS'&&value.schemaVersion==='MainThreeTargetInstallationSummary/v1','INSTALLATION_SUMMARY_INVALID');
- for(const host of ['57','58','59']){const rr=value.controllers[host];need(Array.isArray(rr)&&rr.filter(r=>r.role==='target').length===1,'THREE_TARGET_ROLES_REQUIRED');}
+ const value=JSON.parse(result.stdout);assertInstallationGeneration(value);
  return value;
 }
 async function main(){
@@ -58,12 +101,20 @@ async function main(){
  const dir=path.join(PRIVATE,label),output=path.join(TASK,label+'.json');need(!fs.existsSync(dir)&&!fs.existsSync(output),'UNIQUE_OBSERVATION_REQUIRED');
  fs.mkdirSync(dir);const helperPin=pin(__filename);const report={schemaVersion:'MainThreeTargetRealUi/v1',status:'RUNNING',phase:options.phase,startedAt:new Date().toISOString(),helperPin,loginPosts:0,businessPosts:0,pageErrors:0,blocked:[],matrix:[]};
  const save=(name,value)=>exclusive(path.join(dir,name),value);let browser,page,frame,current;const pending=[],responseErrors=[];
- const receipt=path.join(TASK,'main-i2-to-test58-ui-submission.json');
+ let receipt,previousSubmission=null,previousSubmissionPin=null;
  const phase=value=>{report.stage=value;console.log(JSON.stringify({stage:value,observedAt:new Date().toISOString()}));};
  try{
   phase('formal-current-installation');current=installation(options);save('installation.private.json',current);report.selectionPin=current.selectionPin;
+  const generation=assertInstallationGeneration(current);receipt=path.join(TASK,generation.submissionFile);report.submissionFile=generation.submissionFile;
   const pointFile=path.join(TASK,'main-activated-i2-success-r1.json'),proof=JSON.parse(fs.readFileSync(pointFile,'utf8'));
   assertPointChain(proof);report.pointEvidencePin=pin(pointFile);
+  if(generation.submissionFile==='main-i2-to-test58-ui-submission-b9caa00.json'){
+   const previousFile=path.join(TASK,'main-i2-to-test58-ui-submission.json');previousSubmissionPin=pin(previousFile);
+   previousSubmission=JSON.parse(fs.readFileSync(previousFile,'utf8'));report.previousSubmissionPin=previousSubmissionPin;
+   // Validate retained provenance before any browser or route is created.
+   assertPreviousSubmission({installation:current,pointEvidencePin:report.pointEvidencePin,previousSubmission,previousSubmissionPin});
+   need(equal(pin(previousFile),previousSubmissionPin),'ORIGINAL_SUBMISSION_CHANGED');
+  }
   if(options.phase==='submit'){
    need(!fs.existsSync(receipt),'ALREADY_SUBMITTED_FOLLOW_ORIGINAL_OPERATION');
    const prior=JSON.parse(fs.readFileSync(path.join(TASK,options.preview),'utf8'));
@@ -72,7 +123,8 @@ async function main(){
    report.previewPin=pin(path.join(TASK,options.preview));
   }
   const original=options.phase==='verify'?JSON.parse(fs.readFileSync(receipt,'utf8')):null;
-  if(original)need(restoreWriteAllowed('submit',original.request,POINTS[2],false,0)&&equal(original.selectionPin,current.selectionPin),'ORIGINAL_RESTORE_REQUEST_REQUIRED');
+  if(original)need(equal(original,buildSubmissionReceipt({installation:current,request:original.request,pointEvidencePin:report.pointEvidencePin,
+   submittedAt:original.submittedAt,previousSubmission,previousSubmissionPin})),'ORIGINAL_RESTORE_REQUEST_REQUIRED');
   const {chromium}=require('C:/Users/D01021/Documents/ChatGPT/IntRuoyiE2E/node_modules/playwright');
   phase('real-login');browser=await chromium.launch({channel:'chrome',headless:true});const context=await browser.newContext({viewport:{width:1440,height:1080}});page=await context.newPage();page.setDefaultTimeout(45000);
   page.on('pageerror',e=>{report.pageErrors++;save('page-error-'+report.pageErrors+'.private.json',{error:String(e)});});
@@ -82,8 +134,10 @@ async function main(){
    if(url.origin===ORIGIN&&method==='POST'&&url.pathname==='/api/account/login/'&&!url.search&&report.loginPosts===0){report.loginPosts++;return route.continue();}
    if(url.origin===ORIGIN&&method==='POST'&&url.pathname==='/backup-entry-api/operations'&&!url.search){
     const request=req.postDataJSON();
-    if(restoreWriteAllowed(options.phase,request,POINTS[2],fs.existsSync(receipt),report.businessPosts)){
-     exclusive(receipt,{schemaVersion:'MainI2TestRestoreSubmission/v1',submittedAt:new Date().toISOString(),selectionPin:current.selectionPin,pointEvidencePin:report.pointEvidencePin,request});report.businessPosts++;report.request=request;return route.continue();
+    if(restoreWriteAllowed(options.phase,request,POINTS[2],fs.existsSync(receipt),report.businessPosts,previousSubmission?.request.operationId||null)){
+     if(previousSubmissionPin)need(equal(pin(path.join(TASK,'main-i2-to-test58-ui-submission.json')),previousSubmissionPin),'ORIGINAL_SUBMISSION_CHANGED');
+     exclusive(receipt,buildSubmissionReceipt({installation:current,request,pointEvidencePin:report.pointEvidencePin,
+      submittedAt:new Date().toISOString(),previousSubmission,previousSubmissionPin}));report.businessPosts++;report.request=request;return route.continue();
     }
    }
    report.blocked.push({method,path:url.pathname});return route.abort('blockedbyclient');
@@ -160,11 +214,13 @@ async function main(){
   await Promise.all(pending.splice(0));need(report.loginPosts===1&&report.pageErrors===0&&report.blocked.length===0&&responseErrors.length===0&&report.businessPosts===(options.phase==='submit'?1:0),'REAL_UI_WRITES_OR_ERRORS');
   need(equal(installation(options),current),'INSTALLATION_CHANGED_DURING_UI');
   need(equal(pin(path.join(TASK,'main-activated-i2-success-r1.json')),report.pointEvidencePin)&&equal(pin(__filename),helperPin),'UI_OR_POINT_INPUT_CHANGED');
+  if(previousSubmissionPin)need(equal(pin(path.join(TASK,'main-i2-to-test58-ui-submission.json')),previousSubmissionPin),'ORIGINAL_SUBMISSION_CHANGED');
  }catch(error){report.status='FAIL';report.errorCode=/^[A-Z0-9_]+$/.test(error.message)?error.message:'REAL_UI_OBSERVATION_FAILED';save('failure.private.json',{error:String(error.stack||error),detail:error.privateDetail});process.exitCode=1;}
  finally{
   if(page){await page.screenshot({path:path.join(dir,'actual-page.png'),fullPage:true}).catch(e=>{report.status='FAIL';report.screenshotError=String(e);process.exitCode=1;});}
   report.finishedAt=new Date().toISOString();exclusive(output,report);console.log(JSON.stringify({status:report.status,stage:report.stage,errorCode:report.errorCode,loginPosts:report.loginPosts,businessPosts:report.businessPosts,confirmedPairs:report.confirmedPairs}));if(browser)await browser.close();
  }
 }
-module.exports={restoreWriteAllowed,assertPointChain,jsonEqual:equal};
+module.exports={restoreWriteAllowed,assertPointChain,jsonEqual:equal,targetGeneration,assertInstallationGeneration,buildSubmissionReceipt,
+ assertPreviousSubmission,installationLoaderProgram:INSTALLATION_LOADER};
 if(require.main===module)main().catch(error=>{console.error(JSON.stringify({status:'NOT_STARTED',errorCode:error.message}));process.exitCode=1;});

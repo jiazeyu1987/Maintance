@@ -4,9 +4,11 @@ Pure configuration and file plans do not establish installation or runtime healt
 The original 147->153 contracts and their historical evidence remain unchanged.
 """
 from copy import deepcopy
+import base64
 import json
 from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
+import shlex
 from types import SimpleNamespace
 
 import main_program_control_upgrade_plan as planner
@@ -180,7 +182,7 @@ def build_target_successor_staging_plan(*,candidate,**inputs):
 
 class _PureTransition(transition.TargetControlRuntimeTransition):
     """Reuse only row/comparison semantics, without constructing a runtime gate."""
-    def __init__(self,*,current_spec,retained_history_spec,candidate,dropin_pin):
+    def __init__(self,*,current_spec,retained_history_spec,candidate,dropin_pin,continuation_dropin_pin=None):
         fields={'current','unit','environmentBaseline','targetConfigRef','previousCustody','oldReceiptPin',
             'originalInventory','historyPins','sourceEvidencePins','newDocuments','retainedDocuments'}
         need(type(current_spec) is dict and set(current_spec)==fields and
@@ -215,9 +217,16 @@ class _PureTransition(transition.TargetControlRuntimeTransition):
             need(old_drop['path'] not in {p['path'] for p in self.retained_dropins} and
                 PurePosixPath(old_drop['path']).name not in self.retained_names,'RUNTIME_OLD_DROPIN_CONFLICT')
             self.retained_dropins.append(deepcopy(old_drop));self.retained_names.append(PurePosixPath(old_drop['path']).name)
+        self.continuation_dropin=deepcopy(continuation_dropin_pin)
+        if continuation_dropin_pin is not None:
+            failed=binding.pin(continuation_dropin_pin);failed_location=PurePosixPath(failed['path'])
+            need(suffix=='58' and candidate['sourceCommit']=='b9caa00b7eeed2b915c8855a8313521e57d06f72' and
+                str(failed_location.parent)==self.old_unit['directory'] and failed_location.name.endswith('.conf') and
+                all(failed_location.name>name for name in self.retained_names),'RUNTIME_CONTINUATION_DROPIN')
         self.dropin=deepcopy(binding.pin(dropin_pin));location=PurePosixPath(self.dropin['path'])
         need(str(location.parent)==self.old_unit['directory'] and location.name.endswith('.conf') and
-            location.name not in self.retained_names and all(location.name>name for name in self.retained_names),
+            location.name not in self.retained_names and all(location.name>name for name in self.retained_names) and
+            (continuation_dropin_pin is None or location.name>PurePosixPath(continuation_dropin_pin['path']).name),
             'RUNTIME_NEW_DROPIN')
         self.dependencies=dict(Requires=[],After=[]);self.candidate=deepcopy(candidate)
         self.original=SimpleNamespace(spec=deepcopy(current_spec))
@@ -231,6 +240,9 @@ class _PureTransition(transition.TargetControlRuntimeTransition):
         result=deepcopy(self.original.spec);result['current']['controllers'][self.index]=self._row(pid)
         unit=next(u for u in result['unit']['controllers'] if u['service']==self.old['service'])
         unit['dropinPins']=deepcopy(self.retained_dropins);unit['existingNames']=list(self.retained_names)
+        if self.continuation_dropin is not None:
+            unit['dropinPins'].append(deepcopy(self.continuation_dropin))
+            unit['existingNames'].append(PurePosixPath(self.continuation_dropin['path']).name)
         additions=[deepcopy(r['pin']) for r in self.candidate['newDocuments']]
         refs=result['retainedDocuments']+result['newDocuments']+additions
         for p in refs:binding.pin(p)
@@ -238,11 +250,21 @@ class _PureTransition(transition.TargetControlRuntimeTransition):
         result['retainedDocuments'].extend(additions)
         return result
 
+    def _compare(self,before,after,pid):
+        projected=deepcopy(before)
+        if self.continuation_dropin is not None:
+            # This is an explicit derived comparison, never an amended before
+            # record: only the pinned failed dropin is inserted in the allowed
+            # predecessor sequence. Every other field is compared unchanged.
+            projected['controllers'][self.index]['properties']['DropInPaths']+=' '+self.continuation_dropin['path']
+        return super()._compare(projected,after,pid)
 
-def build_target_successor_runtime_spec(*,current_spec,retained_history_spec,candidate,dropin_pin,successor_pid):
+
+def build_target_successor_runtime_spec(*,current_spec,retained_history_spec,candidate,dropin_pin,successor_pid,
+        continuation_dropin_pin=None):
     """Describe a successor process; the caller must independently read reality."""
     return _PureTransition(current_spec=current_spec,retained_history_spec=retained_history_spec,
-        candidate=candidate,dropin_pin=dropin_pin).spec(successor_pid)
+        candidate=candidate,dropin_pin=dropin_pin,continuation_dropin_pin=continuation_dropin_pin).spec(successor_pid)
 
 
 ACTIVATION_FIELDS={'schemaVersion','status','stage','host','role','targetConfigRef','sourceCommit','observedAt',
@@ -250,6 +272,97 @@ ACTIVATION_FIELDS={'schemaVersion','status','stage','host','role','targetConfigR
     'failurePinsAfter','currentRuntimeSpec','retainedHistoryRuntimeSpec','successorRuntimeSpec','before','after',
     'currentController','nativeBefore','nativeAfter','originalApi','apiSelection','dropinPin','createdPaths',
     'activationReceiptPin',*activated.TRUE_FLAGS,*activated.FALSE_FLAGS}
+CONTINUATION_FIELDS={'continuationProfile','continuationFailurePin','continuationBeforePin','continuationDropinPin',
+    'controlServiceRestartedInPriorAttempt','controlServiceRestartedDuringContinuation'}
+CONTINUATION_LOCAL='continuationLocalEvidencePin'
+
+
+def _decode_raw(value):
+    need(type(value) is str and 0<len(value)<=512*1024,'CONTINUATION_RAW')
+    try:return base64.b64decode(value,validate=True)
+    except ValueError:raise ValueError('MAIN_TARGET_SUCCESSOR_CONTINUATION_BASE64') from None
+
+
+def _dropin_argv(raw,control,engine,reference):
+    text=raw.decode('utf-8');lines=text.splitlines();commands=[line[len('ExecStart='):] for line in lines if line.startswith('ExecStart=')]
+    need(len(commands)==2 and commands[0]=='','CONTINUATION_EXECSTART_SHAPE')
+    argv=shlex.split(commands[1],posix=True)
+    need(len(argv)==6 and argv[:-1]==[control['pythonPin']['path'],'-B',engine+'/control_entry.py','serve','--config-pin'] and
+        json.loads(argv[-1],object_pairs_hook=planner.document)==reference,'CONTINUATION_EXECSTART_PIN')
+
+
+def verify_reader_continuation_evidence(*,result,context,staging_plan,control):
+    """Validate only the two recorded reader-generation failures, without IO."""
+    r=result;host=r['host'].rsplit('.',1)[-1]
+    profile={'57':'TARGET57_AFTER_READBACK_ONLY/v1','58':'TARGET58_BAD_DROPIN_REPLACEMENT/v1'}
+    need(host in profile and r['continuationProfile']==profile[host] and
+        r['sourceCommit']=='b9caa00b7eeed2b915c8855a8313521e57d06f72' and
+        r['controlServiceRestartedInPriorAttempt'] is True and
+        r['controlServiceRestartedDuringContinuation'] is (host=='58'),'CONTINUATION_PROFILE')
+    common={'schemaVersion','failureWrapperPin','failureWrapper','beforePin','before','prepareWrapperPin','prepareWrapper'}
+    extra={'failedDropinPin','failedDropinRawBase64','correctDropinRawBase64','preContinuationObservation'} if host=='58' else {
+        'dropinPin','dropinRawBase64'}
+    schema='MainTarget58ReaderContinuationEvidence/v1' if host=='58' else 'MainTarget57ReaderReadbackEvidence/v1'
+    need(type(context) is dict and set(context)==common|extra and context['schemaVersion']==schema,'CONTINUATION_CONTEXT')
+    _private_input_pin(context['failureWrapperPin']);wrapper=context['failureWrapper']
+    need(type(wrapper) is dict and set(wrapper)==activated.WRAPPER_FIELDS,'CONTINUATION_FAILED_WRAPPER')
+    failure=activated._wrapper(wrapper,host,status='FAILED')
+    failed_fields={'schemaVersion','status','host','role','targetConfigRef','sourceCommit','stage','errorType','errorCode',
+        'observedAt','createdPaths','activationReceiptPin',*activated.FALSE_FLAGS}
+    need(set(failure)==failed_fields and failure['schemaVersion']==r['schemaVersion'] and failure['status']=='FAILED' and
+        failure['stage']=='new-runtime' and failure['errorType']==('ValueError' if host=='58' else 'AttributeError') and
+        failure['errorCode']==('CONTROL_PROCESS_CHANGED' if host=='58' else "'_PureTransition' object has no attribute '_new_package_pin'") and
+        all(failure[k]==r[k] for k in ('host','role','targetConfigRef','sourceCommit')) and
+        all(failure[k] is False for k in activated.FALSE_FLAGS),'CONTINUATION_KNOWN_FAILURE')
+    activated._timestamp(failure['observedAt']);activated._receipt(failure)
+    beforepin=binding.pin(context['beforePin']);failed_drop=binding.pin(r['continuationDropinPin'])
+    need(r['continuationFailurePin']==failure['activationReceiptPin'] and r['continuationBeforePin']==beforepin and
+        context['before']==r['before'] and planner.remote_pin(beforepin['path'],context['before'])==beforepin and
+        PurePosixPath(beforepin['path'])==PurePosixPath(failure['activationReceiptPin']['path']).parent/'before.private.json',
+        'CONTINUATION_ORIGINAL_BEFORE')
+    created=failure['createdPaths'];directory=str(PurePosixPath(failure['activationReceiptPin']['path']).parent)
+    need(type(created) is list and len(set(created))==len(created) and
+        set(created) in ({directory,beforepin['path'],failed_drop['path']},
+            {directory,beforepin['path'],failed_drop['path'],failure['activationReceiptPin']['path']}),'CONTINUATION_FAILED_PATHS')
+    _private_input_pin(context['prepareWrapperPin']);prepare_wrapper=context['prepareWrapper']
+    need(set(prepare_wrapper)==activated.WRAPPER_FIELDS,'CONTINUATION_PREPARE_WRAPPER')
+    prepare=activated._wrapper(prepare_wrapper,host,mode='PREPARE',status='SUCCESSOR_ACTIVATION_PREPARED')
+    fields={'schemaVersion','status','host','role','targetConfigRef','sourceCommit','stage','observedAt','before','after','nativeBefore',
+        'originalApi','proposedDropinPin','serverWrites','controlServiceRestarted','createdPaths',*activated.FALSE_FLAGS}
+    need(set(prepare)==fields and prepare['status']=='SUCCESSOR_ACTIVATION_PREPARED' and prepare['stage']=='prepared' and
+        all(prepare[k]==r[k] for k in ('schemaVersion','host','role','targetConfigRef','sourceCommit')) and
+        all(prepare[k] is False for k in (*activated.FALSE_FLAGS,'serverWrites','controlServiceRestarted')) and
+        prepare['createdPaths']==[] and prepare['before']==r['before'] and prepare['after']==r['before'] and
+        prepare['originalApi']==r['originalApi'] and prepare['nativeBefore']==r['nativeBefore'] and
+        prepare['proposedDropinPin']==failed_drop,'CONTINUATION_PREPARE_BINDING')
+    activated._timestamp(prepare['observedAt'])
+    if host=='57':
+        need(r['dropinPin']==context['dropinPin']==failed_drop,'CONTINUATION_READBACK_DROPIN')
+        raw=_decode_raw(context['dropinRawBase64'])
+        need(_content_pin(failed_drop['path'],raw)==failed_drop,'CONTINUATION_DROPIN_BYTES')
+        _dropin_argv(raw,control,r['candidate']['controller']['engine'],r['candidate']['controller']['controlPin'])
+        return None
+    badraw=_decode_raw(context['failedDropinRawBase64']);correctraw=_decode_raw(context['correctDropinRawBase64'])
+    need(context['failedDropinPin']==failed_drop and _content_pin(failed_drop['path'],badraw)==failed_drop and
+        _content_pin(r['dropinPin']['path'],correctraw)==r['dropinPin'],'CONTINUATION_DROPIN_BYTES')
+    c=r['candidate'];correct=c['controller']['controlPin'];old=c['previousController']['controlConfigurationPin']
+    wrong=dict(correct,bytes=old['bytes'],sha256=old['sha256'])
+    _dropin_argv(badraw,control,c['controller']['engine'],wrong)
+    _dropin_argv(correctraw,control,c['controller']['engine'],correct)
+    token=planner.canonical(wrong);need(badraw.count(token)==1 and correctraw==badraw.replace(token,planner.canonical(correct)),
+        'CONTINUATION_ONLY_CONFIG_PIN_CHANGED')
+    pre=context['preContinuationObservation'];fields={'schemaVersion','status','serverWrites','physicalLockVerified',
+        'protectedObservation','peerControllers','targetProperties','retainedPins','successorPins','failurePins','failedDropinPin'}
+    need(type(pre) is dict and set(pre)==fields and pre['schemaVersion']=='MainTarget58ReaderContinuationPreflight/v1' and
+        pre['status']=='PASS' and pre['serverWrites'] is False and pre['physicalLockVerified'] is True and
+        pre['peerControllers']==[] and pre['protectedObservation']=={k:v for k,v in r['before'].items() if k!='controllers'} and
+        pre['retainedPins']==staging_plan['retainedPins'] and pre['successorPins']==[row['pin'] for row in staging_plan['writes']] and
+        pre['failurePins']==r['retainedFailurePins'] and pre['failedDropinPin']==failed_drop,'CONTINUATION_PREFLIGHT')
+    props=pre['targetProperties'];activated.runtime.canonical_dependency_properties(props)
+    need(props.get('MainPID')=='0' and props.get('ActiveState')=='inactive' and props.get('SubState')=='dead' and
+        props.get('LimitNOFILE')=='65536' and props.get('DropInPaths','').split()==
+        r['before']['controllers'][-1]['properties']['DropInPaths'].split()+[failed_drop['path']],'CONTINUATION_QUIESCENT_TARGET')
+    return failed_drop
 
 
 def _preservation_from_candidate(predecessor,host,candidate):
@@ -271,18 +384,25 @@ def _preservation_from_candidate(predecessor,host,candidate):
 
 
 def verify_target_successor_activations(*,predecessor,activations,build,build_pin,package_raw,previous_package_raw,
-        predecessor_selection_raw,predecessor_build_raw):
+        predecessor_selection_raw,predecessor_build_raw,continuations=None):
     """Validate three original carrier results; never call a remote boundary."""
     need(type(activations) is dict and set(activations)==set(HOSTS),'THREE_SUCCESSOR_ACTIVATIONS_REQUIRED')
+    continuations={} if continuations is None else continuations
+    need(type(continuations) is dict and set(continuations)<={'57','58'},'CONTINUATION_HOST_SET')
     planner.local_pin(build_pin);previous_build=json.loads(predecessor_build_raw.decode('utf-8'),object_pairs_hook=planner.document)
     package=_official_package(package_raw,build);previous=_official_package(previous_package_raw,previous_build)
     rows=deepcopy(predecessor['effectiveControllersByHost']);bindings=deepcopy(predecessor['controllerBuildBindings'])
     owners={};controls={};specs={};receipts=[]
     for host in HOSTS:
         wrapper=activations[host]
-        need(type(wrapper) is dict and set(wrapper)==activated.WRAPPER_FIELDS,'SUCCESSOR_WRAPPER_FIELDS')
-        r=activated._wrapper(wrapper,host)
-        need(set(r)==ACTIVATION_FIELDS and r['schemaVersion']=='MainProgramTargetControlSuccessorActivation/v1' and
+        has_context=CONTINUATION_LOCAL in wrapper
+        if has_context:
+            ctx=continuations.get(host);need(type(ctx) is dict,'CONTINUATION_CONTEXT_REQUIRED')
+            # The local wrapper pin is verified by the loader and its decoded
+            # context is passed in this map; no context may be inferred.
+        need(type(wrapper) is dict and set(wrapper)==activated.WRAPPER_FIELDS|({CONTINUATION_LOCAL} if has_context else set()),'SUCCESSOR_WRAPPER_FIELDS')
+        r=activated._wrapper({k:v for k,v in wrapper.items() if k!=CONTINUATION_LOCAL},host)
+        need(set(r)==ACTIVATION_FIELDS|(CONTINUATION_FIELDS if has_context else set()) and r['schemaVersion']=='MainProgramTargetControlSuccessorActivation/v1' and
             r['status']=='PASS' and r['stage']=='complete' and r['role']=='target' and r['host']=='172.30.30.'+host and
             r['sourceCommit']==build['targetCommit'] and all(r[k] is True for k in activated.TRUE_FLAGS) and
             all(r[k] is False for k in activated.FALSE_FLAGS),'SUCCESSOR_RESULT_SCOPE')
@@ -294,21 +414,27 @@ def verify_target_successor_activations(*,predecessor,activations,build,build_pi
         c=r['candidate'];old=rows[host][-1]
         need(r['targetConfigRef']==old['targetConfigRef'] and c['previousController']==old,'SUCCESSOR_TARGET_BINDING')
         graph=_preservation_from_candidate(predecessor,host,c)
-        rebuilt=build_target_control_successor_candidate(predecessor=predecessor,predecessor_selection_pin=r['predecessorSelectionPin'],
+        inputs=dict(predecessor=predecessor,predecessor_selection_pin=r['predecessorSelectionPin'],
             predecessor_selection_raw=predecessor_selection_raw,predecessor_build=previous_build,predecessor_build_raw=predecessor_build_raw,
             build=build,predecessor_package_raw=previous_package_raw,package_raw=package_raw,host=host,preservation_documents=graph,
             configuration_root=str(PurePosixPath(c['controller']['ownerPin']['path']).parent),new_engine=c['controller']['engine'],
             retained_failure_pins=r['retainedFailurePins'])
+        rebuilt=build_target_control_successor_candidate(**inputs)
         need(rebuilt==c,'SUCCESSOR_CANDIDATE_REBUILD')
         need(r['failurePinsBefore']==r['failurePinsAfter']==r['retainedFailurePins']==c['retainedFailurePins'] and
             (host=='58' or not r['retainedFailurePins']),'SUCCESSOR_FAILURE_ORIGINALS')
+        owner=activated._document(c['newDocuments'],c['controller']['ownerPin'])
+        control=activated._document(c['newDocuments'],c['controller']['controlPin'])
+        continuation_dropin=None
+        if has_context:
+            _private_input_pin(wrapper[CONTINUATION_LOCAL])
+            plan=build_target_successor_staging_plan(candidate=c,**inputs)
+            continuation_dropin=verify_reader_continuation_evidence(result=r,context=continuations[host],staging_plan=plan,control=control)
         pure=_PureTransition(current_spec=r['currentRuntimeSpec'],retained_history_spec=r['retainedHistoryRuntimeSpec'],
-            candidate=c,dropin_pin=r['dropinPin'])
+            candidate=c,dropin_pin=r['dropinPin'],continuation_dropin_pin=continuation_dropin)
         pid=r['currentController'].get('pid');newspec=pure.spec(pid)
         need(newspec==r['successorRuntimeSpec'] and newspec['current']['controllers'][-1]==r['currentController'],
             'SUCCESSOR_RUNTIME_SPEC')
-        owner=activated._document(c['newDocuments'],c['controller']['ownerPin'])
-        control=activated._document(c['newDocuments'],c['controller']['controlPin'])
         projection=dict(r,transition=dict(schemaVersion='MainProgramTargetRuntimeTransition/v1',status='TARGET_SUCCESSOR_RUNTIME_VERIFIED',
             host=r['host'],targetConfigRef=r['targetConfigRef'],service=old['service'],successorController=r['currentController'],
             before=r['before'],after=r['after'],retainedEnvironmentBaseline=pure.retained_environment,
@@ -329,6 +455,7 @@ def verify_target_successor_activations(*,predecessor,activations,build,build_pi
             re.fullmatch('control-activation-main-target-'+build['targetCommit'][:7]+r'-r[1-9][0-9]*',receipt.parent.name),
             'SUCCESSOR_RECEIPT_PATH')
         created={str(receipt.parent),str(receipt.parent/'before.private.json'),r['dropinPin']['path']}
+        if has_context and host=='57':created.remove(r['dropinPin']['path'])
         need(type(r['createdPaths']) is list and len(set(r['createdPaths']))==len(r['createdPaths']) and
             set(r['createdPaths']) in (created,created|{str(receipt)}),'SUCCESSOR_CREATED_PATHS')
         rows[host][-1]=deepcopy(r['currentController']);bindings[host]['target']=dict(buildPin=deepcopy(build_pin),sourceCommit=build['targetCommit'])
@@ -361,13 +488,21 @@ def load_activated_target_successor_installation(task,private,*,selection_file,h
     previous_raw=activated._private_bytes(private,predecessor['selection']['standardPackagePin'],pins)
     evidence=selection['targetActivationEvidencePins']
     need(type(evidence) is dict and set(evidence)==set(HOSTS),'THREE_SUCCESSOR_EVIDENCE_PINS')
-    activations={}
+    activations={};continuations={}
     for host in HOSTS:
         wrapper=activated._private_json(private,evidence[host],pins);activations[host]=wrapper
         activated._private_bytes(private,wrapper['scriptPin'],pins)
+        if CONTINUATION_LOCAL in wrapper:
+            context=activated._private_json(private,wrapper[CONTINUATION_LOCAL],pins);continuations[host]=context
+            for name in ('failure','prepare'):
+                reference=context.get(name+'WrapperPin')
+                if reference is not None:
+                    original=activated._private_json(private,reference,pins)
+                    need(original==context[name+'Wrapper'],'CONTINUATION_LOCAL_ORIGINAL')
+                    activated._private_bytes(private,original['scriptPin'],pins)
     result=verify_target_successor_activations(predecessor=predecessor,activations=activations,build=build,
         build_pin=selection['buildPin'],package_raw=raw,previous_package_raw=previous_raw,
-        predecessor_selection_raw=prior_raw,predecessor_build_raw=previous_build_raw)
+        predecessor_selection_raw=prior_raw,predecessor_build_raw=previous_build_raw,continuations=continuations)
     result.update(selection=deepcopy(selection),selectionPin=records.references[selection_file])
     result['inputPins']=activated.source.unique_pins(predecessor['inputPins']+records.path_pins()+pins+codepins)
     for reference in result['inputPins']:publication.verify_bytes(reference)
