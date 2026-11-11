@@ -2,6 +2,12 @@
 
 ## 原生 Docker nsfs 兼容补充
 
+后续58只读PREPARE确认同路径还有 `systemd-1` autofs 自动挂载底座，CIFS 的 parentId 正好指向该底座；这属于原 systemd automount 正常拓扑。新增BDD：接受精确一层 autofs(systemd-1, root=/) + 其直接子CIFS(登记UNC, root=/)，实际可见层仍须由O_PATH/fdinfo证明为可写CIFS；未知同路径叠层、父子关系错误或额外层全部拒绝。原挂载和fstab不修改。
+
+- RED：6项 automount 场景，1 FAIL / 5 PASS / 45 deselected，合法原 systemd automount 拓扑被误拒。
+- GREEN：同6项，6 PASS / 45 deselected，native 0。
+- REGRESSION：隔离 Linux `run-preservation-view-linux.py regression-r5`，51项 view + 33项原 staging，84 PASS，native 0；pytest 2.12秒，完整载体11.484秒。源快照614件，SHA `6b37f2b6bb49d53dfe0afc83627fefd4825b8b492f1282c39c7584f9f788a3f1`；输入保持、容器移除、stderr 0，remoteWrites=0。真实服务器安装尚未执行。
+
 - BDD：Given 实际 Docker 网络命名空间使用 nsfs `net:[4026531992]` root；When 读取整张 mountinfo；Then 接受该内核格式，CIFS 和其它文件系统仍要求绝对 root，畸形 nsfs root 拒绝。
 - 实际57/58 PREPARE均在写入前停止；58为 VIEW_MOUNTINFO_PATH，已只读确认15条真实 nsfs root；57为父载体误用小配置读取上限验证31MB解释器，载体改用通用 Runtime pin_file。未安装文件、挂载或重载服务。
 - RED：新增4项 parser 场景，native1，1 FAIL/3 PASS/41 deselected，合法nsfs被误拒。

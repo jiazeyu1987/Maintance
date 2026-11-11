@@ -41,6 +41,31 @@ def test_invalid_nonabsolute_kernel_roots_are_rejected(line):
         subject().parse_mountinfo(line)
 
 
+def automount_rows(module,problem=None):
+    source=configuration()['sourceMountPoint']
+    rows=module.parse_mountinfo(('1 0 8:1 / / rw - ext4 /dev/unit rw\n'
+        '2 1 0:43 / '+source+' rw shared:27 - autofs systemd-1 rw\n'
+        '3 2 0:212 / '+source+' rw shared:385 - cifs //172.30.30.4/IT共享 rw\n').encode())
+    if problem=='parent':rows[2]['parentId']=1
+    if problem=='automount-source':rows[1]['source']='foreign'
+    if problem=='cifs-source':rows[2]['source']='//foreign/share'
+    if problem=='root':rows[2]['root']='/foreign'
+    if problem=='extra':rows.append(dict(rows[2],mountId=4,parentId=3))
+    return rows
+
+
+def test_systemd_automount_base_is_a_known_source_topology():
+    module=subject()
+    module._topology(configuration(),automount_rows(module))
+
+
+@pytest.mark.parametrize('problem',['parent','automount-source','cifs-source','root','extra'])
+def test_foreign_or_ambiguous_source_stacks_are_still_rejected(problem):
+    module=subject()
+    with pytest.raises(ValueError,match='VIEW_(STACKED_ANCESTOR_MOUNT|SOURCE_MOUNT_NOT_UNIQUE)'):
+        module._topology(configuration(),automount_rows(module,problem))
+
+
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def pin(path,raw):return dict(path=path,bytes=len(raw),sha256=sha(raw))
 

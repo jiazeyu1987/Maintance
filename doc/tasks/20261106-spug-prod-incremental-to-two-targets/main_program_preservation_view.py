@@ -242,12 +242,20 @@ def _source_view(config, system):
 def _topology(config, rows):
     source, view = config['sourceMountPoint'], config['viewPath']
     counts = Counter(row['mountPoint'] for row in rows)
+    source_rows = [row for row in rows if row['mountPoint'] == source]
+    automount = [row for row in source_rows if row['filesystem'] == 'autofs' and
+                 row['source'] == 'systemd-1' and row['root'] == '/']
+    cifs = [row for row in source_rows if row['filesystem'] == 'cifs' and
+            row['source'] == UNC and row['root'] == '/']
+    known_automount = (len(source_rows) == 2 and len(automount) == len(cifs) == 1 and
+                       cifs[0]['parentId'] == automount[0]['mountId'])
     paths = (source, view, config['pins']['helper']['path'],
              config['pins']['python']['path'], config['pins']['mount']['path'])
     for point, count in counts.items():
         if any(_within(path, point) for path in paths):
-            _require(count == 1, 'VIEW_STACKED_ANCESTOR_MOUNT:' + point)
-    _require(counts[source] == 1, 'VIEW_SOURCE_MOUNT_NOT_UNIQUE')
+            _require(count == 1 or (point == source and known_automount),
+                     'VIEW_STACKED_ANCESTOR_MOUNT:' + point)
+    _require(counts[source] == 1 or known_automount, 'VIEW_SOURCE_MOUNT_NOT_UNIQUE')
     _require(not any(_within(row['mountPoint'], view) for row in rows),
              'VIEW_ALREADY_MOUNTED')
     _require(not any(_within(row['mountPoint'], source) and row['mountPoint'] != source
