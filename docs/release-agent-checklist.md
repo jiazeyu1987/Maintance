@@ -1,5 +1,23 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## NAS 元数据打开后单链接校验门禁
+
+- Trigger：恢复准入在元数据读取时报 BACKUP_EPOCH_REGULAR_SINGLE_LINK_REQUIRED，独立重新打开后属性不同。
+- Preflight check：保留原操作、ledger与无worker/变更边界；只读按 stat/lstat→安全open→fstat→read→最终FD/路径记录完整身份、权限、链接数及纳秒时间，比较原内容pin；不得先手工读文件后把稳定缓存当作修复证明。
+- Blocker：真实FD或最终路径仍有第二链接、inode/大小/权限/时间变化、原内容pin不符、或原操作边界未知时，继续拒绝恢复。
+- Verification：共享reader只将单链接判定放在实际打开对象；首次/读后FD及最终规范路径必须nlink1，原before/opened/after/path的dev/ino/size/mtime/ctime与mode/uid/gid保持。推荐在真实Linux运行 scripts/tests/test_backup_epoch_read_contract.py，核真实硬链接/删除第二链接/同大小改写/FIFO/FD关闭；同时跑epoch及普通/保全输入回归，再以原CIFS文件执行无写候选只读验证。正式包安装与真实恢复另记录。
+- Forbidden action：禁止跳过nlink、重建本次时间基线、按NAS路径/IP特殊放行、sleep/retry缓存预热、修改旧备份/失败记录、改cache/mount/fstab，或把本机模拟当现场CIFS成功。
+- Evidence：doc/tasks/20261106-spug-prod-incremental-to-two-targets/nas-metadata-reader-plan.md 与 nas-metadata-reader-tdd.md，PRIVATE/archive-link-sequence-r2.private.json、nas-reader-cifs-candidate-r1.private.json；必须记录原操作、新提交/正式包、原生测试退出与现场读取边界。
+
+## 历史来源归档与叠层挂载保护门禁
+
+- Trigger：为原目标新增历史来源，或实际观察返回 REPLACEMENT_PROTECTED_ROOT_REQUIRED / REPLACEMENT_STORAGE_MOUNT_AMBIGUOUS。
+- Preflight check：阶段一核旧 target/storage 原件和已绑定 source 的完整 archiveRoots；阶段二以独立有效集合扩大保护，不改原目标；阶段三取实际 mountinfo，同路径有多层或祖先叠层时，用 O_PATH/fdinfo 的 mnt_id 和 fstat device 核唯一可见记录。推荐通过新包实际 observe_main_target 对每个来源执行只读核验，不能只测默认来源。
+- Blocker：路径别名、NAS/操作/状态/数据原保护缺失、字面或实际物理重叠、内核可见身份不在快照或设备不符，立即失败。安装器失败先逐 pin 只读核实际部分写入，禁止按失败推断未写入。
+- Verification：真实 Linux 运行 test_replacement_storage.py，必须含实际 bind 叠层、被遮蔽子挂载、未来不存在叶路径、未知可见身份、符号链接、FD关闭及与可写数据重叠拒绝；再核原保留挂载、停止消费者和失败续办。新包实际逐来源观察及原控制/业务/挂载前后保持，分别记录。
+- Forbidden action：不按 mountId 大小、列表顺序猜层，不改旧 target/protectedRoots 或历史原件、不卸载原 automount/CIFS，不删除失败暂存或盲重跑独占写入，不把暂存成功当真实恢复验收。
+- Evidence：doc/tasks/20261106-spug-prod-incremental-to-two-targets/archive-storage-protection-plan.md、main-program-partial-stage-58-r1/r2.json、archive-storage-protection-red/green/regression-r1/r2 原始日志与交付/安装证据。
+
 ## 包清单身份与桥接期限门禁
 
 - Trigger：Spug 包清单、发布桥接 504、身份探测随历史体积增长、迁移执行器更新或新增 `/identity`。
@@ -23,6 +41,21 @@
 阶段必查与推荐命令：先运行test_automatic_incremental_async_closure、test_automatic_incremental_plan、test_backup_epoch、test_automatic_incremental_resilience和test_backup_variants；Spug的test_automatic_incremental_entry/http/proxy及UI真实状态测试一起运行。单次计划避免重复哈希已闭合历史的大回读文件；异步调度闭合只读小型原件且结束复核身份，原编号详细GET及当前链完整验证保持。诊断先固定原超时，逐阶段统计实际原件读取/在线查询耗时；真实15项历史必须在原30秒预算内完成，并从同一FULL父点继续，不重做全量或改历史。只读缓存结束复核身份。安装只用新专属干净提交worktree，读取实际新进程配置/文件摘要及认证计划。启用周期时无活动操作、持来源锁显式初始化，原target通过owner顶层targetBackupEpochPolicies保持原字节，旧点先建立新FULL。Fail Fast按上述Blocker；必须记录实际命令/退出/零skip/包pins/唯一操作号/实际类型/父链及原服务、挂载、失败原件保持。
 
 挂载必查：v3已登记非数据保留挂载必须完整匹配mount及实时observe_preserved_mount身份，之后才对canonical路径执行epoch/lock隔离；数据卷、旧合同与未登记别名仍严格拒绝。所有可写挂载及嵌套挂载按实时mountinfo设备和物理路径检查重叠，不跳过docker.sock或只检查词法前缀。缺失/漂移恢复回执、身份漂移或物理重叠立即停止激活；记录原始候选失败、新包只读构造与实际服务健康证明。
+
+## Spug 运行资源依赖闭包门禁
+
+- Trigger：Spug 已安装新配置但报 `SIMPLE_CONFIGURATION_INVALID`，或产品入口、延迟导入、远端脚本载体、HTML/CSS/JS 引用发生变化。
+- Preflight check：从固定提交的真实入口递归核对本地导入和文件引用，再与发布清单逐路径、字节数、SHA 比较；运行目录中未列入清单的已加载模块也必须检查。配置写入后的失败先逐项核原生回执及实际读回，确定哪些写入已完成。
+- Blocker：入口依赖未纳入清单、未知动态加载、候选与实际加载路径不符、非本次允许文件漂移、原调用尚未终止或缺少真实写入终态，立即停止对应安装或续办。
+- Verification：真实旧解析器读取实际配置先复现 RED；同提交候选配置解析和完整依赖清单 GREEN；缺文件、未知导入、错误源路径必须失败。安装后核原容器实际导入路径、完整文件摘要、配置解析和页面真实入口；已缓存旧模块时还须证明受控重载后的新进程身份。
+- Forbidden action：不把清单内部校验成功当依赖完整，不只凭 Git 改动列表打包，不复制整个运行目录，不通过删除新配置字段或放宽解析器掩盖版本缺口；七配置已写入而最终验收失败时，不重派配置写入、不改原失败。native exit0 且业务 FAILED 仍为失败。
+- Evidence：`doc/tasks/20261106-spug-prod-incremental-to-two-targets/spug-runtime-dependency-completion-design.md`、`spug-runtime-dependency-observation-r1.json`、`spug-c1-runner-terminal-r1.json` 与正式补充安装/独立只验收原件。
+
+阶段 1：构建及准备。必查项是固定提交的真实入口图、所有本地依赖、平台依赖边界和清单完整性；本次 c772 闭包为原 11 项加 simple 解析器、progress 载体、preview 样式。推荐执行本任务 `test_spug_runtime_dependency_completion.py` 及受影响资源安装测试，并通过 `inspect_runtime_dependencies` / `validate_manifest_coverage` 对真实候选目录检查。Fail Fast：有未解释依赖或来源漂移即拒绝。必须记录真实源提交、干净工作区命令回执、完整文件 pins、测试实际退出与跳过数；后续版本不得沿用旧文件数代替重新检查。
+
+阶段 2：安装及最终验收。必查项是原失败的完整成功前缀、当前实例/进程/配置、唯一允许替换集及原字节保全。已完成的配置写入只做独立最终验收；资源补齐须正式输入、排他保全、写前复核、原子替换、原容器读回及精确进程重载。推荐先执行安装器默认 prepare，正式 activate 后执行真实页面验证。Fail Fast：写后未知保留原件和当前状态，不自动重试或回滚。必须记录安装前后身份、原始 native 回执、配置/历史保持及页面结果；旁路 Python 解析通过不能替代实际入口验证。
+
+现象发生在配置发布后的最终校验阶段，影响页面读取已安装的目标配置；根因为清单未包含真实运行依赖。正式补齐方案以完整入口依赖检查阻止复发；测试与安装结果分别保留在任务原件中，未安装或未验收不得记成功。该检查可在构建和安装准备时自动执行。
 
 ## 实际封包构造配置传递门禁
 

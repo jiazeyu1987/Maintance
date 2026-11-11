@@ -1,5 +1,9 @@
 # 项目经验索引
 
+- NAS 单链接属性 / BACKUP_EPOCH_REGULAR_SINGLE_LINK_REQUIRED / 开前 nlink2 打开后1：`docs/release-agent-checklist.md#nas-元数据打开后单链接校验门禁`。只读记录同一文件完整路径/FD时序；开后FD、读后FD及最终路径仍强制单链接，开前后全部原身份/时间与内容pin保持。禁止重试预热、改历史元数据、放宽真实硬链接或修改挂载缓存。
+
+- 历史归档保护 / REPLACEMENT_PROTECTED_ROOT_REQUIRED / REPLACEMENT_STORAGE_MOUNT_AMBIGUOUS / autofs / CIFS叠层 / 隐藏子挂载：`docs/release-agent-checklist.md#历史来源归档与叠层挂载保护门禁`。原 target 保持，按已绑定 source 扩大保护；同路径叠层用实际 O_PATH/fdinfo 身份核唯一 mountinfo 记录及设备，不猜列表顺序/最大ID。真实叠层、隐藏子挂载、未知身份和数据别名均须验证。
+
 - 包清单 504 / package-catalog / 81MB state / identity / release-center bridge / 18112 / 慢响应头：`docs/release-agent-checklist.md#包清单身份与桥接期限门禁`。包清单先核轻量认证身份，禁止为身份下载全历史；精确固定 origin、禁止重定向、正文上限和共享总期限，旧 `/state` 保持。安装核运行快照与已提交源码同源，先执行器后桥接器，不盲覆盖目录能力或重启无关服务。
 
 - 自动增量 / automatic-incremental / 自动全量基线 / planDigest / 恢复epoch / 日志过期 / 未知提交 / 计划超时 / 异步exit2 / REPOSITORY_QUERY_ORIGINAL_OPERATION / immutable RUNNING completion / owner终态 / 历史计划扫描 / sourceRestored=false / source-restoration / docker.sock / epoch挂载别名：`docs/release-agent-checklist.md#自动增量链与恢复周期门禁`。权威成功链、异步原等待回执与独立worker终态/停止、冻结内容与最终恢复回执、来源实际日志、稳定摘要、持久互斥、原件跟踪及整个HTTP预算一起验证；仅调度闭合避免重复历史大读回，详细查询与当前链完整性保持，FAILED闭合不等于来源健康；旧目标历史严格比较保持，不追认旧点epoch。已登记保留挂载按原精确身份核验，再核实时物理重叠，不能一律拒绝合法链接或跳过挂载。
@@ -51,6 +55,8 @@
 - 本地运行控制台页面自动远端读 / overview SSH / 禁写不等于禁读 / Playwright 本地审阅：`docs/release-build-preflight-lessons.md#本地主程序页面审阅前的隐式远端读门禁`。
 
 任务启动顺序固定为：先创建或识别 `doc/tasks/<task-id>/` 并写入最小 `task.md`（目标、里程碑、预期验证、当前状态），再读本文件并只打开命中的经验文档，随后把适用门禁补入任务文档；不要全量阅读所有经验。唯一例外：PowerShell / Windows shell 任务可先执行只读 UTF-8 bootstrap 读取适用规则，bootstrap 完成后必须立即创建或更新任务文档。
+
+- Spug 运行依赖遗漏 / SIMPLE_CONFIGURATION_INVALID / catalogueRestoreBindings / smallapp_simple / 延迟导入 / progress 载体 / preview 样式 / native exit0 业务 FAILED：`docs/release-agent-checklist.md#spug-运行资源依赖闭包门禁`。从真实入口核完整本地依赖及实际加载路径；已完成写入仅重新验收，补齐资源后核真实进程身份和页面，不修改旧失败或重复写配置。
 
 ## 经验文档写入规范（强制）
 

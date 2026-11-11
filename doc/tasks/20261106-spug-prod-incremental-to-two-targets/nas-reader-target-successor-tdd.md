@@ -2,7 +2,7 @@
 
 ## Current Status
 
-ready_for_parent_review；新helper87项纯units、有限相邻回归216项全部通过，三服实际官方包candidate及current/history spec纯构造通过。未SSH/Docker/提交，旧loader/runtime字节未改。真实后继三服激活与正式新selection尚待父执行，不能将本轮纯验证称为安装或恢复验收。
+ready_for_parent_review；初版新helper87项纯units与有限相邻回归216项通过，后续明确57/58续办扩展后新helper118项、有限相邻回归247项通过。三服实际官方包candidate及current/history spec纯构造通过；父已报告三服真实激活及正式新selection完整loader通过。子任务未SSH/Docker/提交，旧历史loader/runtime字节未改，不将本地纯验证称为业务恢复验收。
 
 ## 目标与里程碑
 
@@ -73,14 +73,24 @@ ready_for_parent_review；新helper87项纯units、有限相邻回归216项全�
 - 输入：父已完成的PRIVATE/nas-reader-predecessor-formal-load-r1.private.json（1668pin正式前代结果，不在子任务重跑loader），原r2选择/raw1552B build、实际旧a3121c6及新b9caa00标准tgz、原三激活candidate图和58原4失败文件pins。
 - 结果：57/58/59均BOUND_NOT_INSTALLED、4新docs、158独占写计划、170前代原件pin；仅本机纯处理。PRIVATE/nas-reader-actual-successor-candidates-r1.private.json，315294B，SHA e67db35bf7b5cd057ee2fa80578f402007406b968a1fe4acc0aeccb62ce832ee。
 - 正式current153/history147 spec各组纯构造均PASS，35 retainedDocuments、旧receipt字段保持；规划dropin名必须在所有原名字后。第一次6个z规划名被严格拒绝，16个z规划值后通过；未写实际dropin。
-- 新后继完整loader尚无真实本轮3激活原文，未执行正式完整加载，未声称现场健康/恢复完成。
+- 初版冻结时尚无本轮完整3激活原文；后续父已完成三服原文并正式完整加载，见文末续办证据。子任务不声称实际恢复完成。
 
 ## 公开接口与当前限制
 
 - `build_target_control_successor_candidate(*, predecessor, predecessor_selection_pin, predecessor_selection_raw, predecessor_build, predecessor_build_raw, build, predecessor_package_raw, package_raw, host, preservation_documents, configuration_root, new_engine, retained_failure_pins)`。
 - `build_target_successor_staging_plan(*, candidate, **同candidate输入)`，返回原始bytes的158项write计划；不写文件。
-- `build_target_successor_runtime_spec(*, current_spec, retained_history_spec, candidate, dropin_pin, successor_pid)`，只构造，不执行或验证进程。
-- `verify_target_successor_activations(*, predecessor, activations, build, build_pin, package_raw, previous_package_raw, predecessor_selection_raw, predecessor_build_raw)`，三服完整原始wrapper的纯投影。
+- `build_target_successor_runtime_spec(*, current_spec, retained_history_spec, candidate, dropin_pin, successor_pid, continuation_dropin_pin=None)`，只构造，不执行或验证进程；58明确已知错误dropin才使用可选参数。
+- `verify_target_successor_activations(*, predecessor, activations, build, build_pin, package_raw, previous_package_raw, predecessor_selection_raw, predecessor_build_raw, continuations=None)`，三服完整原始wrapper的纯投影；续办必须提供原私密context并完整闭合。
 - `load_activated_target_successor_installation(task, private, *, selection_file, historical_source_custody_pin=None)`，本机完整pin文件链；安装历史通过后runtimeVerified仍false。
 
 本子任务仅新增helper/test/计划/TDD；无commit，父审后统一集成。工作区全局git diff --check报告共享execution-log与request-command-log末尾空行；子任务未修改它们，也未清理其他任务内容。
+
+## 明确续办扩展与最终冻结
+
+父现场载体发现58完整config pin替换错误和57纯比较载体遗漏_new_package_pin，两份FAILED及原before/dropin保留；按父批准新增nas-reader-target-continuation-plan.md先写BDD并取得26项真实RED、loader再2项RED后实现。新118项GREEN、相邻247项PASS，详细原始XML/精确profile/实际context验证在该计划中。
+
+公开纯入口增加`verify_reader_continuation_evidence(*, result, context, staging_plan, control)`；只处理本次固定b9caa00的57只读续验及58错误dropin替换。原FAILED/PREPARE wrapper按实际status核验，两个context均闭合原PREPARE.nativeBefore/originalApi。58不得称原PID现仍运行；57不得再次重启或追加dropin。
+
+最终helper 40508 bytes，SHA256 ae1be3679bce0c348a971ecb0ad9f7978c83325c107eefc7e1aacdf26fc15547；test 50699 bytes，SHA256 c5e136ef6a247129251ac9e73c6f23aae403e86acb15486bc2c50613c240c4f1。已冻结供父实际载体使用，文档收尾不改运行字节。
+
+父报告正式三服实际原始wrapper投影PASS8.266s、新selection main-program-targets-activated-b9caa00-r1-v1.json完整loader PASS103.313s/1689 input pins（PRIVATE/nas-reader-successor-formal-load-r1.private.json）。原source6968b58、Spug5651efc及全部旧链保持；现场与业务恢复结论仍由父的真实UI和原始operation跟踪负责。
