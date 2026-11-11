@@ -1,0 +1,15 @@
+{
+  "change": "Retained the existing release-login gate and index anchor without copying credentials",
+  "previousProvenance": {
+    "bytes": 2135,
+    "path": "doc/tasks/20261106-spug-prod-incremental-to-two-targets/portable-project-guides-provenance-r1.json",
+    "sha256": "4d776a9e0705b55e74b62a63958ebb8b804ee2ad6ff33ff72b99302f7893eaf1"
+  },
+  "schemaVersion": "TaskPortableProjectGuidesUpdate/v1",
+  "updatedGuide": {
+    "bytes": 2816,
+    "path": "docs/login-access.md",
+    "sha256": "e007d6512352832f0f412437cdb38e4286c6b7a8587ee1690cb2e3cf12a4ab46"
+  },
+  "utf8Verified": true
+}

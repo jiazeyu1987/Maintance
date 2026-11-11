@@ -12,3 +12,12 @@
 - 默认只访问本机。测试服、正式服、审查服均须有当次任务授权，正式服/审查服按生产等级对待。
 
 交接原文包含明文凭据和与当前写入租户边界冲突的旧默认身份，因此未整份复制；原文保留在私密交接资料，本文件只保留当前适用规则。
+
+### 发布后页面登录基线门禁
+
+- Trigger: 测试服发布后需要用 Playwright 验证真实业务页面或版本浮层。
+- Preflight check: 发布前只读确认测试租户账号可登录、密码未过期、租户选择接口有目标租户；凭据只能由当前进程安全注入，不写入任务文档或截图。
+- Blocker: 登录返回密码过期/账号密码错误、租户选择无数据、目标前端入口不可达或页面 console errors 非零时，认证后页面门禁必须 BLOCKED；不能猜密码或改账号。
+- Verification: 记录脱敏的登录页 URL、租户/账号标签、HTTP 状态、页面 title、console errors 和失败提示；公共登录页/静态 release-info 与认证后业务页结论分开。
+- Forbidden action: 禁止冒用本机 admin 密码登录远端测试租户、切换正式/审查环境、API-only 冒充页面、为验收修改租户/用户密码或把过期凭据写进脚本。
+- Evidence: 原交接登录文档的同名门禁，IntRuoyiMaintance task 20260823-fix-training-rules-sfc-test-release execution-log.md ISSUE-016；原文SHA见本任务portable-project-guides-provenance-r1.json。
