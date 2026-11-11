@@ -279,9 +279,9 @@ Fail Fast：任何未确认远端效果、原包冲突或真实验证失败必�
 
 本文面向 Codex 执行，不替代正式规则。正式边界仍以以下文档为准：
 
-- `E:\IntRuoyi\docs\release-backup-restore.md`
-- `E:\IntRuoyi\docs\server-access.md`
-- `E:\IntRuoyi\docs\login-access.md`
+- `docs\release-backup-restore.md`
+- `docs\server-access.md`
+- `docs\login-access.md`
 - 仅测试服发布还必须先读：`D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md`
 
 ## 执行模型
@@ -314,9 +314,9 @@ Codex 必须把完整发布任务视为以下严格顺序：
 - 命中并读取：
   - `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\test-release-preflight.md`（仅测试服发布或 publish-test 任务）
   - `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
-  - `E:\IntRuoyi\docs\release-backup-restore.md`
-  - `E:\IntRuoyi\docs\server-access.md`
-  - 如涉及登录验证，再读 `E:\IntRuoyi\docs\login-access.md`
+  - `docs\release-backup-restore.md`
+  - `docs\server-access.md`
+  - 如涉及登录验证，再读 `docs\login-access.md`
 - 在 `execution-log.md` 先写 `GREEN: experience-preflight -> PASS` 或明确 blocker。
 - 在 `docs/request-command-log.md` 记录用户需求与关键命令。
 
@@ -700,7 +700,7 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 - 远端数据库探针必须先从冻结 migration 和真实库 `DESCRIBE` 确认表/字段；容器未定义 Docker healthcheck 时只核 `state=running`，应用健康必须独立核 Actuator HTTP 200/UP。
 - 删除 release worktree 前，48181 PID/命令行/JAR 必须指向主维护路径，完整 `/admin-api/infra/runtime-control/release-status` 必须显示目标 tag、notes 和 changes；只看 health=UP 不足以收尾。
 - 同 HEAD 重新构建的 Spring Boot JAR 可能因归档元数据产生不同 hash；必须记录并验证本次实际产物 hash，不得用历史重建 hash 作为当前复制/恢复门禁。
-- 外部 release worktree/state 先按 `E:\IntRuoyi\docs\worktree-memory.md` 验证 Git 注册、物理路径、进程和 allowlist 后清理；再运行仓库内 task-closeout preview/apply，禁止绕过 workspace 边界。
+- 外部 release worktree/state 先按 `docs\worktree-memory.md` 验证 Git 注册、物理路径、进程和 allowlist 后清理；再运行仓库内 task-closeout preview/apply，禁止绕过 workspace 边界。
 
 ## 8.3 2026-08-31 code-only target plan 与历史 ADD COLUMN 幂等门禁
 

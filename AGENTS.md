@@ -5,10 +5,10 @@
 - IntGY: `D:\ProjectPackage\Int\IntGY`
 - IntPP: `D:\ProjectPackage\Int\IntPP`
 - IntBatchRecord: `D:\ProjectPackage\Int\IntBatchRecord`
-- Thread baseline: IntRuoyi 主程序根目录固定为 `E:\IntRuoyi`；后端路径固定为 `IntRuoyiBackend`，前端路径固定为 `IntRuoyiFronted`，均相对该根目录。
-- Thread baseline: 测试服/正式服 IP 与访问方式统一见 `E:\IntRuoyi\docs\server-access.md`；涉及服务器状态检查、重启、发布或联调时先按该文档执行。
-- Thread baseline: 正式环境/测试环境登录方式统一见 `E:\IntRuoyi\docs\login-access.md`；涉及登录验证、联调或 E2E 时先按该文档使用对应租户账号。
-- Thread baseline: 涉及备份、恢复、发布、构建、回滚任务前必须先阅读 `E:\IntRuoyi\docs\release-backup-restore.md`。
+- Thread baseline: `docs/...` 均相对本维护仓根目录；主程序根目录由当次已验证配置确定，允许仓库相对路径，禁止固定旧电脑盘符或猜测目录。后端 `IntRuoyiBackend`、前端 `IntRuoyiFronted` 及其源码命令均相对已确认的主程序根目录。
+- Thread baseline: 测试服/正式服 IP 与访问方式统一见 `docs\server-access.md`；涉及服务器状态检查、重启、发布或联调时先按该文档执行。
+- Thread baseline: 正式环境/测试环境登录方式统一见 `docs\login-access.md`；涉及登录验证、联调或 E2E 时先按该文档使用对应租户账号。
+- Thread baseline: 涉及备份、恢复、发布、构建、回滚任务前必须先阅读 `docs\release-backup-restore.md`。
 - Thread baseline: 正式服 /mnt/nas 是公司共享盘，禁止删除、清空或移除挂载/fstab。
 - Thread baseline: 发布失败先查 migration/manifest/脚本契约，再查环境；后端产物或环境变量契约变更时，维护仓脚本与测试必须同步修改。
 - Thread baseline: 允许不同机器发布；本机发布记录缺失或落后时，不强制要求重新导出资源包。先按 `docs/release-agent-checklist.md` 的“多机器发布接管与缺失记录分析门禁”只读核对远端实际版本、镜像、清单、迁移台账、任务锁及恢复依据，保留证据并区分已证实事实与未知历史；仅具体无法验证的缺口阻塞对应动作，不伪造成功历史或用Git模板覆盖私密资料。
@@ -28,7 +28,7 @@
 ## Mixed Git Workspace Policy
 
 - 本项目为混合 Git 工作区；凡要求新建或使用新分支，只在本任务实际参与且需要修改的 Git 仓库创建同名分支，不得在无关仓库制造分支状态。
-- Thread baseline: 涉及 worktree 创建、合并、清理或排障时，先阅读 `E:\IntRuoyi\docs\worktree-memory.md`。
+- Thread baseline: 涉及 worktree 创建、合并、清理或排障时，先阅读 `docs\worktree-memory.md`。
 - Thread baseline: Codex 并行开发默认一任务一独立 worktree 工作区；前后端成对建同名分支，根目录仅用于协调与最终集成。
 - Thread baseline: IntRuoyi 根目录 Git 不作为融合结果判断项；融合以前后端 `IntRuoyiBackend` 与 `IntRuoyiFronted` 仓库为准。
 - Thread baseline: worktree 合并后必须在合并结果上验证相关功能正确性；验证未通过不得视为完成或继续清理 worktree。
@@ -43,7 +43,7 @@
 ## Agent Task Documentation Policy
 
 - Before starting any task, the Agent must create or identify the task directory under `doc/tasks/<task-id>/` and write the task document first.
-- Thread baseline: PowerShell / Windows shell 任务允许在任务文档写入前先执行唯一只读 UTF-8 bootstrap；该 bootstrap 只能读取适用的 `AGENTS.md`、上一任务状态、`docs/experience-index.md` 和 `E:\IntRuoyi\docs\powershell-memory.md`，不得写文件、调用外部服务、执行构建/测试/发布或通过管道传递业务文本；bootstrap 完成后必须立即创建或更新任务文档并摘取经验门禁。
+- Thread baseline: PowerShell / Windows shell 任务允许在任务文档写入前先执行唯一只读 UTF-8 bootstrap；该 bootstrap 只能读取适用的 `AGENTS.md`、上一任务状态、`docs/experience-index.md` 和 `docs\powershell-memory.md`，不得写文件、调用外部服务、执行构建/测试/发布或通过管道传递业务文本；bootstrap 完成后必须立即创建或更新任务文档并摘取经验门禁。
 - Thread baseline: 每次任务将用户需求、执行命令意图和验证结果记录到 `docs/request-command-log.md`；密码、token、私钥、连接串和其他凭据必须脱敏，含明文凭据的原始日志不得提交。
 - Thread baseline: 每次任务创建或识别任务目录后，必须先读取 `docs/experience-index.md`，按索引只打开命中的经验文档，并在任务文档写入 `经验门禁` 小节，列出本任务适用的强制门禁；不得只写“已阅读”而不摘取门禁。
 - Thread baseline: 后续新增经验默认优先写入事前文档入口；仅事后复盘内容才写入 error-prevention 类文档。
@@ -104,7 +104,7 @@
 - Thread baseline: 本机展厅默认文件配置 `infra_file_config.id=28`、默认 bucket `yudao`、默认域 `http://127.0.0.1:9000/yudao` 视为受保护资源；未经用户明确授权，任何 E2E、联调、脚本或人工操作不得修改、切换、覆盖或绑定到其他 bucket/domain/endpoint。
 - Thread baseline: 任何 E2E、联调、脚本或人工操作都不得把 `config_id=28` 且 `path LIKE 'showroom/%'` 的默认展厅媒体 URL 改写到非默认受保护域；发现默认展厅文件配置或 `showroom/%` 媒体 URL 漂移时必须 fail fast，禁止继续启动、继续 E2E 或用临时同步/回填掩盖问题，除非用户明确批准本次修复范围。
 - Thread baseline: PowerShell 5.1 不使用 `&&`；命令改为分行执行或用 `;` 连接。
-- Thread baseline: PowerShell 任务涉及中文参数、中文正则、中文 SQL、SSH/MySQL 标准输入、多行 inline 脚本或 here-string 时，执行风险命令前必须读取 `E:\IntRuoyi\docs\powershell-memory.md` 并按其设计编码与退出码验证路径。
+- Thread baseline: PowerShell 任务涉及中文参数、中文正则、中文 SQL、SSH/MySQL 标准输入、多行 inline 脚本或 here-string 时，执行风险命令前必须读取 `docs\powershell-memory.md` 并按其设计编码与退出码验证路径。
 
 ## Encoding Safety Policy
 

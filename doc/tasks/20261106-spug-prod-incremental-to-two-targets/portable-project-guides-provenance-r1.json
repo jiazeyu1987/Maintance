@@ -1,0 +1,63 @@
+{
+  "addedGuides": {
+    "login-access.md": {
+      "bytes": 1652,
+      "sha256": "a37c9ad3e7b9d99c5d2ea5b7a9cb8bfa2d466e0e68f5a4a995d23a19024fbe20"
+    },
+    "powershell-memory.md": {
+      "bytes": 64688,
+      "sha256": "aa445c1e58f508152f8e977669bd5acf85d86abe8fc686bdedc107911bb1be5c"
+    },
+    "release-backup-restore.md": {
+      "bytes": 23749,
+      "sha256": "7f99d9ee279138097148b9169e50ed668600fb04fdc85cbfe7618245ccea6e13"
+    },
+    "server-access.md": {
+      "bytes": 5479,
+      "sha256": "61a7d6550c4fbcb33cec2da98eb4d78e09c20af6e4627d425c3fafd8c209dde7"
+    },
+    "worktree-memory.md": {
+      "bytes": 100100,
+      "sha256": "d091f7217e4d14ed69b4cb406a94ca80682afcfb631667e2771f50a130924ec9"
+    }
+  },
+  "changedExisting": [
+    "AGENTS.md",
+    "docs/experience-index.md",
+    "docs/powershell-preflight-lessons.md",
+    "docs/release-agent-checklist.md",
+    "docs/test-release-preflight.md",
+    "docs/test-server-connection-handoff.md",
+    "docs/test-prod-server-connection-handoff.md",
+    "docs/release-build-preflight-lessons.md",
+    "docs/recovery/backup-disaster-recovery.md"
+  ],
+  "credentialsCopied": false,
+  "currentUserRulesTakePrecedence": true,
+  "historicalTaskReceiptsModified": false,
+  "runtimeConfigurationModified": false,
+  "schemaVersion": "TaskPortableProjectGuides/v1",
+  "source": "Existing backend handoff 20261102, original bytes retained privately",
+  "sourcePins": {
+    "login-access.md": {
+      "bytes": 42934,
+      "sha256": "34427d472dc2ac82c016138e429e8587346bc00c5224966584ac1497bd5134b3"
+    },
+    "powershell-memory.md": {
+      "bytes": 64373,
+      "sha256": "8a512add753f082e991637976757e5259cd769a343637dc829d0bd08f98f1a5b"
+    },
+    "release-backup-restore.md": {
+      "bytes": 23467,
+      "sha256": "1aa0dbac7df275b8ff701aa7545ffde506d2dd14881d104ffaa7a47ec1fdb813"
+    },
+    "server-access.md": {
+      "bytes": 5332,
+      "sha256": "a33ebded23777435423d6f1324253e84a783bbd04c1809661d1afe1f7dfa71fe"
+    },
+    "worktree-memory.md": {
+      "bytes": 99740,
+      "sha256": "04b4f289ee1447fe0818fa408c4636e4d6dc3f1fd9462743066b9849ef8a110a"
+    }
+  }
+}

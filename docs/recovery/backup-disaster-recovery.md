@@ -32,7 +32,7 @@
 
 ## 当前已证实现状
 
-静态核对依据包括 `E:\IntRuoyi\docs\server-access.md`、`E:\IntRuoyi\docs\release-backup-restore.md`、`E:\IntRuoyi\IntRuoyiBackend\script\backup-ops`、后台 `BackupPlanController`、`RuntimeControlController`、前端备份计划页和运行控制台页。
+静态核对依据包括 `docs\server-access.md`、`docs\release-backup-restore.md`、`IntRuoyiBackend\script\backup-ops`、后台 `BackupPlanController`、`RuntimeControlController`、前端备份计划页和运行控制台页。
 
 已知测试服务器基线：
 
@@ -71,7 +71,7 @@
 - 当前测试服是否正在运行、当前 `IMAGE_TAG`、当前 Docker 镜像 digest、当前数据库版本、当前 MinIO 实例状态、当前磁盘容量、当前 NAS/备份目录可写性，未在本任务执行实时检查。
 - 当前是否存在最新 `COMPLETE` 且已演练通过的备份包，未在本任务远程查询。
 - 当前 RTO / RPO 尚未由业务正式定义，不能仅凭脚本配置宣称达标。
-- `E:\IntRuoyi\IntRuoyiBackend\docs\recovery\current-dr-readiness.md` 曾记录当前灾备门禁为 `BLOCKED`；后续历史任务存在真实演练证据，但不能替代本次上线前实时门禁检查。
+- `IntRuoyiBackend\docs\recovery\current-dr-readiness.md` 曾记录当前灾备门禁为 `BLOCKED`；后续历史任务存在真实演练证据，但不能替代本次上线前实时门禁检查。
 
 ## Inventory
 

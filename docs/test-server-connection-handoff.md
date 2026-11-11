@@ -6,10 +6,10 @@
 
 ## 权威来源
 
-- 服务器访问来源：`E:\IntRuoyi\docs\server-access.md`
-- 本机主程序根目录：`E:\IntRuoyi`
-- 后端与运维入口：`E:\IntRuoyi\IntRuoyiBackend`
-- 前端工程：`E:\IntRuoyi\IntRuoyiFronted`
+- 服务器访问来源：`docs\server-access.md`
+- 本机主程序根目录：`<主程序根目录>`
+- 后端与运维入口：`IntRuoyiBackend`
+- 前端工程：`IntRuoyiFronted`
 - 远端运行目录：`/opt/intruoyi/runtime`
 
 ## 测试服务器
@@ -25,10 +25,10 @@
 
 ## 本机运维入口
 
-- 状态检查：`E:\IntRuoyi\IntRuoyiBackend\script\deploy\show-int-ruoyi-test-status.bat`
-- 重启脚本：`E:\IntRuoyi\IntRuoyiBackend\script\deploy\restart-int-ruoyi-to-test.bat`
-- 发布脚本：`E:\IntRuoyi\IntRuoyiBackend\script\deploy\publish-int-ruoyi.ps1 -Environment test -ServerHost 172.30.30.58`
-- 统一入口示例：`cmd /c "E:\IntRuoyi\IntRuoyiBackend\运维工具.bat test -ServerHost 172.30.30.58"`
+- 状态检查：`IntRuoyiBackend\script\deploy\show-int-ruoyi-test-status.bat`
+- 重启脚本：`IntRuoyiBackend\script\deploy\restart-int-ruoyi-to-test.bat`
+- 发布脚本：`IntRuoyiBackend\script\deploy\publish-int-ruoyi.ps1 -Environment test -ServerHost 172.30.30.58`
+- 统一入口示例：`cmd /c "IntRuoyiBackend\运维工具.bat test -ServerHost 172.30.30.58"`
 - 直接 SSH 仅限已授权任务：`ssh root@172.30.30.58`
 
 ## 发布参数

@@ -34,12 +34,12 @@ runner 去重执行 C1～C6/C2P 与两个 T7 模块共24个 pytest 模块、三�
 
 正式规则仍以以下文档为准：
 
-- `E:\IntRuoyi\docs\release-backup-restore.md`
-- `E:\IntRuoyi\docs\server-access.md`
-- `E:\IntRuoyi\docs\login-access.md`
+- `docs\release-backup-restore.md`
+- `docs\server-access.md`
+- `docs\login-access.md`
 - `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\release-build-preflight-lessons.md`
 - `D:\ProjectPackage\Int\IntRuoyiMaintance\docs\powershell-preflight-lessons.md`
-- `E:\IntRuoyi\docs\worktree-memory.md`
+- `docs\worktree-memory.md`
 
 ## 使用顺序
 
@@ -92,8 +92,8 @@ runner 去重执行 C1～C6/C2P 与两个 T7 模块共24个 pytest 模块、三�
 
 ```powershell
 git -C D:\ProjectPackage\Int\IntRuoyiMaintance status --short --branch
-git -C E:\IntRuoyi\IntRuoyiBackend status --short --branch
-git -C E:\IntRuoyi\IntRuoyiFronted status --short --branch
+git -C IntRuoyiBackend status --short --branch
+git -C IntRuoyiFronted status --short --branch
 git -C <release-worktree> rev-parse HEAD
 git -C <release-worktree> status --porcelain
 ```
@@ -722,7 +722,7 @@ ssh root@172.30.30.58 bash -s
 - Trigger: `publish-test` 已返回 SUCCESS，准备运行独立远端探针、恢复 48181 稳定控制台、执行 Playwright 最终复验或删除 release worktree/state。
 - Preflight check: 远端 SQL 探针先从冻结 migration 和真实库 `DESCRIBE` 确认表名/字段；先读 compose 判断容器是否定义 Docker healthcheck，未定义时容器门禁只核 `state=running`，应用健康独立核 Actuator HTTP 200/UP。删除 release worktree 前，主 `runtime-control.local.yaml` 的 repo/frontend/ops/state 必须符合当前固定根，48181 的 PID/命令行/JAR 必须指向主维护路径，完整 `/admin-api/infra/runtime-control/release-status` 必须返回目标 tag 和变更说明；同一 Playwright CLI 会话的 open/resize/snapshot/click/find/console/close 必须串行执行。每次实际构建单独记录 JAR hash，不把同 HEAD 的历史重建 hash 当作当前产物固定值。
 - Blocker: 探针凭推断使用表名/字段；把未定义 healthcheck 的 `health=none` 当成应用失败或健康成功；主控制台配置仍指向废弃 repo/frontend 路径；48181 仍引用 release worktree、主路径 JAR/state 只显示旧版本、release-status 缺目标变更说明；Playwright 出现 `ECOMPROMISED Lock compromised` 且尚未串行重验；task-closeout preview 把 workspace 外 worktree/state 列为 blocked；或当前 JAR 来源/当次 hash 无法证明。
-- Verification: 远端 `.env`、实际镜像、容器 running、Actuator UP、frontend HTTP 200、release-info、lock/migration 和业务探针均按真实契约通过；48181 health=UP、PID/命令行指向主维护路径、release-status 的 `testCurrentReleaseTag`/notes/changes 匹配目标；Playwright 页面版本与 console errors=0 串行复验通过；外部 worktree/state 按 `E:\IntRuoyi\docs\worktree-memory.md` 清理后，task-closeout preview/apply 的 blocked/warnings 均为空。
+- Verification: 远端 `.env`、实际镜像、容器 running、Actuator UP、frontend HTTP 200、release-info、lock/migration 和业务探针均按真实契约通过；48181 health=UP、PID/命令行指向主维护路径、release-status 的 `testCurrentReleaseTag`/notes/changes 匹配目标；Playwright 页面版本与 console errors=0 串行复验通过；外部 worktree/state 按 `docs\worktree-memory.md` 清理后，task-closeout preview/apply 的 blocked/warnings 均为空。
 - Forbidden action: 禁止臆造数据库表、Docker healthcheck 或简写 API 路由；禁止用旧稳定控制台 health=UP 替代当前版本/变更说明；禁止跨重建强求历史 JAR hash 相同；禁止并行启动同一 npm cache 下的多个 Playwright CLI 命令；禁止绕过 task-closeout workspace 边界或扩大删除到其它任务路径。
 - Evidence: `doc/tasks/2026-08-11-test-only-release-head/execution-log.md` 的 `postcheck-probe-contract`、`main-runtime-stale-jar-state`、`maintenance-jar-hash-nondeterminism`、`playwright-npm-lock-contention`、`task-closeout-outside-workspace`、`worktree-remove-directory-not-empty` 和 `final-runtime-status-wrong-route`。
 
