@@ -156,7 +156,7 @@ def standard_package_pin(build, private):
     return pin
 
 
-def load_current_installation(task, private, *, selection_file):
+def load_current_installation(task, private, *, selection_file, historical_source_custody_pin=None):
     records = contract.Records(task)
     selected = records.read(selection_file)
     need(set(selected) == {'schemaVersion','sourceCommit','controlGenerationPin','spugInstallationPin','verificationInputsPin'} and
@@ -164,11 +164,20 @@ def load_current_installation(task, private, *, selection_file):
          type(selected['sourceCommit']) is str and re.fullmatch('[0-9a-f]{40}', selected['sourceCommit']), 'SELECTION_INVALID')
     inputs = records.pinned(selected['verificationInputsPin'])
     schema = inputs.get('schemaVersion')
+    source_roles = None
+    if historical_source_custody_pin is not None:
+        need(schema == acceptance.INPUT_SCHEMA, 'SOURCE_CUSTODY_SCOPE')
+        source_roles = acceptance.history.load_source_roles(records.task, Path(private), historical_source_custody_pin)
+        need(source_roles.value['selectionPin'] == records.references[selection_file], 'SOURCE_CUSTODY_SELECTION_CHANGED')
     if schema in OLD_SCHEMAS:
         verified = legacy.validate_publication_v4(records, Path(private), selected)
         kind = 'PUBLICATION_VERIFICATION'
     elif schema == acceptance.INPUT_SCHEMA:
-        verified = acceptance.load_completed_acceptance(records.task, Path(private), selected['spugInstallationPin'])
+        if source_roles is None:
+            verified = acceptance.load_completed_acceptance(records.task, Path(private), selected['spugInstallationPin'])
+        else:
+            verified = acceptance.load_completed_acceptance(records.task, Path(private), selected['spugInstallationPin'],
+                source_roles=source_roles)
         kind = 'CONTROL_GENERATION_ACCEPTANCE'
     else:
         raise ValueError('CURRENT_INSTALLATION_INPUT_SCHEMA')
@@ -177,6 +186,7 @@ def load_current_installation(task, private, *, selection_file):
          bundle['generation']['sourceCommit'] == selected['sourceCommit'], 'GENERATION_CHANGED')
     reader = BoundDocuments(records.task, verified['inputPins']+records.path_pins()+[publication.file_pin(Path(__file__).resolve())])
     runtime = project_runtime(reader, private, selected, inputs, kind)
+    if source_roles is not None:source_roles.finish()
     return dict(selectionPin=records.references[selection_file], selection=selected, generation=bundle,
                 inputPins=reader.finish(), spugRuntime=runtime)
 
@@ -197,10 +207,14 @@ def public_summary(current):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--selection', required=True)
+    parser.add_argument('--historical-source-custody')
     parser.add_argument('--public-summary', required=True, action='store_true')
     args = parser.parse_args()
     try:
-        result = load_current_installation(publication.TASK, publication.PRIVATE, selection_file=args.selection)
+        source_args = {}
+        if args.historical_source_custody:
+            source_args['historical_source_custody_pin'] = publication.file_pin(Path(args.historical_source_custody))
+        result = load_current_installation(publication.TASK, publication.PRIVATE, selection_file=args.selection, **source_args)
         print(json.dumps(public_summary(result), ensure_ascii=False))
     except Exception:
         # Fail closed without leaking private source values through tracebacks.

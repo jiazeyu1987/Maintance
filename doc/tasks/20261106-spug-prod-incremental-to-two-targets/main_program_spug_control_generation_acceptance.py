@@ -111,13 +111,17 @@ def project_published_configuration(base,candidate,observation):
     return view
 
 
-def prepare(task,private,inputs_file):
+def prepare(task,private,inputs_file,*,source_roles=None):
     records=contract.Records(task);private=Path(private);inputs=records.read(inputs_file)
     fields={'schemaVersion','historicalReadCustodyPin','controlGenerationPin','observationPin','verificationId','outputFile'}
     need(type(inputs) is dict and set(inputs)==fields and inputs['schemaVersion']==INPUT_SCHEMA and
          type(inputs['verificationId']) is str and re.fullmatch('[a-z][a-z0-9-]{0,39}',inputs['verificationId']),
          'INPUTS_INVALID')
-    context=history.load_context(records.task,private,inputs['historicalReadCustodyPin'])
+    if source_roles is None:context=history.load_context(records.task,private,inputs['historicalReadCustodyPin'])
+    else:
+        need(type(source_roles) is history.SourceRoles and source_roles.value['acceptanceInputsPin']==
+             records.references[inputs_file],'SOURCE_CUSTODY_INPUT_CHANGED')
+        context=history.load_context(records.task,private,inputs['historicalReadCustodyPin'],source_roles=source_roles)
     verified=verify.validate_publication_v4(records,private,context.selected,historical=context)
     base_inputs=records.pinned(context.selected['verificationInputsPin'])
     base=verify.prepare_value(records,private,base_inputs,context.selected['verificationInputsPin'],historical=context)
@@ -140,8 +144,10 @@ def prepare(task,private,inputs_file):
     view['inputs'].update(outputFile=name,verificationId=inputs['verificationId'])
     all_pins=verify.unique_pins(records.path_pins()+pins+context.finish()+verified['inputPins']+
         base['inputPins']+candidate['inputPins']+[publication.file_pin(__file__)])
+    if source_roles is not None:all_pins=verify.unique_pins(all_pins+source_roles.finish())
     prepared=dict(inputs=inputs,inputPin=records.references[inputs_file],inputPins=all_pins,generation=candidate,
         programView=view,equivalence=equivalent,sourceCommit=commit,revisionId='r7')
+    if source_roles is not None:prepared['sourceRoles']=source_roles
     unchanged(prepared)
     return prepared
 
@@ -203,8 +209,10 @@ def validate_completed(prepared,private,rich,pins):
     attempt=continuation.private_json(private,rich['attemptPin'],pins)
     need(set(attempt)=={'schemaVersion','recordType',*bound,'inputPins','stageOrder','claimPin','retryPermitted'} and
          attempt['schemaVersion']==SCHEMA and attempt['recordType']=='attempt' and attempt['retryPermitted'] is False and
-         all(attempt[k]==v for k,v in bound.items()) and attempt['inputPins']==prepared['inputPins'] and
+         all(attempt[k]==v for k,v in bound.items()) and
          attempt['stageOrder']==schedule(),'ATTEMPT_CHANGED')
+    if 'sourceRoles' in prepared:prepared['sourceRoles'].verify_acceptance_inputs(attempt['inputPins'],prepared['inputPins'])
+    else:need(attempt['inputPins']==prepared['inputPins'],'ATTEMPT_CHANGED')
     claim=continuation.private_json(private,attempt['claimPin'],pins)
     need(claim==dict(schemaVersion=SCHEMA,recordType='claim',**bound,retryPermitted=False),'CLAIM_CHANGED')
     rows=rich['stages']
@@ -229,13 +237,15 @@ def validate_completed(prepared,private,rich,pins):
     unchanged(prepared)
 
 
-def load_completed_acceptance(task,private,result_pin):
+def load_completed_acceptance(task,private,result_pin,*,source_roles=None):
     records=contract.Records(task);core=records.pinned(result_pin)
     need(type(core) is dict and core.get('schemaVersion')==SCHEMA and core.get('recordType')=='result' and
          core.get('status')=='PASS','COMPLETED_RESULT_REQUIRED')
     inputs=records.pinned(core['acceptanceInputsPin'])
     need(result_pin['file']==inputs['outputFile'],'COMPLETED_OUTPUT_CHANGED')
-    prepared=prepare(task,private,core['acceptanceInputsPin']['file']);pins=[]
+    if source_roles is None:prepared=prepare(task,private,core['acceptanceInputsPin']['file'])
+    else:prepared=prepare(task,private,core['acceptanceInputsPin']['file'],source_roles=source_roles)
+    pins=[]
     need(prepared['inputPin']==core['acceptanceInputsPin'],'COMPLETED_INPUT_CHANGED')
     rich=continuation.private_json(private,core['privateEvidencePin'],pins)
     need(core==dict({k:v for k,v in rich.items() if k!='stages'},privateEvidencePin=core['privateEvidencePin']),
@@ -243,6 +253,7 @@ def load_completed_acceptance(task,private,result_pin):
     validate_completed(prepared,private,rich,pins)
     pins=verify.unique_pins(prepared['inputPins']+records.path_pins()+pins)
     for pin in pins:publication.verify_bytes(pin)
+    if source_roles is not None:source_roles.finish()
     return dict(generation=prepared['generation'],inputPins=pins)
 
 

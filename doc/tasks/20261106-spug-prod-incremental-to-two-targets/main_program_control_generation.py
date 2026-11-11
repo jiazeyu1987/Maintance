@@ -160,6 +160,31 @@ def _validate_upgrade_materials(records,private,inputs,build,previous,plan,secre
     return proof['physicalPins']
 
 
+def _catalogue_logical_materials(records,inputs,build,physical):
+    """Restore only the proven 45 local-proof identity, without changing I/O pins."""
+    from main_program_control_activation import generation_product_source
+    commit='45dd7dc65409c87fe856584b85873ea96c0b830e'
+    relative='backend/src/main/resources/recovery_control_restore_catalogue.py'
+    expected=dict(bytes=20770,sha256='d6dfd4701a5a6343af71329167b1167952b3328b4a52568e9ff21ae060c84ab9')
+    need(inputs['sourceCommit']==build['targetCommit']==commit,'LOGICAL_CATALOGUE_COMMIT')
+    coverage=records.pinned(inputs['coveragePin'])
+    need(coverage['schemaVersion']=='MainProgramControlCoverage/v1' and
+         records.pinned(coverage['candidateBuildPin'])==build and
+         coverage['deltaTestEvidencePins'][0]['file']=='archive-catalogue-request-reads-result.json',
+         'LOGICAL_CATALOGUE_COVERAGE')
+    local=records.pinned(coverage['deltaTestEvidencePins'][0]);linux=records.pinned(coverage['deltaTestEvidencePins'][1])
+    need({name:ref for name,ref in local['files'].items() if not name.startswith('doc/tasks/')}=={relative:expected},
+         'LOGICAL_CATALOGUE_SCOPE')
+    proof=generation_product_source(relative,expected,build,linux['sourcePins'])
+    checkout=proof['physicalPin'];original=dict(path=str(records.task.parents[2]/relative),**expected)
+    # The first occurrence is the local proof; the second is the independent
+    # Linux checkout proof. Keep their original order in the logical inventory.
+    need(physical.count(checkout)==2 and all(p['path']!=original['path'] for p in physical),
+         'LOGICAL_CATALOGUE_PHYSICAL_BINDING')
+    logical=deepcopy(physical);logical[logical.index(checkout)]=original
+    return logical
+
+
 def _baseline(records,reference):
     value=records.pinned(reference)
     need(value.get('status')=='PASS' and value.get('sourceConfigRef')==SOURCES[0] and
@@ -308,7 +333,17 @@ def _validate(records,private,value,generation_pin,trail):
     need(len({c['pid'] for c in cores['57']})==2,'CONTROLLER_PID_COLLISION')
     baseline=_baseline(records,value['sourceBaselinePin'])
     if previous:need(value['sourceBaselinePin']==previous['generation']['sourceBaselinePin'],'SOURCE_BASELINE_CHANGED')
-    if previous:private_pins+=_validate_upgrade_materials(records,private,upgrade_inputs,build,previous,plan,secret)
+    logical_private_pins=deepcopy(private_pins)
+    if previous:
+        # Descendant plans freeze the predecessor's logical selection. The
+        # current physical closure still remains separately in inputPins.
+        count=len(previous['inputPins'])
+        need(private_pins[:count]==previous['inputPins'],'PREDECESSOR_PHYSICAL_PREFIX_CHANGED')
+        logical_private_pins=deepcopy(previous['selections']['57']['localInstallationPins'])+logical_private_pins[count:]
+        materials=_validate_upgrade_materials(records,private,upgrade_inputs,build,previous,plan,secret)
+        private_pins+=materials
+        logical_private_pins+=(_catalogue_logical_materials(records,upgrade_inputs,build,materials)
+            if value['sourceCommit']=='45dd7dc65409c87fe856584b85873ea96c0b830e' else deepcopy(materials))
     if previous:
         # Coverage is fully verified above. Only this explicitly reviewed profile
         # consumes the source-policy transition, without replanning old history.
@@ -331,12 +366,17 @@ def _validate(records,private,value,generation_pin,trail):
         need(pin['path'] not in pins or pins[pin['path']]==pin,'INPUT_PIN_CONFLICT')
         pins[pin['path']]=pin
     selections={}
+    logical_pins={}
+    for pin in [*records.path_pins(),*logical_private_pins]:
+        pin=dict(pin,path=str(Path(pin['path'])))
+        need(pin['path'] not in logical_pins or logical_pins[pin['path']]==pin,'LOGICAL_INPUT_PIN_CONFLICT')
+        logical_pins[pin['path']]=pin
     for host in contract.HOSTS:
         selections[host]=dict(host='172.30.30.'+host,suffix=host,sourceCommit=value['sourceCommit'],
             currentSourceCommit=value['sourceCommit'],currentControlGenerationPin=generation_pin,baseAutomaticSelectionPin=base_pin,
             controllers=[{key:c[key] for key in SELECTION_CONTROLLER_KEYS} for c in cores[host]],
             targetConfigRef=targets[host],activeReceiptPin=None if host=='57' else cores[host][0]['currentReceiptPin'],
-            localInstallationPins=list(pins.values()))
+            localInstallationPins=list(logical_pins.values()))
     return dict(generationPin=generation_pin,generation=value,build=build,plan=plan,privatePlan=secret,
         controllersByHost=cores,selections=selections,inputPins=list(pins.values()),targets=targets,
         sourceBaseline=baseline,custodyByHost=custodies)

@@ -169,6 +169,7 @@ def main():
     parser.add_argument('--phase',required=True,choices=['preview','submit','verify'])
     parser.add_argument('--observation',required=True)
     parser.add_argument('--selection',required=True)
+    parser.add_argument('--historical-source-custody')
     parser.add_argument('--source-deployment-root')
     parser.add_argument('--spug-deployment-root')
     args=parser.parse_args()
@@ -179,7 +180,11 @@ def main():
     stem=prefix+'-'+args.phase+'-'+args.observation
     gate_path=TASK/(stem+'-preflight.json')
     need(not gate_path.exists(),'OBSERVATION_ALREADY_EXISTS')
-    verified=load_current_installation(TASK,PRIVATE,selection_file=args.selection)
+    source_args={}
+    if args.historical_source_custody:
+        from main_program_spug_publication import file_pin
+        source_args['historical_source_custody_pin']=file_pin(Path(args.historical_source_custody))
+    verified=load_current_installation(TASK,PRIVATE,selection_file=args.selection,**source_args)
     selection=verified['selection'];selection_pin=verified['selectionPin'];bundle=verified['generation']
     root_args=dict(source_deployment_root=args.source_deployment_root,spug_deployment_root=args.spug_deployment_root)
     git=verify_main_deployment_inputs(verified,TASK.parents[2],**root_args)

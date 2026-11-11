@@ -30,7 +30,7 @@ function exclusive(file,value){
 }
 function args(){
   const value={},flags=new Set(['execute','expect-terminal']);
-  const fields=new Set(['kind','phase','observation','preflight','cycle','selection','browser-mode','expected-application','expected-source','expected-state','expected-parent','expected-base','expected-plan']);
+  const fields=new Set(['kind','phase','observation','preflight','cycle','selection','historical-source-custody','browser-mode','expected-application','expected-source','expected-state','expected-parent','expected-base','expected-plan']);
   for(let i=2;i<process.argv.length;i++){
     const key=process.argv[i].replace(/^--/,'');
     check(process.argv[i].startsWith('--')&&!Object.hasOwn(value,key),'INVALID_OR_DUPLICATE_ARGUMENT');
@@ -51,6 +51,8 @@ function args(){
     check(selected&&!selected.startsWith('..')&&!path.isAbsolute(selected)&&selected.endsWith('.json'),'TASK_MAIN_SELECTION_REQUIRED');
     value.selection=path.resolve(value.selection);
   }
+  if(Object.hasOwn(value,'historical-source-custody'))check(value.cycle==='main-r7-20261110'&&
+    path.basename(value.selection||'')==='main-program-current-installations-b5fa4c5-r7-v4.json','MAIN_HISTORICAL_CUSTODY_SCOPE_INVALID');
   browserPolicy(value);
   return value;
 }
@@ -117,6 +119,42 @@ const mainDeepEqual=(left,right)=>{
 };
 const mainKeys=(value,keys)=>value&&typeof value==='object'&&!Array.isArray(value)&&Object.keys(value).sort().join(',')===[...keys].sort().join(',');
 let mainInstallationProof=null,mainInstallationSelection=null;
+function historicalCustodyInput(selectionPin,options,previous){
+  if(!Object.hasOwn(options,'historical-source-custody')){check(!previous,'MAIN_HISTORICAL_CUSTODY_CHANGED');return null;}
+  let descriptor;
+  try{
+    check(options.cycle==='main-r7-20261110'&&localPin(selectionPin)&&
+      selectionPin.file==='main-program-current-installations-b5fa4c5-r7-v4.json','MAIN_HISTORICAL_CUSTODY_SCOPE_INVALID');
+    const input=options['historical-source-custody'];
+    check(typeof input==='string'&&path.isAbsolute(input)&&!input.startsWith('\\\\')&&!input.startsWith('//')&&
+      !input.replaceAll('\\','/').split('/').some(p=>p==='.'||p==='..')&&
+      (input===path.resolve(input)||input===path.resolve(input).replaceAll('\\','/')),'MAIN_HISTORICAL_CUSTODY_PATH_INVALID');
+    const file=path.resolve(input),relative=path.relative(path.resolve(PRIVATE),file),before=fs.lstatSync(file);
+    check(relative&&!relative.startsWith('..')&&!relative.includes(':')&&!path.isAbsolute(relative)&&before.isFile()&&!before.isSymbolicLink()&&
+      before.nlink===1&&before.size>0&&before.size<=16*1024*1024&&fs.realpathSync(file)===file,'MAIN_HISTORICAL_CUSTODY_FILE_INVALID');
+    const identity=info=>[...mainProofIdentity(info),info.mode,info.nlink];
+    descriptor=fs.openSync(file,'r');
+    check(mainDeepEqual(identity(before),identity(fs.fstatSync(descriptor))),'MAIN_HISTORICAL_CUSTODY_CHANGED');
+    const raw=fs.readFileSync(descriptor),after=fs.fstatSync(descriptor),last=fs.lstatSync(file);
+    check(mainDeepEqual(identity(before),identity(after))&&mainDeepEqual(identity(after),identity(last))&&
+      fs.realpathSync(file)===file&&raw.length===after.size,'MAIN_HISTORICAL_CUSTODY_CHANGED');
+    const state={pin:{path:file,bytes:raw.length,sha256:sha(raw)},identity:identity(after)};
+    check(!previous||mainDeepEqual(state,previous),'MAIN_HISTORICAL_CUSTODY_CHANGED');
+    const text=raw.toString('utf8');check(Buffer.from(text,'utf8').equals(raw),'MAIN_HISTORICAL_CUSTODY_INVALID');
+    const value=JSON.parse(text);
+    check(value?.schemaVersion==='MainProgramSpugHistoricalSourceRoles/v1'&&mainDeepEqual(value.selectionPin,selectionPin),
+      'MAIN_HISTORICAL_CUSTODY_BINDING_INVALID');
+    return state;
+  }catch(error){check(false,error.publicCode||'MAIN_HISTORICAL_CUSTODY_UNREADABLE');}
+  finally{if(descriptor!==undefined)fs.closeSync(descriptor);}
+}
+function bindHistoricalCustody(summary,custody){
+  if(!custody)return;
+  check(Array.isArray(summary?.inputPins)&&summary.inputPins.filter(p=>mainKeys(p,['path','bytes','sha256'])&&
+    typeof p.path==='string'&&path.isAbsolute(p.path)&&
+    (p.path===custody.pin.path||p.path===custody.pin.path.replaceAll('\\','/'))&&
+    p.bytes===custody.pin.bytes&&p.sha256===custody.pin.sha256).length===1,'MAIN_HISTORICAL_CUSTODY_SUMMARY_UNBOUND');
+}
 function verifyMainInputClosure(summary,previous){
   const identities=[],paths=new Set();
   try{
@@ -138,6 +176,7 @@ function runMainInstallationCli(selectionPin,options){
   check(localPin(selectionPin)&&CYCLE.test(options?.cycle||'')&&['FULL','I1','I2'].includes(options?.kind)&&
     ['preview','submit','verify'].includes(options?.phase)&&/^[a-z0-9][a-z0-9-]{0,47}$/.test(options?.observation||''),
     'MAIN_CURRENT_INSTALLATION_OBSERVATION_INVALID');
+  const custody=historicalCustodyInput(selectionPin,options);
   const {privateDir,privateLabel}=artifactPaths(options),directory=path.join(privateDir,privateLabel+'-current-installation');
   try{
     fs.mkdirSync(privateDir,{recursive:true});
@@ -147,6 +186,7 @@ function runMainInstallationCli(selectionPin,options){
   }catch(error){check(false,error.publicCode||(error.code==='EEXIST'?'MAIN_CURRENT_INSTALLATION_OBSERVATION_EXISTS':'MAIN_CURRENT_INSTALLATION_EVIDENCE_WRITE_FAILED'));}
   const executable='C:/Users/D01021/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python.exe';
   const argv=['-B','-X','utf8',path.join(TASK,'main_program_current_installation.py'),'--selection',selectionPin.file,'--public-summary'];
+  if(custody)argv.push('--historical-source-custody',custody.pin.path);
   const timeoutMs=600000,clock=require('node:perf_hooks').performance,startedAt=new Date().toISOString(),start=clock.now();
   let response,thrown=null;
   try{response=require('node:child_process').spawnSync(executable,argv,
@@ -167,24 +207,31 @@ function runMainInstallationCli(selectionPin,options){
     exclusive(path.join(directory,'native.private.json'),{schemaVersion:'MainUiCurrentInstallationNative/v1',selectionPin,
       cycle:options.cycle,kind:options.kind,phase:options.phase,observation:options.observation,startedAt,finishedAt,durationMs,timeoutMs,
       executable,argv,responseReturned:!thrown&&response!==undefined,pid:Number.isSafeInteger(response?.pid)?response.pid:null,
-      exitCode,signal,errorCode,stdoutPin,stderrPin});
+      exitCode,signal,errorCode,stdoutPin,stderrPin,...(custody?{historicalSourceCustodyPin:custody.pin}:{})});
   }catch(writeError){check(false,'MAIN_CURRENT_INSTALLATION_EVIDENCE_WRITE_FAILED');}
   if(error)check(false,errorCode==='ETIMEDOUT'?'MAIN_CURRENT_INSTALLATION_TIMEOUT':errorCode==='ENOBUFS'?
     'MAIN_CURRENT_INSTALLATION_OUTPUT_LIMIT':'MAIN_CURRENT_INSTALLATION_SPAWN_FAILED');
   check(signal===null&&exitCode!==null,'MAIN_CURRENT_INSTALLATION_TERMINATED');
   check(exitCode===0,'MAIN_CURRENT_INSTALLATION_EXIT_FAILED');
   check(stderr.length===0,'MAIN_CURRENT_INSTALLATION_STDERR_REJECTED');
+  let summary;
   try{
     const text=stdout.toString('utf8');check(Buffer.from(text,'utf8').equals(stdout),'MAIN_CURRENT_INSTALLATION_INVALID');
-    return JSON.parse(text);
+    summary=JSON.parse(text);
   }catch(parseError){check(false,'MAIN_CURRENT_INSTALLATION_INVALID');}
+  historicalCustodyInput(selectionPin,options,custody);
+  bindHistoricalCustody(summary,custody);
+  return summary;
 }
 function currentMainProof(deployment,selectionPin,gate,options){
   check(!mainInstallationSelection||mainDeepEqual(mainInstallationSelection,selectionPin),'MAIN_CURRENT_INSTALLATION_SELECTION_CHANGED');
+  const custody=historicalCustodyInput(selectionPin,options,mainInstallationProof?.historicalSourceCustody);
   let summary=mainInstallationProof?.summary;
   if(!summary){
     summary=runMainInstallationCli(selectionPin,options);
   }
+  historicalCustodyInput(selectionPin,options,custody);
+  bindHistoricalCustody(summary,custody);
   check(mainKeys(summary,['schemaVersion','status','selectionPin','sourceCommit','controlGenerationPin','spugInstallationPin','buildPin','build','resourceBuildPin','spugCommit','inputPins'])&&
     summary.schemaVersion==='MainProgramCurrentInstallationSummary/v1'&&summary.status==='PASS'&&
     mainDeepEqual(summary.selectionPin,selectionPin)&&summary.sourceCommit===deployment.sourceCommit&&summary.spugCommit===gate.spugCommit&&
@@ -197,7 +244,7 @@ function currentMainProof(deployment,selectionPin,gate,options){
     check(localPin(ref)&&summary.inputPins.some(p=>path.resolve(p.path)===path.resolve(TASK,ref.file)&&p.bytes===ref.bytes&&p.sha256===ref.sha256),
       'MAIN_CURRENT_INSTALLATION_DOCUMENT_UNBOUND');
   }
-  return {summary,identities};
+  return {summary,identities,...(custody?{historicalSourceCustody:custody}:{})};
 }
 function validateMainDeploymentRoots(gate,deployment,selectionPin,options){
   try{
@@ -232,6 +279,7 @@ function validateMainDeploymentRoots(gate,deployment,selectionPin,options){
     check(runtime.schemaVersion==='MainProgramAutomaticIncrementalUiRuntime/v1'&&runtime.status==='PASS'&&
       mainDeepEqual(runtime.deploymentSelectionPin,selectionPin)&&mainDeepEqual(runtime.gitDeploymentInputs,inputs),'MAIN_RUNTIME_BINDING_CHANGED');
     verifyMainInputClosure(summary,proof.identities);
+    historicalCustodyInput(selectionPin,options,proof.historicalSourceCustody);
     mainInstallationProof=proof;mainInstallationSelection=JSON.parse(JSON.stringify(selectionPin));
   }catch(error){mainInstallationProof=null;throw error;}
 }
