@@ -7,6 +7,7 @@ from pathlib import Path, PurePosixPath
 import re
 import stat
 import sys
+import tarfile
 
 
 _SHA = re.compile(r'[0-9a-f]{64}\Z')
@@ -31,7 +32,7 @@ def _regular(path, code):
 
 
 class _CandidateImports(importlib.abc.MetaPathFinder):
-    def __init__(self, engine, package_pin):
+    def __init__(self, engine, package_pin, committed_inputs=None):
         self.engine = Path(engine).absolute()
         _need(self.engine.is_dir() and not self.engine.is_symlink(),
               'CANDIDATE_ROOT_INVALID')
@@ -56,11 +57,14 @@ class _CandidateImports(importlib.abc.MetaPathFinder):
         _need(isinstance(self.manifest, dict), 'CANDIDATE_MANIFEST_INVALID')
         files = self.manifest.get('files')
         _need(isinstance(files, dict) and bool(files), 'CANDIDATE_MANIFEST_INVALID')
-        _need(self.manifest.get('candidateOnly') is True and
-              self.manifest.get('source') == 'isolated-frozen-candidate-test' and
-              isinstance(self.manifest.get('candidateSourceSnapshotSha256'), str) and
-              _SHA.fullmatch(self.manifest['candidateSourceSnapshotSha256']),
-              'CANDIDATE_IDENTITY_INVALID')
+        if committed_inputs is None:
+            _need(self.manifest.get('candidateOnly') is True and
+                  self.manifest.get('source') == 'isolated-frozen-candidate-test' and
+                  isinstance(self.manifest.get('candidateSourceSnapshotSha256'), str) and
+                  _SHA.fullmatch(self.manifest['candidateSourceSnapshotSha256']),
+                  'CANDIDATE_IDENTITY_INVALID')
+        else:
+            self._verify_committed_identity(*committed_inputs)
         encoded = json.dumps(files, sort_keys=True, separators=(',', ':')).encode()
         _need(hashlib.sha256(encoded).hexdigest() == self.manifest.get('packageSha256'),
               'CANDIDATE_MANIFEST_DIGEST_CHANGED')
@@ -85,6 +89,53 @@ class _CandidateImports(importlib.abc.MetaPathFinder):
                 self.modules[module] = self.engine / name
         self.entered = False
         self.verify()
+
+    def _verify_committed_identity(self, report_pin, archive_pin):
+        def raw(reference):
+            _need(isinstance(reference, dict) and set(reference) == {'path', 'bytes', 'sha256'} and
+                  type(reference['bytes']) is int and reference['bytes'] > 0 and
+                  isinstance(reference['sha256'], str) and _SHA.fullmatch(reference['sha256']),
+                  'COMMITTED_INPUT_PIN_INVALID')
+            path = Path(reference['path'])
+            _need(path.is_absolute() and path.resolve() == path, 'COMMITTED_INPUT_PATH_INVALID')
+            _regular(path, 'COMMITTED_INPUT_FILE_INVALID')
+            data = path.read_bytes()
+            _need(len(data) == reference['bytes'] and hashlib.sha256(data).hexdigest() == reference['sha256'],
+                  'COMMITTED_INPUT_CHANGED')
+            return data
+        report_raw = raw(report_pin)
+        report = json.loads(report_raw)
+        archive_raw = raw(archive_pin)
+        _need(report.get('status') == 'PASS' and report.get('exactCommittedInput') is True and
+              report.get('allFilesShaAndCompileVerified') is True and
+              isinstance(report.get('targetCommit'), str) and
+              re.fullmatch(r'[0-9a-f]{40}', report['targetCommit']), 'COMMITTED_BUILD_UNPROVEN')
+        rows = report.get('packages')
+        _need(isinstance(rows, list), 'COMMITTED_BUILD_UNPROVEN')
+        rows = [row for row in rows if isinstance(row, dict) and row.get('variant') == 'standard']
+        _need(len(rows) == 1, 'COMMITTED_BUILD_UNPROVEN')
+        row = rows[0]
+        _need(row.get('bytes') == len(archive_raw) and row.get('sha256') == hashlib.sha256(archive_raw).hexdigest() and
+              row.get('fileManifestSha256') == self.manifest.get('packageSha256') and
+              row.get('fileCount') == len(self.manifest['files']), 'COMMITTED_PACKAGE_MISMATCH')
+        _need(self.manifest.get('candidateOnly') is not True and self.manifest.get('variant') == 'standard' and
+              self.manifest.get('source') == 'frozen-20261021-with-reviewed-fixes' and
+              self.manifest.get('fileVerification') is True and
+              self.manifest.get('payloadContentVerification') is True, 'COMMITTED_PACKAGE_IDENTITY_INVALID')
+        with tarfile.open(archive_pin['path'], 'r:gz') as archive:
+            members = archive.getmembers()
+            _need(len(members) == len(self.manifest['files']) + 1 and
+                  all(member.isfile() for member in members) and
+                  {member.name for member in members} == set(self.manifest['files']) | {'package.json'},
+                  'COMMITTED_ARCHIVE_MEMBERS_INVALID')
+            _need(archive.extractfile('package.json').read() == self.package_raw, 'COMMITTED_MANIFEST_MISMATCH')
+            for member in members:
+                if member.name != 'package.json':
+                    _need(member.size <= _MEMBER_LIMIT and
+                          hashlib.sha256(archive.extractfile(member).read()).hexdigest() == self.manifest['files'][member.name],
+                          'COMMITTED_ARCHIVE_MEMBER_CHANGED')
+        _need(raw(report_pin) == report_raw, 'COMMITTED_INPUT_CHANGED')
+        _need(raw(archive_pin) == archive_raw, 'COMMITTED_INPUT_CHANGED')
 
     def _verify_package_pin(self):
         raw = self.package_path.read_bytes()
@@ -160,3 +211,8 @@ class _CandidateImports(importlib.abc.MetaPathFinder):
 
 def candidate_imports(engine, package_pin):
     return _CandidateImports(engine, package_pin)
+
+
+def committed_package_imports(engine, package_pin, build_report_pin, archive_pin):
+    """Authenticate an official archive through its pinned committed build report."""
+    return _CandidateImports(engine, package_pin, (build_report_pin, archive_pin))
