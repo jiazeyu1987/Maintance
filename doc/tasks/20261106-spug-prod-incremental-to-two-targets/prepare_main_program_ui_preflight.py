@@ -1,6 +1,7 @@
 """Fresh MAIN/v4 gates for a named real UI acceptance cycle; no dispatch."""
 import argparse
 import hashlib
+import inspect
 import json
 import os
 from pathlib import Path
@@ -158,10 +159,23 @@ def verify_main_deployment_inputs(verified, default_root, *, source_deployment_r
     return dict(result, deploymentRootBindings=bindings)
 
 
+def validate_spug_current_entry(expected, candidates):
+    need(type(candidates) is list and len(candidates) == 1, 'SPUG_CURRENT_PROCESS_NOT_UNIQUE')
+    row = candidates[0]; original = expected['entryIdentity']
+    need(type(row) is dict and set(row) == {'pid', 'parentPid', 'startTicks', 'argv', 'cwd',
+         'executable', 'environmentSha256'} and type(row['pid']) is int and row['pid'] > 0 and
+         type(row['parentPid']) is int and row['parentPid'] == original['parentPid'] and
+         type(row['startTicks']) is str and row['startTicks'].isdecimal() and
+         row['argv'] == original['argv'] and row['cwd'] == original['cwd'] and
+         row['executable'] == original['executable'] and
+         row['environmentSha256'] == expected['entryEnvironmentSha256'], 'SPUG_CURRENT_PROCESS_CHANGED')
+    return row
+
+
 def spug_observation(verified, selection):
     guard=verified['spugRuntime']['guard']
     build=verified['spugRuntime']['resourceBuild']
-    script='EXPECTED='+repr(guard)+'\n'+SPUG_SCRIPT
+    script='EXPECTED='+repr(guard)+'\n'+inspect.getsource(validate_spug_current_entry)+'\n'+SPUG_SCRIPT
     result=subprocess.run([str(Path(os.environ['LOCALAPPDATA'])/'Programs/DockerDesktop/resources/bin/docker.exe'),
         'exec','-i','f615a60c76f46e4f6ae20ea6298f737fb9786684ce941fcc15763654461265bf',
         'python3','-B','-S','-'],input=script.encode('utf-8'),capture_output=True,timeout=50)
@@ -178,12 +192,21 @@ def need(ok,code):
  if not ok:raise RuntimeError(code)
 for pin in EXPECTED['filePins']+EXPECTED['configurationPins']:
  raw=pathlib.Path(pin['path']).read_bytes();need(len(raw)==pin['bytes'] and hashlib.sha256(raw).hexdigest()==pin['sha256'],'SPUG_FILE_CHANGED')
-identity=EXPECTED['entryIdentity'];p=pathlib.Path('/proc')/str(identity['pid']);stat=(p/'stat').read_text();tail=stat[stat.rfind(')')+2:].split()
-need(tail[19]==identity['startTicks'] and int(tail[1])==identity['parentPid'],'SPUG_PROCESS_CHANGED')
-need((p/'cmdline').read_bytes().decode().rstrip('\0').split('\0')==identity['argv'],'SPUG_ARGV_CHANGED')
-need(str((p/'exe').resolve())==identity['executable'] and str((p/'cwd').resolve())==identity['cwd'],'SPUG_EXECUTION_CHANGED')
-need(hashlib.sha256((p/'environ').read_bytes()).hexdigest()==EXPECTED['entryEnvironmentSha256'],'SPUG_ENVIRONMENT_CHANGED')
-print(json.dumps(dict(status='PASS',entryPid=identity['pid'],fileCount=len(EXPECTED['filePins']),configurationCount=len(EXPECTED['configurationPins']))))
+def observe(p):
+ stat=(p/'stat').read_text();tail=stat[stat.rfind(')')+2:].split()
+ return dict(pid=int(p.name),parentPid=int(tail[1]),startTicks=tail[19],argv=(p/'cmdline').read_bytes().decode().rstrip('\0').split('\0'),cwd=str((p/'cwd').resolve()),executable=str((p/'exe').resolve()),environmentSha256=hashlib.sha256((p/'environ').read_bytes()).hexdigest())
+candidates=[]
+for p in pathlib.Path('/proc').iterdir():
+ if not p.name.isdecimal():continue
+ try:
+  if (p/'cmdline').read_bytes().decode().rstrip('\0').split('\0')!=EXPECTED['entryIdentity']['argv']:continue
+  candidates.append(observe(p))
+ except (FileNotFoundError,ProcessLookupError):continue
+identity=validate_spug_current_entry(EXPECTED,candidates)
+for pin in EXPECTED['filePins']+EXPECTED['configurationPins']:
+ raw=pathlib.Path(pin['path']).read_bytes();need(len(raw)==pin['bytes'] and hashlib.sha256(raw).hexdigest()==pin['sha256'],'SPUG_FILE_CHANGED')
+need(observe(pathlib.Path('/proc')/str(identity['pid']))==identity,'SPUG_PROCESS_CHANGED_DURING_CHECK')
+print(json.dumps(dict(status='PASS',entryPid=identity['pid'],entryIdentity=identity,previousEntryPid=EXPECTED['entryIdentity']['pid'],processRestarted=identity['pid']!=EXPECTED['entryIdentity']['pid'] or identity['startTicks']!=EXPECTED['entryIdentity']['startTicks'],fileCount=len(EXPECTED['filePins']),configurationCount=len(EXPECTED['configurationPins']))))
 '''
 
 
