@@ -1,5 +1,13 @@
 # 独立保全视图持久控制 TDD
 
+## 原生 Docker nsfs 兼容补充
+
+- BDD：Given 实际 Docker 网络命名空间使用 nsfs `net:[4026531992]` root；When 读取整张 mountinfo；Then 接受该内核格式，CIFS 和其它文件系统仍要求绝对 root，畸形 nsfs root 拒绝。
+- 实际57/58 PREPARE均在写入前停止；58为 VIEW_MOUNTINFO_PATH，已只读确认15条真实 nsfs root；57为父载体误用小配置读取上限验证31MB解释器，载体改用通用 Runtime pin_file。未安装文件、挂载或重载服务。
+- RED：新增4项 parser 场景，native1，1 FAIL/3 PASS/41 deselected，合法nsfs被误拒。
+- GREEN：native0，4 PASS/41 deselected，0.09s。
+- REGRESSION：隔离Linux实际45视图+33暂存共78 PASS/4.33s，native0，原输入保持、容器移除、stderr0；source snapshot cd3e471fe6111d6249909d43aadb791e2bd9aec8aaa884f59a90ba124194cf29，614文件。保留原PREPARE失败，不将单元测试误称真实挂载成功。
+
 ## Current Status
 
 ready_for_closeout；实现和有限回归已通过，已发父任务独立审查，等待父统一审查/提交及实际主机验收。仅新增独立helper、测试及本文，不连接服务器、不改旧载体/共享日志、不提交；未创建worktree或残留测试容器。

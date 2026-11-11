@@ -115,7 +115,10 @@ def parse_mountinfo(raw):
         _require(identifier not in ids, 'VIEW_DUPLICATE_MOUNT_ID')
         ids.add(identifier)
         root, point = _unescape(left[3]), _unescape(left[4])
-        _require(root.startswith('/') and point.startswith('/'), 'VIEW_MOUNTINFO_PATH')
+        # Linux nsfs exposes an inode name, such as net:[4026531992], as
+        # mountinfo root. These unrelated Docker mounts are not CIFS paths.
+        nsfs_root = right[0] == 'nsfs' and re.fullmatch(r'net:\[[0-9]+\]', root) is not None
+        _require((root.startswith('/') or nsfs_root) and point.startswith('/'), 'VIEW_MOUNTINFO_PATH')
         rows.append(dict(mountId=identifier, parentId=int(left[1]), device=left[2],
             root=root, mountPoint=point, options=left[5].split(','),
             optionalFields=left[6:], filesystem=right[0], source=_unescape(right[1]),

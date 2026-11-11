@@ -24,6 +24,23 @@ def subject():
     module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
 
 
+def test_kernel_nsfs_root_is_valid_without_relaxing_cifs_root():
+    module=subject()
+    line=b'212 199 0:4 net:[4026531992] /run/docker/netns/default rw - nsfs nsfs rw\n'
+    rows=module.parse_mountinfo(line)
+    assert rows[0]['root']=='net:[4026531992]' and rows[0]['filesystem']=='nsfs'
+    assert rows[0]['line']==line.decode().strip()
+
+
+@pytest.mark.parametrize('line',[
+    b'212 199 0:4 net:[bad] /run/docker/netns/default rw - nsfs nsfs rw\n',
+    b'212 199 0:4 net:[4026531992] /mnt/nas rw - cifs //nas/share rw\n',
+    b'212 199 0:4 relative /mnt/nas rw - ext4 /dev/unit rw\n'])
+def test_invalid_nonabsolute_kernel_roots_are_rejected(line):
+    with pytest.raises(ValueError,match='VIEW_MOUNTINFO_PATH'):
+        subject().parse_mountinfo(line)
+
+
 def sha(raw):return hashlib.sha256(raw).hexdigest()
 def pin(path,raw):return dict(path=path,bytes=len(raw),sha256=sha(raw))
 
