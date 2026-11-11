@@ -106,4 +106,42 @@ class PreparationTests(unittest.TestCase):
     def test_owner_pin_changed(self):check_changed_source_owner_binding_rejected(self.data)
 
 
+class DependencyComparisonTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.observed=json.loads((PRIVATE/'source-only-partial-r2-readonly.result.private.json').read_text(encoding='utf-8'))
+
+    def test_actual_reload_preserves_same_dependency_sets(self):
+        before=self.observed['before'];after=self.observed['after']
+        self.assertNotEqual(before['historyGuard'],after['historyGuard'])
+        self.assertTrue(subject().systemd_properties_equal(before['historyGuard'],after['historyGuard']))
+        self.assertTrue(subject().process_observation_equal(before['controllers'][1],after['controllers'][1]))
+
+    def test_added_or_removed_dependency_is_rejected(self):
+        before=self.observed['before']['historyGuard']
+        for field in ('After','Requires'):
+            for value in ('unexpected.service '+before[field],' '.join(before[field].split()[1:])):
+                changed=deepcopy(before);changed[field]=value
+                self.assertFalse(subject().systemd_properties_equal(before,changed))
+
+    def test_dropin_order_and_other_properties_stay_exact(self):
+        before=self.observed['before']['controllers'][1]['properties']
+        for field,value in (('DropInPaths',' '.join(reversed(before['DropInPaths'].split()))),('MainPID','999999'),('ActiveState','inactive')):
+            changed=deepcopy(before);changed[field]=value
+            self.assertFalse(subject().systemd_properties_equal(before,changed))
+
+    def test_process_identity_cannot_change(self):
+        before=self.observed['before']['controllers'][1]
+        for field,value in (('pid',999999),('argvSha256','0'*64),('executable','/other/python')):
+            changed=deepcopy(before);changed[field]=value
+            self.assertFalse(subject().process_observation_equal(before,changed))
+
+    def test_duplicate_dependencies_or_missing_properties_rejected(self):
+        before=self.observed['before']['historyGuard'];changed=deepcopy(before)
+        changed['After']+=' '+before['After'].split()[0]
+        self.assertFalse(subject().systemd_properties_equal(before,changed))
+        changed=deepcopy(before);changed.pop('Requires')
+        self.assertFalse(subject().systemd_properties_equal(before,changed))
+
+
 if __name__=='__main__':unittest.main()

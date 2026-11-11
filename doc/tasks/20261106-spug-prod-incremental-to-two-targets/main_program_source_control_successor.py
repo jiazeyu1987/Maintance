@@ -30,6 +30,25 @@ def validate_delta(before,after):
     return sorted(CHANGED_FILES)
 
 
+def systemd_properties_equal(before,after):
+    """systemd dependency properties are sets; drop-in precedence stays ordered."""
+    if type(before) is not dict or type(after) is not dict or set(before)!=set(after):return False
+    for key in before:
+        left,right=before[key],after[key]
+        if type(left) is not str or type(right) is not str:return False
+        if key in ('After','Requires'):
+            a,b=left.split(),right.split()
+            if len(a)!=len(set(a)) or len(b)!=len(set(b)) or set(a)!=set(b):return False
+        elif left!=right:return False
+    return True
+
+
+def process_observation_equal(before,after):
+    if type(before) is not dict or type(after) is not dict or set(before)!=set(after) or 'properties' not in before:return False
+    return (systemd_properties_equal(before['properties'],after['properties']) and
+        all(before[key]==after[key] for key in before if key!='properties'))
+
+
 def prepare_candidate(*,previous,control,owner,previous_build,build,previous_package_raw,package_raw,engine=None):
     """Pure preparation; a BOUND result never asserts installation or a runtime PID."""
     for key,value in (('controlConfigurationPin',control),('ownerConfigurationPin',owner)):
