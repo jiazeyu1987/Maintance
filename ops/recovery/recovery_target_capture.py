@@ -16,7 +16,7 @@ from recovery_program_native import _NativeView
 from recovery_program_protection import ProtectionCustody, _preservation_root
 from recovery_program_execution import _directory
 from minimal_capture_support import (Budget, Originals, actual_pin, exclusive_json,
-    path_checked, source_config_redis, validate_config, MinimalSemantic)
+    path_checked, source_config_redis, validate_config, validate_main_target_config, MinimalSemantic)
 
 
 class _CaptureProcessObserver:
@@ -115,7 +115,9 @@ class MainTargetCapture:
     def _prepare(cls,native,capture_ref,capture_pin,reservation_pin):
         context=native.native_context._context
         require(getattr(context,'_target_capture_session',None) is None,'PROGRAM_CAPTURE_ALREADY_CLAIMED')
-        config=pinned_json(capture_pin);validate_config(config)
+        config=pinned_json(capture_pin)
+        if config.get('schemaVersion')=='MainTargetCaptureConfiguration/v1':validate_main_target_config(config)
+        else:validate_config(config)
         cls._configuration(native,capture_ref,config)
         from recovery_replace import verify_services
         from recovery_main_target import application_runtime_inputs, verify_runtime
@@ -170,8 +172,14 @@ class MainTargetCapture:
         target=native.config;source=config['source'];context=native.native_context._context
         services=native.config_services;epoch=context._policy['backupEpochPolicy']
         require(config['sourceConfigRef']==capture_ref and config['parent'] is None and
-            config['sourceLockPath']==epoch['sourceLockPath'] and config['archiveRoot'] in native.source['archiveRoots'],
+            config['sourceLockPath']==epoch['sourceLockPath'],
             'PROGRAM_CAPTURE_CONFIGURATION_SCOPE_CHANGED')
+        if config.get('schemaVersion')=='MainTargetCaptureConfiguration/v1':
+            require(config.get('outputRootPolicy')=='CURRENT_OPERATION_TARGET_PRESERVATION_CAPTURE' and
+                'archiveRoot' not in config,'PROGRAM_CAPTURE_CONFIGURATION_SCOPE_CHANGED')
+        else:
+            require(config.get('schemaVersion')=='minimal-source-capture-config/v1' and
+                config['archiveRoot'] in native.source['archiveRoots'],'PROGRAM_CAPTURE_CONFIGURATION_SCOPE_CHANGED')
         require(source['sourceIdentity']==source['sourceFingerprint']==epoch['sourceIdentity'] and
             source['databaseUuid']==epoch['databaseUuid']==target['replacement']['databaseUuid'] and
             source['database']==target['database'] and source['mysqlContainerId']==services['mysql']['id'] and

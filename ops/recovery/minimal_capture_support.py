@@ -12,6 +12,7 @@ from pathlib import Path
 import re
 import shutil
 import stat
+import sys
 import time
 import uuid
 
@@ -39,15 +40,39 @@ def actual_pin(path, guard=lambda: None):
     def identity(i):
         return (i.st_dev, i.st_ino, i.st_mode, i.st_nlink, i.st_size, i.st_mtime_ns, i.st_ctime_ns)
     require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1, 'MINIMAL_FILE_INVALID')
+    if sys.platform.startswith('linux'):
+        flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK
+    elif sys.platform == 'win32':
+        flags = os.O_RDONLY | os.O_BINARY | os.O_NOINHERIT
+    else:
+        raise RuntimeError('MINIMAL_PLATFORM_UNSUPPORTED')
     checksum = hashlib.sha256(); size = 0
-    with path.open('rb') as stream:
-        require(identity(os.fstat(stream.fileno())) == identity(before), 'MINIMAL_INPUT_CHANGED')
+    fd = os.open(path, flags)
+    try:
+        stream = os.fdopen(fd, 'rb')
+    except BaseException:
+        os.close(fd)
+        raise
+    with stream:
+        opened = os.fstat(stream.fileno()); baseline = identity(opened)
+        # Reopening CIFS may refresh pathname times. Establish read stability
+        # from this single FD only after proving the same regular object.
+        require(identity(before)[:5] == baseline[:5], 'MINIMAL_INPUT_CHANGED')
+        if sys.platform == 'win32':
+            # CPython's Windows path and FD APIs report different ctime kinds.
+            require(identity(before)[:6] == baseline[:6], 'MINIMAL_INPUT_CHANGED')
         while True:
             guard(); chunk = stream.read(1024*1024)
             if not chunk: break
             size += len(chunk); checksum.update(chunk)
-        require(identity(os.fstat(stream.fileno())) == identity(before), 'MINIMAL_INPUT_CHANGED')
-    require(identity(path.lstat()) == identity(before), 'MINIMAL_INPUT_CHANGED')
+        require(size == opened.st_size and identity(os.fstat(stream.fileno())) == baseline,
+            'MINIMAL_INPUT_CHANGED')
+        after = path_checked(str(path)).lstat()
+        if sys.platform == 'win32':
+            require(identity(after)[:6] == baseline[:6] and after.st_ctime_ns == before.st_ctime_ns,
+                'MINIMAL_INPUT_CHANGED')
+        else:
+            require(identity(after) == baseline, 'MINIMAL_INPUT_CHANGED')
     return dict(path=str(path), bytes=size, sha256=checksum.hexdigest())
 
 
@@ -70,7 +95,10 @@ def exclusive_json(path, value):
         fd = os.open(path.parent, os.O_RDONLY | os.O_DIRECTORY)
         try: os.fsync(fd)
         finally: os.close(fd)
-    return actual_pin(path)
+    reference = actual_pin(path)
+    require(reference['bytes'] == len(raw) and reference['sha256'] == hashlib.sha256(raw).hexdigest(),
+        'MINIMAL_INPUT_CHANGED')
+    return reference
 
 
 def _configuration_header(config):
@@ -139,6 +167,23 @@ def validate_config(config):
     _configuration_header(config)
     _configuration_values(config)
     return _configuration_paths(config)
+
+
+def validate_main_target_config(config):
+    """Validate a target-owned capture whose output is fixed by its real ctx.
+
+    This version is deliberately not accepted by the ordinary source worker.
+    Identity/tools/limits keep the same strict shared value validation.
+    """
+    require(type(config) is dict and set(config)=={'schemaVersion','sourceConfigRef','outputRootPolicy',
+        'sourceLockPath','tools','limits','source','parent'} and
+        config['schemaVersion']=='MainTargetCaptureConfiguration/v1' and
+        type(config['sourceConfigRef']) is str and config['sourceConfigRef'] and
+        config['parent'] is None and
+        config['outputRootPolicy']=='CURRENT_OPERATION_TARGET_PRESERVATION_CAPTURE',
+        'MAIN_TARGET_CAPTURE_CONFIG_INVALID')
+    _configuration_values(config)
+    path_checked(config['sourceLockPath'])
 
 
 def validate_job(config, request):

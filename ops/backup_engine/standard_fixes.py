@@ -178,6 +178,359 @@ def program_worker_handoff(payload, root):
     payload[name] = frozen.encode('utf-8')
 
 
+def _preservation_declaration(source, owner, name):
+    """Select one reviewed AST boundary, never a textual best match."""
+    body = ast.parse(source).body
+    if owner is not None:
+        classes = [item for item in body if isinstance(item, ast.ClassDef) and item.name == owner]
+        if len(classes) != 1:
+            raise ValueError('STANDARD_PRESERVATION_OWNER_CHANGED ' + owner)
+        body = classes[0].body
+    nodes = [item for item in body if isinstance(item, (ast.FunctionDef, ast.ClassDef)) and item.name == name]
+    if len(nodes) != 1:
+        raise ValueError('STANDARD_PRESERVATION_BOUNDARY_CHANGED ' + name)
+    node = nodes[0]
+    return ''.join(source.splitlines(keepends=True)[node.lineno-1:node.end_lineno])
+
+
+def _preservation_method(payload, member, owner, name, expected, replacement):
+    text = payload[member].decode('utf-8').replace('\r\n', '\n')
+    original = _preservation_declaration(text, owner, name)
+    if hashlib.sha256(original.encode()).hexdigest() != expected or text.count(original) != 1:
+        raise ValueError('STANDARD_PRESERVATION_BASELINE_CHANGED ' + member + ':' + name)
+    updated = text.replace(original, replacement)
+    compile(updated, member, 'exec')
+    payload[member] = updated.encode('utf-8')
+
+
+def target_preservation_capture(payload, root):
+    """Bind MAIN to SAFE while preserving its authenticated SOURCE algorithms."""
+    def current(path):
+        return (root/path).read_text(encoding='utf-8').replace('\r\n', '\n')
+
+    # Only these reviewed observer boundaries are shared. In particular the
+    # SAFE content reader, capture/finalize and parent verifier stay in place.
+    snapshot = current('ops/backup_engine/formal/formal_snapshot_linux.py')
+    member = 'formal/formal_snapshot_linux.py'
+    for name, expected in {
+        '__init__': '284357ba908e417154dbb1081e7e61bb0c4778315d75e4b2cd7cdc38398b82ce',
+        'query': '4c51e60b56610c3e1a8187911d757d5840389210a91b5831d709bfeaa27675d8',
+        '_dump_current': 'b0f1b0b3dbca081e9d3e620355273f9ff86621eb4b2f4ffc98b0e2920a2003ac',
+    }.items():
+        replacement = _preservation_declaration(snapshot, 'PrivateDockerMySql', name)
+        if name == '_dump_current':
+            # Keep the authenticated SAFE compression policy. This transform
+            # adds client ownership, not the source tree's timing policy.
+            if replacement.count(',mtime=0,compresslevel=1)') != 1:
+                raise ValueError('STANDARD_PRESERVATION_DUMP_POLICY_CHANGED')
+            replacement = replacement.replace(',mtime=0,compresslevel=1)', ',mtime=0)')
+        _preservation_method(payload, member, 'PrivateDockerMySql', name, expected, replacement)
+    payload[member] += ('\n\n' + _preservation_declaration(snapshot, None, '_drain_observed_process') + '\n').encode()
+
+    semantics = current('ops/backup_engine/formal/formal_capture_semantics.py')
+    for owner, name, expected in (
+        ('SemanticCapture', 'verify_endpoint', '7b591ab228449f558e8321d0460136cdf3782e5b01a7a9688c909dbb803dc3c1'),
+        (None, 'bounded_reference_query', 'ccd39f0b336df4f6e3c6db8abd870da3aa8abc76ef9681b0bd984120f06fcdd0'),
+    ):
+        _preservation_method(payload, 'formal/formal_capture_semantics.py', owner, name, expected,
+            _preservation_declaration(semantics, owner, name))
+
+    # MAIN owns the endpoint subprocess observer through its typed session.
+    # Retain the complete SAFE offline listing/content verifier; SOURCE keeps
+    # the original endpoint call when no observer was explicitly supplied.
+    member = 'formal/minimal_capture_worker.py'
+    offline = _preservation_declaration(payload[member].decode('utf-8').replace('\r\n', '\n'),
+        None, 'verify_objects_after_offline')
+    changes = (
+        ('def verify_objects_after_offline(semantic, runtime):',
+         'def verify_objects_after_offline(semantic, runtime, *, process_observer=None):'),
+        ('    semantic.verify_endpoint(guard)\n',
+         '    if process_observer is None:\n'
+         '        semantic.verify_endpoint(guard)\n'
+         '    else:\n'
+         '        semantic.verify_endpoint(guard, process_observer=process_observer)\n'),
+    )
+    replacement = offline
+    for before, after in changes:
+        if replacement.count(before) != 1:
+            raise ValueError('STANDARD_PRESERVATION_OFFLINE_CONTEXT_CHANGED')
+        replacement = replacement.replace(before, after)
+    _preservation_method(payload, member, None, 'verify_objects_after_offline',
+        'f923288d37c422db7ee7443ee00603a2b5eb01bf528834fb5dbf8cc6e2da9091', replacement)
+
+    member = 'formal/minimal_capture_support.py'
+    support = payload[member].decode('utf-8').replace('\r\n', '\n')
+    original_semantic = _preservation_declaration(support, None, 'MinimalSemantic')
+    if hashlib.sha256(original_semantic.encode()).hexdigest() != \
+            '8ec1628a9895df0de597c386815bf687e317288b562fced8023f99413d544fc6':
+        raise ValueError('STANDARD_PRESERVATION_SEMANTIC_BASELINE_CHANGED')
+    original_job = _preservation_declaration(support, None, 'validate_job')
+    if hashlib.sha256(original_job.encode()).hexdigest() != \
+            '7e89c50e294bf6e992b36a65e4f7af50885a9e4d4ce1a7ee87d3f4b1db08a5b1':
+        raise ValueError('STANDARD_PRESERVATION_CONFIGURATION_BASELINE_CHANGED')
+    shared_support = current('ops/recovery/minimal_capture_support.py')
+    declarations = [_preservation_declaration(shared_support, None, name) for name in
+        ('_configuration_header', '_configuration_values', '_configuration_paths', 'validate_config',
+         'validate_main_target_config')]
+    # The ordinary validate_job remains byte-for-byte, including its order and
+    # request/parent contract. MAIN uses the separate registered config entry.
+    support += '\n\n' + '\n\n'.join(declarations) + '\n'
+    changes = (
+        ('    def __init__(self, series, originals, descriptor, source_config):',
+         '    def __init__(self, series, originals, descriptor, source_config, *, process_observer=None):'),
+        ('            self._initialize(series, originals, descriptor, source_config)',
+         '            self._initialize(series, originals, descriptor, source_config, process_observer=process_observer)'),
+        ('    def _initialize(self, series, originals, descriptor, source_config):',
+         '    def _initialize(self, series, originals, descriptor, source_config, *, process_observer=None):'),
+        ('        self.source_config = source_config\n',
+         '        self.source_config = source_config\n        self.process_observer = process_observer\n'),
+        ('            self.redis_snapshot = observe(source_config_redis(self.source_config), guard)',
+         '            self.redis_snapshot = (observe(source_config_redis(self.source_config), guard)\n'
+         '                if self.process_observer is None else observe(source_config_redis(self.source_config), guard,\n'
+         '                    process_observer=self.process_observer))'),
+        ('            verify_current(self.redis_snapshot, source_config_redis(self.source_config), guard)',
+         '            if self.process_observer is None:\n'
+         '                verify_current(self.redis_snapshot, source_config_redis(self.source_config), guard)\n'
+         '            else:\n'
+         '                verify_current(self.redis_snapshot, source_config_redis(self.source_config), guard,\n'
+         '                    process_observer=self.process_observer)'),
+    )
+    for before, after in changes:
+        if support.count(before) != 1:
+            raise ValueError('STANDARD_PRESERVATION_SEMANTIC_CONTEXT_CHANGED')
+        support = support.replace(before, after)
+    if _preservation_declaration(support, None, 'validate_job') != original_job:
+        raise ValueError('STANDARD_PRESERVATION_SOURCE_ADMISSION_CHANGED')
+    payload[member] = support.encode()
+
+    # Keep the SAFE password/mode/encoding checks; add only the actual inspect
+    # observer and pass it through the existing Redis algorithms.
+    member = 'formal/minimal_redis_snapshot.py'
+    redis = payload[member].decode('utf-8').replace('\r\n', '\n')
+    before = _preservation_declaration(redis, None, 'source_client')
+    if hashlib.sha256(before.encode()).hexdigest() != \
+            '0eff5081351f61abb27d2fabd11d2b3273b1ed59442a899ce81cfc6b995ccee1':
+        raise ValueError('STANDARD_PRESERVATION_REDIS_BASELINE_CHANGED')
+    after = before.replace('def source_client(config, guard):',
+        'def source_client(config, guard, *, process_observer=None):')
+    old = "    row=json.loads(subprocess.check_output(['docker','inspect',config['containerId']],timeout=10))[0]"
+    new = """    if process_observer is None:
+        raw=subprocess.check_output(['docker','inspect',config['containerId']],timeout=10)
+    else:
+        from formal_schema_evidence import _bounded_process
+        raw=_bounded_process(['docker','inspect',config['containerId']],b'',8*1024*1024,10,
+            process_observer=process_observer)
+    row=json.loads(raw)[0]"""
+    if after.count(old) != 1:
+        raise ValueError('STANDARD_PRESERVATION_REDIS_CONTEXT_CHANGED')
+    redis = redis.replace(before, after.replace(old, new))
+    payload[member] = redis.encode()
+    redis_current = current('ops/backup_engine/formal/minimal_redis_snapshot.py')
+    for name, expected in {
+        'observe': 'b0d13a03be4e4f4b63683e88f888232240092e7dcea59c1fefde2e9f2221a9be',
+        'verify_current': '0d156a80535bd84bbfc3463b5b825835c71b2289f2658a5a31fb68df667b7321',
+    }.items():
+        _preservation_method(payload, member, None, name, expected,
+            _preservation_declaration(redis_current, None, name))
+
+    core = current('ops/recovery/recovery_capture_materials.py')
+    core = core.replace(_preservation_declaration(core, 'SourceCaptureLifecycle', '_capture_database'),
+        """    def _capture_database(self,prepared):
+        self.worker.capture_database(prepared.config,prepared.identity,prepared.root,self.runtime,
+            prepared.series,prepared.mysql,prepared.data_mysql)
+""")
+    core = core.replace(_preservation_declaration(core, 'SourceCaptureLifecycle', '_save_images'),
+        """    def _save_images(self,path,images,budget):
+        from minimal_image_export import capture_images
+        import time
+        image_started=time.monotonic();image_pin={}
+        reused=capture_images(self.runtime.config,path,budget,self.worker.validate_image_export,result=image_pin)
+        self.runtime.event('IMAGE_EXPORT_COMPLETE',reused=reused,
+            elapsedSeconds=round(time.monotonic()-image_started,3))
+        return image_pin
+""")
+    core = core.replace(_preservation_declaration(core, 'SourceCaptureLifecycle', '_verify_parent'),
+        '    def _verify_parent(self,semantic):\n        semantic.verify_parent()\n')
+    payload['common/recovery_capture_materials.py'] = core.encode()
+    for name in ('recovery_target_capture', 'recovery_target_preservation', 'recovery_preservation_source',
+                 'recovery_restore_inputs', 'recovery_preservation_inputs'):
+        payload['common/' + name + '.py'] = (root/'ops/recovery'/(''+name+'.py')).read_bytes()
+
+    # STANDARD's authenticated repository APIs always verify content. Adapt
+    # only the new preservation caller; keep those strict callees unchanged.
+    member = 'common/recovery_target_preservation.py'
+    preservation = payload[member].decode('utf-8').replace('\r\n', '\n')
+    for before, after, expected_count in (
+        ('publisher.stream(self.archive,tree,verify_content=True)',
+         'publisher.stream(self.archive,tree)', 1),
+        ('reader.verify(str(self.archive),tree,material,payload_content=True)',
+         'reader.verify(str(self.archive),tree,material)', 1),
+        ('binder.assemble_repository_capture_records,verify_content=True)',
+         'binder.assemble_repository_capture_records)', 2),
+        (',verify_metadata=True)', ')', 2),
+    ):
+        if preservation.count(before) != expected_count:
+            raise ValueError('STANDARD_PRESERVATION_PUBLICATION_API_CHANGED')
+        preservation = preservation.replace(before, after)
+    compile(preservation, member, 'exec')
+    payload[member] = preservation.encode('utf-8')
+
+    member = 'formal/minimal_capture_worker.py'
+    original = _preservation_declaration(payload[member].decode('utf-8').replace('\r\n', '\n'), None, 'capture_locked')
+    # Its restoration/parent cleanup tail is retained exactly; only the shared
+    # material owner replaces the old inline SOURCE material algorithm.
+    replacement = '''def capture_locked(config, request, root, budget, runtime):
+    from recovery_capture_materials import (SourceCaptureLifecycle, prepare_materials,
+        capture_protected_materials)
+    source = config['source']; runtime.preflight()
+    originals = Originals(budget.check)
+    lifecycle = None
+    token = observation_deadline.set(budget.deadline)
+    try:
+        with budget.activate():
+            lifecycle = SourceCaptureLifecycle(runtime)
+            prepared = prepare_materials(config, request, root, output_budget=budget,
+                originals=originals, transport=lifecycle)
+            mysql = prepared.mysql; semantic = prepared.semantic
+            primary = None; result = None
+            try:
+                runtime.phase = 'STOP_WRITERS'
+                for container in source['writerContainerIds']: runtime.stop(container)
+                runtime.fence_attempted = True
+                runtime.phase = 'SET_DATABASE_READ_ONLY'
+                mysql.query('SET GLOBAL read_only=ON; SET GLOBAL super_read_only=ON;')
+                runtime.phase = 'WRITERS_STOPPED_DATABASE_FENCE_CHECK'
+                runtime.protected(force=True); runtime.event('WRITERS_STOPPED_DATABASE_FENCED')
+                result = capture_protected_materials(prepared, lifecycle).result
+            except BaseException as error:
+                error.diagnostic = diagnostic_value(dict(
+                    getattr(error, 'diagnostic', None) or {}, captureStage=runtime.phase))
+                primary = error
+            try:
+                restored = runtime.restore()
+            except Exception as error:
+                runtime.event('CAPTURE_OR_RESTORATION_FAILED', captureFailureCode=None if primary is None else failure_code(primary),
+                    restorationFailureCode=failure_code(error),
+                    captureDiagnostic=None if primary is None else getattr(primary, 'diagnostic', None))
+                raise
+            if primary is not None: raise primary
+            result['sourceRestorationPin'] = restored
+            semantic.verify_parent()
+            runtime.event('CAPTURE_MATERIAL_COMPLETE_SOURCE_RESTORED')
+            return result
+    finally:
+        semantic = None if lifecycle is None else lifecycle.semantic
+'''
+    tail = original[original.index('        import sys\n'):]
+    replacement += tail
+    _preservation_method(payload, member, None, 'capture_locked',
+        '3b749f4163b64a0d2663ce11c2066e4d9d0927335e6983e8da41b5f1892acc7f', replacement)
+
+    member = 'common/recovery_minimal_runtime.py'
+    runtime = payload[member].decode('utf-8').replace('\r\n', '\n')
+    selected = current('ops/recovery/recovery_minimal_runtime.py')
+    helper = _preservation_declaration(selected, None, '_require_main_capability')
+    anchor = 'MinimalData = guarded_type(MinimalData)\n'
+    if runtime.count(anchor) != 1:
+        raise ValueError('STANDARD_PRESERVATION_RUNTIME_BOUNDARY_CHANGED')
+    runtime = runtime.replace(anchor, anchor + '\nsupports_main_target_preservation = True\n\n' + helper + '\n')
+    for function in ('execute', 'execute_empty'):
+        method = _preservation_declaration(runtime, None, function)
+        lines = method.splitlines(keepends=True)
+        signature_end = next(index for index, line in enumerate(lines) if line.rstrip().endswith(':'))
+        gate = '    _require_main_capability(configuration, request)\n'
+        if function == 'execute_empty':
+            # The existing typed signature fragment already carries the
+            # source admission line; require it instead of inserting twice.
+            if lines[signature_end+1] != gate or method.count(gate) != 1:
+                raise ValueError('STANDARD_PRESERVATION_EMPTY_ADMISSION_CHANGED')
+        else:
+            if gate in method:
+                raise ValueError('STANDARD_PRESERVATION_EXECUTE_ADMISSION_CHANGED')
+            lines.insert(signature_end+1, gate)
+        runtime = runtime.replace(method, ''.join(lines))
+    payload[member] = runtime.encode()
+
+
+def target_preservation_repository(payload, root):
+    """Add explicit MAIN readback/holds without replacing ordinary SAFE readers."""
+    member = 'common/repository_native_readback.py'
+    text = payload[member].decode('utf-8').replace('\r\n', '\n')
+    imports = ('from repository_records import (absolute, document, exact, pin_file, read_pin,\n'
+               '                                require, safe_path, write_new)\n')
+    if text.count(imports) != 1:
+        raise ValueError('STANDARD_PRESERVATION_READBACK_IMPORTS_CHANGED')
+    text = text.replace(imports,
+        'from repository_records import (absolute, canonical, document, exact, pin_file, read_pin,\n'
+        '                                require, safe_path, validate_pin, write_new)\n')
+    original = _preservation_declaration(text, 'SmbReadback', 'verify')
+    if hashlib.sha256(original.encode()).hexdigest() != \
+            '6fe357635400bf0a1336fcd78eef11e32ccd4030c3b32805f98d7055be089d17':
+        raise ValueError('STANDARD_PRESERVATION_READBACK_BASELINE_CHANGED')
+    before = "original_records_pin = write_new(self.records / 'readback-originals.json',"
+    if original.count(before) != 1:
+        raise ValueError('STANDARD_PRESERVATION_READBACK_CONTEXT_CHANGED')
+    text = text.replace(original, original.replace(before, 'original_records_pin = self._write_original_records('))
+    current = (root/'ops/recovery/repository_native_readback.py').read_text(encoding='utf-8')
+    hook = _preservation_declaration(current, 'SmbReadback', '_write_original_records')
+    anchor = 'class SmbReadback:\n'
+    if text.count(anchor) != 1:
+        raise ValueError('STANDARD_PRESERVATION_READBACK_OWNER_CHANGED')
+    text = text.replace(anchor, anchor + hook + '\n')
+    for name in ('_private_record', 'read_verified', 'PreservationReadback'):
+        value = _preservation_declaration(current, None, name)
+        if name == 'PreservationReadback':
+            # SAFE's original constructor already mandates authentication and
+            # strict environment checks; it has no LIGHT verification switch.
+            old = 'super().__init__(configuration, deadline, verify_environment=True)'
+            if value.count(old) != 1:
+                raise ValueError('STANDARD_PRESERVATION_READBACK_SUPER_CHANGED')
+            value = value.replace(old, 'super().__init__(configuration, deadline)')
+        text += '\n\n' + value + '\n'
+    payload[member] = text.encode()
+    member = 'common/repository_minimal.py'
+    text = payload[member].decode('utf-8').replace('\r\n', '\n')
+    original = _preservation_declaration(text, None, 'publish')
+    if hashlib.sha256(original.encode()).hexdigest() != \
+            '79d6d40d4fd27f184846e0850d3bc4a66f75b52326483dcd2026d880a9b513bc':
+        raise ValueError('STANDARD_PRESERVATION_SOURCE_PUBLICATION_CHANGED')
+    if any(isinstance(item, ast.FunctionDef) and item.name == 'publish_materials'
+           for item in ast.parse(text).body):
+        raise ValueError('STANDARD_PRESERVATION_MATERIAL_ENTRY_ALREADY_PRESENT')
+    current = (root/'ops/recovery/repository_minimal.py').read_text(encoding='utf-8')
+    entry = _preservation_declaration(current, None, 'publish_materials')
+    text = text.replace(original, entry + '\n\n\n' + original)
+    compile(text, member, 'exec')
+    payload[member] = text.encode()
+    member = 'common/repository_retention.py'
+    text = payload[member].decode('utf-8').replace('\r\n', '\n')
+    for name, expected in {
+        'plan_retention': 'd5422e8a37785c5f8cd92f3515d7254a80b202541f223bf2c964ffb138b6bde4',
+        'execute_retention': '56cd9b9b3760fd7e7825731265d9a0aaf560d8c11fd7e7aa27f54bf60d9b7836',
+    }.items():
+        original = _preservation_declaration(text, None, name)
+        if hashlib.sha256(original.encode()).hexdigest() != expected:
+            raise ValueError('STANDARD_PRESERVATION_RETENTION_BASELINE_CHANGED ' + name)
+    changes = (
+        ('plan_retention', '    points = inventory(catalog)\n',
+         '    from recovery_target_preservation import preservation_holds\n'
+         '    held = preservation_holds(config, guard=catalog.deadline.check)\n'
+         '    points = inventory(catalog)\n'),
+        ('plan_retention', '    protected = set()\n', '    protected = set(held)\n'),
+        ('execute_retention', '            # shutil uses the current platform end to end. No command-built shell deletion.\n',
+         '            from recovery_target_preservation import preservation_holds\n'
+         '            held = preservation_holds(config, guard=owner.check)\n'
+         "            require(pin['path'] not in held, 'REPOSITORY_DELETE_RETAINED_POINT')\n"
+         '            # shutil uses the current platform end to end. No command-built shell deletion.\n'),
+    )
+    for method, before, after in changes:
+        selected = _preservation_declaration(text, None, method)
+        if selected.count(before) != 1:
+            raise ValueError('STANDARD_PRESERVATION_RETENTION_CONTEXT_CHANGED')
+        text = text.replace(selected, selected.replace(before, after))
+    payload[member] = text.encode()
+
+
 def apply(payload):
     payload = dict(payload)
     root = Path(__file__).resolve().parents[2]
@@ -725,4 +1078,6 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     payload['common/recovery_backup_epoch.py'] = (root/'ops/recovery/recovery_backup_epoch.py').read_bytes()
     program_restore_handoff(payload, root)
     program_worker_handoff(payload, root)
+    target_preservation_capture(payload, root)
+    target_preservation_repository(payload, root)
     return payload

@@ -5,11 +5,13 @@ interpreted here. Dedicated preservation points retain the current target while
 its real capture context and original writer protections remain held.
 """
 from copy import deepcopy
+from contextlib import contextmanager
 import hashlib
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import shutil
+import stat
 import time
 from types import SimpleNamespace
 
@@ -17,7 +19,7 @@ from recovery_engine import RecoveryError
 from recovery_archive_guard import ArchivePathGuard
 from recovery_backup_epoch import _path, _read_file
 from recovery_program_native import _NativeView
-from recovery_target_capture import MainTargetCapture
+from recovery_replacement_storage import parse_mountinfo as _parse_mountinfo, visible_mount as _visible_mount
 from minimal_capture_support import actual_pin, exclusive_json
 from repository_records import (RepositoryError, canonical, document, exact,
     require, utc, validate_pin)
@@ -28,6 +30,11 @@ POLICY = ('schemaVersion targetConfigRef captureRef captureConfigurationPin '
     'maxReadbackRecordBytes maxPreservationSeconds minimumFreeBytes')
 REPOSITORY = ('schemaVersion repositoryId repositoryRoot sourceIdentityPin '
     'captureBinderPin readbackConfigPin')
+REPOSITORY_V2 = ('schemaVersion repositoryId repositoryRoot sourceIdentityPin '
+    'captureBinderPin readbackTemplatePin writeView')
+READBACK_TEMPLATE = ('schemaVersion uncRoot repositoryRelativePath repositoryRoot credentialPin '
+    'port authProtocol maximumRecordBytes maximumTotalRecordBytes libraryPins recordRootPolicy')
+READBACK_ROOT_POLICY = 'CURRENT_OPERATION_TARGET_PRESERVATION_PUBLICATION'
 HOLD_INTENT = ('schemaVersion repositoryId operationId targetConfigRef role '
     'archivePath pointPath preservationIntentPin createdAt')
 HOLD = ('schemaVersion repositoryId operationId targetConfigRef role intentPin '
@@ -64,7 +71,10 @@ def _new(path, value):
     directory = os.open(path.parent, os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW)
     try:os.fsync(directory)
     finally:os.close(directory)
-    return actual_pin(path)
+    reference = actual_pin(path)
+    require(reference['bytes'] == len(raw) and reference['sha256'] == hashlib.sha256(raw).hexdigest(),
+        'PRESERVATION_INPUT_CHANGED')
+    return reference
 
 
 def _directory(path):
@@ -79,6 +89,222 @@ def _operation(value):
     require(type(value) is str and re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.-]{0,120}', value),
         'PRESERVATION_OPERATION_INVALID')
     return value
+
+
+def _posix(value):
+    require(type(value) is str and value.startswith('/') and not value.startswith('//') and
+        '\\' not in value and not any(ord(c)<32 for c in value) and
+        str(PurePosixPath(value))==value and '..' not in PurePosixPath(value).parts and value!='/',
+        'PRESERVATION_WRITE_VIEW_INVALID')
+    return value
+
+
+def _template_configuration(repository, template, policy, operation_root):
+    """Validate only stable declarations; this grants no filesystem admission."""
+    require(type(template) is dict and set(template)==set(READBACK_TEMPLATE.split()) and
+        template.get('schemaVersion')=='MainTargetPreservationReadbackTemplate/v1' and
+        template.get('recordRootPolicy')==READBACK_ROOT_POLICY,
+        'PRESERVATION_READBACK_TEMPLATE_INVALID')
+    root=_posix(repository['repositoryRoot'])
+    require(template['repositoryRoot']==root,'PRESERVATION_READBACK_SCOPE_CHANGED')
+    from repository_native_readback import relative_name
+    relative=relative_name(template['repositoryRelativePath'])
+    unc=template['uncRoot']
+    require(type(unc) is str and re.fullmatch(r'\\\\[^\\/:*?"<>|\x00-\x20]+\\[^\\/:*?"<>|\x00-\x1f]+',unc) and
+        all(part.rstrip(' .')==part for part in unc[2:].split('\\')),
+        'PRESERVATION_READBACK_TEMPLATE_INVALID')
+    view=repository['writeView']
+    require(type(view) is dict and set(view)=={'mountPoint','filesystem','mountSource','mountRoot'} and
+        view['filesystem']=='cifs' and view['mountPoint']==root and
+        view['mountSource']=='//'+unc[2:].replace('\\','/') and
+        view['mountRoot']=='/'+relative,'PRESERVATION_WRITE_VIEW_INVALID')
+    _posix(view['mountRoot'])
+    require(type(template['port']) is int and 1<=template['port']<=65535 and
+        template['authProtocol'] in ('ntlm','kerberos') and
+        type(template['maximumRecordBytes']) is int and 0<template['maximumRecordBytes']<=64*1024*1024 and
+        type(template['maximumTotalRecordBytes']) is int and
+        template['maximumRecordBytes']<=template['maximumTotalRecordBytes']<=policy['maxReadbackRecordBytes'] and
+        type(template['libraryPins']) is list and 0<len(template['libraryPins'])<=1000,
+        'PRESERVATION_READBACK_TEMPLATE_INVALID')
+    validate_pin(template['credentialPin'])
+    for reference in template['libraryPins']:validate_pin(reference)
+    result={key:deepcopy(value) for key,value in template.items()
+        if key not in ('schemaVersion','recordRootPolicy')}
+    result.update(schemaVersion='RepositorySmbReadbackConfig/v1',
+        recordRoot=str(operation_root/'target-preservation'/'publication'))
+    return result
+
+
+def _v2_inputs(native, policy_pin):
+    view=getattr(native,'native_context',None)
+    require(type(view) is _NativeView and view.phase=='PREPARATION',
+        'PRESERVATION_PREPARATION_REQUIRED')
+    view.guard_native(native);context=view._context
+    target=context._request['targetConfigRef']
+    require(context._owner.get('targetPreservationPolicies',{}).get(target)==policy_pin,
+        'PRESERVATION_POLICY_UNREGISTERED')
+    policy=_json(policy_pin);exact(policy,POLICY,'MainTargetPreservationPolicy/v2')
+    require(policy['targetConfigRef']==target and
+        context._policy['captureConfigurationPins'].get(policy['captureRef'])==policy['captureConfigurationPin'] and
+        policy['backupEpochPolicy']==context._policy['backupEpochPolicy'],'PRESERVATION_POLICY_SCOPE_CHANGED')
+    require(all(type(policy[k]) is int and policy[k]>0 for k in
+        ('maxArchiveBytes','maxReadbackRecordBytes','maxPreservationSeconds','minimumFreeBytes')),
+        'PRESERVATION_BUDGET_INVALID')
+    capture=_json(policy['captureConfigurationPin'])
+    require(capture.get('schemaVersion')=='MainTargetCaptureConfiguration/v1' and
+        capture.get('outputRootPolicy')=='CURRENT_OPERATION_TARGET_PRESERVATION_CAPTURE' and
+        capture.get('parent') is None,'PRESERVATION_MAIN_CAPTURE_CONFIGURATION_REQUIRED')
+    from minimal_capture_support import validate_main_target_config
+    validate_main_target_config(capture)
+    repository=_json(policy['repositoryConfigurationPin'])
+    exact(repository,REPOSITORY_V2,'MainTargetPreservationRepository/v2')
+    require(type(repository['repositoryId']) is str and repository['repositoryId'],
+        'PRESERVATION_REPOSITORY_INVALID')
+    template=_json(repository['readbackTemplatePin'])
+    configuration=_template_configuration(repository,template,policy,context._root)
+    return context,policy,repository,configuration
+
+
+def _derive_readback_configuration(native, *, policy_pin):
+    """Create private per-operation originals, never a writable-view capability."""
+    context,policy,repository,configuration=_v2_inputs(native,policy_pin)
+    from recovery_program_protection import _preservation_root
+    root=_preservation_root(context)/'publication'
+    require(not os.path.lexists(root),'PRESERVATION_READBACK_ALREADY_DERIVED')
+    root.mkdir(mode=0o700)
+    configuration_pin=_new(root/'readback-configuration.json',configuration)
+    native.original_pins.append(deepcopy(configuration_pin))
+    derivation_pin=_new(root/'readback-derivation.json',dict(
+        schemaVersion='MainTargetPreservationReadbackDerivation/v1',
+        operationId=context._request['operationId'],targetConfigRef=context._request['targetConfigRef'],
+        policyPin=policy_pin,repositoryConfigurationPin=policy['repositoryConfigurationPin'],
+        templatePin=repository['readbackTemplatePin'],executionBindingPin=context._binding,
+        operationRoot=str(context._root),configurationPin=configuration_pin))
+    native.original_pins.append(deepcopy(derivation_pin))
+    return dict(configurationPin=configuration_pin,derivationPin=derivation_pin)
+
+
+class _WriteViewLease:
+    """Hold the actual view FD; privileged forced unmount is not atomic with writes."""
+    def __init__(self, repository):
+        self._closed=False;self._fd=None
+        self._expected=deepcopy(repository['writeView'])
+        self._path=_path(repository['repositoryRoot'])
+        try:
+            self._fd=os.open(self._path,os.O_PATH|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
+            self.observation=self._observe()
+        except BaseException:
+            self.close();raise
+
+    def _observe(self):
+        require(not self._closed,'PRESERVATION_WRITE_VIEW_CLOSED')
+        _directory(self._path)
+        held=os.fstat(self._fd);current=self._path.stat()
+        identity=lambda info:dict(device=info.st_dev,inode=info.st_ino,mode=stat.S_IMODE(info.st_mode),
+            uid=info.st_uid,gid=info.st_gid)
+        require(stat.S_ISDIR(held.st_mode) and identity(held)==identity(current),
+            'PRESERVATION_WRITE_VIEW_DIRECTORY_CHANGED')
+        raw=Path('/proc/self/mountinfo').read_text(encoding='utf-8')
+        rows=_parse_mountinfo(raw);observed=_visible_mount(str(self._path),rows)
+        require(observed['filesystem']=='cifs','PRESERVATION_WRITE_VIEW_CIFS_REQUIRED')
+        require(all(observed[key]==value for key,value in
+            (('mountPoint',self._expected['mountPoint']),('source',self._expected['mountSource']),
+             ('root',self._expected['mountRoot']))),'PRESERVATION_WRITE_VIEW_MOUNT_MISMATCH')
+        require(all('rw' in observed[key] and 'ro' not in observed[key] for key in ('options','superOptions')),
+            'PRESERVATION_WRITE_VIEW_READ_ONLY')
+        ids=re.findall(r'^mnt_id:\s*([0-9]+)\s*$',
+            Path('/proc/self/fdinfo',str(self._fd)).read_text(encoding='ascii'),re.MULTILINE)
+        require(len(ids)==1 and int(ids[0])==observed['mountId'] and
+            observed['device']==str(os.major(held.st_dev))+':'+str(os.minor(held.st_dev)),
+            'PRESERVATION_WRITE_VIEW_MOUNT_MISMATCH')
+        require(not any(self._path in Path(row['mountPoint']).parents for row in rows),
+            'PRESERVATION_WRITE_VIEW_NESTED_MOUNT')
+        lines=[line for line in raw.splitlines() if line.split(' ',1)[0]==str(observed['mountId'])]
+        require(len(lines)==1,'PRESERVATION_WRITE_VIEW_MOUNT_MISMATCH')
+        return dict(mountIdentity=observed,rootIdentity=identity(held),mountInfoLine=lines[0])
+
+    def check(self):
+        try:
+            require(self._observe()==self.observation,'PRESERVATION_WRITE_VIEW_CHANGED')
+        except BaseException as error:
+            # Admission has already happened. Any later mismatch prohibits clear.
+            raise RepositoryError('PRESERVATION_WRITE_VIEW_CHANGED',unknown=True) from error
+
+    def close(self):
+        if self._closed:return
+        self._closed=True
+        if self._fd is not None:os.close(self._fd);self._fd=None
+
+
+@contextmanager
+def _preparation_view_guard(context, lease):
+    """Bounded preparation custody until the publication owns resource checks."""
+    if lease is None:
+        yield
+        return
+    previous=context._outer_guard
+    def guarded():
+        if previous is not None:previous()
+        lease.check()
+    context._outer_guard=guarded
+    try:
+        yield
+    finally:
+        if context._outer_guard is not guarded:
+            # Do not overwrite a guard owned by somebody else or lose the
+            # original exception; Python retains it as the chained context.
+            raise RepositoryError('PRESERVATION_PREPARATION_GUARD_CHANGED',unknown=True)
+        context._outer_guard=previous
+
+
+def _read_v2_admission(reader, *, policy_pin,policy,repository,request,root,binding_pin,derivation_pin,view_pin):
+    """Consume original declarations and that operation's observation, not live mounts."""
+    exact(policy,POLICY,'MainTargetPreservationPolicy/v2')
+    exact(repository,REPOSITORY_V2,'MainTargetPreservationRepository/v2')
+    operation=request['operationId'];target=request['targetConfigRef']
+    publication=root/'target-preservation'/'publication'
+    def fixed(reference,path):
+        require(_path(reference['path'])==path,'PRESERVATION_EVIDENCE_PATH_CHANGED')
+        return reader.read(reference)
+    template=reader.read(repository['readbackTemplatePin'])
+    expected=_template_configuration(repository,template,policy,root)
+    derivation=fixed(derivation_pin,publication/'readback-derivation.json')
+    require(type(derivation) is dict and set(derivation)=={'schemaVersion','operationId','targetConfigRef',
+        'policyPin','repositoryConfigurationPin','templatePin','executionBindingPin','operationRoot','configurationPin'} and
+        derivation['schemaVersion']=='MainTargetPreservationReadbackDerivation/v1' and
+        derivation['operationId']==operation and derivation['targetConfigRef']==target and
+        derivation['policyPin']==policy_pin and derivation['repositoryConfigurationPin']==policy['repositoryConfigurationPin'] and
+        derivation['templatePin']==repository['readbackTemplatePin'] and derivation['executionBindingPin']==binding_pin and
+        derivation['operationRoot']==str(root),'PRESERVATION_READBACK_DERIVATION_CHANGED')
+    require(fixed(derivation['configurationPin'],publication/'readback-configuration.json')==expected,
+        'PRESERVATION_READBACK_DERIVATION_CHANGED')
+    observed=fixed(view_pin,root/'target-preservation'/'write-view.json')
+    require(type(observed) is dict and set(observed)=={'schemaVersion','operationId','targetConfigRef',
+        'repositoryConfigurationPin','executionBindingPin','mountIdentity','rootIdentity','mountInfoLine','observedAt'} and
+        observed['schemaVersion']=='MainTargetPreservationWriteViewObservation/v1' and
+        observed['operationId']==operation and observed['targetConfigRef']==target and
+        observed['repositoryConfigurationPin']==policy['repositoryConfigurationPin'] and
+        observed['executionBindingPin']==binding_pin,'PRESERVATION_WRITE_VIEW_EVIDENCE_CHANGED')
+    line=observed['mountInfoLine']
+    require(type(line) is str and 0<len(line)<=65536 and '\n' not in line and '\r' not in line,
+        'PRESERVATION_WRITE_VIEW_EVIDENCE_CHANGED')
+    rows=_parse_mountinfo(line)
+    require(len(rows)==1 and rows[0]==observed['mountIdentity'],'PRESERVATION_WRITE_VIEW_EVIDENCE_CHANGED')
+    mount=rows[0];view=repository['writeView'];identity=observed['rootIdentity']
+    require(mount['filesystem']=='cifs','PRESERVATION_WRITE_VIEW_CIFS_REQUIRED')
+    require(mount['mountPoint']==view['mountPoint'] and mount['source']==view['mountSource'] and
+        mount['root']==view['mountRoot'] and
+        all('rw' in mount[key] and 'ro' not in mount[key] for key in ('options','superOptions')),
+        'PRESERVATION_WRITE_VIEW_EVIDENCE_CHANGED')
+    require(type(identity) is dict and set(identity)=={'device','inode','mode','uid','gid'} and
+        all(type(value) is int and value>=0 for value in identity.values()) and identity['inode']>0 and
+        identity['mode']<=0o7777 and not identity['mode']&0o022 and
+        mount['device']==str(os.major(identity['device']))+':'+str(os.minor(identity['device'])) and
+        type(observed['observedAt']) is str and
+        re.fullmatch(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|\+00:00)',observed['observedAt']),
+        'PRESERVATION_WRITE_VIEW_EVIDENCE_CHANGED')
+    return dict(configurationPin=deepcopy(derivation['configurationPin']),
+        derivationPin=deepcopy(derivation_pin),writeViewObservationPin=deepcopy(view_pin))
 
 
 def _location(root, operation):
@@ -186,7 +412,8 @@ class TargetPreservation:
         require(context._owner.get('targetPreservationPolicies', {}).get(target) == policy_pin,
             'PRESERVATION_POLICY_UNREGISTERED')
         policy = _json(policy_pin)
-        exact(policy, POLICY, 'MainTargetPreservationPolicy/v1')
+        version_two=policy.get('schemaVersion')=='MainTargetPreservationPolicy/v2'
+        exact(policy, POLICY, 'MainTargetPreservationPolicy/v2' if version_two else 'MainTargetPreservationPolicy/v1')
         program = context._policy
         require(policy['targetConfigRef'] == target and
             program['captureConfigurationPins'].get(policy['captureRef']) == policy['captureConfigurationPin'] and
@@ -195,7 +422,8 @@ class TargetPreservation:
             ('maxArchiveBytes','maxReadbackRecordBytes','maxPreservationSeconds','minimumFreeBytes')),
             'PRESERVATION_BUDGET_INVALID')
         repository = _json(policy['repositoryConfigurationPin'])
-        exact(repository, REPOSITORY, 'MainTargetPreservationRepository/v1')
+        exact(repository, REPOSITORY_V2 if version_two else REPOSITORY,
+            'MainTargetPreservationRepository/v2' if version_two else 'MainTargetPreservationRepository/v1')
         require(type(repository['repositoryId']) is str and repository['repositoryId'],
             'PRESERVATION_REPOSITORY_INVALID')
         root = _path(repository['repositoryRoot']); _directory(root)
@@ -203,7 +431,9 @@ class TargetPreservation:
         forbidden = [str(context._root), *native.config['dataPaths'], native.config['dataRoot'],
             native.config['replacement']['stateRoot'], program['backupEpochPolicy']['root']]
         require(all(not overlaps(str(root), p) for p in forbidden), 'PRESERVATION_REPOSITORY_OVERLAP')
-        readback = _json(repository['readbackConfigPin'])
+        if version_two:
+            _,_,_,readback=_v2_inputs(native,policy_pin)
+        else:readback = _json(repository['readbackConfigPin'])
         require(readback['repositoryRoot'] == str(root) and
             readback['recordRoot'] == str(context._root/'target-preservation'/'publication') and
             readback['maximumTotalRecordBytes'] <= policy['maxReadbackRecordBytes'],
@@ -215,36 +445,59 @@ class TargetPreservation:
         _read(repository['captureBinderPin'])
         require(getattr(context, '_target_preservation', None) is None, 'PRESERVATION_ALREADY_USED')
         from repository_retention import RepositoryLock
+        write_view=None;owner=None;derived=None;view_pin=None
         def preparation_guard():
             view.guard_native(native); context.budget.remaining()
+            if write_view is not None:write_view.check()
         configuration = SimpleNamespace(root=root, archives=root/'preservations', value=repository,
             identity_pin=repository['sourceIdentityPin'], current=preparation_guard)
         # The target's real lock is already proved above. This is the existing
         # shared repository byte lock, not a second target lock implementation.
-        owner = RepositoryLock(configuration, context._request)
         result = None
         try:
-            session = MainTargetCapture.prepare(native, capture_ref=policy['captureRef'], reservation_pin=reservation_pin)
-            source_scope = _json(_json(session.source['objectSourcePin'])['sourceScopePin'])
+            if version_two:
+                # The kernel view is proved before the first repository write.
+                write_view=_WriteViewLease(repository)
+                from recovery_program_protection import _preservation_root
+                parent=_preservation_root(context)
+                view_pin=_new(parent/'write-view.json',dict(
+                    schemaVersion='MainTargetPreservationWriteViewObservation/v1',
+                    operationId=context._request['operationId'],targetConfigRef=target,
+                    repositoryConfigurationPin=policy['repositoryConfigurationPin'],
+                    executionBindingPin=context._binding,**write_view.observation,observedAt=utc()))
+                native.original_pins.append(deepcopy(view_pin))
+                derived=_derive_readback_configuration(native,policy_pin=policy_pin)
+            preparation_guard()
+            owner = RepositoryLock(configuration, context._request)
+            preparation_guard()
+            with _preparation_view_guard(context,write_view):
+                from recovery_target_capture import MainTargetCapture
+                session = MainTargetCapture.prepare(native, capture_ref=policy['captureRef'], reservation_pin=reservation_pin)
+                source_scope = _json(_json(session.source['objectSourcePin'])['sourceScopePin'])
+                preparation_guard()
             require(source_scope['sourceIdentityPin'] == repository['sourceIdentityPin'],
                 'PRESERVATION_SOURCE_IDENTITY_CHANGED')
             result = cls.__new__(cls)
             result._closed = result._used = False
             result._pins, result._leases, result._directories = {}, [], {}
             result._repository_lock = owner
+            result._write_view=write_view
             result.native, result.context, result.session = native, context, session
             result.policy, result.readback = deepcopy(policy), deepcopy(readback)
             result.policy_pin, result.repository_pin = deepcopy(policy_pin), deepcopy(policy['repositoryConfigurationPin'])
             result.root = context._root/'target-preservation'/'publication'
-            result.root.mkdir(mode=0o700)
+            if not version_two:result.root.mkdir(mode=0o700)
             result.configuration, result._repository_lock = configuration, owner
             configuration.current = result._check_base
             result.deadline = _Deadline(result)
             result._proof = None
+            result._restoration_custody = None
             context._target_preservation = result
             for path in (root, result.root, owner.control): result._directories[path] = _directory(path)
+            readback_pins=(repository['readbackTemplatePin'],derived['configurationPin'],
+                derived['derivationPin'],view_pin) if version_two else (repository['readbackConfigPin'],)
             for reference in (policy_pin, result.repository_pin, repository['sourceIdentityPin'],
-                    repository['readbackConfigPin'], repository['captureBinderPin']):
+                    *readback_pins, repository['captureBinderPin']):
                 result._remember(reference)
             from repository_native_readback import PreservationReadback
             with PreservationReadback(readback, result.deadline) as reader:
@@ -255,19 +508,26 @@ class TargetPreservation:
             snapshot = _json(execution['contextPin'])
             operation = context._request['operationId']
             result.archive = _location(root, operation)
-            result.intent_pin = result._write(result.root/'intent.json', dict(
-                schemaVersion='MainTargetPreservationIntent/v1', operationId=operation, targetConfigRef=target,
+            intent=dict(
+                schemaVersion='MainTargetPreservationIntent/v2' if version_two else 'MainTargetPreservationIntent/v1',
+                operationId=operation, targetConfigRef=target,
                 role=ROLE, policyPin=policy_pin, repositoryConfigurationPin=result.repository_pin,
                 configurationPin=execution['configurationPin'], requestPin=execution['requestPin'],
                 originalTargetPin=view.evidence['targetPin'], captureConfigurationPin=session._capture_pin,
                 executionBindingPin=context._binding, reservationPin=reservation_pin, contextPin=execution['contextPin'],
                 readyEventPin=snapshot['readyEpoch']['eventPin'], replacingEventPin=context._epoch['eventPin'],
-                archivePath=str(result.archive), deadlineMonotonic=result.deadline.end, createdAt=utc()))
+                archivePath=str(result.archive), deadlineMonotonic=result.deadline.end, createdAt=utc())
+            if version_two:intent.update(readbackDerivationPin=derived['derivationPin'],writeViewObservationPin=view_pin)
+            result.intent_pin = result._write(result.root/'intent.json',intent)
             result._hold_before_capture()
             return result
         except BaseException as error:
             try:
-                if result is None: owner.close()
+                if result is None:
+                    try:
+                        if owner is not None:owner.close()
+                    finally:
+                        if write_view is not None:write_view.close()
                 else: result.close()
             except BaseException as cleanup:
                 error.cleanupError = cleanup
@@ -335,7 +595,16 @@ class TargetPreservation:
         require(not self._closed,'PRESERVATION_CLOSED')
         require(self.context._target_preservation is self and self.session._context is self.context,
             'PRESERVATION_OWNER_CHANGED')
-        require(time.monotonic()<self.deadline.end,'PRESERVATION_DEADLINE')
+        custody = self._restoration_custody
+        if custody is None:
+            require(time.monotonic()<self.deadline.end,'PRESERVATION_DEADLINE')
+        else:
+            # Publication has finished. The enclosing native context still
+            # enforces its original owner budget before and after this guard.
+            require(type(custody) is VerifiedTargetPreservation and custody is self._final and
+                custody._publication is self and self.session.handed_off and self.session._lease.handed_off,
+                'PRESERVATION_CUSTODY_CHANGED')
+        if self._write_view is not None:self._write_view.check()
         for path,expected in self._directories.items():
             require(_directory(path)==expected,'PRESERVATION_DIRECTORY_CHANGED')
         for lease in self._leases:lease.check()
@@ -527,6 +796,9 @@ class TargetPreservation:
             originalResultPins=deepcopy(list(self._pins.values())),finishedAt=utc()))
         self._final=VerifiedTargetPreservation(self,reference)
         require_preservation(self.context,native=self.native)
+        # Seal only after the complete final proof passes under the original
+        # publication deadline; HANDED_OFF alone never transfers the clock.
+        self._restoration_custody=self._final
         return self._final
 
     def close(self):
@@ -536,7 +808,9 @@ class TargetPreservation:
             for lease in reversed(self._leases):lease.close()
         finally:
             self._leases=[]
-            self._repository_lock.close()
+            try:self._repository_lock.close()
+            finally:
+                if self._write_view is not None:self._write_view.close()
 
 
 def validate_archive(native, archive_proof_pin):
@@ -653,13 +927,16 @@ def validate_preservation_evidence(owner,request,reference,*,binding_pin,guard=N
         require(value['state']=='SUCCEEDED' and value['operationId']==operation and
             value['targetConfigRef']==target and owner['targetPreservationPolicies'][target]==value['policyPin'],
             'PRESERVATION_EVIDENCE_SCOPE_CHANGED')
-        policy=read(value['policyPin']);exact(policy,POLICY,'MainTargetPreservationPolicy/v1')
+        policy=read(value['policyPin'])
+        version_two=policy.get('schemaVersion')=='MainTargetPreservationPolicy/v2'
+        exact(policy,POLICY,'MainTargetPreservationPolicy/v2' if version_two else 'MainTargetPreservationPolicy/v1')
         program=owner['targetProgramPolicies'][target]
         require(policy['targetConfigRef']==target and policy['backupEpochPolicy']==program['backupEpochPolicy'] and
             program['captureConfigurationPins'][policy['captureRef']]==policy['captureConfigurationPin'],
             'PRESERVATION_EVIDENCE_POLICY_CHANGED')
         repository=read(policy['repositoryConfigurationPin'])
-        exact(repository,REPOSITORY,'MainTargetPreservationRepository/v1')
+        exact(repository,REPOSITORY_V2 if version_two else REPOSITORY,
+            'MainTargetPreservationRepository/v2' if version_two else 'MainTargetPreservationRepository/v1')
         archive=_location(_path(repository['repositoryRoot']),operation);sidecar=archive/'.repository'
         binding=fixed(binding_pin,claim/'program-execution-binding.json')
         require(type(binding) is dict and set(binding)==BINDING_FIELDS and
@@ -673,7 +950,7 @@ def validate_preservation_evidence(owner,request,reference,*,binding_pin,guard=N
             context['schemaVersion']=='MainProgramRestoreContext/v1' and context['operationId']==operation and
             context['policySha256']==digest(program),'PRESERVATION_EVIDENCE_CONTEXT_CHANGED')
         intent=fixed(value['intentPin'],publication/'intent.json')
-        require(intent.get('schemaVersion')=='MainTargetPreservationIntent/v1' and
+        require(intent.get('schemaVersion')==('MainTargetPreservationIntent/v2' if version_two else 'MainTargetPreservationIntent/v1') and
             intent['operationId']==operation and intent['targetConfigRef']==target and intent['role']==ROLE and
             intent['policyPin']==value['policyPin'] and intent['repositoryConfigurationPin']==policy['repositoryConfigurationPin'] and
             intent['configurationPin']==binding['configurationPin'] and intent['requestPin']==binding['requestPin'] and
@@ -683,6 +960,17 @@ def validate_preservation_evidence(owner,request,reference,*,binding_pin,guard=N
             intent['reservationPin']==binding['reservationPin'] and intent['archivePath']==str(archive) and
             intent['readyEventPin']==context['readyEpoch']['eventPin'],
             'PRESERVATION_EVIDENCE_INTENT_CHANGED')
+        if version_two:
+            exact(intent,'schemaVersion operationId targetConfigRef role policyPin repositoryConfigurationPin '
+                'configurationPin requestPin originalTargetPin captureConfigurationPin executionBindingPin '
+                'reservationPin contextPin readyEventPin replacingEventPin archivePath deadlineMonotonic '
+                'createdAt readbackDerivationPin writeViewObservationPin','MainTargetPreservationIntent/v2')
+            capture=read(policy['captureConfigurationPin'])
+            from minimal_capture_support import validate_main_target_config
+            validate_main_target_config(capture)
+            _read_v2_admission(reader,policy_pin=value['policyPin'],policy=policy,repository=repository,
+                request=request,root=root,binding_pin=binding_pin,
+                derivation_pin=intent['readbackDerivationPin'],view_pin=intent['writeViewObservationPin'])
         proof=fixed(value['archiveProofPin'],publication/'archive-proof.json')
         exact(proof,PROOF,'MainTargetPreservationArchive/v1')
         require(proof['state']=='ARCHIVED_VERIFIED' and proof['role']==ROLE and proof['operationId']==operation and

@@ -333,7 +333,17 @@ from recovery_main_target import guarded_type
 MinimalData = guarded_type(MinimalData)
 
 
+supports_main_target_preservation = False
+
+
+def _require_main_capability(configuration, request):
+    if 'mainApplication' in configuration['targets'][request['targetConfigRef']]:
+        require(supports_main_target_preservation is True,
+                'MAIN_PRESERVATION_REQUIRES_SAFE_ENGINE')
+
+
 def execute(configuration, request, root, input_pins):
+    _require_main_capability(configuration, request)
     from recovery_replace import enabled, execute as replace
     if enabled(configuration['targets'][request['targetConfigRef']]):
         return replace(configuration, request, root, input_pins, execute_empty, MinimalData, selected_chain)
@@ -343,6 +353,7 @@ def execute(configuration, request, root, input_pins):
 def execute_empty(configuration, request, root, input_pins, *, reservation_configuration=None,
                   native_context=None, protection_custody=None, execution_binding_pin=None,
                   execution_generation_pin=None, execution_lock_fd=None, target_preservation=None):
+    _require_main_capability(configuration, request)
     with step_timing(root, 'restore-admission'):
         source, policy, chain = selected_chain(configuration, request)
         target = target_configuration(configuration, request, source)

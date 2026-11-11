@@ -45,6 +45,7 @@ class SourceCaptureLifecycle:
                 Path(module.__file__).resolve()==Path(selected.origin).resolve(),'MINIMAL_CAPTURE_LIFECYCLE_INVALID')
         self.runtime=runtime
         self.worker=module
+        self.semantic=None
 
     def _mysql(self,source,limits):
         password=self.originals.read(source['passwordPin'],16384).decode('utf-8').removesuffix('\n')
@@ -53,9 +54,30 @@ class SourceCaptureLifecycle:
 
     def _save_images(self,path,images,budget):
         save_application_images(path,images,budget)
+        self.worker.validate_image_export(path,images,budget.check)
+        return actual_pin(path,budget.check)
 
     def _semantic(self,series,originals,descriptor,source):
-        return MinimalSemantic(series,originals,descriptor,source)
+        self.semantic=MinimalSemantic(series,originals,descriptor,source)
+        return self.semantic
+
+    def _admit_semantic(self,prepared):
+        source=prepared.config['source']
+        prepared.semantic.verify_endpoint(prepared.budget.check)
+        if 'redisSnapshot' in source:
+            from minimal_redis_snapshot import preflight as redis_preflight
+            redis_preflight(source['redisSnapshot'],prepared.budget.check)
+        programs=['mysql','sh','timeout']
+        if prepared.identity['action']=='FULL':programs.append('mysqldump')
+        self.runtime.command(['exec',source['mysqlContainerId'],'sh','-ec',
+            'for program in '+' '.join(programs)+'; do command -v "$program" >/dev/null || exit 1; done'])
+        self.runtime.event('CAPTURE_DEPENDENCIES_VERIFIED')
+
+    def _capture_database(self,prepared):
+        _capture_database(prepared,self.runtime)
+
+    def _verify_parent(self,semantic):
+        semantic.check()
 
     def _verify_objects(self,semantic):
         self.worker.verify_objects_after_offline(semantic,self.runtime)
@@ -128,6 +150,8 @@ def prepare_materials(config,identity,root,*,output_budget,originals,transport):
         configurationPins=source['configurationPins'],materialPins=source['materialPins']))
     series=MinimalSeries(config,identity,catalog_pin,originals,budget.check)
     semantic=transport._semantic(series,originals,descriptor,source)
+    prepared.mysql,prepared.data_mysql,prepared.series,prepared.semantic=mysql,data_mysql,series,semantic
+    if type(transport) is SourceCaptureLifecycle:transport._admit_semantic(prepared)
     material_rows=[];config_rows={}
     for key,label,prefix in (('configurationPins','role','original-configs'),('materialPins','purpose','recovery-materials')):
         for item in source[key]:
@@ -146,25 +170,23 @@ def prepare_materials(config,identity,root,*,output_budget,originals,transport):
     write_record(Path(root)/'recovery-materials'/'index.json',dict(schemaVersion='backup-capture-material-index/v1',files=material_rows))
     runtime.phase='CONFIGURATION_AND_IMAGE_CAPTURE'
     image_path=Path(root)/'payload'/'original-application-images.tar'
-    transport._save_images(image_path,source['applicationImageIds'],budget)
-    transport.worker.validate_image_export(image_path,source['applicationImageIds'],budget.check)
+    if type(transport) is SourceCaptureLifecycle:
+        image_pin=transport._save_images(image_path,source['applicationImageIds'],budget)
+    else:
+        transport._save_images(image_path,source['applicationImageIds'],budget)
+        transport.worker.validate_image_export(image_path,source['applicationImageIds'],budget.check)
+        image_pin=actual_pin(image_path,budget.check)
     write_record(Path(root)/'payload'/'050-original-images.json',dict(imageIds=source['applicationImageIds'],
-        archivePin=actual_pin(image_path,budget.check)))
+        archivePin=image_pin))
     runtime.event('CONFIGURATION_AND_IMAGES_CAPTURED')
-    prepared.mysql,prepared.data_mysql,prepared.series,prepared.semantic=mysql,data_mysql,series,semantic
     prepared.check()
     return prepared
 
 
-def capture_protected_materials(prepared,lifecycle):
-    require(type(prepared) is PreparedCaptureMaterials and prepared.lifecycle is lifecycle and not prepared._used,
-            'MINIMAL_CAPTURE_MATERIALS_INVALID')
-    runtime=_lifecycle(lifecycle);prepared.check();prepared._used=True
-    worker=lifecycle.worker
+def _capture_database(prepared,runtime):
+    """The original full strict algorithm, also used by MAIN without a flag."""
     source=prepared.config['source'];limits=prepared.config['limits'];root=prepared.root;budget=prepared.budget
-    mysql,data_mysql,series,semantic=prepared.mysql,prepared.data_mysql,prepared.series,prepared.semantic
-    runtime.phase='SEMANTIC_CAPTURE'
-    semantic.capture(mysql,source['database'],root/'semantic-capture',runtime.protected)
+    mysql,data_mysql,series=prepared.mysql,prepared.data_mysql,prepared.series
     def data(name):
         return observe_data(data_mysql,source['database'],source['databaseUuid'],guard=runtime.protected,
             scratch=root/name,max_rows=limits['dataMaxRows'],max_nodes=limits['dataMaxNodes'],
@@ -187,6 +209,19 @@ def capture_protected_materials(prepared,lifecycle):
             max_rows=limits['dataMaxRows'],max_nodes=limits['dataMaxNodes'],max_bytes=limits['dataMaxBytes'],seconds=limits['dataSeconds'])
         write_record(root/'payload'/'source-affected-data.json',observed)
         series.database_delta.update(dataObservation='AFFECTED_TABLES_V1',lowerCaseTableNames=int(case))
+
+
+def capture_protected_materials(prepared,lifecycle):
+    require(type(prepared) is PreparedCaptureMaterials and prepared.lifecycle is lifecycle and not prepared._used,
+            'MINIMAL_CAPTURE_MATERIALS_INVALID')
+    runtime=_lifecycle(lifecycle);prepared.check();prepared._used=True
+    worker=lifecycle.worker
+    source=prepared.config['source'];root=prepared.root;budget=prepared.budget
+    mysql,series,semantic=prepared.mysql,prepared.series,prepared.semantic
+    runtime.phase='SEMANTIC_CAPTURE'
+    semantic.capture(mysql,source['database'],root/'semantic-capture',runtime.protected)
+    if type(lifecycle) is SourceCaptureLifecycle:lifecycle._capture_database(prepared)
+    else:_capture_database(prepared,runtime)
     runtime.phase='MINIO_OFFLINE_PRECHECK';runtime.protected(force=True)
     runtime.phase='MINIO_STOP';runtime.stop(source['minioContainerId']);runtime.minio_stopped=True
     runtime.phase='MINIO_PHYSICAL_CAPTURE'
@@ -201,7 +236,9 @@ def capture_protected_materials(prepared,lifecycle):
     write_record(root/'payload'/'capture-content-point.json',point)
     write_record(root/'payload'/'capture-file-inventory.json',series.file_inventory)
     runtime.phase='SEMANTIC_FINALIZE';supplement,_=semantic.finalize(point,runtime.protected)
-    runtime.phase='CAPTURE_FINAL_CHECK';prepared.originals.check(full=True);runtime.protected(force=True)
+    runtime.phase='CAPTURE_FINAL_CHECK'
+    if type(lifecycle) is SourceCaptureLifecycle:lifecycle._verify_parent(semantic)
+    prepared.originals.check(full=True);runtime.protected(force=True)
     entries=worker.archive_entries(root,budget.check)
     inputs=capture_recovery_inputs(point,source_root=str(root),entries=entries,supplemental=supplement)
     inputs_pin=write_record(root/'capture-recovery-inputs.json',inputs);entries['capture-recovery-inputs.json']=worker.marker(inputs_pin)

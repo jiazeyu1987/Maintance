@@ -34,7 +34,7 @@ pytestmark=pytest.mark.skipif(not sys.platform.startswith('linux'),reason='actua
 
 
 CLIENT=r'''#!PYTHON
-import json,sys,time
+import json,re,sys,time
 from pathlib import Path
 state_path=Path(STATE)
 s=json.loads(state_path.read_text());a=sys.argv[1:];query=sys.stdin.buffer.read().decode() if a[:1]==['exec'] else ''
@@ -54,7 +54,18 @@ elif a[:1] in (['start'],['stop']):
     if s.get('restoreFailure') and a[0]=='start' and identity in s['writers']:sys.exit(7)
 elif a[:1]==['exec']:
     sql=query.split('\n',1)[1] if '\n' in query else query
-    if any('mysqldump' in part for part in a):
+    # The SOURCE dependency probe mentions mysqldump but never executes it.
+    probe='for program in mysql sh timeout mysqldump; do command -v "$program" >/dev/null || exit 1; done'
+    dump_prefix=('test -z "${MYSQL_TEST_LOGIN_FILE:-}"; test -n "${HOME:-}"; '
+        'test ! -e "$HOME/.mylogin.cnf"; test ! -L "$HOME/.mylogin.cnf"; '
+        'IFS= read -r MYSQL_PWD; export MYSQL_PWD; exec timeout --signal=TERM --kill-after=5 ')
+    dump=(len(a)>6 and a[:2]==['exec','-i'] and a[2] in s['containers'] and a[3:5]==['sh','-ec']
+        and a[6:]==['formal-mysql','--no-defaults','--protocol=SOCKET','-uroot',
+            '--single-transaction','--routines','--triggers','--events','--hex-blob',
+            '--set-gtid-purged=OFF','--default-character-set=utf8mb4','app']
+        and re.fullmatch(re.escape(dump_prefix)+r'[1-9][0-9]*s mysqldump "\$@"',a[5]) is not None)
+    if len(a)==5 and a[1] in s['containers'] and a[2:]==['sh','-ec',probe]:pass
+    elif dump:
         if s.get('dumpRelease'):
             Path(s['dumpReady']).touch();end=time.monotonic()+5
             while not Path(s['dumpRelease']).exists() and time.monotonic()<end:time.sleep(.001)

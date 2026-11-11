@@ -1,5 +1,7 @@
 """Future backup discovery and immutable selection, without running a restore."""
 from copy import deepcopy
+from contextlib import contextmanager
+import importlib.util
 import json
 from pathlib import Path
 import sys
@@ -31,6 +33,38 @@ class ArchiveCatalogue(unittest.TestCase):
         path.write_text(json.dumps(value, sort_keys=True, separators=(',',':')), encoding='utf-8')
         path.chmod(0o600)
         return executor.pin(path)
+
+    @contextmanager
+    def actual_runtime(self, variant):
+        """Pure authenticated files, real imports; never caller-granted flags."""
+        root = Path(__file__).resolve().parents[2]
+        spec = importlib.util.spec_from_file_location('catalogue_qualification_builder',
+            root/'ops/backup_engine/build_variants.py')
+        builder = importlib.util.module_from_spec(spec); spec.loader.exec_module(builder)
+        baseline, _ = (builder.standard_sources() if variant == 'standard'
+            else builder.lightweight_sources())
+        payload = builder.safe_fixes(baseline) if variant == 'standard' else baseline
+        with tempfile.TemporaryDirectory(dir=self.root) as directory:
+            engine = Path(directory)
+            for name, raw in payload.items():
+                path = engine/name; path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(raw)
+            expected = {Path(name).stem:engine/name for name in payload
+                if name.endswith('.py') and name.count('/') == 1 and
+                name.split('/')[0] in ('common','formal')}
+            with patch.dict(sys.modules), patch.object(sys, 'path',
+                    [str(engine/name) for name in ('common','formal')]+sys.path):
+                for name in expected:sys.modules.pop(name, None)
+                runtime = importlib.import_module('recovery_minimal_runtime')
+                self.assertIs(runtime.supports_main_target_preservation, variant == 'standard')
+                try:
+                    yield runtime
+                finally:
+                    for name, path in expected.items():
+                        module = sys.modules.get(name)
+                        if module is None:continue
+                        self.assertEqual(Path(module.__file__).resolve(), path.resolve())
+                        self.assertEqual(path.read_bytes(), payload[path.relative_to(engine).as_posix()])
 
     def point(self, reference, parents=(), generation='full-first'):
         sidecar = self.root/'archives'/reference/'.repository'
@@ -360,13 +394,14 @@ class ArchiveCatalogue(unittest.TestCase):
         request=dict(schemaVersion='SmallAppBackupUiRequest/v1',operationId='main-refusal-001',
             action='RESTORE',sourceConfigRef='source-A',parentChainRef=None,
             recoveryPointRef='backup-old',targetConfigRef='target-B')
-        from types import SimpleNamespace
         native=Native.__new__(Native);native.config_pin='native-config'
-        with patch.object(native,'configuration',return_value=config),patch.object(native,'registration',
+        with self.actual_runtime('lightweight'), \
+                patch.object(native,'configuration',return_value=config),patch.object(native,'registration',
                 return_value=({'allowedRestoreTargets':[{'configRef':'target-B'}]},'registration')), \
                 patch.object(native,'document',return_value=owner),patch.object(native,'point',return_value='binding'), \
-                patch.object(executor,'verify'),patch.dict(sys.modules,{'recovery_minimal_runtime':SimpleNamespace(MinimalData=object)}):
-            with self.assertRaisesRegex(Exception,'MAIN_RESTORE_REQUIRES_SAFE_ENGINE'):native.resolve(request)
+                patch.object(executor,'verify'),patch.object(native,'execute') as execute:
+            with self.assertRaisesRegex(Exception,'^MAIN_PRESERVATION_REQUIRES_SAFE_ENGINE$'):native.resolve(request)
+            execute.assert_not_called()
 
     def test_main_availability_observes_live_target_and_propagates_identity_errors(self):
         from recovery_control_target_availability import available
@@ -374,8 +409,7 @@ class ArchiveCatalogue(unittest.TestCase):
         configuration=dict(targets={'target-B':{'mainApplication':{}}})
         native=SimpleNamespace(document=lambda pin:configuration)
         module=SimpleNamespace(observe_main_target=lambda *args: (_ for _ in ()).throw(RuntimeError('MAIN_SERVICE_UNSTABLE')))
-        with patch.dict(sys.modules,{'recovery_main_target':module,
-                'recovery_minimal_runtime':SimpleNamespace(MinimalData=SimpleNamespace(supports_registered_main_targets=True))}), \
+        with self.actual_runtime('standard'),patch.dict(sys.modules,{'recovery_main_target':module}), \
                 patch('recovery_control_target_availability.unclaimed_target',return_value=True):
             with self.assertRaisesRegex(RuntimeError,'MAIN_SERVICE_UNSTABLE'):
                 available(native,'owner','target-B','source-A')
@@ -384,8 +418,11 @@ class ArchiveCatalogue(unittest.TestCase):
         from recovery_control_target_availability import available
         from types import SimpleNamespace
         native=SimpleNamespace(document=lambda pin:dict(targets={'target-B':{'mainApplication':{}}}))
-        with patch('recovery_control_target_availability.unclaimed_target',return_value=True):
+        with self.actual_runtime('standard'), \
+                patch('recovery_control_target_availability.unclaimed_target',return_value=True), \
+                patch('recovery_main_target.observe_main_target') as observe:
             self.assertTrue(available(native,'owner','target-B','source-A',observe_main=False))
+            observe.assert_not_called()
 
 
 if __name__ == '__main__': unittest.main()

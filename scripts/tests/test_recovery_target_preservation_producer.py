@@ -130,7 +130,9 @@ def preservation_producer_case(handoff_case,monkeypatch,capsys):
             # Keep that actual module; validate each exact origin instead.
             capture_type.__init__(self,*args,**kwargs)
             self.policy['maxExpandedBytes']=1024*1024
-            formal=Path(runtime.__file__).resolve().parents[1]/'backup_engine'/'formal'
+            formal=(Path(runtime.__file__).resolve().parent.parent/'formal'
+                if Path(runtime.__file__).resolve().parent.name=='common'
+                else Path(runtime.__file__).resolve().parents[1]/'backup_engine'/'formal')
             strict=Path(runtime.__file__).resolve().parent
             self.modules=runtime.modules_from(str(formal))
             for name,module in self.modules.items():

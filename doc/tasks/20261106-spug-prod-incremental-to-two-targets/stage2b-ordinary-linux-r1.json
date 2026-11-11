@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "Stage2BOrdinaryLinuxPublicVerification/v1",
+  "status": "PASS",
+  "counts": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 30
+  },
+  "nativeExitCode": 0,
+  "elapsedSeconds": 51.125,
+  "inputsUnchanged": true,
+  "containerRemoved": true,
+  "actualBusinessRestore": false,
+  "businessWrites": 0,
+  "originalResultPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\stage2b-ordinary-linux-r1-attempt\\verification-result.private.json",
+    "bytes": 3715,
+    "sha256": "89a4db0d6e6e0a398529ecb06c972901d8d2286cd49cc1b0316c619301dfd9ca"
+  },
+  "manifestPin": {
+    "bytes": 135814,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\stage2b-ordinary-linux-r1-frozen\\inputs.json",
+    "sha256": "6477c633086375922d1a6a75585c7944ee40dd47472fea2480be85281312a16f"
+  },
+  "entryReportPin": {
+    "bytes": 86684,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\stage2b-ordinary-linux-r1-attempt\\entry-report.private.json",
+    "sha256": "9176d2cc420393116a25a5d56bcc19fb6cd0170cca3ff7d07918d3fa80261910"
+  },
+  "junitPin": {
+    "bytes": 5404,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\stage2b-ordinary-linux-r1-attempt\\result.private.xml",
+    "sha256": "6d5989354c79e4514f8423390165823de0af3ab2dc1e6d8e568d31b2977a01d0"
+  }
+}

@@ -206,7 +206,7 @@ def publication_case(capture_protocol, monkeypatch, capsys, request):
     repository_pin = write(metadata/'preservation-repository.json', dict(
         schemaVersion='MainTargetPreservationRepository/v1', repositoryId='finite-target-preservation',
         repositoryRoot=str(repository), sourceIdentityPin=scope['sourceIdentityPin'],
-        captureBinderPin=pin(ROOT/'ops/recovery/formal_capture_recovery_inputs.py'),
+        captureBinderPin=pin(importlib.import_module('formal_capture_recovery_inputs').__file__),
         readbackConfigPin=write(metadata/'readback.json', readback)))
     policy = dict(schemaVersion='MainTargetPreservationPolicy/v1', targetConfigRef='target57',
         captureRef='source57', captureConfigurationPin=h.case['base_pin'], repositoryConfigurationPin=repository_pin,

@@ -360,8 +360,10 @@ class Native:
         if value['action'] == 'RESTORE':
             target = self.document(owner_configuration)['targets'][value['targetConfigRef']]
             if 'mainApplication' in target:
-                from recovery_minimal_runtime import MinimalData
-                need(getattr(MinimalData, 'supports_registered_main_targets', False) is True,
+                import recovery_minimal_runtime as runtime
+                need(getattr(runtime, 'supports_main_target_preservation', False) is True,
+                     'MAIN_PRESERVATION_REQUIRES_SAFE_ENGINE')
+                need(getattr(runtime.MinimalData, 'supports_registered_main_targets', False) is True,
                      'MAIN_RESTORE_REQUIRES_SAFE_ENGINE')
         if value['action'] in ('FULL', 'INCREMENTAL'):
             from recovery_control_capture_config import for_request

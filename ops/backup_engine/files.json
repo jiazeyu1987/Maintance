@@ -141,5 +141,11 @@
   "ops/recovery/recovery_program_resources.py": "common/recovery_program_resources.py",
   "ops/recovery/recovery_program_restore.py": "common/recovery_program_restore.py",
   "ops/recovery/recovery_program_evidence.py": "common/recovery_program_evidence.py",
-  "ops/recovery/recovery_program_sql_staging.py": "common/recovery_program_sql_staging.py"
+  "ops/recovery/recovery_program_sql_staging.py": "common/recovery_program_sql_staging.py",
+  "ops/recovery/recovery_capture_materials.py": "common/recovery_capture_materials.py",
+  "ops/recovery/recovery_target_capture.py": "common/recovery_target_capture.py",
+  "ops/recovery/recovery_target_preservation.py": "common/recovery_target_preservation.py",
+  "ops/recovery/recovery_preservation_source.py": "common/recovery_preservation_source.py",
+  "ops/recovery/recovery_restore_inputs.py": "common/recovery_restore_inputs.py",
+  "ops/recovery/recovery_preservation_inputs.py": "common/recovery_preservation_inputs.py"
 }

@@ -1,0 +1,55 @@
+{
+  "schemaVersion": "RestoreInputDependencyVerification/v1",
+  "status": "PASS",
+  "counts": {
+    "tests": 12,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "nativeExitCode": 0,
+  "elapsedSeconds": 16.766,
+  "inputsUnchanged": true,
+  "scope": "Actual candidateOnly STANDARD imports and actual lightweight member mapping; not installation or business restore.",
+  "inputPins": {
+    "ops/backup_engine/files.json": {
+      "bytes": 13405,
+      "sha256": "8daf0518f64eeffdf2ea38ae1e0f137c6ee19e996a5fda8e39483d0b2b639043"
+    },
+    "ops/backup_engine/standard_fixes.py": {
+      "bytes": 70876,
+      "sha256": "c3d53833fb30a03cd05a812cd85714ff110d79e875955af4fa00a86e8a545faa"
+    },
+    "ops/recovery/recovery_restore_inputs.py": {
+      "bytes": 15977,
+      "sha256": "a1d42136c4cb39f57e119da42416fd97157db0ad7a664bdb8ca4bb0bd65c1ad0"
+    },
+    "ops/recovery/recovery_preservation_inputs.py": {
+      "bytes": 21501,
+      "sha256": "26848a32876d037472aae34297552b37fabdddee4e66dce9b33281baab0285b3"
+    },
+    "ops/recovery/recovery_preservation_source.py": {
+      "bytes": 49186,
+      "sha256": "7442a0f4b4b7e9faec1842cede5b8e87cf0cab45e12bfb4d8ad3c76aaeba3ef9"
+    },
+    "scripts/tests/test_preservation_candidate_imports.py": {
+      "bytes": 7223,
+      "sha256": "be2514fd25c3426ea0e5c4f69d2f73e5979e4a76a5ee230d53d63552ea185f44"
+    }
+  },
+  "originalResultPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\restore-input-dependency-green-r2.result.private.json",
+    "bytes": 1233,
+    "sha256": "f228c336ea9c6908e73b12aa6d8cc1e543e45f232a27a52ab13f8edeac6f7306"
+  },
+  "junitPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\restore-input-dependency-green-r2.junit.private.xml",
+    "bytes": 2024,
+    "sha256": "bfffc448c28d69611534348625e5a357db5eae00f4da42047d35fdb1c0301b5c"
+  },
+  "nativeLogPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\restore-input-dependency-green-r2.native.private.log",
+    "bytes": 244,
+    "sha256": "de7a05dd1f3fc66cd2ea717f63776c9029491bf880b18b16ef252d94e9cbb799"
+  }
+}

@@ -140,6 +140,10 @@ class _ArchiveReads:
             actual, _ = executor.pinned_read(path)
             need(actual == reference and self._file_stamp(path) == observed,
                  'ARCHIVE_METADATA_CHANGED')
+        self.guard()
+
+    def guard(self):
+        """Keep discovery observations current during deterministic derivation."""
         # A later hash must not hide changes to an earlier verified original.
         for path, (_, _, observed) in self.documents.items():
             need(self._file_stamp(path) == observed, 'ARCHIVE_METADATA_CHANGED')
@@ -315,9 +319,10 @@ def for_request(native, configuration, request, owner_pin):
     resolved, binding = _bind_archive_chain(source, request, reads)
     need(all(reads.document(pin, source['archiveCatalogue']['maximumMetadataBytes'])['backupId'] in admitted
          for pin in resolved['repositoryPointPins']), 'SOURCE_PARENT_NOT_CURRENTLY_ELIGIBLE')
+    reads.guard()
+    from recovery_restore_inputs import derive_archive_restore_owner
+    owner = derive_archive_restore_owner(owner, request, binding, guard=reads.guard)
     reads.finish()
-    owner = deepcopy(owner)
-    owner['sources'][request['sourceConfigRef']] = resolved
     from recovery_control_smallapp_native import directory
     root = Path(configuration['taskRoot'])/'request-configurations'
     root.mkdir(mode=0o700, exist_ok=True)

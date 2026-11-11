@@ -1,0 +1,78 @@
+{
+  "schemaVersion": "MainTargetPreservationPackagedProducerVerification/v1",
+  "status": "PASS",
+  "scope": "Isolated Linux actual STANDARD candidate with finite external Docker/SQL/Redis/SMB protocols; not a business server restore.",
+  "counts": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 1
+  },
+  "actualProcessExitCode": 0,
+  "elapsedSeconds": 488.343,
+  "inputsUnchanged": true,
+  "containerRemoved": true,
+  "actualBusinessRestore": false,
+  "remoteActions": 0,
+  "businessWrites": 0,
+  "sourceSnapshotPin": {
+    "bytes": 7536640,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-3a2-main-producer-r6.tar",
+    "sha256": "640416679c5918d642b4c782693d4f5c07795088ec7fab6a4ed085cf0f78d736"
+  },
+  "productionSourceSnapshotPin": {
+    "bytes": 7526400,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\standard-preservation-custody-green-r1.tar",
+    "sha256": "e87c023a20f48fe2d2dcd0ab4a61259f600d8a782e0bd99ddcea40cae30b5872"
+  },
+  "candidatePackagePin": {
+    "bytes": 857950,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\standard-preservation-custody-green-r1-candidate.tgz",
+    "sha256": "a458a81fcb7a9f0668a187d06f6047930ed29bc3ec67fbfbe80a4284f624affc"
+  },
+  "candidateManifestPin": {
+    "bytes": 16167,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\standard-preservation-custody-green-r1-candidate-package.private.json",
+    "sha256": "f8b66aa72b0fca75dc95d1307585d3b0b650a2b586ddf339d4e4956c38804db8"
+  },
+  "inputManifestPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-3a2-main-producer-r6-inputs.private.json",
+    "bytes": 277225,
+    "sha256": "c74325e3fbd6ca6dae33a7c6d8567e245a17a7f7e1f28c35802d5b8ec8279023"
+  },
+  "nativeResultPin": {
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-3a2-main-producer-r6-attempt\\verification-result.private.json",
+    "bytes": 4187,
+    "sha256": "ed678b2ec9896a0b0b2bf18fa1a761b46766969adcaab792de3e08c5d6a52541"
+  },
+  "junitPin": {
+    "bytes": 394,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-3a2-main-producer-r6-attempt\\result.private.xml",
+    "sha256": "a8b3265a38150aa718b31142935967766520d72f8481cd202795b93b44496f30"
+  },
+  "stdoutPin": {
+    "bytes": 2564273,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-3a2-main-producer-r6-attempt\\verification.stdout.private.log",
+    "sha256": "8a5a609fccd28288ef694b0ab194779bf833358a05e4be91402e89634d2baa13"
+  },
+  "stderrPin": {
+    "bytes": 0,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\target-preservation-3a2-main-producer-r6-attempt\\verification.stderr.private.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "verifiedMilestones": {
+    "workerState": "SUCCEEDED",
+    "actualWorkerExitCode": 0,
+    "preservationState": "SUCCEEDED",
+    "replacementState": "SUCCEEDED",
+    "typedHandoffArchiveClearAndHistoryAssertions": true
+  },
+  "unchangedBudgets": {
+    "querySeconds": 30,
+    "dataSeconds": 180,
+    "workSeconds": 480,
+    "preservationSeconds": 480,
+    "ownerSeconds": 600,
+    "outerSeconds": 900
+  }
+}

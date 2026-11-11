@@ -32,12 +32,15 @@ def available(native, configuration_pin, target_ref, source_ref, *, observe_main
     configuration = native.document(configuration_pin)
     need(target_ref in configuration['targets'], 'NEW_TARGET_CONFIGURATION_REQUIRED')
     target = configuration['targets'][target_ref]
+    if 'mainApplication' in target:
+        import recovery_minimal_runtime as runtime
+        need(getattr(runtime, 'supports_main_target_preservation', False) is True,
+             'MAIN_PRESERVATION_REQUIRES_SAFE_ENGINE')
+        need(getattr(runtime.MinimalData, 'supports_registered_main_targets', False) is True,
+             'MAIN_RESTORE_REQUIRES_SAFE_ENGINE')
     if not unclaimed_target(target, source_ref, target_ref, configuration=configuration):
         return False
     if 'mainApplication' in target and observe_main:
-        from recovery_minimal_runtime import MinimalData
-        need(getattr(MinimalData, 'supports_registered_main_targets', False) is True,
-             'MAIN_RESTORE_REQUIRES_SAFE_ENGINE')
         from recovery_main_target import observe_main_target
         observe_main_target(native, dict(operationId='selection-preflight',sourceConfigRef=source_ref,
             targetConfigRef=target_ref), dict(ownerConfigurationPin=configuration_pin))
