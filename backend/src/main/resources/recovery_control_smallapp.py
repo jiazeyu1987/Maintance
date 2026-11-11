@@ -214,7 +214,8 @@ class Ledger:
                     if (saved['action'] in ('FULL', 'INCREMENTAL') and
                             completion.get('result', {}).get('state') == 'RUNNING' and
                             completion['result'].get('errorCode') == 'REPOSITORY_QUERY_ORIGINAL_OPERATION' and
-                            self.native.asynchronously_closed(directory, saved)):
+                            self.native.asynchronously_closed(directory, saved,
+                                publish_success=True, guard=guard)):
                         continue
                 current = self.status(saved['operationId'])
                 need(current['state'] in ('SUCCEEDED', 'FAILED'), 'SOURCE_OPERATION_IN_PROGRESS')

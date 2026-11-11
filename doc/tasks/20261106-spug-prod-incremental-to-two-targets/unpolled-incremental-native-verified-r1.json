@@ -1,0 +1,177 @@
+{
+  "businessRestorePerformed": false,
+  "exactIndexSourcePins": {
+    "backend/src/main/resources/recovery_control_capture_config.py": {
+      "bytes": 9904,
+      "sha256": "6421a992e19fd962bdda07ee4c0dd454ac57008da25b39477486f8fb2ad6185d"
+    },
+    "backend/src/main/resources/recovery_control_executor.py": {
+      "bytes": 62111,
+      "sha256": "5b9ecbaef1820b46249c7a72c9261ca72d1d1f8b5b157c1688a3a6ab7249953b"
+    },
+    "backend/src/main/resources/recovery_control_incremental_plan.py": {
+      "bytes": 21845,
+      "sha256": "47bbc3a0d1749fd70900b6dc93f2d519f97c6c0b8e2bbe4c9bbe10b800e6e0fb"
+    },
+    "backend/src/main/resources/recovery_control_point_quarantine.py": {
+      "bytes": 3093,
+      "sha256": "2c20aafccf7c3e98bdf0285e23720eba4ccd13faa5b85a2ae050d1c9e63d1664"
+    },
+    "backend/src/main/resources/recovery_control_smallapp.py": {
+      "bytes": 18299,
+      "sha256": "2c68392b6198fbd7816bee03637612faa4e673e527ca2d085c320a3eab3d502f"
+    },
+    "backend/src/main/resources/recovery_control_smallapp_http.py": {
+      "bytes": 6369,
+      "sha256": "4bcd85b4394c86a8ed78e7a97a948ad87c6fe655187aba672462fa33c60dc45e"
+    },
+    "backend/src/main/resources/recovery_control_smallapp_native.py": {
+      "bytes": 101404,
+      "sha256": "5292755ddf9b5dfc1f92c2728d3f6fd3dd4af471bbbb4018e32b6a2f6c1adf9f"
+    },
+    "ops/backup_engine/formal/formal_snapshot_linux.py": {
+      "bytes": 80121,
+      "sha256": "8e2801fd7618ffebae181144547e3d90e4303089b1e24fd6fa8f98b34b089d9f"
+    },
+    "ops/recovery/formal_capture_incremental.py": {
+      "bytes": 35360,
+      "sha256": "7d2560cc27647e8192ee3ec63a89a073e10440d2ea4a90a0bf2874a51444cd9a"
+    },
+    "ops/recovery/recovery_backup_epoch.py": {
+      "bytes": 18100,
+      "sha256": "32954ebf9d187cf245be4fe5b9f8ae19b187076a9880f3aaae7f316a13fc0c5d"
+    },
+    "ops/recovery/repository_host_view.py": {
+      "bytes": 4544,
+      "sha256": "2597e6554dee5f086aaafe5bdb776b6895ea96a741eac7c73c81b74d4a2bad60"
+    },
+    "ops/recovery/repository_records.py": {
+      "bytes": 20392,
+      "sha256": "91fabc4c65a7a51e3f3e5c3854fe2011e6df6a5c37c8f4abfc87c5b14ef63ada"
+    },
+    "scripts/tests/test_automatic_incremental_async_closure.py": {
+      "bytes": 15256,
+      "sha256": "f3b2785162abd917127ab883a5e6a05b272b17f01692ae4643d98404e6f6d952"
+    },
+    "scripts/tests/test_automatic_incremental_plan.py": {
+      "bytes": 38068,
+      "sha256": "27b5351635261ef060c1cb791dbbea43c08a3096f1d616c876dc9774bf495606"
+    },
+    "scripts/tests/test_automatic_incremental_unpolled.py": {
+      "bytes": 8975,
+      "sha256": "b799ed84a31448df90de154330e413cbbec1bf3e0f469ebece4992592fe7c095"
+    },
+    "scripts/tests/test_automatic_incremental_unpolled_boundaries.py": {
+      "bytes": 8776,
+      "sha256": "b3c0ed85869f6b114fe2397f51c758df3dcf617cc7296be02fa88bc5c3de34c4"
+    }
+  },
+  "remoteActions": 0,
+  "remoteInstallationVerified": false,
+  "scenario": "Successful asynchronous I1 is registered before planning I2, without a detailed query.",
+  "schemaVersion": "UnpolledIncrementalRegistrationVerification/v1",
+  "sourceSnapshotPin": {
+    "bytes": 471040,
+    "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\unpolled-incremental-native-index-r1-source.tar",
+    "sha256": "8c3db0dc7a21f9cd8b897c9a3ce6b50eed813f9745e12d191cc9188bda54f8e5"
+  },
+  "stages": [
+    {
+      "actualExitCode": 1,
+      "containerRemoved": true,
+      "counts": {
+        "errors": 0,
+        "failures": 1,
+        "skipped": 0,
+        "tests": 1
+      },
+      "elapsedSeconds": 16.281,
+      "inputsUnchanged": true,
+      "junitPin": {
+        "bytes": 1635,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\unpolled-incremental-native-red-r2-attempt\\result.private.xml",
+        "sha256": "175ac1b70fbfcaec386d62401c195da330efce4073a07538fe476d52623c51da"
+      },
+      "name": "unpolled-incremental-native-red-r2",
+      "originalResultPin": {
+        "bytes": 7147,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\unpolled-incremental-native-red-r2-attempt\\verification-result.private.json",
+        "sha256": "c8052568fd08e6b5bd5bd500e6b62ecfbac89a9032fb05d9746bf07813eadd1a"
+      },
+      "status": "EXPECTED_RED"
+    },
+    {
+      "actualExitCode": 0,
+      "containerRemoved": true,
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 15
+      },
+      "elapsedSeconds": 24.547,
+      "inputsUnchanged": true,
+      "junitPin": {
+        "bytes": 2735,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\unpolled-incremental-native-green-r1-attempt\\result.private.xml",
+        "sha256": "05a09e7fc6a155fbc1bbc1297a2fbc0f822ee01cd46fd9025c295a7c0cc65765"
+      },
+      "name": "unpolled-incremental-native-green-r1",
+      "originalResultPin": {
+        "bytes": 7314,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\unpolled-incremental-native-green-r1-attempt\\verification-result.private.json",
+        "sha256": "3ab19f8954f3e2a01f417087c7b2dd52c034f5847e6d2472adc4ac8755452c25"
+      },
+      "status": "PASS"
+    },
+    {
+      "actualExitCode": 0,
+      "containerRemoved": true,
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 68
+      },
+      "elapsedSeconds": 23.109,
+      "inputsUnchanged": true,
+      "junitPin": {
+        "bytes": 11439,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\unpolled-incremental-native-regression-r1-attempt\\result.private.xml",
+        "sha256": "bb91d149fdd73ead30608c6f89957fc82b766425e0f25076b607a0f4533dbb71"
+      },
+      "name": "unpolled-incremental-native-regression-r1",
+      "originalResultPin": {
+        "bytes": 6744,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\unpolled-incremental-native-regression-r1-attempt\\verification-result.private.json",
+        "sha256": "1f8b82b8d1b75ccc76b54e533cdf6417d28e0a2dac8b33316ca232d27d4bbb9a"
+      },
+      "status": "PASS"
+    },
+    {
+      "actualExitCode": 0,
+      "containerRemoved": true,
+      "counts": {
+        "errors": 0,
+        "failures": 0,
+        "skipped": 0,
+        "tests": 83
+      },
+      "elapsedSeconds": 26.532,
+      "inputsUnchanged": true,
+      "junitPin": {
+        "bytes": 13945,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\unpolled-incremental-native-index-r1-attempt\\result.private.xml",
+        "sha256": "2109e761bb83c8a3d05ad8d9dcb5e4dfb401f06237f473be2207cbee988a9f9c"
+      },
+      "name": "unpolled-incremental-native-index-r1",
+      "originalResultPin": {
+        "bytes": 7315,
+        "path": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\unpolled-incremental-native-index-r1-attempt\\verification-result.private.json",
+        "sha256": "220439d921435f739341cd229d438aa1b6179d527ec8e70473fd9be941bdea15"
+      },
+      "status": "PASS"
+    }
+  ],
+  "status": "LOCAL_VERIFIED"
+}

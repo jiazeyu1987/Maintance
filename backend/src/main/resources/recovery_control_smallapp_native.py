@@ -502,7 +502,7 @@ class Native:
     def operation_output(self, value, reference, *, selection=None):
         return self.operation_evidence(value, reference, selection=selection)[0]
 
-    def asynchronously_closed(self, operation_directory, value):
+    def asynchronously_closed(self, operation_directory, value, *, publish_success=False, guard=None):
         """Prove asynchronous backup termination for scheduling, never source health.
 
         The launcher legitimately exits 2 while the separate repository worker
@@ -580,6 +580,8 @@ class Native:
         # this exact admitted operation directory in any argument.
         need(not any(str(root).encode() in argument for argument in arguments),
              'SOURCE_ASYNC_WORKER_STILL_RUNNING')
+        if publish_success and output['state'] == 'SUCCEEDED':
+            self.close_async_point(value, directory, selected, output_pin, output, guard=guard)
         need(all(local_read(directory / name) == original for name, original in originals.items()) and
              self.accepted_operation(value, selected) == root and
              executor.pin(root / 'result.json') == output_pin and
@@ -587,6 +589,88 @@ class Native:
              all(executor.pin(pin['path']) == pin for pin in failure_pins),
              'SOURCE_ASYNC_ORIGINAL_CHANGED')
         return True
+
+    def close_async_point(self, value, directory, selection, result_pin, output, *, guard=None):
+        """Close a proven backup in its original registry before another dispatch.
+
+        Complete historical bindings are small read-only evidence. Only an
+        unpublished success revalidates all materials and the current epoch;
+        neither a browser query nor a changed owner program is required.
+        """
+        if guard is not None:
+            guard()
+        original = self.document(selection['configurationPin'])
+        current = self.configuration()
+        source = value['sourceConfigRef']
+        need(original.get('sourceConfigurations', {}).get(source) == selection['ownerConfigurationPin'] and
+             source in current.get('sourceConfigurations', {}), 'SOURCE_POINT_OWNER_BINDING_INVALID')
+        for key in ('ledgerRoot', 'registryRoot'):
+            path = Path(original[key])
+            need(path.is_absolute() and path.resolve() == path and path.is_dir() and
+                 current[key] == str(path), 'SOURCE_POINT_REGISTRY_CHANGED')
+        need(directory == Path(original['ledgerRoot']) / value['operationId'],
+             'SOURCE_POINT_LEDGER_CHANGED')
+        registry = Path(original['registryRoot'])
+        binding_path = directory / 'point-binding.json'
+        selector_path = registry / 'points' / (value['operationId'] + '.pin.json')
+        epoch_path = registry / 'point-epochs' / (value['operationId'] + '.json')
+        binding = dict(schemaVersion='SmallAppPointBinding/v2', reference=value['operationId'],
+            sourceConfigRef=source, resultPin=result_pin)
+        present = lambda path: path.exists() or path.is_symlink()
+        bound = None
+        if source in original.get('sourceEpochPolicies', {}):
+            captured = selection.get('sourceEpoch')
+            need(type(captured) is dict and captured.get('state') == 'READY', 'BACKUP_EPOCH_CAPTURE_UNBOUND')
+            bound = dict(schemaVersion='SmallAppPointEpochBinding/v1', reference=value['operationId'],
+                sourceConfigRef=source, pointPin=output['data']['pointPin'], resultPin=result_pin,
+                policySha256=captured['policySha256'], epochId=captured['epochId'], epochEventPin=captured['eventPin'])
+            from recovery_control_incremental_plan import validate_epoch
+            need(validate_epoch(captured, bound, source_ref=source, reference=value['operationId'],
+                 point_pin=output['data']['pointPin'], result_pin=result_pin, reader=self) is None,
+                 'BACKUP_EPOCH_CAPTURE_UNBOUND')
+        if present(binding_path):
+            need(local_read(binding_path) == binding, 'POINT_PUBLICATION_CHANGED')
+        if present(epoch_path):
+            need(bound is not None and local_read(epoch_path) == bound, 'BACKUP_EPOCH_POINT_PUBLICATION_CHANGED')
+        if present(selector_path):
+            need(present(binding_path) and (bound is None or present(epoch_path)), 'POINT_PUBLICATION_INCOMPLETE')
+            need(local_read(selector_path) == executor.pin(binding_path), 'POINT_PUBLICATION_CHANGED')
+        else:
+            # A partial epoch record is not a completed publication. Do not
+            # finish it after a restore merely because its old sidecar exists.
+            need(self.source_epoch(current, source) == selection.get('sourceEpoch'),
+                 'BACKUP_EPOCH_CHANGED_DURING_CAPTURE')
+            for pin in output['originalResultPins']:
+                if guard is not None:
+                    guard()
+                executor.verify(pin)
+            self.verify_success_data(output['data'], guard=guard)
+            if guard is not None:
+                guard()
+            need(self.source_epoch(current, source) == selection.get('sourceEpoch'),
+                 'BACKUP_EPOCH_CHANGED_DURING_CAPTURE')
+            self.publish_point(value, directory, result_pin, original)
+            need(self.source_epoch(current, source) == selection.get('sourceEpoch'),
+                 'BACKUP_EPOCH_CHANGED_DURING_CAPTURE')
+        need(self.document(selection['configurationPin']) == original and self.configuration() == current,
+             'SOURCE_POINT_CONFIGURATION_CHANGED')
+        if guard is not None:
+            guard()
+
+    @staticmethod
+    def verify_success_data(data, *, guard=None):
+        def inspect(item):
+            if guard is not None:
+                guard()
+            if type(item) is dict:
+                if set(item) == {'path', 'bytes', 'sha256'}:
+                    executor.verify(item)
+                    return 1
+                return sum(inspect(child) for child in item.values())
+            if type(item) is list:
+                return sum(inspect(child) for child in item)
+            return 0
+        need(inspect(data) > 0, 'ORIGINAL_SUCCESS_MATERIAL_MISSING')
 
     def async_failure_evidence(self, root, output, worker):
         """Keep the producer's child-exit semantics separate from owner failure."""
@@ -1293,16 +1377,7 @@ class Native:
                                              result_pin=reference)
                 reply = result(value, 'FAILED', output['failureCode'])
             if reply['state'] == 'SUCCEEDED':
-                def inspect(item):
-                    if type(item) is dict:
-                        if set(item) == {'path', 'bytes', 'sha256'}:
-                            executor.verify(item)
-                            return 1
-                        return sum(inspect(child) for child in item.values())
-                    if type(item) is list:
-                        return sum(inspect(child) for child in item)
-                    return 0
-                need(inspect(output['data']) > 0, 'ORIGINAL_SUCCESS_MATERIAL_MISSING')
+                self.verify_success_data(output['data'])
                 self.publish_point(value, operation_directory, reference, self.document(selection['configurationPin']))
         except Exception as error:
             reply = result(value, 'RUNNING', public_error(error))
