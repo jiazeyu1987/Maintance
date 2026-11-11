@@ -9,6 +9,7 @@ import io
 import json
 import os
 from pathlib import Path, PurePosixPath
+import shutil
 import stat
 import tarfile
 
@@ -68,14 +69,43 @@ def _identity(location):
         item.st_size,item.st_mtime_ns,item.st_ctime_ns)
 
 
+def check_target_staging_capacity(*,resource_budget,capture_root,capture_limits):
+    """Observe actual devices and apply the same explicit policy as restoration."""
+    import recovery_resource_admission as admission
+    mode=admission.disk_admission_mode(resource_budget)
+    need(type(capture_limits) is dict and all(type(capture_limits.get(k)) is int and
+        capture_limits[k]>0 for k in ('maxWrittenBytes','minimumFreeBytes')),'CAPTURE_BUDGET_INVALID')
+    groups={}
+    def add(location,amount,minimum):
+        p=Path(location)
+        need(p.is_absolute() and p.resolve(strict=True)==p and p.is_dir(),'CAPACITY_PATH_INVALID')
+        device=p.stat().st_dev;free=shutil.disk_usage(p).free
+        row=groups.setdefault(device,dict(device=device,requiredBytes=0,availableBytes=free,
+            minimumFreeBytes=0,paths=[]))
+        row['requiredBytes']+=amount;row['availableBytes']=min(row['availableBytes'],free)
+        row['minimumFreeBytes']=max(row['minimumFreeBytes'],minimum);row['paths'].append(str(p))
+    for location,amount in resource_budget['diskBytesByPath'].items():add(location,amount,0)
+    add(capture_root,capture_limits['maxWrittenBytes']+capture_limits['minimumFreeBytes'],
+        capture_limits['minimumFreeBytes'])
+    rows=[]
+    for device in sorted(groups):
+        row=groups[device]
+        decision=admission.enforce_disk_capacity(resource_budget,row['requiredBytes'],row['availableBytes'],
+            'TARGET_CAPACITY_NOT_AVAILABLE',minimum_free_bytes=row['minimumFreeBytes'],details=row)
+        rows.append(dict(row,**decision))
+    return dict(schemaVersion='MainProgramTargetStagingCapacity/v1',diskAdmissionMode=mode,
+        diskRequirements=rows,businessAcceptance='NOT_PERFORMED')
+
+
 def preflight_target_filesystem(*,candidate,host,current_controller,owner,control,old_build,new_build,
-        preservation,configuration_root,new_engine,package_raw,previous_package_raw):
+        preservation,configuration_root,new_engine,package_raw,previous_package_raw,disk_admission_mode=None):
     """Rebuild, read all originals and check every destination; creates nothing."""
     package=_target_package(package_raw,new_build)
     previous=legacy.verify_package(previous_package_raw,old_build)
     rebuilt=binding.build_target_control_candidate(host=host,current_controller=current_controller,owner=owner,control=control,
         old_build=old_build,new_build=new_build,preservation=preservation,configuration_root=configuration_root,
-        new_engine=new_engine,package_files=package['payloadFiles'],previous_package_files=previous['payloadFiles'])
+        new_engine=new_engine,package_files=package['payloadFiles'],previous_package_files=previous['payloadFiles'],
+        disk_admission_mode=disk_admission_mode)
     need(type(candidate) is dict and candidate==rebuilt,'CANDIDATE_REBUILD_CHANGED')
     engine=Path(str(binding.path(new_engine)));configuration=Path(str(binding.path(configuration_root)))
     old_engine=Path(str(binding.path(current_controller['engine'])))
@@ -125,12 +155,13 @@ class TargetStagingFailure(legacy.StagingFailure):
 
 
 def stage_target_filesystem(*,candidate,host,current_controller,owner,control,old_build,new_build,
-        preservation,configuration_root,new_engine,package_raw,previous_package_raw):
+        preservation,configuration_root,new_engine,package_raw,previous_package_raw,disk_admission_mode=None):
     """Stage files with native exclusive writes; never issues runtime admission."""
     need(os.name=='posix','NATIVE_POSIX_REQUIRED')
     ready=preflight_target_filesystem(candidate=candidate,host=host,current_controller=current_controller,owner=owner,control=control,
         old_build=old_build,new_build=new_build,preservation=preservation,configuration_root=configuration_root,
-        new_engine=new_engine,package_raw=package_raw,previous_package_raw=previous_package_raw)
+        new_engine=new_engine,package_raw=package_raw,previous_package_raw=previous_package_raw,
+        disk_admission_mode=disk_admission_mode)
     created=[];failed=ready['engine'];engine=Path(ready['engine']);configuration=Path(ready['configurationRoot'])
     try:
         legacy._mkdir(engine,created)

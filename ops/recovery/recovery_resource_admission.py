@@ -427,18 +427,90 @@ def cgroup_memory_limits(record, root=Path('/sys/fs/cgroup')):
     return dict(version=version, limitsBytes=limits, observedPaths=paths)
 
 
-def check_budget(policy, observed):
-    """Check a measured snapshot, aggregating disk demand by actual device."""
+def disk_admission_mode(policy):
+    """Validate the versioned policy; v1 always means strict reservation."""
     invalid = 'RESTORE_RESOURCE_BUDGET_INVALID'
-    need(type(policy) is dict and set(policy) == {'schemaVersion', 'mysqlMemoryBytes',
-         'hostAvailableMemoryBytes', 'diskBytesByPath'} and
-         policy['schemaVersion'] == 'RestoreResourceBudget/v1', invalid)
+    fields = {'schemaVersion', 'mysqlMemoryBytes', 'hostAvailableMemoryBytes', 'diskBytesByPath'}
+    need(type(policy) is dict, invalid)
+    version = policy.get('schemaVersion')
+    if version == 'RestoreResourceBudget/v1':
+        need(set(policy) == fields, invalid)
+        mode = 'RESERVE'
+    else:
+        need(version == 'RestoreResourceBudget/v2' and set(policy) == fields | {'diskAdmissionMode'} and
+             type(policy['diskAdmissionMode']) is str and
+             policy['diskAdmissionMode'] in ('RESERVE', 'OBSERVE_ONLY'), invalid)
+        mode = policy['diskAdmissionMode']
     need(integer(policy['mysqlMemoryBytes'], 1) and integer(policy['hostAvailableMemoryBytes'], 1), invalid)
     disks = policy['diskBytesByPath']
     need(type(disks) is dict and disks and all(type(path) is str and
          PurePosixPath(path).is_absolute() and '..' not in PurePosixPath(path).parts and
          str(PurePosixPath(path)) == path and integer(size) for path, size in disks.items()) and
          sum(disks.values()) > 0, invalid)
+    return mode
+
+
+def configured_budget(configuration, request):
+    """Select operational admission without changing immutable target identity.
+
+    Legacy owners carry only a physical v1 budget. Explicit operational v2
+    policies may change its disk admission mode, never its resource bounds.
+    An existing policy map must cover this request; omission is not fallback.
+    """
+    from copy import deepcopy
+    invalid = 'RESTORE_RESOURCE_BUDGET_INVALID'
+    targets = configuration.get('targets') if type(configuration) is dict else None
+    target_ref = request.get('targetConfigRef') if type(request) is dict else None
+    need(type(targets) is dict and type(target_ref) is str and target_ref in targets and
+         type(targets[target_ref]) is dict, invalid)
+
+    def physical_budget(reference):
+        target = targets[reference]
+        budget = target.get('resourceBudget') if type(target) is dict else None
+        disk_admission_mode(budget)
+        need(budget['schemaVersion'] == 'RestoreResourceBudget/v1', invalid)
+        return budget
+
+    original = physical_budget(target_ref)
+    if 'targetResourceAdmissionPolicies' not in configuration:
+        return deepcopy(original)
+    invalid = 'RESTORE_RESOURCE_ADMISSION_POLICY_INVALID'
+    policies = configuration['targetResourceAdmissionPolicies']
+    need(type(policies) is dict and target_ref in policies and set(policies) <= set(targets), invalid)
+    for reference, policy in policies.items():
+        baseline = original if reference == target_ref else physical_budget(reference)
+        try:
+            disk_admission_mode(policy)
+        except ResourceAdmissionError as error:
+            raise ResourceAdmissionError(invalid) from error
+        need(policy['schemaVersion'] == 'RestoreResourceBudget/v2' and
+             {key: value for key, value in policy.items() if key not in ('schemaVersion', 'diskAdmissionMode')} ==
+             {key: value for key, value in baseline.items() if key != 'schemaVersion'}, invalid)
+    return deepcopy(policies[target_ref])
+
+
+def enforce_disk_capacity(policy, required_bytes, available_bytes, failure_code, *, minimum_free_bytes=0, details=None):
+    """Record forecasts while enforcing only the explicitly selected threshold.
+
+    OBSERVE_ONLY does not reserve configured maxima. Actual write limits,
+    minimum headroom and measured upcoming archive bytes remain enforceable.
+    This pure decision never catches or converts filesystem write errors.
+    """
+    mode = disk_admission_mode(policy)
+    need(all(integer(value) for value in (required_bytes, available_bytes, minimum_free_bytes)) and
+         minimum_free_bytes <= required_bytes and type(failure_code) is str and bool(failure_code),
+         'RESTORE_DISK_CAPACITY_ARGUMENT_INVALID')
+    result = dict(diskAdmissionMode=mode, forecastReservationsEnforced=mode == 'RESERVE',
+        requiredBytes=required_bytes, minimumFreeBytes=minimum_free_bytes, availableBytes=available_bytes)
+    threshold = required_bytes if mode == 'RESERVE' else minimum_free_bytes
+    need(available_bytes >= threshold, failure_code, result if details is None else details)
+    return result
+
+
+def check_budget(policy, observed):
+    """Check a measured snapshot, aggregating disk forecasts by actual device."""
+    mode = disk_admission_mode(policy)
+    disks = policy['diskBytesByPath']
     invalid = 'RESTORE_RESOURCE_OBSERVATION_INVALID'
     need(type(observed) is dict and integer(observed.get('mysqlMemoryLimitBytes'), 1) and
          integer(observed.get('hostAvailableMemoryBytes')) and type(observed.get('disks')) is list, invalid)
@@ -462,10 +534,14 @@ def check_budget(policy, observed):
         current['availableBytes'] = min(current['availableBytes'], row['freeBytes'])
     requirements = [grouped[device] for device in sorted(grouped)]
     for row in requirements:
-        need(row['availableBytes'] >= row['requiredBytes'], 'RESTORE_DISK_SPACE_INSUFFICIENT', row)
-    return dict(admitted=True, businessAcceptance='NOT_PERFORMED', diskRequirements=requirements,
+        enforce_disk_capacity(policy, row['requiredBytes'], row['availableBytes'],
+            'RESTORE_DISK_SPACE_INSUFFICIENT', details=row)
+    result = dict(admitted=True, businessAcceptance='NOT_PERFORMED', diskRequirements=requirements,
                 mysqlMemoryLimitBytes=observed['mysqlMemoryLimitBytes'],
                 hostAvailableMemoryBytes=observed['hostAvailableMemoryBytes'])
+    if policy['schemaVersion'] == 'RestoreResourceBudget/v2':
+        result.update(diskAdmissionMode=mode, forecastReservationsEnforced=mode == 'RESERVE')
+    return result
 
 
 def observe_resources(configuration, request, policy):
@@ -575,9 +651,7 @@ def admit(configuration, request, root, stage, *, reservation_configuration=None
             record['reservationPin'] = verify_reservation(
                 configuration if reservation_configuration is None else reservation_configuration,
                 request, Path(root))
-        policy = configuration['targets'][request['targetConfigRef']].get('resourceBudget')
-        need(type(policy) is dict and type(policy.get('diskBytesByPath')) is dict,
-             'RESTORE_RESOURCE_BUDGET_INVALID')
+        policy = configured_budget(configuration, request)
         observed = observe_resources(configuration, request, policy)
         if execution:
             expected, after = resolve_execution_configuration(reservation_configuration, request, root,

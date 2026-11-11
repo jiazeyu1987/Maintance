@@ -23,6 +23,7 @@ CHANGED_MEMBERS=frozenset(('common/recovery_main_target.py','common/recovery_min
     'formal/formal_capture_semantics.py','formal/formal_data_evidence.py','formal/formal_schema_evidence.py',
     'formal/formal_snapshot_linux.py','formal/minimal_capture_support.py','formal/minimal_capture_worker.py',
     'formal/minimal_redis_snapshot.py'))
+DISK_POLICY_CHANGED_MEMBERS=frozenset(('common/recovery_resource_admission.py','common/recovery_program_resources.py'))
 DOCUMENT_SCHEMAS={
     'source-identity.json':None,'source-scope.json':'RecoverySourceScope/v1',
     'versions.json':'MainTargetCaptureVersion/v1','reference-recipe.json':'backup-capture-reference-recipe/v1',
@@ -52,7 +53,7 @@ def pin(value):
     path(value['path']);return value
 
 
-def packages(files,previous,old_build,new_build,core):
+def packages(files,previous,old_build,new_build,core,*,disk_policy_bound=False):
     commit=new_build.get('targetCommit');old_commit=old_build.get('targetCommit')
     need(type(commit) is str and re.fullmatch('[0-9a-f]{40}',commit) is not None and
         type(old_commit) is str and re.fullmatch('[0-9a-f]{40}',old_commit) is not None and
@@ -92,9 +93,28 @@ def packages(files,previous,old_build,new_build,core):
             except (SyntaxError,UnicodeError,ValueError):
                 raise ValueError('MAIN_TARGET_CANDIDATE_PACKAGE_COMPILE_FAILED') from None
     need(planner.digest(planner.canonical(hashes))==standard.get('fileManifestSha256'),'PACKAGE_MANIFEST_CHANGED')
+    expected=CHANGED_MEMBERS | (DISK_POLICY_CHANGED_MEMBERS if disk_policy_bound else frozenset())
     need(set(files)-set(previous)==ADDED_MEMBERS and not set(previous)-set(files) and
-        {name for name in previous if files[name]!=previous[name]}==CHANGED_MEMBERS,'UNREVIEWED_PACKAGE_DELTA')
+        {name for name in previous if files[name]!=previous[name]}==expected,'UNREVIEWED_PACKAGE_DELTA')
     return commit,standard
+
+
+def bind_disk_policy(original,mode):
+    """Change only the explicitly selected admission mode, retaining all limits."""
+    need(type(mode) is str and mode in ('RESERVE','OBSERVE_ONLY'),'DISK_ADMISSION_MODE_INVALID')
+    fields={'schemaVersion','mysqlMemoryBytes','hostAvailableMemoryBytes','diskBytesByPath'}
+    need(type(original) is dict and set(original)==fields and
+        original['schemaVersion']=='RestoreResourceBudget/v1','DISK_BUDGET_INVALID')
+    need(all(type(original[k]) is int and original[k]>0 for k in ('mysqlMemoryBytes','hostAvailableMemoryBytes')),
+        'DISK_BUDGET_INVALID')
+    disks=original['diskBytesByPath']
+    need(type(disks) is dict and disks and all(type(p) is str and p.startswith('/') and
+        str(PurePosixPath(p))==p and '..' not in PurePosixPath(p).parts and
+        type(amount) is int and amount>=0 for p,amount in disks.items()) and sum(disks.values())>0,
+        'DISK_BUDGET_INVALID')
+    result=deepcopy(original)
+    result.update(schemaVersion='RestoreResourceBudget/v2',diskAdmissionMode=mode)
+    return result
 
 
 def preservation_graph(value,root,target_ref,target,program,new_engine,files):
@@ -210,7 +230,7 @@ def preservation_graph(value,root,target_ref,target,program,new_engine,files):
 
 
 def build_target_control_candidate(*,host,current_controller,owner,control,package_files,previous_package_files,
-        old_build,new_build,preservation,configuration_root,new_engine):
+        old_build,new_build,preservation,configuration_root,new_engine,disk_admission_mode=None):
     """Return 14 preservation documents and two target configs, all uninstalled."""
     core=current_controller
     need(host in ('57','58','59') and type(core) is dict and core.get('schemaVersion')=='MainProgramControlActivation/v1' and
@@ -222,7 +242,11 @@ def build_target_control_candidate(*,host,current_controller,owner,control,packa
         'CONFIGURATION_SCHEMA_CHANGED')
     for value,key in ((owner,'ownerConfigurationPin'),(control,'controlConfigurationPin')):
         old_pin=pin(core[key]);need(old_pin==planner.remote_pin(old_pin['path'],value),'ORIGINAL_CONFIGURATION_CHANGED')
-    commit,standard=packages(package_files,previous_package_files,old_build,new_build,core)
+    if disk_admission_mode is not None:
+        need(type(disk_admission_mode) is str and disk_admission_mode in ('RESERVE','OBSERVE_ONLY'),
+            'DISK_ADMISSION_MODE_INVALID')
+    commit,standard=packages(package_files,previous_package_files,old_build,new_build,core,
+        disk_policy_bound=disk_admission_mode is not None)
     old_engine=str(path(core['engine']));parent=path(old_engine).parent;root=path(configuration_root)
     need(path(new_engine)==parent/('engine-main-program-'+commit[:7]) and
         path(old_engine).name=='engine-main-program-'+old_build['targetCommit'][:7], 'ENGINE_LOCATION_CHANGED')
@@ -237,6 +261,12 @@ def build_target_control_candidate(*,host,current_controller,owner,control,packa
         'OWNER_PROGRAM_POLICY_CHANGED')
     docs=preservation_graph(preservation,root,target_ref,owner['targets'][target_ref],program,new_engine,package_files)
     new_owner=deepcopy(owner);new_owner['formalModuleDirectory']=new_engine+'/formal'
+    if disk_admission_mode is not None:
+        budget=bind_disk_policy(owner['targets'][target_ref].get('resourceBudget'),disk_admission_mode)
+        admission_policies=new_owner.setdefault('targetResourceAdmissionPolicies',{})
+        need(type(admission_policies) is dict and set(admission_policies)<=set(owner['targets']) and
+            (target_ref not in admission_policies or admission_policies[target_ref]==budget),'DISK_POLICY_CONFLICT')
+        admission_policies[target_ref]=budget
     captures=new_owner['targetProgramPolicies'][target_ref].get('captureConfigurationPins')
     need(type(captures) is dict and (preservation['captureRef'] not in captures or
         captures[preservation['captureRef']]==preservation['capturePin']),'CAPTURE_REGISTRATION_CONFLICT')
@@ -263,9 +293,11 @@ def build_target_control_candidate(*,host,current_controller,owner,control,packa
     docs.extend([dict(pin=owner_pin,value=new_owner),dict(pin=control_pin,value=new_control)])
     need(len({r['pin']['path'] for r in docs})==16 and not {core['ownerConfigurationPin']['path'],
         core['controlConfigurationPin']['path']} & {r['pin']['path'] for r in docs},'NEW_DOCUMENT_COLLISION')
-    return dict(schemaVersion='MainProgramTargetControlCandidate/v1',status='BOUND_NOT_INSTALLED',host=core['host'],
+    result=dict(schemaVersion='MainProgramTargetControlCandidate/v1',status='BOUND_NOT_INSTALLED',host=core['host'],
         targetConfigRef=target_ref,sourceCommit=commit,previousController=deepcopy(core),
         controller=dict(role='target',service=core['service'],engine=new_engine,previousControlPin=deepcopy(core['controlConfigurationPin']),
             previousOwnerPin=deepcopy(core['ownerConfigurationPin']),controlPin=control_pin,ownerPin=owner_pin),
         newDocuments=docs,package=dict(fileCount=153,fileManifestSha256=standard['fileManifestSha256'],packageSha256=standard['sha256']),
         retainedSourceConfigurationUnchanged=True,installationPerformed=False,restoreDispatched=False)
+    if disk_admission_mode is not None:result['diskAdmissionMode']=disk_admission_mode
+    return result

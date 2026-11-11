@@ -262,19 +262,31 @@ class MainTargetCapture:
     def handed_off(self):return self._state=='HANDED_OFF'
 
     def _admit_resources(self):
-        from recovery_resource_admission import observe_resources,check_budget,verify_reservation
+        from recovery_resource_admission import (observe_resources,check_budget,verify_reservation,
+            configured_budget,enforce_disk_capacity,ResourceAdmissionError)
         c=self._context
         require(verify_reservation(c._owner,c._request,c._root)==self._reservation,'PROGRAM_CAPTURE_RESERVATION_CHANGED')
-        policy=self._native.config['resourceBudget'];observed=observe_resources(c._owner,c._request,policy)
+        policy=configured_budget(c._owner,c._request);observed=observe_resources(c._owner,c._request,policy)
         check_budget(policy,observed)
         device=self.root.stat().st_dev
         same=[r for r in observed['disks'] if r['device']==device]
         required=sum(policy['diskBytesByPath'][r['path']] for r in same)+self.budget.maximum+self.budget.reserve
         free=min([shutil.disk_usage(self.root).free,*[r['freeBytes'] for r in same]])
-        require(free>=required,'PROGRAM_CAPTURE_DISK_SPACE_INSUFFICIENT')
-        self._record('resource-admission.json',dict(schemaVersion='MainTargetCaptureResourceAdmission/v1',
+        try:
+            decision=enforce_disk_capacity(policy,required,free,'PROGRAM_CAPTURE_DISK_SPACE_INSUFFICIENT',
+                minimum_free_bytes=self.budget.reserve)
+        except ResourceAdmissionError as error:
+            if error.code=='PROGRAM_CAPTURE_DISK_SPACE_INSUFFICIENT':
+                raise RecoveryError(error.code) from error
+            raise
+        record=dict(schemaVersion='MainTargetCaptureResourceAdmission/v1',
             operationId=c._request['operationId'],reservationPin=self._reservation,device=device,requiredBytes=required,
-            freeBytes=free,admitted=True,businessAcceptance='NOT_PERFORMED'))
+            freeBytes=free,admitted=True,businessAcceptance='NOT_PERFORMED')
+        if policy['schemaVersion']=='RestoreResourceBudget/v2':
+            record.update(schemaVersion='MainTargetCaptureResourceAdmission/v2',
+                diskAdmissionMode=decision['diskAdmissionMode'],
+                forecastReservationsEnforced=decision['forecastReservationsEnforced'],minimumFreeBytes=self.budget.reserve)
+        self._record('resource-admission.json',record)
 
     def _record(self,name,value):
         reference=exclusive_json(self._journal/name,value)

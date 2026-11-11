@@ -66,8 +66,9 @@ def check_program_budget(data_policy, observed, program_budget, source_program, 
     requirements = [grouped[device] for device in sorted(grouped)]
     for row in requirements:
         row['requiredBytes'] += program_budget['minimumFreeBytes']
-        admission.need(row['availableBytes'] >= row['requiredBytes'],
-            'RESTORE_PROGRAM_DISK_SPACE_INSUFFICIENT', row)
+        admission.enforce_disk_capacity(data_policy, row['requiredBytes'], row['availableBytes'],
+            'RESTORE_PROGRAM_DISK_SPACE_INSUFFICIENT',
+            minimum_free_bytes=program_budget['minimumFreeBytes'], details=row)
     return dict(decision, diskRequirements=requirements)
 
 
@@ -151,8 +152,7 @@ def admit_program_resources(native, source_program, claim, *, reservation_config
         admission.need(source_program['archivePin']['bytes'] <= source_policy['maxArchiveBytes'],
             'RESTORE_PROGRAM_RESOURCE_SOURCE_CHANGED')
         record.update(sourceProgramPolicySha256=digest(source_policy), programBudget=deepcopy(policy))
-        data_policy = configuration['targets'][target_ref].get('resourceBudget')
-        admission.need(type(data_policy) is dict, 'RESTORE_RESOURCE_BUDGET_INVALID')
+        data_policy = admission.configured_budget(owner, request)
         record['budget'] = deepcopy(data_policy)
         observed = admission.observe_resources(configuration, request, data_policy)
         record['observation'] = observed

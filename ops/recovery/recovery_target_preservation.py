@@ -535,8 +535,8 @@ class TargetPreservation:
             raise
 
     def _admit_archive_resources(self):
-        from recovery_resource_admission import observe_resources
-        budget = self.native.config['resourceBudget']
+        from recovery_resource_admission import configured_budget,observe_resources,enforce_disk_capacity,ResourceAdmissionError
+        budget = configured_budget(self.context._owner,self.context._request)
         observed = observe_resources(self.context._owner,self.context._request,budget)
         devices = {}
         def add(path, amount, free=None):
@@ -552,9 +552,50 @@ class TargetPreservation:
             add(row['path'],budget['diskBytesByPath'][row['path']],row['freeBytes'])
         for row in devices.values():
             row['requiredBytes'] += self.policy['minimumFreeBytes']
-            require(row['freeBytes'] >= row['requiredBytes'],'PRESERVATION_ARCHIVE_CAPACITY_INSUFFICIENT')
-        self._write(self.root/'resource-admission.json',dict(schemaVersion='MainTargetPreservationResourceAdmission/v1',
-            operationId=self.context._request['operationId'],devices=list(devices.values()),admitted=True,observedAt=utc()))
+            minimum=self.policy['minimumFreeBytes']
+            if row['device']==self.session.root.stat().st_dev:
+                minimum=max(minimum,self.session.budget.reserve)
+            try:
+                decision=enforce_disk_capacity(budget,row['requiredBytes'],row['freeBytes'],
+                    'PRESERVATION_ARCHIVE_CAPACITY_INSUFFICIENT',minimum_free_bytes=minimum)
+            except ResourceAdmissionError as error:
+                if error.code=='PRESERVATION_ARCHIVE_CAPACITY_INSUFFICIENT':
+                    raise RepositoryError(error.code) from error
+                raise
+            if budget['schemaVersion']=='RestoreResourceBudget/v2':row['minimumFreeBytes']=minimum
+        record=dict(schemaVersion='MainTargetPreservationResourceAdmission/v1',
+            operationId=self.context._request['operationId'],devices=list(devices.values()),admitted=True,observedAt=utc())
+        if budget['schemaVersion']=='RestoreResourceBudget/v2':
+            record.update(schemaVersion='MainTargetPreservationResourceAdmission/v2',
+                diskAdmissionMode=decision['diskAdmissionMode'],
+                forecastReservationsEnforced=decision['forecastReservationsEnforced'])
+        self._write(self.root/'resource-admission.json',record)
+
+    def _admit_publication_resources(self,total):
+        """Actual archive payload space is mandatory in every disk mode."""
+        from recovery_resource_admission import configured_budget,observe_resources,enforce_disk_capacity,ResourceAdmissionError
+        budget=configured_budget(self.context._owner,self.context._request)
+        observed=observe_resources(self.context._owner,self.context._request,budget)
+        device=self.configuration.root.stat().st_dev
+        required=total+self.policy['minimumFreeBytes']
+        required+=sum(budget['diskBytesByPath'][r['path']] for r in observed['disks'] if r['device']==device)
+        minimum=total+self.policy['minimumFreeBytes']
+        if self.session.root.stat().st_dev==device:
+            required+=self.session.budget.maximum+self.session.budget.reserve
+            minimum=total+max(self.policy['minimumFreeBytes'],self.session.budget.reserve)
+        free=shutil.disk_usage(self.configuration.root).free
+        try:
+            decision=enforce_disk_capacity(budget,required,free,'PRESERVATION_ARCHIVE_CAPACITY_INSUFFICIENT',
+                minimum_free_bytes=minimum)
+        except ResourceAdmissionError as error:
+            if error.code=='PRESERVATION_ARCHIVE_CAPACITY_INSUFFICIENT':
+                raise RepositoryError(error.code) from error
+            raise
+        if budget['schemaVersion']=='RestoreResourceBudget/v2':
+            self._write(self.root/'publication-resource-admission.json',dict(
+                schemaVersion='MainTargetPreservationPublicationResourceAdmission/v1',
+                operationId=self.context._request['operationId'],device=device,actualArchiveBytes=total,
+                **decision,admitted=True,observedAt=utc()))
 
     def _hold_before_capture(self):
         self.check()
@@ -669,16 +710,7 @@ class TargetPreservation:
             'PRESERVATION_MATERIALS_CHANGED')
         total = sum(int(v.split('|')[1]) for v in tree.values() if v != 'directory')
         require(total <= self.policy['maxArchiveBytes'], 'PRESERVATION_ARCHIVE_BUDGET_EXCEEDED')
-        from recovery_resource_admission import observe_resources
-        budget = self.native.config['resourceBudget']
-        observed = observe_resources(self.context._owner,self.context._request,budget)
-        device = self.configuration.root.stat().st_dev
-        required = total+self.policy['minimumFreeBytes']
-        required += sum(budget['diskBytesByPath'][r['path']] for r in observed['disks'] if r['device']==device)
-        if self.session.root.stat().st_dev == device:
-            required += self.session.budget.maximum+self.session.budget.reserve
-        require(shutil.disk_usage(self.configuration.root).free >= required,
-            'PRESERVATION_ARCHIVE_CAPACITY_INSUFFICIENT')
+        self._admit_publication_resources(total)
         source_files = [root/name for name, spec in tree.items() if spec != 'directory']
         source_dirs = [root, *(root/name for name,spec in tree.items() if spec == 'directory')]
         self._leases.append(ArchivePathGuard.capture(source_files, closed_directories=source_dirs))
