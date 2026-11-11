@@ -33,3 +33,9 @@ in_progress；三target a3121c6均已实际激活，来源与Spug仍为各自已
 - Given已成功FULL/I1/I2原链和三服已激活；When真实页面选择每个点及每台目标；Then均显示正确确认身份且未勾覆盖确认时最终按钮禁用。
 - Given只读阶段或任何非精确目标/点/来源/请求键；When拦截业务POST；Then拒绝。Given明确submit阶段及原I2/测试服58，且未有持久化提交；When请求到达；Then先独占保存原请求，再允许唯一POST。
 - RED→GREEN→REGRESSION证据追加execution-log.md；本地合同测试不替代真实页面验证。
+# 补充：原请求查询比较与实际失败
+
+- 原测试服恢复 operationId=smallapp-b4f21de7a0c64d31beda7efa0204ced8 已提交一次，history380；原入口和目标 ledger 均证实在准入阶段失败，未创建 worker。不得重用该编号或改写失败记录。
+- 验证载体原 verify/r1 将对象键顺序作为身份，误报 ORIGINAL_OPERATION_RESPONSE_REQUIRED。BDD：相同 JSON 对象键顺序不同应相等，数组顺序、标量类型及字段增删仍须不同。
+- RED：新增 5 项 JSON 身份测试，原导出缺失导致 5 FAIL；GREEN/REGRESSION：使用 Node util.isDeepStrictEqual 并在断言前保存响应，实际 node --test scripts/tests/test_main_three_target_ui_contract.cjs -> 29 PASS / 0 FAIL / 0 SKIP。
+- 本项只修正验证载体，不宣称实际恢复错误解除。下一次只读页面查询仍须如实暴露 FAILED/SMALLAPP_VALUEERROR。

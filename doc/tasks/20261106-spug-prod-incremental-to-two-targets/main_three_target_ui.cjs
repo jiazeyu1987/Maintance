@@ -5,7 +5,7 @@ const ORIGIN='http://127.0.0.1:18080',SOURCE='intruoyi-57-safe-20261024-v1';
 const POINTS=['smallapp-3c2395ff88bd474e9fc007649565b848','smallapp-20a1bb9b78ac402693289675d16c63dd','smallapp-e7b668792c8f4bce945a52f984d3c660'];
 const need=(value,code)=>{if(!value)throw Error(code);};
 const sha=raw=>crypto.createHash('sha256').update(raw).digest('hex');
-const equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+const equal=require('node:util').isDeepStrictEqual;
 function assertPointChain(proof){
  need(proof.status==='SUCCEEDED_VERIFIED'&&proof.operationId===POINTS[2]&&proof.parentOperationId===POINTS[1]&&
   proof.baseFullOperationId===POINTS[0]&&proof.chainDepth===2&&proof.actualExitCode===0&&
@@ -113,8 +113,9 @@ async function main(){
    await row.waitFor();need(await row.count()===1,'ORIGINAL_HISTORY_ROW_REQUIRED');await row.getByRole('button',{name:'查看进度',exact:true}).click();
    await frame.locator('#simple-progress-tab').click();await frame.waitForFunction(id=>document.querySelector('#operation-reference')?.textContent===id&&!document.querySelector('#simple-query').disabled,id);
    const queried=page.waitForResponse(r=>new URL(r.url()).origin===ORIGIN&&new URL(r.url()).pathname==='/backup-entry-api/operations/'+id,{timeout:90000});await frame.locator('#simple-query').click();await queried;
-   await frame.waitForTimeout(3000);await Promise.all(pending);need(observation&&observation.httpStatus===200&&equal(observation.body.request,original.request),'ORIGINAL_OPERATION_RESPONSE_REQUIRED');
-   save('operation-response.private.json',observation);report.operationResponse=observation.body;report.state=observation.body.result?.state;
+   await frame.waitForTimeout(3000);await Promise.all(pending);if(observation)save('operation-response.private.json',observation);
+   need(observation&&observation.httpStatus===200&&equal(observation.body.request,original.request),'ORIGINAL_OPERATION_RESPONSE_REQUIRED');
+   report.operationResponse=observation.body;report.state=observation.body.result?.state;
    report.visibleProblem=await frame.locator('#problem').textContent();report.visibleLogs=await frame.locator('#simple-logs').innerText();
    need(!observation.body.queryError&&!report.visibleProblem&&!report.visibleLogs.includes('ENTRY_REQUEST_TIMEOUT')&&['RUNNING','SUCCEEDED'].includes(report.state),'ORIGINAL_RESTORE_STATE_NOT_READY');report.status='PASS';
   }else{
@@ -165,5 +166,5 @@ async function main(){
   report.finishedAt=new Date().toISOString();exclusive(output,report);console.log(JSON.stringify({status:report.status,stage:report.stage,errorCode:report.errorCode,loginPosts:report.loginPosts,businessPosts:report.businessPosts,confirmedPairs:report.confirmedPairs}));if(browser)await browser.close();
  }
 }
-module.exports={restoreWriteAllowed,assertPointChain};
+module.exports={restoreWriteAllowed,assertPointChain,jsonEqual:equal};
 if(require.main===module)main().catch(error=>{console.error(JSON.stringify({status:'NOT_STARTED',errorCode:error.message}));process.exitCode=1;});
