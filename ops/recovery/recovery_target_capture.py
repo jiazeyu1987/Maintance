@@ -7,6 +7,7 @@ from copy import deepcopy
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import time
@@ -17,6 +18,35 @@ from recovery_program_protection import ProtectionCustody, _preservation_root
 from recovery_program_execution import _directory
 from minimal_capture_support import (Budget, Originals, actual_pin, exclusive_json,
     path_checked, source_config_redis, validate_config, validate_main_target_config, MinimalSemantic)
+
+
+def _redis_authentication(target,redis):
+    """Bind an already validated snapshot to the registered MAIN auth contract."""
+    application=target.get('mainApplication')
+    require(type(application) is dict and application.get('schemaVersion') in
+        ('RegisteredMainApplication/v1','RegisteredMainApplication/v2'),
+        'PROGRAM_CAPTURE_REDIS_AUTHENTICATION_INVALID')
+    if application['schemaVersion']=='RegisteredMainApplication/v1':
+        require('redisAuthentication' not in application,'PROGRAM_CAPTURE_REDIS_AUTHENTICATION_INVALID')
+        mode='PASSWORD'
+    else:
+        authentication=application.get('redisAuthentication')
+        require(type(authentication) is dict and (authentication==dict(mode='PASSWORD') or
+            set(authentication)=={'mode','aclSha256'} and authentication['mode']=='NONE' and
+            type(authentication['aclSha256']) is str and
+            re.fullmatch('[0-9a-f]{64}',authentication['aclSha256']) is not None),
+            'PROGRAM_CAPTURE_REDIS_AUTHENTICATION_INVALID')
+        mode=authentication['mode']
+    secrets=target.get('secrets',{})
+    require(type(secrets) is dict and type(secrets.get('redis',{})) is dict and type(redis) is dict,
+        'PROGRAM_CAPTURE_REDIS_CREDENTIAL_CHANGED')
+    registered=secrets.get('redis',{})
+    if mode=='PASSWORD':
+        reference=registered.get('REDIS_PASSWORD')
+        require(type(reference) is dict and 'passwordPin' in redis and redis['passwordPin']==reference,
+            'PROGRAM_CAPTURE_REDIS_CREDENTIAL_CHANGED')
+    else:
+        require(not registered and 'passwordPin' not in redis,'PROGRAM_CAPTURE_REDIS_CREDENTIAL_CHANGED')
 
 
 class _CaptureProcessObserver:
@@ -226,11 +256,7 @@ class MainTargetCapture:
         redis=source_config_redis(source)
         require(redis['containerId']==services['redis']['id'] and redis['host']==services['redis']['ip'] and
             redis['database']==target['redisRebuild']['database'],'PROGRAM_CAPTURE_REDIS_SCOPE_CHANGED')
-        authentication=target['mainApplication']['redisAuthentication']
-        if authentication['mode']=='PASSWORD':
-            require(redis.get('passwordPin')==target['secrets']['redis']['REDIS_PASSWORD'],'PROGRAM_CAPTURE_REDIS_CREDENTIAL_CHANGED')
-        else:
-            require(authentication['mode']=='NONE' and 'passwordPin' not in redis,'PROGRAM_CAPTURE_REDIS_CREDENTIAL_CHANGED')
+        _redis_authentication(target,redis)
 
     @property
     def handed_off(self):return self._state=='HANDED_OFF'
