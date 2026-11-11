@@ -73,12 +73,16 @@ def validate_policy(policy):
     return policy
 
 
-def _regular(info, *, private=False):
-    _require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1,
-             'BACKUP_EPOCH_REGULAR_SINGLE_LINK_REQUIRED')
+def _file_permissions(info, *, private=False):
     if os.name == 'posix':
         _require(info.st_uid == os.geteuid() and not info.st_mode & (0o077 if private else 0o022),
                  'BACKUP_EPOCH_FILE_PERMISSIONS_INVALID')
+
+
+def _regular(info, *, private=False):
+    _require(stat.S_ISREG(info.st_mode) and info.st_nlink == 1,
+             'BACKUP_EPOCH_REGULAR_SINGLE_LINK_REQUIRED')
+    _file_permissions(info, private=private)
 
 
 def _signature(info):
@@ -87,15 +91,28 @@ def _signature(info):
 
 
 def _read_file(path, limit=16384):
-    path = _path(str(path)); before = path.stat(); _regular(before)
-    fd = os.open(path, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0) | getattr(os, 'O_BINARY', 0))
+    path = _path(str(path)); before = path.stat()
+    _require(stat.S_ISREG(before.st_mode), 'BACKUP_EPOCH_REGULAR_SINGLE_LINK_REQUIRED')
+    _file_permissions(before)
+    if os.name == 'nt':
+        flags = os.O_RDONLY | os.O_BINARY | os.O_NOINHERIT
+    else:
+        flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_CLOEXEC | os.O_NONBLOCK
+    fd = os.open(path, flags)
     try:
         opened = os.fstat(fd); _regular(opened)
-        _require(_signature(opened) == _signature(before), 'BACKUP_EPOCH_FILE_CHANGED')
+        attributes = lambda info: (info.st_mode, info.st_uid, info.st_gid)
+        # CIFS can refresh a cached pathname link count when opening the same
+        # file. Only the actual FD and final path may prove a single link;
+        # identity, permissions and both original times must still be stable.
+        _require(_signature(opened) == _signature(before) and
+                 attributes(opened) == attributes(before), 'BACKUP_EPOCH_FILE_CHANGED')
         with os.fdopen(fd, 'rb', closefd=False) as stream:
             raw = stream.read(limit + 1)
-        after = os.fstat(fd)
-        _require(_signature(opened) == _signature(after) == _signature(path.stat()),
+        after = os.fstat(fd); _regular(after)
+        current = _path(str(path)).stat(); _regular(current)
+        _require(_signature(opened) == _signature(after) == _signature(current) and
+                 attributes(opened) == attributes(after) == attributes(current),
                  'BACKUP_EPOCH_FILE_CHANGED')
     finally:
         os.close(fd)
