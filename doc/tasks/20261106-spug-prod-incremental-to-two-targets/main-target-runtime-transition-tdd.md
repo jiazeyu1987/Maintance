@@ -2,7 +2,7 @@
 
 ## Current Status
 
-ready_for_closeout。实现与有限回归84 PASS，已发父审，等待父统一审查/提交及真实切换验收。父任务承接上一持久视图3文件的审查/提交/真实主机验收；该前项状态不由本子项改写。本项仅新增独立runtime helper、测试和本文，不改原RuntimeGates、不连接远端、不提交；未创建worktree，所有自有测试容器已移除。
+ready_for_closeout（依赖集合顺序语义续修98 PASS）。上一过渡入口3文件已由父提交a3121c6；父真实58安装只读证明daemon-reload导致After/Requires输出TOKEN_ORDER变化，其它实际状态未变。现授权的原runtime.properties、新增依赖属性单测及本文已完成并发父审；不改原记录、不连接远端、不提交。前项真实安装/验收由父继续负责。
 
 ## 目标、里程碑与预期验证
 
@@ -57,3 +57,22 @@ ready_for_closeout。实现与有限回归84 PASS，已发父审，等待父统�
 后继观测通过原RuntimeGates完整执行；`RetainedHistoryRuntimeGates` 仅将custody/inventory委托持有完整原spec的原gate。旧配置和旧147包仍实际实读；无历史custody的目标也不能漏查。来源和其它包逐项保持，containers/fstab/全部mountinfo/historyGuard/原custody/inventory及其它所有观察字段精确相等。目标属性只允许明确PID/dropin及Requires/After并集变化，未知观察变化拒绝；旧scope和旧control入口仍有进程/worker活动拒绝。
 
 返回 `MainProgramTargetRuntimeTransition/v1`、`TARGET_SUCCESSOR_RUNTIME_VERIFIED`，包含真实before/after与明确retained baseline上下文；`serverWrites=false`、`installationReceiptCreated=false`、`restoreDispatched=false`。本项没有服务切换、远端dispatch、挂载、构建、receipt或安装选择功能，不能据此冒称真实服务器切换或业务验收。
+
+## 依赖集合顺序语义续修
+
+### 目标、BDD与约束
+
+仅Requires/After是systemd依赖集合，daemon-reload允许其输出顺序改变；DropInPaths加载顺序仍有语义。纯helper `canonical_dependency_properties(value)` 返回properties副本，仅完整排序Requires/After tokens，重复显式拒绝，未知依赖及其它属性不删除。旧留存记录由父对副本调用，不改原件。
+
+- BDD: Given 同一完整Requires/After集合仅顺序改变；When properties观测与纯语义比较；Then 结果相同且原值保持。
+- BDD: Given 依赖增删、重复、DropInPaths顺序或其它属性改变；When 比较；Then 仍被检测/拒绝，未知依赖和属性精确保留。
+- 里程碑：先新单测RED，再最小调整properties及纯helper，最后本项新测试+原37+过渡47有限回归。设计约束仍为无fallback/吞异常/临时绕过；不接受任何业务/挂载变化，不连接远端。
+
+### RED / GREEN / REGRESSION
+
+- RED: `python -X utf8 PRIVATE/run-runtime-dependency-properties-linux.py red-r1` -> native/载体exit1，14 failed in0.07s，全部预期 `MISSING_DEPENDENCY_PROPERTIES_CANONICALIZER`，随后才新增helper。10完整依赖快照SHA `0d9e4265f50ed7e658e516811f8c53f8f90c523c3f593f8f11133a44ed4ee8fc`、inputsUnchanged/containerRemoved=true。
+- 最小实现：main_program_control_runtime.py新增 `canonical_dependency_properties(value)`，properties()解析后的dict经过该helper返回；仅21增1删。Require/After token排序保留全部值，重复抛DEPENDENCY_DUPLICATE，缺失字段不制造，空集合保持。所有其它key/value及DropInPaths顺序不改变。
+- GREEN + REGRESSION: `python -X utf8 PRIVATE/run-runtime-dependency-properties-linux.py regression-r1` -> native/载体exit0，98 passed in21.10s（新依赖14+过渡47+原37）；10完整依赖tar256000 bytes SHA `8ec377a9596a13561222373a219988ce7bbc35c993373a353560aa70007429a5`；stdout180 bytes SHA `d7098e33ec1dfb03a587a66b26a0de56220fb8ccbc8beed9d37b419d3016e180`，stderr0，inputsUnchanged/containerRemoved=true、remoteWrites0、actualBusinessRestore=false。
+- 固定image/wheels/network-none/cap-drop/read-only/预算沿用上一轮；实际完整旧7依赖仍逐字与既有RED pins核对，未抽AST或替换实现。
+- `git diff --check -- TASK/main_program_control_runtime.py` -> PASS；仅本次拥有3文件，不改其它入口、不提交、不触发服务或服务器动作。
+- 父可对已留存原始观测的副本分别调用helper（controllers[*].properties/historyGuard），进行依赖集合语义比较；不得修改原留存记录或由此接受新mount/业务变化。

@@ -22,6 +22,25 @@ def canonical(value):
     return json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False).encode('utf-8')
 
 
+def canonical_dependency_properties(value):
+    """Copy systemd properties with only dependency-set order normalized.
+
+    Requires/After output order can change on daemon-reload. Keep every token
+    and unknown property; repeated tokens fail instead of being deduplicated.
+    DropInPaths remains ordered because its loading precedence is meaningful.
+    """
+    need(type(value) is dict, 'DEPENDENCY_PROPERTIES_INVALID')
+    result = deepcopy(value)
+    for key in ('Requires', 'After'):
+        if key not in result:
+            continue
+        need(type(result[key]) is str, 'DEPENDENCY_PROPERTY_INVALID')
+        tokens = result[key].split()
+        need(len(tokens) == len(set(tokens)), 'DEPENDENCY_DUPLICATE')
+        result[key] = ' '.join(sorted(tokens))
+    return result
+
+
 def _identity(info):
     return tuple(getattr(info, key) for key in ('st_dev', 'st_ino', 'st_mode', 'st_nlink',
         'st_uid', 'st_gid', 'st_size', 'st_mtime_ns', 'st_ctime_ns'))
@@ -118,7 +137,8 @@ class RuntimeGates:
     def properties(self, service):
         raw = self.run(['systemctl', 'show', service, '-p', 'MainPID', '-p', 'FragmentPath', '-p', 'DropInPaths',
             '-p', 'Requires', '-p', 'After', '-p', 'LimitNOFILE', '-p', 'ActiveState', '-p', 'SubState'])
-        return dict(line.split('=', 1) for line in raw.decode('utf-8').splitlines() if '=' in line)
+        return canonical_dependency_properties(dict(
+            line.split('=', 1) for line in raw.decode('utf-8').splitlines() if '=' in line))
 
     def verify_process(self, row):
         control = self.read(row['controlConfigurationPin']); self.read(row['ownerConfigurationPin'])
