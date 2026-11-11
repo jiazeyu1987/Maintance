@@ -9,9 +9,45 @@ import smallapp_adapter as adapter
 CONFIG = Path('/var/lib/intruoyi-spug/smallapp-simple-settings.json')
 
 
+def validate_preservation_bindings(value, routes):
+    code = 'SIMPLE_PRESERVATION_RESTORE_BINDING_INVALID'
+    if (type(routes) is not dict or len(routes) > 32 or
+            any(not adapter.reference(source) or not adapter.reference(app) for source, app in routes.items()) or
+            len(set(routes.values())) != len(routes)):
+        raise adapter.Refused(code)
+    if not routes:
+        return
+    from smallapp_entry import PRESERVATION_SOURCE_KIND, SETTINGS, settings
+
+    applications = {row['applicationId']: row for row in settings(SETTINGS)['applications']}
+    bindings = {row['applicationId']: row for row in value['bindings']}
+    servers = value['servers']
+    if (not isinstance(servers, list) or
+            any(not isinstance(row, dict) or not adapter.reference(row.get('address')) for row in servers)):
+        raise adapter.Refused(code)
+    addresses = {row['address'] for row in servers}
+    if len(addresses) != 3 or set(routes.values()).intersection(value.get('catalogueRestoreBindings', {}).values()):
+        raise adapter.Refused(code)
+    for source, application_id in routes.items():
+        app = applications.get(application_id)
+        binding = bindings.get(application_id)
+        if (app is None or app.get('sourceKind') != PRESERVATION_SOURCE_KIND or app['sourceConfigRef'] != source or
+                binding is None or binding.get('mode') != 'safe' or binding['selectable'] or
+                not adapter.reference(binding.get('server')) or binding['server'] not in addresses):
+            raise adapter.Refused(code)
+        overwrite = binding['overwriteTargetServers']
+        fresh = binding.get('targetServers')
+        if (set(overwrite) != addresses or not all(adapter.reference(ref) for ref in overwrite.values()) or
+                set(overwrite.values()) != set(app['targetConfigRefs']) or not isinstance(fresh, dict) or
+                any(server not in addresses or not adapter.reference(ref) or ref in app['targetConfigRefs']
+                    for server, ref in fresh.items())):
+            raise adapter.Refused(code)
+
+
 def configuration():
     value = adapter.read_json(CONFIG)
-    if set(value) - {'catalogueRestoreBindings'} != {'nas', 'servers', 'bindings'} or len(value['servers']) != 3:
+    if (set(value) - {'catalogueRestoreBindings', 'preservationRestoreBindings'} != {'nas', 'servers', 'bindings'} or
+            len(value['servers']) != 3):
         raise adapter.Refused('SIMPLE_CONFIGURATION_INVALID')
     if any(type(row.get('selectable')) is not bool for row in value['bindings']):
         raise adapter.Refused('SIMPLE_BINDING_SELECTION_STATE_REQUIRED')
@@ -30,6 +66,8 @@ def configuration():
                     app not in by_id or by_id[app]['mode'] != 'safe'
                     for point, app in routes.items())):
             raise adapter.Refused('SIMPLE_CATALOGUE_RESTORE_BINDING_INVALID')
+    if 'preservationRestoreBindings' in value:
+        validate_preservation_bindings(value, value['preservationRestoreBindings'])
     return value
 
 
@@ -40,6 +78,8 @@ def public_configuration():
     } for row in value['bindings']])
     if 'catalogueRestoreBindings' in value:
         public['catalogueRestoreBindings'] = dict(value['catalogueRestoreBindings'])
+    if 'preservationRestoreBindings' in value:
+        public['preservationRestoreBindings'] = dict(value['preservationRestoreBindings'])
     return public
 
 

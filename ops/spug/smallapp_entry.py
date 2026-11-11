@@ -24,6 +24,9 @@ import smallapp_adapter as adapter
 SETTINGS = Path('/var/lib/intruoyi-spug/smallapp-entry-settings.json')
 ENTRIES = adapter.RECORDS / 'ui'
 ACTIONS = ('FULL', 'INCREMENTAL', 'RESTORE')
+PRESERVATION_SOURCE_KIND = 'TARGET_PRE_RESTORE'
+APPLICATION_FIELDS = frozenset(('applicationId', 'displayName', 'sourceConfigRef', 'targetConfigRefs',
+                                'engineSelectionRef', 'registrationSha256'))
 PREFIX = 'python3 /opt/intruoyi-spug/smallapp_adapter.py --business-action '
 CHOICE_FIELDS = frozenset(('applicationId', 'sourceConfigRef', 'engineSelectionRef',
                           'fullReady', 'fullErrorCode', 'parentChainRefs',
@@ -33,6 +36,10 @@ CHOICE_FIELDS = frozenset(('applicationId', 'sourceConfigRef', 'engineSelectionR
 def need(condition, code):
     if not condition:
         raise adapter.Refused(code)
+
+
+def require_ordinary_source(app):
+    need('sourceKind' not in app, 'PRESERVATION_SELECTION_REQUIRED')
 
 
 def now():
@@ -64,19 +71,23 @@ def settings(path=SETTINGS):
     seen = set()
     sources = set()
     for app in value['applications']:
-        need(isinstance(app, dict) and set(app) == {'applicationId', 'displayName', 'sourceConfigRef',
-             'targetConfigRefs', 'engineSelectionRef', 'registrationSha256'}, 'W08_DISPLAY_PROJECTION_INVALID')
+        need(isinstance(app, dict), 'W08_DISPLAY_PROJECTION_INVALID')
+        preservation = app.get('sourceKind') == PRESERVATION_SOURCE_KIND
+        need(set(app) == (APPLICATION_FIELDS | {'sourceKind'} if preservation else APPLICATION_FIELDS),
+             'W08_DISPLAY_PROJECTION_INVALID')
         need(adapter.reference(app['applicationId']) and app['applicationId'] not in seen,
              'W08_APPLICATION_ID_INVALID')
         need(isinstance(app['displayName'], str) and 0 < len(app['displayName']) <= 160 and
              not any(ord(c) < 32 for c in app['displayName']), 'W08_DISPLAY_NAME_INVALID')
-        need(app['sourceConfigRef'] is None or adapter.reference(app['sourceConfigRef']), 'W08_SOURCE_INVALID')
+        need(adapter.reference(app['sourceConfigRef']) or (not preservation and app['sourceConfigRef'] is None),
+             'W08_SOURCE_INVALID')
         if app['sourceConfigRef'] is not None:
             need(app['sourceConfigRef'] not in sources, 'W08_DUPLICATE_SOURCE')
             sources.add(app['sourceConfigRef'])
-        need(app['engineSelectionRef'] is None or adapter.reference(app['engineSelectionRef']), 'W08_ENGINE_INVALID')
+        need(adapter.reference(app['engineSelectionRef']) or (not preservation and app['engineSelectionRef'] is None),
+             'W08_ENGINE_INVALID')
         refs = app['targetConfigRefs']
-        need(isinstance(refs, list) and all(adapter.reference(r) for r in refs) and
+        need(isinstance(refs, list) and (not preservation or len(refs) == 3) and all(adapter.reference(r) for r in refs) and
              len(set(refs)) == len(refs) and app['sourceConfigRef'] not in refs, 'W08_TARGETS_INVALID')
         need(isinstance(app['registrationSha256'], str) and re.fullmatch('[0-9a-f]{64}',
              app['registrationSha256']), 'W08_REGISTRATION_PIN_REQUIRED')
@@ -113,6 +124,7 @@ def validated_selections(payload, config):
         app_id = item['applicationId']
         need(adapter.reference(app_id) and app_id in known and app_id not in rows, 'W01_APPLICATION_NOT_REGISTERED')
         app = known[app_id]
+        require_ordinary_source(app)
         need(adapter.reference(item['sourceConfigRef']) and item['sourceConfigRef'] == app['sourceConfigRef'],
              'W01_SOURCE_REGISTRATION_MISMATCH')
         need(type(item['fullReady']) is bool and
@@ -143,6 +155,7 @@ def catalogue(config, bridge):
 def application_catalogue(config, application_id, target_ref=None):
     matches = [app for app in config['applications'] if app['applicationId'] == application_id]
     need(len(matches) == 1 and matches[0]['sourceConfigRef'] is not None, 'SOURCE_NOT_REGISTERED_BY_W08')
+    require_ordinary_source(matches[0])
     if target_ref is not None:
         need(target_ref in matches[0]['targetConfigRefs'], 'W01_TARGET_NOT_REGISTERED')
     return catalogue(config, adapter.HttpBridge(source_ref=matches[0]['sourceConfigRef'], target_ref=target_ref))
@@ -150,8 +163,10 @@ def application_catalogue(config, application_id, target_ref=None):
 
 def admit_selection(request, config, bridge):
     adapter.validate_request(request)
-    bridge.validate_binding(request)
     matches = [a for a in config['applications'] if a['sourceConfigRef'] == request['sourceConfigRef']]
+    if len(matches) == 1:
+        require_ordinary_source(matches[0])
+    bridge.validate_binding(request)
     need(len(matches) == 1, 'SOURCE_NOT_REGISTERED_BY_W08')
     app = matches[0]
     rows = validated_selections(bridge.selections(), config)
@@ -212,6 +227,7 @@ def incremental_application(config, application_id):
     matches = [app for app in config['applications'] if app['applicationId'] == application_id]
     need(len(matches) == 1 and adapter.reference(matches[0]['sourceConfigRef']),
          'SOURCE_NOT_REGISTERED_BY_W08')
+    require_ordinary_source(matches[0])
     return matches[0]
 
 
