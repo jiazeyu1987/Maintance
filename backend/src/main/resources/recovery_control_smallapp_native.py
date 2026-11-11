@@ -590,6 +590,71 @@ class Native:
              'SOURCE_ASYNC_ORIGINAL_CHANGED')
         return True
 
+    def original_backup_owner(self, configuration, value, selection, *, guard=None):
+        """Prove the original template-to-request binding without resolving again.
+
+        resolve() freezes a separate repository owner for each capture request.
+        Re-running it here could read a later generation or append epoch state.
+        Only parentChains and this source's capture path are derived owner fields.
+        """
+        code = 'SOURCE_POINT_OWNER_BINDING_INVALID'
+        source = value['sourceConfigRef']
+        template_pin = configuration.get('sourceConfigurations', {}).get(source)
+        need(template_pin is not None, code)
+        if template_pin == selection['ownerConfigurationPin']:
+            return []
+        task_root = configuration.get('taskRoot')
+        need(type(task_root) is str and Path(task_root).is_absolute(), code)
+        root = Path(task_root) / 'request-configurations' / opaque(value['operationId'])
+        need(root.resolve() == root and root.is_dir() and
+             selection['ownerConfigurationPin']['path'] == str(root / 'repository.json'), code)
+        originals = []
+
+        def read(reference):
+            if guard is not None:
+                guard()
+            document = self.document(reference)
+            originals.append(reference)
+            return document
+
+        inputs = read(executor.pin(root / 'request-inputs.json'))
+        exact({key: item for key, item in inputs.items() if key != 'programGenerationEvidencePins'},
+              'request ownerConfigurationPin captureConfigurationPin objectSourcePin pointBindingPin', code)
+        need(inputs['request'] == value and inputs['ownerConfigurationPin'] == template_pin and
+             inputs['pointBindingPin'] == selection.get('pointBindingPin'), code)
+        # These are identities of shared templates observed at dispatch. The
+        # frozen request owner below, not a later live template, is authoritative
+        # for the completed operation. Capture/objects are not owner fields.
+        executor.pin_reference(inputs['captureConfigurationPin'])
+        executor.pin_reference(inputs['objectSourcePin'])
+        evidence = inputs.get('programGenerationEvidencePins', [])
+        need(type(evidence) is list, code)
+        for reference in evidence:
+            read(reference)
+        from recovery_control_capture_config import verify_request_epoch
+        verify_request_epoch(self, configuration, value, selection.get('sourceEpoch'))
+        expected = deepcopy(read(template_pin))
+        need(type(expected.get('sources')) is dict and source in expected['sources'], code)
+        if value['action'] == 'FULL':
+            need(value['parentChainRef'] is None and inputs['pointBindingPin'] is None, code)
+            expected['parentChains'] = {}
+        else:
+            need(value['action'] == 'INCREMENTAL' and inputs['pointBindingPin'] is not None, code)
+            parent = read(inputs['pointBindingPin'])
+            need(parent.get('schemaVersion') == 'SmallAppPointBinding/v2' and
+                 parent.get('reference') == value['parentChainRef'] and
+                 parent.get('sourceConfigRef') == source, code)
+            output = read(parent['resultPin'])
+            need(output.get('operationId') == output.get('requestId') == parent['reference'] and
+                 output.get('action') in ('FULL', 'INCREMENTAL') and output.get('state') == 'SUCCEEDED' and
+                 type(output.get('actualExitCode')) is int and output['actualExitCode'] == 0, code)
+            point_pin = output['data']['pointPin']
+            executor.pin_reference(point_pin)
+            expected['parentChains'] = {parent['reference']: point_pin}
+        expected['sources'][source]['configurationPath'] = str(root / 'capture.json')
+        need(read(selection['ownerConfigurationPin']) == expected, code)
+        return originals
+
     def close_async_point(self, value, directory, selection, result_pin, output, *, guard=None):
         """Close a proven backup in its original registry before another dispatch.
 
@@ -602,8 +667,14 @@ class Native:
         original = self.document(selection['configurationPin'])
         current = self.configuration()
         source = value['sourceConfigRef']
-        need(original.get('sourceConfigurations', {}).get(source) == selection['ownerConfigurationPin'] and
-             source in current.get('sourceConfigurations', {}), 'SOURCE_POINT_OWNER_BINDING_INVALID')
+        need(source in current.get('sourceConfigurations', {}), 'SOURCE_POINT_OWNER_BINDING_INVALID')
+        owner_originals = self.original_backup_owner(original, value, selection, guard=guard)
+
+        def verify_owner_originals():
+            for reference in owner_originals:
+                if guard is not None:
+                    guard()
+                executor.verify(reference)
         for key in ('ledgerRoot', 'registryRoot'):
             path = Path(original[key])
             need(path.is_absolute() and path.resolve() == path and path.is_dir() and
@@ -649,11 +720,13 @@ class Native:
                 guard()
             need(self.source_epoch(current, source) == selection.get('sourceEpoch'),
                  'BACKUP_EPOCH_CHANGED_DURING_CAPTURE')
+            verify_owner_originals()
             self.publish_point(value, directory, result_pin, original)
             need(self.source_epoch(current, source) == selection.get('sourceEpoch'),
                  'BACKUP_EPOCH_CHANGED_DURING_CAPTURE')
         need(self.document(selection['configurationPin']) == original and self.configuration() == current,
              'SOURCE_POINT_CONFIGURATION_CHANGED')
+        verify_owner_originals()
         if guard is not None:
             guard()
 

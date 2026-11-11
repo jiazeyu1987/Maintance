@@ -58,13 +58,14 @@ def unregistered_material(fixture, reference, parent):
 
 
 class UnpolledFixture:
-    def __init__(self, root):
+    def __init__(self, root, *, request_bound_owner=False, mutate_owner=None):
         self.root = root
         self.metadata = MetadataFixture(root)
         self.metadata.enable_epoch()
         self.metadata.epoch_event()
         self.native = self.metadata.native
         config = self.native.configuration()
+        config['taskRoot'] = str(root)
         owner = local_read(Path(config['sourceConfigurations']['source-A']['path']))
         owner.update(schemaVersion='RepositoryMinimumConfiguration/v1', operationRoot=str(root / 'owners'))
         (root / 'owners').mkdir(mode=0o700)
@@ -81,9 +82,30 @@ class UnpolledFixture:
         self.worker.write_text(WORKER, encoding='utf-8')
         self.reference = 'unpolled-i1'
         self.value = ui_request(self.reference, parent='full-root')
+        self.point_binding_pin = None
+        if request_bound_owner:
+            from copy import deepcopy
+            self.template_pin = self.owner_pin
+            self.request_root = root / 'request-configurations' / self.reference
+            capture = self.metadata.write('capture-template.json', dict(source='source-A'))
+            objects = self.metadata.write('objects-template.json', dict(source='source-A'))
+            self.point_binding_pin = self.metadata.points['full-root']['controlPin']
+            inputs = dict(request=self.value, ownerConfigurationPin=self.template_pin,
+                captureConfigurationPin=capture, objectSourcePin=objects,
+                pointBindingPin=self.point_binding_pin)
+            derived = deepcopy(owner)
+            derived['parentChains'] = {'full-root': self.metadata.points['full-root']['pointPin']}
+            derived['sources']['source-A']['configurationPath'] = str(self.request_root / 'capture.json')
+            if mutate_owner is not None:
+                mutate_owner(derived, inputs, self)
+            self.metadata.write('request-configurations/' + self.reference + '/request-inputs.json', inputs)
+            self.metadata.write('request-configurations/' + self.reference + '/capture.json', dict(source='source-A'))
+            self.owner_pin = self.metadata.write('request-configurations/' + self.reference + '/repository.json', derived)
         self.selection = dict(ownerConfigurationPin=self.owner_pin,
             ownerProgramPin=executor.pin(self.launcher), configurationPin=self.native.config_pin,
             sourceEpoch=self.native.source_epoch(config, 'source-A'))
+        if request_bound_owner:
+            self.selection['pointBindingPin'] = self.point_binding_pin
         self.ledger = Ledger(root / 'ledger', self.native)
         self.ledger.reserve(self.value, self.selection)
         self.directory = root / 'ledger' / self.reference
