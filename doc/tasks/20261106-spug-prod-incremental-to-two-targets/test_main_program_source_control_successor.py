@@ -106,6 +106,26 @@ class PreparationTests(unittest.TestCase):
     def test_owner_pin_changed(self):check_changed_source_owner_binding_rejected(self.data)
 
 
+class DeclaredDeltaTests(unittest.TestCase):
+    def test_explicit_native_only_successor(self):
+        before={name:name.encode() for name in subject().CHANGED_FILES}
+        after=dict(before);after['control/recovery_control_smallapp_native.py']=b'new-native'
+        self.assertEqual(subject().validate_delta(before,after,
+            expected_changed_files={'control/recovery_control_smallapp_native.py'}),
+            ['control/recovery_control_smallapp_native.py'])
+
+    def test_default_scope_remains_both_files(self):
+        before={name:name.encode() for name in subject().CHANGED_FILES}
+        after=dict(before);after['control/recovery_control_smallapp_native.py']=b'new-native'
+        with self.assertRaisesRegex(ValueError,'PACKAGE_SCOPE_CHANGED'):
+            subject().validate_delta(before,after)
+
+    def test_unapproved_or_empty_declaration_rejected(self):
+        for declared in (set(),{'formal/capture.py'},{'control/recovery_control_smallapp_native.py','formal/capture.py'}):
+            with self.assertRaisesRegex(ValueError,'PACKAGE_SCOPE_CHANGED'):
+                subject().validate_delta({}, {}, expected_changed_files=declared)
+
+
 class DependencyComparisonTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

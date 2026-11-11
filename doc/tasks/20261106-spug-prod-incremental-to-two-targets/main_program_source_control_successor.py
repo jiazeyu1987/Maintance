@@ -24,10 +24,12 @@ def document_pin(path,value):
     return dict(path=str(path),bytes=len(raw),sha256=hashlib.sha256(raw).hexdigest())
 
 
-def validate_delta(before,after):
-    need(set(before)==set(after) and {name for name in before if before[name]!=after[name]}==CHANGED_FILES,
+def validate_delta(before,after,*,expected_changed_files=None):
+    expected=CHANGED_FILES if expected_changed_files is None else expected_changed_files
+    need(type(expected) in (set,frozenset) and bool(expected) and expected<=CHANGED_FILES and
+         set(before)==set(after) and {name for name in before if before[name]!=after[name]}==expected,
          'PACKAGE_SCOPE_CHANGED')
-    return sorted(CHANGED_FILES)
+    return sorted(expected)
 
 
 def systemd_properties_equal(before,after):
@@ -49,7 +51,8 @@ def process_observation_equal(before,after):
         all(before[key]==after[key] for key in before if key!='properties'))
 
 
-def prepare_candidate(*,previous,control,owner,previous_build,build,previous_package_raw,package_raw,engine=None):
+def prepare_candidate(*,previous,control,owner,previous_build,build,previous_package_raw,package_raw,engine=None,
+                      expected_changed_files=None):
     """Pure preparation; a BOUND result never asserts installation or a runtime PID."""
     for key,value in (('controlConfigurationPin',control),('ownerConfigurationPin',owner)):
         need(document_pin(previous[key]['path'],value)==previous[key],'ORIGINAL_CONFIGURATION_CHANGED')
@@ -61,7 +64,7 @@ def prepare_candidate(*,previous,control,owner,previous_build,build,previous_pac
          set(owner['sources'])=={SOURCE},'SOURCE_BINDING_CHANGED')
     old=verify_package(previous_package_raw,previous_build)
     new=verify_package(package_raw,build)
-    changed=validate_delta(old['payloadFiles'],new['payloadFiles'])
+    changed=validate_delta(old['payloadFiles'],new['payloadFiles'],expected_changed_files=expected_changed_files)
     previous_engine=previous['engine'];parent=PurePosixPath(previous_engine).parent
     expected=str(parent/('engine-source-only-'+build['targetCommit'][:7]))
     engine=expected if engine is None else engine
