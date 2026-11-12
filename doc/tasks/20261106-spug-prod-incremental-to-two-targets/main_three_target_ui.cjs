@@ -46,7 +46,9 @@ function assertInstallationGeneration(value){
    const known=targetGeneration(row.selectionSchemaVersion);need(!known.targetCommit||known.targetCommit===row.sourceCommit,'TARGET_ANCESTRY_COMMIT_CHANGED');seen.add(row.selectionPin.file);
   }
   need(ancestry[0].selectionSchemaVersion==='TaskMainProgramTargetControlSelection/v1'&&equal(ancestry.at(-1).selectionPin,value.selectionSchemaVersion===MIXED_SCHEMA?value.partialPredecessor?.baseSelectionPin:value.predecessorSelectionPin),'TARGET_ANCESTRY_PREDECESSOR_CHANGED');
-  if(value.selectionSchemaVersion===MIXED_SCHEMA){const p=value.partialPredecessor;need(p&&equal(Object.keys(p).sort(),['activationVerifiedHosts','baseSelectionPin','retainedBaseHosts','selectionPin'])&&localPinShape(p.selectionPin)&&localPinShape(p.baseSelectionPin)&&equal(p.selectionPin,value.predecessorSelectionPin)&&equal(p.activationVerifiedHosts,['57'])&&equal(p.retainedBaseHosts,['58','59']),'PARTIAL_PREDECESSOR_BINDING_REQUIRED');}
+  if(value.selectionSchemaVersion===MIXED_SCHEMA||value.partialPredecessor){const p=value.partialPredecessor;need(p&&equal(Object.keys(p).sort(),['activationVerifiedHosts','baseSelectionPin','retainedBaseHosts','selectionPin'])&&localPinShape(p.selectionPin)&&localPinShape(p.baseSelectionPin)&&equal(p.activationVerifiedHosts,['57'])&&equal(p.retainedBaseHosts,['58','59']),'PARTIAL_PREDECESSOR_BINDING_REQUIRED');
+   if(value.selectionSchemaVersion===MIXED_SCHEMA)need(equal(p.selectionPin,value.predecessorSelectionPin),'PARTIAL_PREDECESSOR_BINDING_REQUIRED');
+   else{const i=ancestry.findIndex(r=>equal(r.selectionPin,p.baseSelectionPin));need(i>=0&&ancestry[i+1]?.selectionSchemaVersion===MIXED_SCHEMA&&!ancestry.some(r=>equal(r.selectionPin,p.selectionPin)),'PARTIAL_ANCESTOR_BINDING_REQUIRED');}}
   profile={...profile,targetCommit:value.verifiedTargetCommit,submissionFile:'main-i2-to-test58-ui-submission-'+value.selectionPin.sha256+'.json'};
  }
  need(controllers&&equal(Object.keys(controllers).sort(),['57','58','59']),'THREE_TARGET_HOSTS_REQUIRED');
@@ -135,7 +137,8 @@ if selected['schemaVersion'] in ('TaskMainProgramTargetControlSuccessorSelection
   reference=prior['selectionPin'];assert reference['file'] not in seen,'TARGET_ANCESTRY_CYCLE';seen.add(reference['file'])
   assert len(ancestry)<18,'TARGET_ANCESTRY_DEPTH'
   if prior['selection']['schemaVersion']=='TaskMainProgramTargetControlPartialPredecessor/v1':
-   assert selected['schemaVersion']=='TaskMainProgramTargetControlSuccessorSelection/v3' and prior['status']=='PARTIALLY_ACTIVATED' and prior['installationVerified'] is False
+   assert prior['status']=='PARTIALLY_ACTIVATED' and prior['installationVerified'] is False
+   assert (selected['schemaVersion']=='TaskMainProgramTargetControlSuccessorSelection/v3' if not ancestry else ancestry[-1]['selectionSchemaVersion']=='TaskMainProgramTargetControlSuccessorSelection/v3'),'PARTIAL_ANCESTOR_BINDING_REQUIRED'
    out['partialPredecessor']=dict(selectionPin=reference,baseSelectionPin=prior['selection']['baseSelectionPin'],activationVerifiedHosts=prior['activationVerifiedHosts'],retainedBaseHosts=prior['retainedBaseHosts'])
    prior=prior['predecessorInstallation'];continue
   ancestry.append(dict(selectionPin=reference,selectionSchemaVersion=prior['selection']['schemaVersion'],sourceCommit=prior['controllerBuildBindings']['58']['target']['sourceCommit']))
