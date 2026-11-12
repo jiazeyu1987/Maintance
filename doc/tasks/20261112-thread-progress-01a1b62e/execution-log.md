@@ -16,3 +16,12 @@
 - GREEN：task.md、execution-log.md、report.md严格UTF-8解码、无BOM、无U+FFFD替换字符检查 -> PASS；git diff --cached --check -> PASS。
 - COMMIT：aee04c8 任务: 分析三服备份恢复对话进度；仅report.md与请求日志本任务新增7行。采用精确cached patch，原请求日志9行并发改动仍未暂存。
 - CLOSEOUT：本任务无worktree/进程/控制台/服务器改动，审阅completed；最终任务记录按独立提交保存。
+
+## 追加问询：后续还有哪些工作
+
+- 用户要求：列出目标对话后续工作；复用同一审阅任务。
+- READ：wait_threads(timeoutMs=0) -> 目标active/inProgress；最新消息明确本地验证通过、修复已提交，尚待从该提交独立构建与完整执行链验证。
+- 当前审阅状态恢复in_progress，仅核对近期任务记录，不发送消息或执行目标任务。
+- EVIDENCE：目标execution-log.md最新02:08/02:12 UTC记录：identity-fixture-red-r1两项准确FAIL，green-r1所在20项PASS；修复12文件提交0119156，专用worktree C:/Spug/runtime/private/u-main-0119156-r1开始构建预检，尚未完成本轮安装/续办/恢复。
+- VERIFICATION：对比最新快照与公开日志，旧计划头部92/94标记已落后，按实际后续验证更新结论；未将待执行构建当成功。
+- CLOSEOUT：追加剩余工作审阅completed，无任务自有资源待清理；仅精确提交本次四份文档新增内容，原请求日志其它任务9行改动继续保留。
