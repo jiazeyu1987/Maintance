@@ -51,3 +51,14 @@
 - SEND：send_message_to_thread(01a1b62e-c0a4-7da2-bed2-9b4a58188636) -> 成功返回threadId。一次发送，未创建新对话或重复业务操作。
 - CHECK：wait_threads(timeoutMs=20000) -> 目标active/inProgress，尚未出现针对本次收敛指令的新回复；没有把发送成功当作执行完成。
 - CLOSEOUT：协调发送任务completed，本任务无服务器、worktree、业务或控制台变更；原任务继续承担实际闭环。
+
+## 收敛落实情况复核
+
+- 用户要求：核对当前进度及是否开始收敛。
+- 引导：读取本任务前状态completed、最新经验索引和仓库相对路径powershell-memory；不沿用已替换的旧盘符规则。
+- 计划：只读原对话最新状态/必要消息与任务日志，按实际结果判定，不重复发送要求或执行恢复。
+- READ：wait_threads(timeoutMs=0)及read_thread最新1turn确认active/inProgress；读取最新task/execution-log、S3凭据方案、终态查询方案、查询实际计时及GREEN/REGRESSION结果。
+- EVIDENCE：原381已正式收口，b30f21e三服实际安装及9对页面预览通过；新2717在12:30Z受理、13:15Z失败，无业务覆盖。根因是对象凭据缺endpoint；失败查询反复读取2.08GB镜像，最小查询修复3项GREEN/111项回归PASS。
+- EVIDENCE：现有v2失败续办与新capture pin尚须正式修复；此前实现已合入3f3e873且融合工作树已清理，不能外推为最新修复或真实恢复验收成功。
+- RESULT：已开始范围收敛，尚未交付收口，当前仍有直接缺陷返工；没有宣称已恢复或给出无依据完成率。
+- CLOSEOUT：只读审阅completed，无本任务worktree、服务器、业务或控制台动作；请求日志原有9行他项修改继续保留。
