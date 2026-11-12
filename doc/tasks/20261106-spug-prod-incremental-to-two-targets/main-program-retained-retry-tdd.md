@@ -2,7 +2,7 @@
 
 ## Current Status
 
-ready_for_closeout：目标专用 v2 合同、backend/package 及 opaque 原件读取已完成；27 项独立 Linux GREEN，391 项有限相邻回归全部 PASS，无 skip。产品和测试冻结，由父审查、精确提交及正式包认证；本子任务没有服务器操作、业务恢复或提交。57 的 0119156 已激活、58 仅暂存、59 未暂存均为原事实，不重写。实际后继安装与58恢复仍由父任务独立验收，不能将此处协议 PASS 当成现场成功。
+ready_for_closeout：产品原冻结输入已27项 Linux GREEN及391项相邻回归PASS，现已由父提交为b10ba57并正式封包。本轮额外2处test-only夹具修改已冻结，提交前真实官方包节点GREEN仍由父验证；源码载体green-r7/r8/r9的混根fixture ERROR原件保留，不能将原27/391 PASS追认给本轮变更测试。没有服务器操作、业务恢复或提交。实际后继安装与58恢复由父任务独立验收，不能将此处协议 PASS 当成现场成功。
 
 ## 目标、里程碑与验证
 
@@ -75,6 +75,17 @@ regression-r2 仅调整旧2处测试 adapter：mock resolver 改为正式新增 
 - 原 proof 的不透明 pin 始终保留，以强 reader 完整 SHA/身份/权限读取并受连续 inotify/O_PATH 租约保护。0400和0755/50320B均验证，FD正常关闭及构造失败均无泄漏。
 - 本轮仅一条正式 v1 PREPARATION no-mutation 失败接 v2 的目标专用续办。若 v2 再失败且再授权，明确 PROGRAM_RETRY_PREDECESSOR_V2_UNSUPPORTED，不声称所有失败都可自动恢复。
 - 私密 runner/stdout/XML/result.json 原件均保留于本任务 PRIVATE/program-retained-retry-*，没有覆盖失败历史；最后冻结报告由父用于精确提交、clean build、包认证和现场验收。
+
+## 正式包认证夹具目录的后续修正
+
+- 事实：b10ba57 正式 STANDARD 两节点认证 r1 中，原完整 producer PASS（127.657秒），新 v2 节点在 fixture setup ERROR：FORMAL_MODULE_WRONG_ORIGIN；总计1 PASS/1 ERROR/0FAIL/SKIP。原日志 PRIVATE/main-final-candidate-b10ba57-producer-r1-attempt/stdout.private.log 保留。这是测试夹具配置错误，不能记录为产品 RED，也不能把原错误节点记成功。
+- 根因：认证导入器已将 formal 模块从 /work/actual-standard-candidate/formal 加载；InvocationCase 已支持显式 formal_directory，但 history_factory 没有透传，原测试 owner 仍绑定源码 ROOT/ops/backup_engine/formal，因此正式 modules_from 来源校验正确拒绝。
+- BDD：Given 认证导入器已加载实际正式包的五个 formal 模块；When retained fixture 构造真实历史及 v2 上下文；Then fixture 将其共同实际父目录显式透传给 history_factory/EvidenceCase，正式 modules_from 继续验证来源；任一模块父目录不同必须 FORMAL_TEST_MODULE_ORIGIN_MISMATCH，不选择源码 fallback。
+- 最小变更：仅 test_recovery_program_evidence.py 的 history_factory 增加 formal_directory=None 并原样透传；test_recovery_program_retained_retry.py 的 retained fixture 从原五模块实际 __file__ 推导唯一 root。五模块清单与 modules_from 相同：formal_sql_restore、formal_data_evidence、formal_s3_export、formal_physical_restore_readback、formal_schema_evidence。旧 fixture 无参数默认行为保持；不修改产品/导入器/包来源校验，不 mock 模块、不重建 b10ba57 正式包。
+- 验证交接：父明确批准 test-only 两文件与本记录；本子任务冻结后由父单独提交测试工具，再以同一 b10ba57 官方包运行唯一新 v2 认证节点，显式记录 testToolCommit 与 productCommit 不同，并合并原完整 producer PASS 原件。实际 GREEN 尚待父运行，不重复新大回归，不冒称已认证成功。
+- 提交前有限验证：父要求同源码载体原27项 green-r7，结果10 PASS/17 fixture ERROR（5.497秒）；五模块在 native loader 尚未设定正式目录前被过早导入，源码树另有 ops/recovery/formal_data_evidence.py，与正式目录形成两个根，唯一根断言正确拒绝。修正为先从 formal_sql_restore 实际位置取明确 root，再调用当前实际 runtime.modules_from(root)，保留该原 loader 的目录优先次序与正式包来源门禁；最后仍严格核原五模块集合及父目录唯一并透传。无手工 sys.path、模块替换、fallback 或产品改动。原 green-r7 错误原件保留，随后仅原27项 green-r8 验证，不扩391。
+- green-r8（5.009秒）与green-r9（5.053秒）均10 PASS/17 fixture ERROR/0FAIL/SKIP，仍是已加载源码 formal_data_evidence 根与 formal 目录不一致。green-r9仅私密载体在collection之前将明确formal目录优先；测试依赖随后预加载的模块缓存仍被严格唯一根断言拒绝。产品和本轮2测试未为此错误继续改动；三轮source/localInputs不变与容器移除均true，分别独立保留result/XML/stdout，未删除/替换模块、未降级门禁。
+- 父明确要求停止源码路径载体排查。现冻结当前2tests与本记录，不再测试/构建；父使用同一真实b10ba57已认证STANDARD包路由运行单独v2节点作为提交前GREEN，再单独提交testToolCommit，最终闭合两个node的原始证据。尚无本轮变更后的GREEN，提交与安装不能依据旧27/391结果追认。
 
 ### 不透明原件的附加 BDD
 

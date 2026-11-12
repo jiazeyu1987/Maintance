@@ -183,8 +183,9 @@ def publish_envelopes(h, *, result_changes=None, receipt_changes=None):
 
 @pytest.fixture
 def history_factory(tmp_path, monkeypatch):
-    def build(*, outcome='success', phases='both', complete_epoch=True, install_protection=True):
-        c = EvidenceCase(tmp_path, monkeypatch)
+    def build(*, outcome='success', phases='both', complete_epoch=True, install_protection=True,
+              formal_directory=None):
+        c = EvidenceCase(tmp_path, monkeypatch, formal_directory=formal_directory)
         e = c.e
         e.operation_pin = write(e.root/'operation.json', dict(operationId=e.request['operationId'],
             requestPin=e.request_pin, configurationSha256=digest(e.owner), startedAt=utc()))

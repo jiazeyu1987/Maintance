@@ -58,7 +58,18 @@ def clear(h):
 
 @pytest.fixture
 def retained(history_factory):
-    return clear(history_factory(outcome='retained', phases='preparation', install_protection=False))
+    # Use the actual imported engine's formal directory. The authenticated
+    # package import route and modules_from retain all their origin checks.
+    names = ('formal_sql_restore', 'formal_data_evidence', 'formal_s3_export',
+             'formal_physical_restore_readback', 'formal_schema_evidence')
+    import recovery_minimal_runtime as runtime
+    formal = Path(importlib.import_module('formal_sql_restore').__file__).resolve().parent
+    modules = runtime.modules_from(str(formal))
+    assert tuple(modules) == names, 'FORMAL_TEST_MODULE_SET_MISMATCH'
+    roots = {Path(modules[name].__file__).resolve().parent for name in names}
+    assert len(roots) == 1, 'FORMAL_TEST_MODULE_ORIGIN_MISMATCH'
+    return clear(history_factory(outcome='retained', phases='preparation', install_protection=False,
+        formal_directory=roots.pop()))
 
 
 def retry(h, *, purpose='SOURCE_CANDIDATE', **kwargs):
