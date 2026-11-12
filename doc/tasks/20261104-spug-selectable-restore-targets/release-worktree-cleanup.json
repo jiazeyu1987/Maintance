@@ -1,0 +1,22 @@
+{
+  "status": "PASS",
+  "worktrees": [
+    {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-install-20261104/Maintance",
+      "targetCommit": "f36ff55a6588cb11822dd7611699a2ad76c7207b",
+      "newCommits": false,
+      "ancestorOfVerifiedMain": true,
+      "gitRegistrationRemoved": true,
+      "physicalCheckoutRemoved": true
+    },
+    {
+      "path": "C:/Users/D01021/.codex/worktrees/spug-restore-install-20261104-v2/Maintance",
+      "targetCommit": "45b4e3e4267183306dcc087e0c52659b6df5d463",
+      "newCommits": false,
+      "ancestorOfVerifiedMain": true,
+      "gitRegistrationRemoved": true,
+      "physicalCheckoutRemoved": true
+    }
+  ],
+  "developmentWorktreeRetained": true
+}
