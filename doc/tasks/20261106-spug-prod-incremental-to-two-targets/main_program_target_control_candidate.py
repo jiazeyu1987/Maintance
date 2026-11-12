@@ -117,17 +117,24 @@ def bind_disk_policy(original,mode):
     return result
 
 
-def preservation_graph(value,root,target_ref,target,program,new_engine,files):
+def preservation_graph(value,root,target_ref,target,program,new_engine,files,*,exact_document_pins=None):
     need(type(value) is dict and value.get('schemaVersion')=='MainTargetPreservationDocuments/v1' and
         value.get('status')=='BOUND_NOT_INSTALLED' and value.get('targetConfigRef')==target_ref,
         'PRESERVATION_IDENTITY_CHANGED')
     rows=value.get('documents');directory=root/'preservation'
     need(type(rows) is list and len(rows)==14,'PRESERVATION_DOCUMENT_COUNT_CHANGED')
+    if exact_document_pins is not None:
+        need(type(exact_document_pins) is dict and set(exact_document_pins)==set(DOCUMENT_SCHEMAS),
+            'PRESERVATION_REGISTERED_DOCUMENT_SET_CHANGED')
+        for name,reference in exact_document_pins.items():
+            pin(reference);need(path(reference['path']).name==name,'PRESERVATION_REGISTERED_DOCUMENT_CHANGED')
     by_path={};by_name={}
     for row in rows:
         need(type(row) is dict and set(row)=={'pin','value'} and type(row['value']) is dict,'PRESERVATION_DOCUMENT_INVALID')
         reference=pin(row['pin']);location=path(reference['path']);name=location.name
-        need(location.parent==directory and name in DOCUMENT_SCHEMAS and reference['path'] not in by_path and
+        admitted_location=(location.parent==directory if exact_document_pins is None else
+            name in exact_document_pins and reference==exact_document_pins[name])
+        need(admitted_location and name in DOCUMENT_SCHEMAS and name not in by_name and reference['path'] not in by_path and
             reference==planner.remote_pin(reference['path'],row['value']),'PRESERVATION_DOCUMENT_CHANGED')
         expected=DOCUMENT_SCHEMAS[name]
         need(row['value'].get('schemaVersion')==expected,'PRESERVATION_SCHEMA_CHANGED')
@@ -212,7 +219,10 @@ def preservation_graph(value,root,target_ref,target,program,new_engine,files):
         if type(item) is dict:
             if set(item)=={'path','bytes','sha256'}:
                 pin(item)
-                if path(item['path']).is_relative_to(root):
+                internal=(path(item['path']).is_relative_to(root) if exact_document_pins is None else
+                    item['path'] in by_path or any(path(item['path']).is_relative_to(path(p['path']).parent)
+                        for p in exact_document_pins.values()))
+                if internal:
                     need(item['path'] in by_path and item==by_path[item['path']]['pin'],'PRESERVATION_EDGE_CHANGED')
                     yield item['path']
             else:
