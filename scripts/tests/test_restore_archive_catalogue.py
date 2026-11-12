@@ -408,7 +408,7 @@ class ArchiveCatalogue(unittest.TestCase):
         from types import SimpleNamespace
         configuration=dict(targets={'target-B':{'mainApplication':{}}})
         native=SimpleNamespace(document=lambda pin:configuration)
-        module=SimpleNamespace(observe_main_target=lambda *args: (_ for _ in ()).throw(RuntimeError('MAIN_SERVICE_UNSTABLE')))
+        module=SimpleNamespace(observe_main_target=lambda *args, **kwargs: (_ for _ in ()).throw(RuntimeError('MAIN_SERVICE_UNSTABLE')))
         with self.actual_runtime('standard'),patch.dict(sys.modules,{'recovery_main_target':module}), \
                 patch('recovery_control_target_availability.unclaimed_target',return_value=True):
             with self.assertRaisesRegex(RuntimeError,'MAIN_SERVICE_UNSTABLE'):

@@ -216,7 +216,8 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
                 'REPLACEMENT_PHYSICAL_ARCHIVE_REQUIRED')
         require(all(disjoint(replacement['stateRoot'],path) for path in source['archiveRoots']),
                 'REPLACEMENT_STATE_ARCHIVE_OVERLAP')
-        context_pin = snapshot_restore(policy,request['operationId'],source_lock_fd,guard=original_guard)
+        context_pin = snapshot_restore(policy,request['operationId'],source_lock_fd,guard=original_guard,
+            owner=configuration,request=request)
         records.append(context_pin)
         binding_pin = bind_execution(configuration,request,root,context_pin,source_lock_fd,guard=original_guard)
         records.append(binding_pin)
@@ -293,7 +294,8 @@ def execute(configuration, request, root, input_pins, original_execute, native_t
         # context publishes its in-process transition to RESTORE.
         generation_pin = stage_generation(policy,context_pin,target_pin=derived['targetPin'],
             capture_pins={key:value['capturePin'] for key,value in derived['captureBindings'].items()},
-            switch_result_pin=switched['receiptPin'],lock_fd=source_lock_fd,guard=context._check)
+            switch_result_pin=switched['receiptPin'],lock_fd=source_lock_fd,guard=context._check,
+            owner=configuration,request=request)
         context.stage(generation_pin)
         phase = 'RESTORE'
         runtime = claim/'runtime'; runtime.mkdir(mode=0o700)

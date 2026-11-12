@@ -39,3 +39,24 @@ def resolve_configuration(configuration, target_ref, *, reader=document, guard=N
     binding = dict(policy=deepcopy(policy), targetPin=deepcopy(target_pin), evidencePins=deepcopy(evidence))
     if guard is not None: guard()
     return effective, binding
+
+
+def resolve_restore_configuration(configuration, target_ref, *, purpose, source_ref,
+                                  recovery_point_ref=None, operation_id=None, reader=document, guard=None):
+    """Explicit target admission, separate from the public READY-only resolver."""
+    require(purpose in ('SOURCE_CANDIDATE', 'RESTORE_REQUEST'), 'PROGRAM_RETRY_PURPOSE_REQUIRED')
+    policies = configuration.get('targetProgramPolicies', {})
+    require(type(policies) is dict, 'PROGRAM_TARGET_POLICIES_INVALID')
+    if target_ref not in policies:
+        return resolve_configuration(configuration, target_ref, reader=reader, guard=guard)
+    from recovery_backup_epoch import read_current
+    current = read_current(policies[target_ref]['backupEpochPolicy'], guard=guard)
+    if current['state'] != 'FAILED_RETAINED':
+        return resolve_configuration(configuration, target_ref, reader=reader, guard=guard)
+    from recovery_program_retry import resolve_retry_target
+    result = resolve_retry_target(configuration, target_ref, purpose=purpose, source_ref=source_ref,
+        recovery_point_ref=recovery_point_ref, operation_id=operation_id, reader=reader, guard=guard)
+    effective = deepcopy(configuration)
+    effective['targets'][target_ref] = deepcopy(result['target'])
+    return effective, dict(policy=deepcopy(policies[target_ref]), targetPin=deepcopy(result['targetPin']),
+        evidencePins=deepcopy(result['evidencePins']), retryAuthorization=deepcopy(result['authorization']))

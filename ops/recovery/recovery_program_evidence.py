@@ -284,8 +284,17 @@ def _execution(request, inputs, native, generation_pin, reader):
     context_pin = binding['contextPin']
     _need(_pin(context_pin) == claim/'program-context.json', 'CONTEXT_LOCATION_INVALID')
     context = reader.read(context_pin)
-    _need(type(context) is dict and set(context) == CONTEXT_FIELDS and
-        context['schemaVersion'] == 'MainProgramRestoreContext/v1' and context['operationId'] == request['operationId'] and
+    retry = context.get('schemaVersion') == 'MainProgramRestoreContext/v2'
+    if retry:
+        from recovery_program_retry import CONTEXT_V2_FIELDS, validate_retry_context
+        owner = reader.read(inputs['configurationPin'])
+        validate_retry_context(owner, request, context, reader=reader.read, guard=reader.guard)
+        fields = CONTEXT_V2_FIELDS
+    else:
+        fields = CONTEXT_FIELDS
+    _need(type(context) is dict and set(context) == fields and
+        context['schemaVersion'] == ('MainProgramRestoreContext/v2' if retry else 'MainProgramRestoreContext/v1') and
+        context['operationId'] == request['operationId'] and
         context['policySha256'] == digest(policy) and type(context['readyEpoch']) is dict and
         type(context['evidencePins']) is list, 'CONTEXT_INVALID')
     epoch_policy = policy['backupEpochPolicy']
@@ -295,20 +304,23 @@ def _execution(request, inputs, native, generation_pin, reader):
         context['parentGenerationPin'] == historical['generationPin'] and context['capturePins'] == historical['captures'],
         'CONTEXT_INVALID')
     expected = [p for p in historical['evidence'] if p != tail['eventPin'] or p == context['readyEpoch']['eventPin']]
-    _need(len(context['evidencePins']) == len(expected) and all(p in context['evidencePins'] for p in expected),
-        'CONTEXT_INVALID')
-    for reference in context['evidencePins']: reader.read(reference)
+    if not retry:
+        _need(len(context['evidencePins']) == len(expected) and all(p in context['evidencePins'] for p in expected),
+            'CONTEXT_INVALID')
+        for reference in context['evidencePins']: reader.read(reference)
     ready_pin = context['readyEpoch']['eventPin']; ready = reader.read(ready_pin)
-    started, started_pin = reader.fixed(Path(epoch_policy['root'])/('%020d.json' % (ready['sequence']+1)))
+    start_pin = context['startEpoch']['eventPin'] if retry else ready_pin
+    start = reader.read(start_pin)
+    started, started_pin = reader.fixed(Path(epoch_policy['root'])/('%020d.json' % (start['sequence']+1)))
     _need(started.get('kind') == 'RESTORE_STARTED' and started.get('state') == 'REPLACING' and
-        started.get('operationId') == request['operationId'] and started.get('previousSha256') == ready_pin['sha256'],
+        started.get('operationId') == request['operationId'] and started.get('previousSha256') == start_pin['sha256'],
         'EPOCH_BINDING_INVALID')
     intent = reader.read(started['evidencePin'])
     _need(intent.get('schemaVersion') == 'ReplacementBackupEpochIntent/v1' and
         intent.get('operationId') == request['operationId'] and intent.get('targetConfigRef') == request['targetConfigRef'] and
         intent.get('databaseUuid') == epoch_policy['databaseUuid'] and
         _path(intent['replacementReceiptPath']) == claim/'replacement-result.json', 'EPOCH_INTENT_INVALID')
-    ended = Path(epoch_policy['root'])/('%020d.json' % (ready['sequence']+2))
+    ended = Path(epoch_policy['root'])/('%020d.json' % (start['sequence']+2))
     operation_epoch = dict(state='REPLACING', epochId=started['epochId'], eventPin=started_pin)
     if ended.exists():
         terminal, terminal_pin = reader.fixed(ended)

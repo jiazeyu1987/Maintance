@@ -709,11 +709,14 @@ def guarded_type(original):
     return MainData
 
 
-def observe_main_target(control, value, selection):
+def observe_main_target(control, value, selection, *, purpose='RESTORE_REQUEST'):
     """Read-only control-plane identity observation; never return environment values."""
     configuration = control.document(selection['ownerConfigurationPin'])
-    from recovery_program_targets import resolve_configuration
-    configuration, _binding = resolve_configuration(configuration, value['targetConfigRef'],
+    from recovery_program_targets import resolve_restore_configuration
+    configuration, _binding = resolve_restore_configuration(configuration, value['targetConfigRef'],
+        purpose=purpose, source_ref=value['sourceConfigRef'],
+        recovery_point_ref=value.get('recoveryPointRef') if purpose == 'RESTORE_REQUEST' else None,
+        operation_id=value.get('operationId') if purpose == 'RESTORE_REQUEST' else None,
         reader=control.document, guard=getattr(control, 'guard', None))
     target = configuration['targets'][value['targetConfigRef']]
     validate(target); check_pin(target['dockerPin'], content=False)

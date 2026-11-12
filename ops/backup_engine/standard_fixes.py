@@ -968,6 +968,7 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     payload['common/recovery_program_activation.py'] = (root/'ops/recovery/recovery_program_activation.py').read_bytes()
     payload['common/recovery_program_targets.py'] = (root/'ops/recovery/recovery_program_targets.py').read_bytes()
     payload['common/recovery_program_execution.py'] = (root/'ops/recovery/recovery_program_execution.py').read_bytes()
+    payload['common/recovery_program_retry.py'] = (root/'ops/recovery/recovery_program_retry.py').read_bytes()
     payload['common/recovery_program_derivation.py'] = (root/'ops/recovery/recovery_program_derivation.py').read_bytes()
     payload['common/recovery_program_import.py'] = (root/'ops/recovery/recovery_program_import.py').read_bytes()
     payload['common/recovery_program_native.py'] = (root/'ops/recovery/recovery_program_native.py').read_bytes()

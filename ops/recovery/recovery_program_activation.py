@@ -77,35 +77,59 @@ def _exclusive(path, value, held):
     return reference
 
 
-def snapshot_restore(policy, operation_id, lock_fd, *, reader=document, guard=None):
+def snapshot_restore(policy, operation_id, lock_fd, *, reader=document, guard=None, owner=None, request=None):
     """Freeze the last successful program before this restore enters REPLACING."""
     guard = (lambda: None) if guard is None else guard
     guard(); validate_policy(policy); _assert_lock(policy['backupEpochPolicy'], lock_fd)
     read, unchanged = _reader(reader, guard)
     root, _ = _claim(policy, operation_id, read)
     require(not os.path.lexists(root/'program-context.json'), 'PROGRAM_METADATA_ALREADY_EXISTS')
-    result = _resolve(policy, read, guard)
-    context = dict(schemaVersion='MainProgramRestoreContext/v1', policySha256=digest(policy),
-        operationId=operation_id, readyEpoch=result['epoch'], targetPin=result['targetPin'],
-        parentGenerationPin=result['generationPin'], capturePins=result['captures'],
-        evidencePins=result['evidence'])
+    current = read_current(policy['backupEpochPolicy'], guard=guard)
+    if current['state'] == 'FAILED_RETAINED':
+        require(type(owner) is dict and type(request) is dict and
+            request['operationId'] == operation_id and request['targetConfigRef'] == policy['targetConfigRef'] and
+            owner['targetProgramPolicies'][policy['targetConfigRef']] == policy, 'PROGRAM_RETRY_REQUEST_REQUIRED')
+        from recovery_program_retry import resolve_retry_target
+        result = resolve_retry_target(owner, policy['targetConfigRef'], purpose='CONSUMED_EXECUTION',
+            source_ref=request['sourceConfigRef'], recovery_point_ref=request['recoveryPointRef'],
+            operation_id=operation_id, reader=read, guard=guard)
+        context = dict(schemaVersion='MainProgramRestoreContext/v2', policySha256=digest(policy),
+            operationId=operation_id, readyEpoch=result['readyEpoch'], targetPin=result['targetPin'],
+            parentGenerationPin=result['generationPin'], capturePins=result['captures'],
+            evidencePins=result['evidencePins'], startEpoch=result['startEpoch'], retryAuthorization=result['authorization'])
+        expected_epoch = result['startEpoch']
+    else:
+        result = _resolve(policy, read, guard)
+        context = dict(schemaVersion='MainProgramRestoreContext/v1', policySha256=digest(policy),
+            operationId=operation_id, readyEpoch=result['epoch'], targetPin=result['targetPin'],
+            parentGenerationPin=result['generationPin'], capturePins=result['captures'], evidencePins=result['evidence'])
+        expected_epoch = result['epoch']
     def held():
         guard(); _assert_lock(policy['backupEpochPolicy'], lock_fd)
-        require(read_current(policy['backupEpochPolicy'], guard=guard) == result['epoch'],
+        require(read_current(policy['backupEpochPolicy'], guard=guard) == expected_epoch,
                 'PROGRAM_RESTORE_EPOCH_CHANGED')
     unchanged(); held()
     return _exclusive(root/'program-context.json', context, held)
 
 
 def stage_generation(policy, context_pin, *, target_pin, capture_pins, switch_result_pin,
-                     lock_fd, reader=document, guard=None):
+                     lock_fd, reader=document, guard=None, owner=None, request=None):
     """Validate and stage one candidate; the caller must finish the real restore."""
     guard = (lambda: None) if guard is None else guard
     guard(); validate_policy(policy); _assert_lock(policy['backupEpochPolicy'], lock_fd)
     read, unchanged = _reader(reader, guard)
     context = read(context_pin)
-    require(type(context) is dict and set(context) == CONTEXT_FIELDS and
-            context['schemaVersion'] == 'MainProgramRestoreContext/v1' and
+    retry = context.get('schemaVersion') == 'MainProgramRestoreContext/v2'
+    if retry:
+        from recovery_program_retry import validate_retry_context, CONTEXT_V2_FIELDS
+        require(type(owner) is dict and type(request) is dict and
+            owner['targetProgramPolicies'][policy['targetConfigRef']] == policy, 'PROGRAM_RETRY_REQUEST_REQUIRED')
+        validate_retry_context(owner, request, context, reader=read, guard=guard)
+        fields = CONTEXT_V2_FIELDS
+    else:
+        fields = CONTEXT_FIELDS
+    require(type(context) is dict and set(context) == fields and
+            context['schemaVersion'] == ('MainProgramRestoreContext/v2' if retry else 'MainProgramRestoreContext/v1') and
             context['policySha256'] == digest(policy) and
             type(context['readyEpoch']) is dict and context['readyEpoch'].get('state') == 'READY' and
             context['readyEpoch'].get('policySha256') == digest(policy['backupEpochPolicy']) and
@@ -122,11 +146,13 @@ def stage_generation(policy, context_pin, *, target_pin, capture_pins, switch_re
         require(current['state'] == 'REPLACING' and current['operationId'] == context['operationId'],
                 'PROGRAM_RESTORE_EPOCH_CHANGED')
         event = read(current['eventPin'])
+        start_epoch = context['startEpoch'] if retry else context['readyEpoch']
+        start_pin = start_epoch['eventPin']; start = read(start_pin)
         ready_pin = context['readyEpoch']['eventPin']
         ready = read(ready_pin)
         require(event['kind'] == 'RESTORE_STARTED' and
-                event['previousSha256'] == ready_pin['sha256'] and
-                event['sequence'] == ready['sequence']+1 and ready['state'] == 'READY' and
+                event['previousSha256'] == start_pin['sha256'] and
+                event['sequence'] == start['sequence']+1 and ready['state'] == 'READY' and
                 _snapshot(ready, ready_pin) == context['readyEpoch'] and
                 Path(ready_pin['path']) == Path(policy['backupEpochPolicy']['root'])/('%020d.json' % ready['sequence']),
                 'PROGRAM_RESTORE_EPOCH_CHANGED')
@@ -159,8 +185,9 @@ def stage_generation(policy, context_pin, *, target_pin, capture_pins, switch_re
                 'PROGRAM_RESTORE_CONTEXT_INVALID')
         return current
     current = started()
-    for reference in context['evidencePins']:
-        read(reference)
+    if not retry:
+        for reference in context['evidencePins']:
+            read(reference)
     require(context['readyEpoch']['eventPin'] in context['evidencePins'] and
             context['targetPin'] in context['evidencePins'], 'PROGRAM_RESTORE_CONTEXT_INVALID')
     previous = read(context['targetPin']); target = read(target_pin)

@@ -157,7 +157,7 @@ def test_observer_uses_active_target_but_retains_original_configuration_pin(tmp_
     def resolve(configuration,reference,*,reader,**kwargs):
         calls.append((configuration,reference,reader))
         return dict(configuration,targets={'target57':active}),{'private':'binding'}
-    monkeypatch.setitem(sys.modules,'recovery_program_targets',SimpleNamespace(resolve_configuration=resolve))
+    monkeypatch.setitem(sys.modules,'recovery_program_targets',SimpleNamespace(resolve_restore_configuration=resolve))
     monkeypatch.setattr(main,'validate',lambda target:None)
     monkeypatch.setattr(main,'check_pin',lambda *a,**kw:None)
     monkeypatch.setattr(main,'verify_runtime',lambda *a,**kw:None)

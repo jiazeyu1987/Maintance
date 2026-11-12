@@ -1,7 +1,7 @@
 """Prove an operation's private program view without changing its original owner.
 
-Only a fresh READY start and that operation's REPLACING phase are supported.
-Retained failure authorization and retry contexts require a separate contract.
+Fresh READY and explicitly consumed no-mutation v1 failures have distinct
+contexts. Neither private view grants source-backup READY authority.
 """
 from copy import deepcopy
 import os
@@ -97,6 +97,34 @@ def _context(inputs, request, context_pin, lock_fd, guard, *, ready_only=False):
     read, policy, claim = inputs['read'], inputs['policy'], inputs['claim']
     require(Path(context_pin['path']) == claim/'program-context.json', 'PROGRAM_RESTORE_CONTEXT_INVALID')
     context = read(context_pin)
+    if context.get('schemaVersion') == 'MainProgramRestoreContext/v2':
+        from recovery_program_retry import validate_retry_context
+        owner = read(inputs['configurationPin'])
+        result = validate_retry_context(owner, request, context, reader=read, guard=guard)
+        current = read_current(policy['backupEpochPolicy'], guard=guard)
+        start_pin = context['startEpoch']['eventPin']
+        if current == context['startEpoch']:
+            pass
+        else:
+            require(not ready_only and current['state'] == 'REPLACING' and
+                current['operationId'] == request['operationId'], 'PROGRAM_RESTORE_EPOCH_CHANGED')
+            event, start = read(current['eventPin']), read(start_pin)
+            require(event['kind'] == 'RESTORE_STARTED' and event['previousSha256'] == start_pin['sha256'] and
+                event['sequence'] == start['sequence']+1, 'PROGRAM_RESTORE_EPOCH_CHANGED')
+            intent = read(event['evidencePin'])
+            require(intent['operationId'] == request['operationId'] and intent['targetConfigRef'] == request['targetConfigRef'] and
+                intent['databaseUuid'] == policy['backupEpochPolicy']['databaseUuid'] and
+                Path(intent['replacementReceiptPath']) == claim/'replacement-result.json', 'PROGRAM_RESTORE_CONTEXT_INVALID')
+        for reference in result['evidencePins']:
+            if reference not in inputs['evidence']: inputs['evidence'].append(deepcopy(reference))
+        historical = dict(target=result['target'], targetPin=result['targetPin'], captures=result['captures'],
+            generationPin=result['generationPin'], epoch=result['readyEpoch'])
+        def held():
+            inputs['held']()
+            require(read_current(policy['backupEpochPolicy'], guard=guard) == current, 'PROGRAM_RESTORE_EPOCH_CHANGED')
+            _assert_lock(policy['backupEpochPolicy'], lock_fd); guard()
+        held()
+        return context, historical, current, held
     require(type(context) is dict and set(context) == CONTEXT_FIELDS and
             context['schemaVersion'] == 'MainProgramRestoreContext/v1' and
             context['operationId'] == request['operationId'] and

@@ -42,6 +42,12 @@ def available(native, configuration_pin, target_ref, source_ref, *, observe_main
         return False
     if 'mainApplication' in target and observe_main:
         from recovery_main_target import observe_main_target
-        observe_main_target(native, dict(operationId='selection-preflight',sourceConfigRef=source_ref,
-            targetConfigRef=target_ref), dict(ownerConfigurationPin=configuration_pin))
+        from recovery_engine import RecoveryError
+        try:
+            observe_main_target(native, dict(operationId='selection-preflight',sourceConfigRef=source_ref,
+                targetConfigRef=target_ref), dict(ownerConfigurationPin=configuration_pin), purpose='SOURCE_CANDIDATE')
+        except RecoveryError as error:
+            if error.code == 'PROGRAM_RETRY_SOURCE_NOT_AUTHORIZED':
+                return False
+            raise
     return True

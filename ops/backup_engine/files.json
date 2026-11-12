@@ -6,6 +6,7 @@
   "ops/recovery/recovery_program_activation.py": "common/recovery_program_activation.py",
   "ops/recovery/recovery_program_targets.py": "common/recovery_program_targets.py",
   "ops/recovery/recovery_program_execution.py": "common/recovery_program_execution.py",
+  "ops/recovery/recovery_program_retry.py": "common/recovery_program_retry.py",
   "ops/recovery/recovery_program_derivation.py": "common/recovery_program_derivation.py",
   "ops/recovery/recovery_target_sources.py": "common/recovery_target_sources.py",
   "backend/src/main/resources/recovery_control_incremental_plan.py": "control/recovery_control_incremental_plan.py",

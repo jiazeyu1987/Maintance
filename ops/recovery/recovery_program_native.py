@@ -15,7 +15,7 @@ from recovery_archive_guard import ArchivePathGuard
 from recovery_backup_epoch import _assert_lock, _read_file
 from recovery_engine import Budget, RecoveryError, absolute, require
 from recovery_program_execution import _directory, resolve_execution_configuration
-from recovery_program_generation import document
+from recovery_program_generation import document, _pin
 
 
 RESTORE_ACTIONS = frozenset(('RESTORE', 'DATABASE_FULL', 'DATABASE_INCREMENTAL',
@@ -192,7 +192,13 @@ class MainNativeExecutionContext:
             # Include the host's durable reservation, not just the operation's
             # local reservation copy. The resolver independently verifies both.
             for reference in additions.values():
-                document(reference)
+                # Both complete resolutions already interpret their JSON.
+                # Retained proof also pins opaque secrets and tool binaries;
+                # preserve the same strong read without interpreting those.
+                _pin(reference)
+                _, observed = _read_file(reference['path'], 4*1024*1024)
+                require(observed == dict(reference, path=Path(reference['path']).as_posix()),
+                    'PROGRAM_DOCUMENT_CHANGED')
                 self._check()
             self._references.update(additions)
             return actual, proof
