@@ -1365,6 +1365,41 @@ class Native:
                      'ORIGINAL_CAPTURE_STILL_RUNNING')
         return capture['failureCode'], [capture_pin, binding_pin, restored_pin]
 
+    def released_program_failure(self, value, operation_directory, selection, root, output):
+        """Close an immutable conservative envelope from its released child proof."""
+        worker_pin = executor.pin(root / 'worker-result.json')
+        proof = self.restore_program_evidence(value, selection, worker_pin, root=root)
+        need(proof is not None, 'ORIGINAL_PROGRAM_RESULT_REQUIRED')
+        owner = self.document(selection['ownerConfigurationPin'])
+        exit_pin = executor.pin(root / 'child-exit.json')
+        release_pin = executor.pin(root / 'resource-no-mutation-release.json')
+        from recovery_retained_retry import verify_no_mutation
+        reservation = verify_no_mutation(owner, value, root,
+            dict(resultPin=worker_pin, exitPin=exit_pin), release_pin)
+        native_exit_pin = executor.pin(operation_directory / 'execute' / 'native-original-exit.json')
+        exited = self.document(native_exit_pin)
+        process_pin = executor.pin(operation_directory / 'execute' / 'native-process.json')
+        process = self.document(process_pin)
+        intent_pin = executor.pin(operation_directory / 'execute' / 'native-intent.json')
+        need(exited['operationId'] == exited['requestId'] == value['operationId'] and
+             exited['requestPin'] == executor.pin(operation_directory / 'request.json') and
+             exited['intentPin'] == process['intentPin'] == intent_pin and
+             process['operationId'] == process['requestId'] == value['operationId'] and
+             type(process['pid']) is int and process['pid'] > 0 and process['pid'] == exited['pid'] and
+             type(exited['actualExitCode']) is int and exited['actualExitCode'] == 2 and
+             type(output['actualExitCode']) is int and output['actualExitCode'] == 1 and
+             exit_pin in output['originalResultPins'] and
+             exited['timedOut'] is False and self.document(exited['resultPin']) == output,
+             'ORIGINAL_PROGRAM_FAILURE_EXIT_NOT_PROVEN')
+        need(os.name == 'posix' and Path('/proc').is_dir() and
+             process['bootId'] == Path('/proc/sys/kernel/random/boot_id').read_text(encoding='ascii').strip() and
+             not (Path('/proc') / str(process['pid'])).exists(), 'ORIGINAL_PROGRAM_PROCESS_NOT_PROVEN_EXITED')
+        for reference in output['originalResultPins']:
+            executor.verify(reference)
+        worker = self.document(worker_pin)
+        return result(value, 'FAILED', worker['failureCode']), proof, [
+            worker_pin, exit_pin, release_pin, reservation, native_exit_pin, process_pin, *proof['originalResultPins']]
+
     def refresh_original(self, value, operation_directory, selection):
         reference, output = None, None
         resolution_pins = []
@@ -1378,8 +1413,18 @@ class Native:
             root = self.accepted_operation(value, selection)
             need((root / 'result.json').is_file(), 'ORIGINAL_OWNER_RESULT_NOT_READY')
             reference = executor.pin(root / 'result.json')
-            output, program = self.operation_evidence(value, reference, selection=selection)
-            reply = self.operation_result(value, output)
+            output = self.operation_metadata(value, reference)
+            if (value['action'] == 'RESTORE' and self.restore_owner(value, selection)[1] and
+                    output['state'] == 'TERMINAL_UNKNOWN' and
+                    output['failureCode'] == 'RESTORE_RESOURCE_NO_MUTATION_NOT_PROVEN'):
+                # This envelope records a release refusal, not a valid MAIN
+                # worker terminal. Read the fixed child and its existing formal
+                # release explicitly; never rewrite or reinterpret the envelope.
+                reply, program, resolution_pins = self.released_program_failure(
+                    value, operation_directory, selection, root, output)
+            else:
+                output, program = self.operation_evidence(value, reference, selection=selection)
+                reply = self.operation_result(value, output)
             if (value['action'] == 'RESTORE' and output['state'] == 'FAILED_RETAINED' and
                     (program['mutationDispatched'] if program is not None else
                      output['data'].get('mutationDispatched')) is True and
