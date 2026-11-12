@@ -21,8 +21,9 @@ def need(condition,code):
     if not condition:raise ValueError('MAIN_TARGET_STAGING_'+code)
 
 
-def _target_package(raw,build):
-    """Read exactly the official 153 payload members and original manifest."""
+def _target_package(raw,build,*,payload_count=153):
+    """Read a bounded official manifest; successor profiles authorize growth."""
+    need(type(payload_count) is int and payload_count in (153,154),'PACKAGE_PAYLOAD_COUNT')
     need(type(raw) is bytes and 0<len(raw)<=legacy.MAX_PACKAGE_BYTES and type(build) is dict,
         'PACKAGE_BUILD_CHANGED')
     package_sha=legacy.digest(raw)
@@ -30,13 +31,13 @@ def _target_package(raw,build):
     need(type(rows) is list and len(rows)==2 and all(type(r) is dict for r in rows) and
         {r.get('variant') for r in rows}=={'standard','lightweight'},'PACKAGE_VARIANTS_CHANGED')
     standard=next(r for r in rows if r['variant']=='standard')
-    need(standard.get('fileCount')==153 and standard.get('bytes')==len(raw) and
+    need(standard.get('fileCount')==payload_count and standard.get('bytes')==len(raw) and
         standard.get('sha256')==legacy.digest(raw),'PACKAGE_BUILD_CHANGED')
     files={};total=0
     with tarfile.open(fileobj=io.BytesIO(raw),mode='r:gz') as archive:
         for member in archive:
             name=member.name;path=PurePosixPath(name)
-            need(len(files)<154 and name not in files,'PACKAGE_MEMBER_CLOSURE')
+            need(len(files)<payload_count+1 and name not in files,'PACKAGE_MEMBER_CLOSURE')
             need(member.isfile() and name and not path.is_absolute() and str(path)==name and
                 '..' not in path.parts and not any(c in name for c in ('\\',':','\0')) and
                 not any(ord(c)<32 for c in name) and 0<member.size<=legacy.MAX_MEMBER_BYTES,
@@ -44,7 +45,7 @@ def _target_package(raw,build):
             total+=member.size;need(total<=legacy.MAX_PACKAGE_BYTES,'PACKAGE_EXPANDED_LIMIT')
             content=archive.extractfile(member).read(member.size+1)
             need(len(content)==member.size,'PACKAGE_MEMBER_TRUNCATED');files[name]=content
-    need(len(files)==154 and 'package.json' in files,'PACKAGE_MEMBER_CLOSURE')
+    need(len(files)==payload_count+1 and 'package.json' in files,'PACKAGE_MEMBER_CLOSURE')
     metadata=json.loads(files['package.json'].decode('utf-8'),object_pairs_hook=legacy.document)
     payload={name:raw for name,raw in files.items() if name!='package.json'}
     hashes={name:legacy.digest(raw) for name,raw in payload.items()}

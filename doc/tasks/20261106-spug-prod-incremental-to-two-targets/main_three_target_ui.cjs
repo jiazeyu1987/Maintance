@@ -4,9 +4,15 @@ const TASK=__dirname,PRIVATE='C:/Spug/runtime/private/prod-incremental-to-two-ta
 const ORIGIN='http://127.0.0.1:18080',SOURCE='intruoyi-57-safe-20261024-v1';
 const POINTS=['smallapp-3c2395ff88bd474e9fc007649565b848','smallapp-20a1bb9b78ac402693289675d16c63dd','smallapp-e7b668792c8f4bce945a52f984d3c660'];
 const ORIGINAL_FAILURE='smallapp-b4f21de7a0c64d31beda7efa0204ced8';
+const READER_FAILURE='smallapp-6546b96486f7413a84c7281c95131f1f';
+const REPEAT_SCHEMA='TaskMainProgramTargetControlSuccessorSelection/v2';
+const MIXED_SCHEMA='TaskMainProgramTargetControlSuccessorSelection/v3';
+const isRepeated=schema=>schema===REPEAT_SCHEMA||schema===MIXED_SCHEMA;
 const GENERATIONS=Object.freeze({
  'TaskMainProgramTargetControlSelection/v1':Object.freeze({loaderModule:'main_program_target_control_activated',loaderFunction:'load_activated_target_installation',targetCommit:'a3121c64d46fcdc2c1a3195a2cbbf8ca1c05742e',submissionFile:'main-i2-to-test58-ui-submission.json'}),
- 'TaskMainProgramTargetControlSuccessorSelection/v1':Object.freeze({loaderModule:'main_program_target_control_successor',loaderFunction:'load_activated_target_successor_installation',targetCommit:'b9caa00b7eeed2b915c8855a8313521e57d06f72',submissionFile:'main-i2-to-test58-ui-submission-b9caa00.json'})
+ 'TaskMainProgramTargetControlSuccessorSelection/v1':Object.freeze({loaderModule:'main_program_target_control_successor',loaderFunction:'load_activated_target_successor_installation',targetCommit:'b9caa00b7eeed2b915c8855a8313521e57d06f72',submissionFile:'main-i2-to-test58-ui-submission-b9caa00.json'}),
+ [MIXED_SCHEMA]:Object.freeze({loaderModule:'main_program_current_installation',loaderFunction:'load_current_target_installation'}),
+ [REPEAT_SCHEMA]:Object.freeze({loaderModule:'main_program_current_installation',loaderFunction:'load_current_target_installation'})
 });
 const need=(value,code)=>{if(!value)throw Error(code);};
 const sha=raw=>crypto.createHash('sha256').update(raw).digest('hex');
@@ -26,15 +32,50 @@ function restoreWriteAllowed(phase,request,point,persisted,writes,previousOperat
   request.targetConfigRef==='intruoyi-main-58-safe-restore-20261104-v1';
 }
 function targetGeneration(schema){need(Object.hasOwn(GENERATIONS,schema),'UNKNOWN_TARGET_SELECTION_SCHEMA');return GENERATIONS[schema];}
+function localPinShape(value){return value&&equal(Object.keys(value).sort(),['bytes','file','sha256'])&&
+ /^[A-Za-z0-9][A-Za-z0-9_.-]*\.json$/.test(value.file)&&Number.isSafeInteger(value.bytes)&&value.bytes>0&&/^[0-9a-f]{64}$/.test(value.sha256);}
 function assertInstallationGeneration(value){
  need(value&&value.schemaVersion==='MainThreeTargetInstallationSummary/v1'&&value.status==='PASS','INSTALLATION_SUMMARY_INVALID');
- const profile=targetGeneration(value.selectionSchemaVersion),controllers=value.controllers;
+ let profile=targetGeneration(value.selectionSchemaVersion);const controllers=value.controllers;
+ if(isRepeated(value.selectionSchemaVersion)){
+  need(localPinShape(value.selectionPin)&&localPinShape(value.verifiedTargetBuildPin)&&/^[0-9a-f]{40}$/.test(value.verifiedTargetCommit),'VERIFIED_TARGET_BUILD_REQUIRED');
+  const ancestry=value.targetSelectionAncestry;need(Array.isArray(ancestry)&&ancestry.length>=2&&ancestry.length<=18,'VERIFIED_TARGET_ANCESTRY_REQUIRED');
+  const seen=new Set();for(const row of ancestry){
+   need(row&&equal(Object.keys(row).sort(),['selectionPin','selectionSchemaVersion','sourceCommit'])&&localPinShape(row.selectionPin)&&
+    /^[0-9a-f]{40}$/.test(row.sourceCommit)&&!seen.has(row.selectionPin.file)&&row.selectionPin.file!==value.selectionPin.file,'TARGET_ANCESTRY_INVALID');
+   const known=targetGeneration(row.selectionSchemaVersion);need(!known.targetCommit||known.targetCommit===row.sourceCommit,'TARGET_ANCESTRY_COMMIT_CHANGED');seen.add(row.selectionPin.file);
+  }
+  need(ancestry[0].selectionSchemaVersion==='TaskMainProgramTargetControlSelection/v1'&&equal(ancestry.at(-1).selectionPin,value.selectionSchemaVersion===MIXED_SCHEMA?value.partialPredecessor?.baseSelectionPin:value.predecessorSelectionPin),'TARGET_ANCESTRY_PREDECESSOR_CHANGED');
+  if(value.selectionSchemaVersion===MIXED_SCHEMA){const p=value.partialPredecessor;need(p&&equal(Object.keys(p).sort(),['activationVerifiedHosts','baseSelectionPin','retainedBaseHosts','selectionPin'])&&localPinShape(p.selectionPin)&&localPinShape(p.baseSelectionPin)&&equal(p.selectionPin,value.predecessorSelectionPin)&&equal(p.activationVerifiedHosts,['57'])&&equal(p.retainedBaseHosts,['58','59']),'PARTIAL_PREDECESSOR_BINDING_REQUIRED');}
+  profile={...profile,targetCommit:value.verifiedTargetCommit,submissionFile:'main-i2-to-test58-ui-submission-'+value.selectionPin.sha256+'.json'};
+ }
  need(controllers&&equal(Object.keys(controllers).sort(),['57','58','59']),'THREE_TARGET_HOSTS_REQUIRED');
  for(const host of ['57','58','59']){
   const rr=controllers[host];need(Array.isArray(rr),'THREE_TARGET_ROLES_REQUIRED');const targets=rr.filter(r=>r.role==='target');
   need(targets.length===1&&targets[0].host==='172.30.30.'+host&&targets[0].sourceCommit===profile.targetCommit,'TARGET_GENERATION_CHANGED');
+  if(isRepeated(value.selectionSchemaVersion))need(equal(value.controllerBuildBindings?.[host]?.target,
+   {buildPin:value.verifiedTargetBuildPin,sourceCommit:profile.targetCommit}),'TARGET_BUILD_BINDING_CHANGED');
  }
  return profile;
+}
+function assertRepeatedSubmissions({installation,pointEvidencePin,previousSubmissions}){
+ need(isRepeated(installation.selectionSchemaVersion)&&Array.isArray(previousSubmissions)&&previousSubmissions.length>=2,'RETAINED_SUBMISSIONS_REQUIRED');
+ const ancestry=installation.targetSelectionAncestry,seen=new Set(),pins=[],ids=[];let index=-1;
+ for(const row of previousSubmissions){
+  need(row&&equal(Object.keys(row).sort(),['pin','value'])&&filePinShape(row.pin),'RETAINED_SUBMISSION_PIN');
+  const v=row.value,position=ancestry.findIndex(a=>equal(a.selectionPin,v?.selectionPin));
+  need(position>index&&!seen.has(v?.request?.operationId)&&equal(v?.pointEvidencePin,pointEvidencePin)&&
+   restoreWriteAllowed('submit',v?.request,POINTS[2],false,0)&&typeof v.submittedAt==='string'&&Number.isFinite(Date.parse(v.submittedAt)),'RETAINED_SUBMISSION_BINDING');
+  const base=['schemaVersion','submittedAt','selectionPin','pointEvidencePin','request'];
+  if(pins.length===0)need(equal(Object.keys(v).sort(),base.sort())&&v.schemaVersion==='MainI2TestRestoreSubmission/v1'&&v.request.operationId===ORIGINAL_FAILURE&&position===0,'ORIGINAL_FAILED_SUBMISSION_REQUIRED');
+  else if(pins.length===1)need(equal(Object.keys(v).sort(),[...base,'previousSubmissionPin','previousOperationId'].sort())&&
+   v.schemaVersion==='MainI2TestRestoreSuccessorSubmission/v1'&&v.request.operationId===READER_FAILURE&&equal(v.previousSubmissionPin,pins[0])&&v.previousOperationId===ids[0]&&
+   ancestry[position].selectionSchemaVersion==='TaskMainProgramTargetControlSuccessorSelection/v1','READER_FAILED_SUBMISSION_REQUIRED');
+  else need(equal(Object.keys(v).sort(),[...base,'previousSubmissionPins','previousOperationIds'].sort())&&v.schemaVersion==='MainI2TestRestoreRepeatedSubmission/v1'&&
+   equal(v.previousSubmissionPins,pins)&&equal(v.previousOperationIds,ids)&&isRepeated(ancestry[position].selectionSchemaVersion),'REPEATED_SUBMISSION_CHAIN_CHANGED');
+  index=position;seen.add(v.request.operationId);pins.push(row.pin);ids.push(v.request.operationId);
+ }
+ return {pins,ids};
 }
 function filePinShape(value){return value&&equal(Object.keys(value).sort(),['bytes','path','sha256'])&&typeof value.path==='string'&&
  path.isAbsolute(value.path)&&Number.isSafeInteger(value.bytes)&&value.bytes>0&&/^[0-9a-f]{64}$/.test(value.sha256);}
@@ -46,12 +87,17 @@ function assertPreviousSubmission({installation,pointEvidencePin,previousSubmiss
   equal(previousSubmission.pointEvidencePin,pointEvidencePin)&&filePinShape(previousSubmissionPin),'ORIGINAL_FAILED_SUBMISSION_REQUIRED');
  return ORIGINAL_FAILURE;
 }
-function buildSubmissionReceipt({installation,request,pointEvidencePin,submittedAt,previousSubmission=null,previousSubmissionPin=null}){
+function buildSubmissionReceipt({installation,request,pointEvidencePin,submittedAt,previousSubmission=null,previousSubmissionPin=null,previousSubmissions=null}){
  const profile=assertInstallationGeneration(installation),successor=profile.submissionFile==='main-i2-to-test58-ui-submission-b9caa00.json';
  need(restoreWriteAllowed('submit',request,POINTS[2],false,0,successor?ORIGINAL_FAILURE:null)&&filePinShape(pointEvidencePin)&&
   typeof submittedAt==='string'&&Number.isFinite(Date.parse(submittedAt)),'SUBMISSION_INPUT_INVALID');
  const value={schemaVersion:'MainI2TestRestoreSubmission/v1',submittedAt,selectionPin:installation.selectionPin,pointEvidencePin,request};
- if(successor){
+ if(isRepeated(installation.selectionSchemaVersion)){
+  need(previousSubmission===null&&previousSubmissionPin===null,'UNEXPECTED_PREDECESSOR_SUBMISSION');
+  const {pins,ids}=assertRepeatedSubmissions({installation,pointEvidencePin,previousSubmissions});
+  need(!ids.includes(request.operationId),'RETAINED_OPERATION_ID_REUSED');
+  Object.assign(value,{schemaVersion:'MainI2TestRestoreRepeatedSubmission/v1',previousSubmissionPins:pins,previousOperationIds:ids});
+ }else if(successor){
   assertPreviousSubmission({installation,pointEvidencePin,previousSubmission,previousSubmissionPin});
   Object.assign(value,{schemaVersion:'MainI2TestRestoreSuccessorSubmission/v1',previousSubmissionPin,previousOperationId:ORIGINAL_FAILURE});
  }else need(previousSubmission===null&&previousSubmissionPin===null,'UNEXPECTED_PREDECESSOR_SUBMISSION');
@@ -73,8 +119,7 @@ task=pathlib.Path(sys.argv[1]);private=pathlib.Path(sys.argv[2]);sys.path.insert
 from main_program_installation_selection import Records
 records=Records(task);selected=records.read(sys.argv[3]);profiles=${JSON.stringify(GENERATIONS)}
 assert selected.get('schemaVersion') in profiles,'UNKNOWN_TARGET_SELECTION_SCHEMA'
-profile=profiles[selected['schemaVersion']]
-load=getattr(importlib.import_module(profile['loaderModule']),profile['loaderFunction'])
+from main_program_current_installation import load_current_target_installation as load
 custody=json.loads(sys.argv[4])
 v=load(task,private,selection_file=sys.argv[3],historical_source_custody_pin=custody)
 assert v['status']=='ACTIVATED' and v['installationVerified'] is True and v['runtimeVerified'] is False
@@ -84,6 +129,19 @@ out=dict(schemaVersion='MainThreeTargetInstallationSummary/v1',status='PASS',sel
  selectionSchemaVersion=selected['schemaVersion'],predecessorSelectionPin=selected.get('predecessorSelectionPin'),
  effectiveControllersByHost=rows,controllerBuildBindings=v['controllerBuildBindings'],
  controllers={h:[{k:r[k] for k in ('host','role','sourceCommit','controlConfigurationPin','ownerConfigurationPin') if k in r} for r in rr] for h,rr in rows.items()})
+if selected['schemaVersion'] in ('TaskMainProgramTargetControlSuccessorSelection/v2','TaskMainProgramTargetControlSuccessorSelection/v3'):
+ binding=v['controllerBuildBindings']['58']['target'];ancestry=[];prior=v['predecessorInstallation'];seen=set()
+ while True:
+  reference=prior['selectionPin'];assert reference['file'] not in seen,'TARGET_ANCESTRY_CYCLE';seen.add(reference['file'])
+  assert len(ancestry)<18,'TARGET_ANCESTRY_DEPTH'
+  if prior['selection']['schemaVersion']=='TaskMainProgramTargetControlPartialPredecessor/v1':
+   assert selected['schemaVersion']=='TaskMainProgramTargetControlSuccessorSelection/v3' and prior['status']=='PARTIALLY_ACTIVATED' and prior['installationVerified'] is False
+   out['partialPredecessor']=dict(selectionPin=reference,baseSelectionPin=prior['selection']['baseSelectionPin'],activationVerifiedHosts=prior['activationVerifiedHosts'],retainedBaseHosts=prior['retainedBaseHosts'])
+   prior=prior['predecessorInstallation'];continue
+  ancestry.append(dict(selectionPin=reference,selectionSchemaVersion=prior['selection']['schemaVersion'],sourceCommit=prior['controllerBuildBindings']['58']['target']['sourceCommit']))
+  if prior['selection']['schemaVersion']=='TaskMainProgramTargetControlSelection/v1':break
+  prior=prior['predecessorInstallation']
+ out.update(verifiedTargetCommit=binding['sourceCommit'],verifiedTargetBuildPin=binding['buildPin'],targetSelectionAncestry=list(reversed(ancestry)))
 print(json.dumps(out,ensure_ascii=False,separators=(',',':')))
 `;
 function installation(options){
@@ -101,7 +159,11 @@ async function main(){
  const dir=path.join(PRIVATE,label),output=path.join(TASK,label+'.json');need(!fs.existsSync(dir)&&!fs.existsSync(output),'UNIQUE_OBSERVATION_REQUIRED');
  fs.mkdirSync(dir);const helperPin=pin(__filename);const report={schemaVersion:'MainThreeTargetRealUi/v1',status:'RUNNING',phase:options.phase,startedAt:new Date().toISOString(),helperPin,loginPosts:0,businessPosts:0,pageErrors:0,blocked:[],matrix:[]};
  const save=(name,value)=>exclusive(path.join(dir,name),value);let browser,page,frame,current;const pending=[],responseErrors=[];
- let receipt,previousSubmission=null,previousSubmissionPin=null;
+ let receipt,previousSubmission=null,previousSubmissionPin=null,previousSubmissions=null;
+ const checkPreviousPins=()=>{
+  const pins=previousSubmissions?previousSubmissions.map(row=>row.pin):(previousSubmissionPin?[previousSubmissionPin]:[]);
+  for(const reference of pins)need(equal(pin(reference.path),reference),'ORIGINAL_SUBMISSION_CHANGED');
+ };
  const phase=value=>{report.stage=value;console.log(JSON.stringify({stage:value,observedAt:new Date().toISOString()}));};
  try{
   phase('formal-current-installation');current=installation(options);save('installation.private.json',current);report.selectionPin=current.selectionPin;
@@ -115,6 +177,18 @@ async function main(){
    assertPreviousSubmission({installation:current,pointEvidencePin:report.pointEvidencePin,previousSubmission,previousSubmissionPin});
    need(equal(pin(previousFile),previousSubmissionPin),'ORIGINAL_SUBMISSION_CHANGED');
   }
+  if(isRepeated(current.selectionSchemaVersion)){
+   previousSubmissions=[];
+   for(const ancestor of current.targetSelectionAncestry){
+    const known=targetGeneration(ancestor.selectionSchemaVersion);
+    const filename=known.submissionFile||'main-i2-to-test58-ui-submission-'+ancestor.selectionPin.sha256+'.json';
+    const file=path.join(TASK,filename);
+    if(isRepeated(ancestor.selectionSchemaVersion)&&!fs.existsSync(file))continue;
+    previousSubmissions.push({pin:pin(file),value:JSON.parse(fs.readFileSync(file,'utf8'))});
+   }
+   assertRepeatedSubmissions({installation:current,pointEvidencePin:report.pointEvidencePin,previousSubmissions});checkPreviousPins();
+   report.previousSubmissionPins=previousSubmissions.map(row=>row.pin);
+  }
   if(options.phase==='submit'){
    need(!fs.existsSync(receipt),'ALREADY_SUBMITTED_FOLLOW_ORIGINAL_OPERATION');
    const prior=JSON.parse(fs.readFileSync(path.join(TASK,options.preview),'utf8'));
@@ -124,7 +198,7 @@ async function main(){
   }
   const original=options.phase==='verify'?JSON.parse(fs.readFileSync(receipt,'utf8')):null;
   if(original)need(equal(original,buildSubmissionReceipt({installation:current,request:original.request,pointEvidencePin:report.pointEvidencePin,
-   submittedAt:original.submittedAt,previousSubmission,previousSubmissionPin})),'ORIGINAL_RESTORE_REQUEST_REQUIRED');
+   submittedAt:original.submittedAt,previousSubmission,previousSubmissionPin,previousSubmissions})),'ORIGINAL_RESTORE_REQUEST_REQUIRED');
   const {chromium}=require('C:/Users/D01021/Documents/ChatGPT/IntRuoyiE2E/node_modules/playwright');
   phase('real-login');browser=await chromium.launch({channel:'chrome',headless:true});const context=await browser.newContext({viewport:{width:1440,height:1080}});page=await context.newPage();page.setDefaultTimeout(45000);
   page.on('pageerror',e=>{report.pageErrors++;save('page-error-'+report.pageErrors+'.private.json',{error:String(e)});});
@@ -135,9 +209,9 @@ async function main(){
    if(url.origin===ORIGIN&&method==='POST'&&url.pathname==='/backup-entry-api/operations'&&!url.search){
     const request=req.postDataJSON();
     if(restoreWriteAllowed(options.phase,request,POINTS[2],fs.existsSync(receipt),report.businessPosts,previousSubmission?.request.operationId||null)){
-     if(previousSubmissionPin)need(equal(pin(path.join(TASK,'main-i2-to-test58-ui-submission.json')),previousSubmissionPin),'ORIGINAL_SUBMISSION_CHANGED');
+     checkPreviousPins();
      exclusive(receipt,buildSubmissionReceipt({installation:current,request,pointEvidencePin:report.pointEvidencePin,
-      submittedAt:new Date().toISOString(),previousSubmission,previousSubmissionPin}));report.businessPosts++;report.request=request;return route.continue();
+      submittedAt:new Date().toISOString(),previousSubmission,previousSubmissionPin,previousSubmissions}));report.businessPosts++;report.request=request;return route.continue();
     }
    }
    report.blocked.push({method,path:url.pathname});return route.abort('blockedbyclient');
@@ -214,7 +288,7 @@ async function main(){
   await Promise.all(pending.splice(0));need(report.loginPosts===1&&report.pageErrors===0&&report.blocked.length===0&&responseErrors.length===0&&report.businessPosts===(options.phase==='submit'?1:0),'REAL_UI_WRITES_OR_ERRORS');
   need(equal(installation(options),current),'INSTALLATION_CHANGED_DURING_UI');
   need(equal(pin(path.join(TASK,'main-activated-i2-success-r1.json')),report.pointEvidencePin)&&equal(pin(__filename),helperPin),'UI_OR_POINT_INPUT_CHANGED');
-  if(previousSubmissionPin)need(equal(pin(path.join(TASK,'main-i2-to-test58-ui-submission.json')),previousSubmissionPin),'ORIGINAL_SUBMISSION_CHANGED');
+  checkPreviousPins();
  }catch(error){report.status='FAIL';report.errorCode=/^[A-Z0-9_]+$/.test(error.message)?error.message:'REAL_UI_OBSERVATION_FAILED';save('failure.private.json',{error:String(error.stack||error),detail:error.privateDetail});process.exitCode=1;}
  finally{
   if(page){await page.screenshot({path:path.join(dir,'actual-page.png'),fullPage:true}).catch(e=>{report.status='FAIL';report.screenshotError=String(e);process.exitCode=1;});}

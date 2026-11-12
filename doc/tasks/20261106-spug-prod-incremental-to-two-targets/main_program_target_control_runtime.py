@@ -160,7 +160,7 @@ class TargetControlRuntimeTransition:
         row = deepcopy(self.old); new = self.candidate['controller']
         row.update(engine=new['engine'], pid=pid, controlConfigurationPin=deepcopy(new['controlPin']),
             ownerConfigurationPin=deepcopy(new['ownerPin']), sourceCommit=self.candidate['sourceCommit'],
-            fileCount=153, fileManifestSha256=self.candidate['package']['fileManifestSha256'],
+            fileCount=self._new_payload_count(), fileManifestSha256=self.candidate['package']['fileManifestSha256'],
             dropinPin=deepcopy(self.dropin), environmentMode='CONFIG_EXACT')
         row.pop('argvSha256', None)
         # These known fields described the old captured process, not a fresh
@@ -169,6 +169,14 @@ class TargetControlRuntimeTransition:
         for key in _BASELINE_ONLY:
             row.pop(key, None)
         return row
+
+    def _new_payload_count(self):
+        # Only the rebuilt, reviewed v3 successor can grow the payload. Ordinary
+        # and historical transitions retain their exact 153-member contract.
+        count=154 if self.candidate.get('schemaVersion')=='MainProgramTargetControlSuccessorCandidate/v3' else 153
+        need(type(self.candidate['package'].get('fileCount')) is int and
+             self.candidate['package']['fileCount']==count,'TARGET_RUNTIME_PACKAGE_SCOPE')
+        return count
 
     def _successor(self, pid):
         spec = deepcopy(self.original.spec)
@@ -184,7 +192,7 @@ class TargetControlRuntimeTransition:
         need(not self.original.paths.exists(self.dropin['path']), 'TARGET_RUNTIME_NEW_DROPIN_ALREADY_EXISTS')
         before = self.original._observe(documents_created=True)
         self._documents()
-        package_row = dict(engine=self.candidate['controller']['engine'], fileCount=153,
+        package_row = dict(engine=self.candidate['controller']['engine'], fileCount=self._new_payload_count(),
                            fileManifestSha256=self.candidate['package']['fileManifestSha256'])
         self._new_package_pin = self.original.verify_package(package_row)
         need(not self.original.paths.exists(self.dropin['path']), 'TARGET_RUNTIME_NEW_DROPIN_ALREADY_EXISTS')

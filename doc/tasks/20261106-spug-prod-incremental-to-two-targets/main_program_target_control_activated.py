@@ -207,8 +207,10 @@ def _observations(r,gate,package,old_package,old_control,new_control):
         need(observation['argvSha256']==expected_sha,'PROCESS_ARGV')
 
 
-def _native_and_api(r,owner):
+def _native_evidence(r,owner,*,allow_retained_retry=False):
     native=r['nativeBefore'];target=r['targetConfigRef']
+    if allow_retained_retry and type(native) is dict and 'retainedRetryAdmission' in native:
+        return _retry_native_evidence(r,owner)
     need(native==r['nativeAfter'] and type(native) is dict and set(native)=={'actualConfigurationReadPassed',
         'archiveViewsPreflightVerified','directlyAdmittedSources','epoch','epochPolicy'} and
         native['actualConfigurationReadPassed'] is True and native['archiveViewsPreflightVerified'] is True and
@@ -221,20 +223,75 @@ def _native_and_api(r,owner):
     ref=contract.remote_pin(epoch['eventPin'])
     need(PurePosixPath(ref['path']).parent==PurePosixPath(policy['root']) and
         re.fullmatch(r'[0-9]{20}\.json',PurePosixPath(ref['path']).name),'EPOCH_EVENT')
-    for api in (r['originalApi'],r['apiSelection']):
-        need(type(api) is dict and set(api)=={'applications','observedAt'},'HTTP_SHAPE')
-        _timestamp(api['observedAt']);apps=api['applications']
-        need(type(apps) is list and len(apps)==3 and [a.get('sourceConfigRef') for a in apps]==list(activation.SOURCES),
-            'HTTP_SOURCES')
-        for index,app in enumerate(apps):
-            need(set(app)=={'applicationId','sourceConfigRef','engineSelectionRef','freshTargetConfigRefs','fullReady',
-                'fullErrorCode','historyErrorCode','parentChainRefs','recoveryPointRefs'} and
-                app['applicationId']==app['sourceConfigRef'] and type(app['engineSelectionRef']) is str and
-                bool(app['engineSelectionRef']) and app['freshTargetConfigRefs']==[target] and
-                app['historyErrorCode'] is None and type(app['fullReady']) is bool and
-                type(app['parentChainRefs']) is list and type(app['recoveryPointRefs']) is list,'HTTP_ADMISSION')
-            need((index==0 and app['fullReady'] is True and app['fullErrorCode'] is None) or
-                (index>0 and app['fullReady'] is False and app['fullErrorCode']=='SOURCE_RESTORE_ONLY'),'HTTP_FULL_SCOPE')
+
+
+def _retry_native_evidence(r,owner):
+    """Validate an explicit product admission without rewriting its FAILED tail."""
+    n=r['nativeBefore'];target=r['targetConfigRef'];policy=owner['targetProgramPolicies'][target]['backupEpochPolicy']
+    need(n==r['nativeAfter'] and set(n)=={'actualConfigurationReadPassed','archiveViewsPreflightVerified',
+        'directlyAdmittedSources','epoch','epochPolicy','retainedRetryAdmission','rejectedSources'} and
+        n['actualConfigurationReadPassed'] is True and n['archiveViewsPreflightVerified'] is True and
+        n['epochPolicy']==policy,'RETRY_NATIVE')
+    a=n['retainedRetryAdmission'];fields={'schemaVersion','state','sourceConfigRef','targetConfigRef','recoveryPointRef',
+        'predecessorOperationId','epoch','readyEpoch','targetPin','parentGenerationPin','capturePins','authorization','evidencePins','serverWrites'}
+    need(type(a) is dict and set(a)==fields and a['schemaVersion']=='MainProgramRetainedRetryAdmission/v1' and
+        a['state']=='FAILED_RETAINED_RETRY_ADMITTED' and a['serverWrites'] is False and a['targetConfigRef']==target and
+        a['sourceConfigRef'] in activation.SOURCES and n['directlyAdmittedSources']==[a['sourceConfigRef']] and
+        n['rejectedSources']=={s:'PROGRAM_RETRY_SOURCE_NOT_AUTHORIZED' for s in activation.SOURCES if s!=a['sourceConfigRef']},
+        'RETRY_NATIVE_ADMISSION')
+    need(type(a['predecessorOperationId']) is str and re.fullmatch('smallapp-[0-9a-f]{32}',a['predecessorOperationId']) and
+        type(a['recoveryPointRef']) is str and re.fullmatch('smallapp-[0-9a-f]{32}',a['recoveryPointRef']), 'RETRY_NATIVE_REQUEST')
+    epoch_fields={'schemaVersion','state','operationId','epochId','policySha256','eventPin'}
+    expected_sha=hashlib.sha256(publication.canonical(policy)).hexdigest();sequences=[]
+    for epoch,state,operation in ((a['readyEpoch'],'READY',None),(a['epoch'],'FAILED_RETAINED',a['predecessorOperationId'])):
+        need(type(epoch) is dict and set(epoch)==epoch_fields and epoch['schemaVersion']=='SourceBackupEpoch/v1' and
+            epoch['state']==state and epoch['operationId']==operation and contract.sha(epoch['epochId']) and
+            epoch['policySha256']==expected_sha,'RETRY_NATIVE_EPOCH')
+        ref=contract.remote_pin(epoch['eventPin']);location=PurePosixPath(ref['path'])
+        need(location.parent==PurePosixPath(policy['root']) and re.fullmatch(r'[0-9]{20}\.json',location.name),'RETRY_NATIVE_EVENT')
+        sequences.append(int(location.stem))
+    need(a['epoch']==n['epoch'] and sequences[0]<sequences[1],'RETRY_NATIVE_EPOCH')
+    auth=a['authorization'];pin_names={'configurationPin','requestPin','resultPin','exitPin','replacementResultPin','contextPin',
+        'clearancePin','readyPin','noMutationReleasePin','recoveryReleasePin','observationPin','consumptionPin'}
+    need(type(auth) is dict and set(auth)==pin_names|{'schemaVersion','predecessorOperationId','sourceConfigRef','recoveryPointRef','targetConfigRef'} and
+        auth['schemaVersion']=='MainProgramRetainedRetryAuthorization/v1' and auth['consumptionPin'] is None and
+        all(auth[k]==a[k] for k in ('predecessorOperationId','sourceConfigRef','recoveryPointRef','targetConfigRef')),'RETRY_NATIVE_AUTHORIZATION')
+    required=[a['epoch']['eventPin'],a['readyEpoch']['eventPin'],contract.remote_pin(a['targetPin'])]
+    if a['parentGenerationPin'] is not None:required.append(contract.remote_pin(a['parentGenerationPin']))
+    captures=a['capturePins'];need(type(captures) is dict and bool(captures),'RETRY_NATIVE_CAPTURES')
+    required.extend(contract.remote_pin(p) for p in captures.values())
+    required.extend(contract.remote_pin(auth[k]) for k in pin_names if k!='consumptionPin')
+    evidence=a['evidencePins'];need(type(evidence) is list and bool(evidence),'RETRY_NATIVE_EVIDENCE')
+    by_path={}
+    for p in evidence:
+        contract.remote_pin(p);need(p['path'] not in by_path or by_path[p['path']]==p,'RETRY_NATIVE_EVIDENCE')
+        by_path[p['path']]=p
+    need(all(by_path.get(p['path'])==p for p in required),'RETRY_NATIVE_EVIDENCE')
+    return a
+
+
+def _api_selection(api,target,*,available=True,admitted_source=None):
+    need(type(available) is bool,'HTTP_AVAILABILITY_STATE')
+    need(admitted_source is None or (available and admitted_source in activation.SOURCES),'HTTP_AUTHORIZED_SOURCE')
+    need(type(api) is dict and set(api)=={'applications','observedAt'},'HTTP_SHAPE')
+    _timestamp(api['observedAt']);apps=api['applications']
+    need(type(apps) is list and len(apps)==3 and [a.get('sourceConfigRef') for a in apps]==list(activation.SOURCES),
+        'HTTP_SOURCES')
+    for index,app in enumerate(apps):
+        need(set(app)=={'applicationId','sourceConfigRef','engineSelectionRef','freshTargetConfigRefs','fullReady',
+            'fullErrorCode','historyErrorCode','parentChainRefs','recoveryPointRefs'} and
+            app['applicationId']==app['sourceConfigRef'] and type(app['engineSelectionRef']) is str and
+            bool(app['engineSelectionRef']) and app['freshTargetConfigRefs']==([target] if available and
+                (admitted_source is None or app['sourceConfigRef']==admitted_source) else []) and
+            app['historyErrorCode'] is None and type(app['fullReady']) is bool and
+            type(app['parentChainRefs']) is list and type(app['recoveryPointRefs']) is list,'HTTP_ADMISSION')
+        need((index==0 and app['fullReady'] is True and app['fullErrorCode'] is None) or
+            (index>0 and app['fullReady'] is False and app['fullErrorCode']=='SOURCE_RESTORE_ONLY'),'HTTP_FULL_SCOPE')
+
+
+def _native_and_api(r,owner):
+    _native_evidence(r,owner)
+    for api in (r['originalApi'],r['apiSelection']):_api_selection(api,r['targetConfigRef'])
 
 
 def verify_target_activations(source_installation,activations,*,build,build_pin,package_raw,previous_package_raw,

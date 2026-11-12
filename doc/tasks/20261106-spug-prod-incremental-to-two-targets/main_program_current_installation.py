@@ -15,6 +15,38 @@ OLD_SCHEMAS = (legacy.INPUT_SCHEMA, 'MainProgramSpugPublicationVerificationInput
 SUMMARY_SCHEMA = 'MainProgramCurrentInstallationSummary/v1'
 
 
+def load_current_target_installation(task, private, *, selection_file, historical_source_custody_pin=None):
+    """One explicit dispatch boundary for all admitted target generations."""
+    import main_program_target_control_activated as target
+    import main_program_target_control_successor as successor
+    records=contract.Records(task);selection=records.read(selection_file)
+    schema=selection.get('schemaVersion')
+    args={} if historical_source_custody_pin is None else dict(historical_source_custody_pin=historical_source_custody_pin)
+    if schema==target.SCHEMA:
+        result=target.load_activated_target_installation(task,private,selection_file=selection_file,**args)
+    elif schema==successor.SELECTION_SCHEMA:
+        result=successor.load_activated_target_successor_installation(task,private,selection_file=selection_file,**args)
+    elif schema==successor.MIXED_SELECTION_SCHEMA:
+        result=successor.load_mixed_target_successor_installation(task,private,selection_file=selection_file,**args)
+    else:
+        need(schema==successor.REPEAT_SELECTION_SCHEMA,'TARGET_SELECTION_SCHEMA')
+        result=successor.load_repeated_target_successor_installation(task,private,selection_file=selection_file,**args)
+    need(result.get('selectionPin')==records.references[selection_file],'TARGET_SELECTION_CHANGED_DURING_DISPATCH')
+    if 'currentPreservationDocumentsByHost' not in result:
+        wrappers={};pins=[]
+        for host in successor.HOSTS:
+            reference=selection['targetActivationEvidencePins'][host]
+            successor.need(reference in result['inputPins'],'PREDECESSOR_WRAPPER_NOT_ADMITTED')
+            wrappers[host]=target._private_json(private,reference,pins)
+        successor._bind_verified_current(result,wrappers)
+        result['inputPins']=target.source.unique_pins(result['inputPins']+pins)
+    for reference in records.path_pins():publication.verify_bytes(reference)
+    result['inputPins']=target.source.unique_pins(result['inputPins']+[publication.file_pin(Path(__file__).resolve()),
+        publication.file_pin(Path(successor.__file__).resolve())])
+    for reference in result['inputPins']:publication.verify_bytes(reference)
+    return result
+
+
 def need(value, code):
     if not value:
         raise ValueError('CURRENT_INSTALLATION_' + code)
