@@ -603,10 +603,12 @@ def _preservation_from_candidate(predecessor,host,candidate):
         for key in ('MINIO_ROOT_USER','MINIO_ROOT_PASSWORD')]+deepcopy(originals))
 
 
-def _verify_repeat_api(r,owner,old_owner,context):
+def _verify_repeat_api(r,owner,old_owner,context,archive_owner_verification=None):
     """Keep unavailable predecessor HTTP evidence explicit; after stays strict."""
     state=r.get('beforeApiState');target=r['targetConfigRef'];old=r['candidate']['previousController']
     need(state in ('AVAILABLE','RETAINED_FAILURE_UNAVAILABLE'),'BEFORE_API_STATE')
+    need(archive_owner_verification is None or state=='RETAINED_FAILURE_UNAVAILABLE' and
+        r['candidate'].get('schemaVersion')=='MainProgramTargetControlSuccessorCandidate/v3','ARCHIVE_OWNER_EXPLICIT_V3_CONTEXT')
     retry=activated._native_evidence(r,owner,allow_retained_retry=
         r['candidate'].get('schemaVersion')=='MainProgramTargetControlSuccessorCandidate/v3')
     need(retry is None or state=='RETAINED_FAILURE_UNAVAILABLE','RETRY_RETAINED_FAILURE_REQUIRED')
@@ -644,7 +646,11 @@ def _verify_repeat_api(r,owner,old_owner,context):
         need(reference['path']==str(root/filename) and reference==_content_pin(reference['path'],raw),'FAILURE_ORIGINAL_BYTES')
         values[name]=json.loads(raw.decode('utf-8'),object_pairs_hook=planner.document)
     request=values['request'];worker=values['workerResult']
-    need(values['configuration']==old_owner and type(request) is dict and set(request)=={'schemaVersion','operationId','action',
+    configuration_matches=values['configuration']==old_owner
+    if archive_owner_verification is not None:
+        from main_program_target_archive_owner_verification import verify_configuration_relation
+        configuration_matches=verify_configuration_relation(r,old_owner,values['configuration'],request,archive_owner_verification)
+    need(configuration_matches and type(request) is dict and set(request)=={'schemaVersion','operationId','action',
         'sourceConfigRef','parentChainRef','recoveryPointRef','targetConfigRef'} and request['schemaVersion']=='SmallAppBackupUiRequest/v1' and
         request['operationId']==operation and request['action']=='RESTORE' and request['sourceConfigRef'] in activated.activation.SOURCES and
         request['parentChainRef'] is None and request['targetConfigRef']==target and type(request['recoveryPointRef']) is str and
@@ -675,7 +681,7 @@ def _verify_repeat_api(r,owner,old_owner,context):
 
 def _verify_target_successor_host(*,host,activation,predecessor,build,build_pin,package_raw,previous_package_raw,
         predecessor_selection_raw,predecessor_build_raw,continuations,build_raw,package_delta_review,
-        package_delta_review_pin,package_delta_review_raw,retained_failure_admissions):
+        package_delta_review_pin,package_delta_review_raw,retained_failure_admissions,archive_owner_verifications=None):
     need(host in HOSTS,'SUCCESSOR_HOST')
     repeated=any(v is not None for v in (build_raw,package_delta_review,package_delta_review_pin,package_delta_review_raw))
     planner.local_pin(build_pin);previous_build=json.loads(predecessor_build_raw.decode('utf-8'),object_pairs_hook=planner.document)
@@ -744,7 +750,8 @@ def _verify_target_successor_host(*,host,activation,predecessor,build,build_pin,
     for phase in ('before','after'):
         props=r[phase]['controllers'][-1]['properties']
         need(all(dependency in props[key].split() for key in ('Requires','After')),'SUCCESSOR_PRESERVATION_DEPENDENCY')
-    if repeated:_verify_repeat_api(r,owner,predecessor['targetOwners'][host],retained_failure_admissions.get(host))
+    if repeated:_verify_repeat_api(r,owner,predecessor['targetOwners'][host],retained_failure_admissions.get(host),
+        None if archive_owner_verifications is None else archive_owner_verifications.get(host))
     else:activated._native_and_api(r,owner)
     receipt=PurePosixPath(r['activationReceiptPin']['path']);parent=PurePosixPath(old['engine']).parent
     need(receipt.name=='result-activate.private.json' and receipt.parent.parent==parent and
@@ -1015,8 +1022,8 @@ def load_mixed_target_successor_installation(task,private,*,selection_file,histo
     """A complete three-host result must verify every actual mixed predecessor."""
     records=contract.Records(task);_bounded_target_ancestry(records,selection_file)
     selected=records.read(selection_file)
-    need(set(selected)=={'schemaVersion','predecessorSelectionPin','buildPin','standardPackagePin',
-        'packageDeltaReviewPinsByHost','targetActivationEvidencePins'} and selected['schemaVersion']==MIXED_SELECTION_SCHEMA,
+    base_fields={'schemaVersion','predecessorSelectionPin','buildPin','standardPackagePin','packageDeltaReviewPinsByHost','targetActivationEvidencePins'}
+    need(set(selected) in (base_fields,base_fields|{'archiveOwnerVerificationPinsByHost'}) and selected['schemaVersion']==MIXED_SELECTION_SCHEMA,
         'MIXED_SELECTION')
     reference=selected['predecessorSelectionPin'];records.pinned(reference)
     prior=load_partial_target_predecessor(task,private,selection_file=reference['file'],historical_source_custody_pin=historical_source_custody_pin)
@@ -1027,6 +1034,16 @@ def load_mixed_target_successor_installation(task,private,*,selection_file,histo
     build=records.pinned(selected['buildPin']);build_raw=_report_bytes(records,selected['buildPin']);pins=[]
     package_raw=activated._private_bytes(private,selected['standardPackagePin'],pins)
     wrappers,admissions=_private_activations(private,evidence,pins)
+    archive_owners={}
+    if 'archiveOwnerVerificationPinsByHost' in selected:
+        refs=selected['archiveOwnerVerificationPinsByHost']
+        need(type(refs) is dict and set(refs)=={'58'},'ARCHIVE_OWNER_VERIFICATION_HOST')
+        archive_owners['58']=activated._private_json(private,refs['58'],pins)
+        from main_program_target_archive_owner_verification import verify_context
+        checked=verify_context(archive_owners['58'],private=private)
+        pins.extend(checked['inputPins'])
+        import main_program_target_archive_owner_verification as archive_reader
+        pins.append(activated.publication.file_pin(Path(archive_reader.__file__).resolve()))
     rows=deepcopy(prior['effectiveControllersByHost']);bindings=deepcopy(prior['controllerBuildBindings'])
     owners={};controls={};specs={};receipts=[]
     for host in HOSTS:
@@ -1039,7 +1056,7 @@ def load_mixed_target_successor_installation(task,private,*,selection_file,histo
             package_raw=package_raw,previous_package_raw=previous_raw,predecessor_selection_raw=_report_bytes(records,reference),
             predecessor_build_raw=_report_bytes(records,artifact['buildPin']),continuations={},build_raw=build_raw,
             package_delta_review=review,package_delta_review_pin=reviews[host],package_delta_review_raw=_report_bytes(records,reviews[host]),
-            retained_failure_admissions=admissions)
+            retained_failure_admissions=admissions,archive_owner_verifications=archive_owners)
         rows[host][-1]=checked['controller'];bindings[host]['target']=dict(buildPin=deepcopy(selected['buildPin']),sourceCommit=build['targetCommit'])
         owners[host]=checked['owner'];controls[host]=checked['control'];specs[host]=checked['runtime'];receipts.append(checked['activationReceiptPin'])
     result=dict(status='ACTIVATED',installationVerified=True,runtimeVerified=False,predecessorInstallation=prior,
