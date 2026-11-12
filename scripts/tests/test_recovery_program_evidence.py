@@ -183,7 +183,7 @@ def publish_envelopes(h, *, result_changes=None, receipt_changes=None):
 
 @pytest.fixture
 def history_factory(tmp_path, monkeypatch):
-    def build(*, outcome='success', phases='both', complete_epoch=True):
+    def build(*, outcome='success', phases='both', complete_epoch=True, install_protection=True):
         c = EvidenceCase(tmp_path, monkeypatch)
         e = c.e
         e.operation_pin = write(e.root/'operation.json', dict(operationId=e.request['operationId'],
@@ -206,7 +206,7 @@ def history_factory(tmp_path, monkeypatch):
                 custody.append(value)
                 protections = value.view_for(native)
                 assert protections.archive is None and protections.fence is None
-                protections.scheduler.install()
+                if install_protection:protections.scheduler.install()
                 native.command(command(), mutation=False)
             if outcome == 'constructor-before-custody': c.at_native(lambda native: None)
             else: c.at_native(prepare)

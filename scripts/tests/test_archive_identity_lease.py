@@ -173,7 +173,7 @@ def test_minimal_data_leases_before_hash_and_closes_constructor_failure(tmp_path
     namespace = dict(vars(recovery_minimal_runtime))
     safe_engine = {'__name__': 'safe_engine_unit'}
     exec(compile(payload['common/recovery_engine.py'], '<safe-engine>', 'exec'), safe_engine)
-    namespace['modules_from'] = lambda _: {}
+    namespace['modules_from'] = recovery_minimal_runtime.modules_from
     path = tmp_path/'payload'
     path.write_bytes(b'original')
     reference = safe_engine['pin'](path)
@@ -196,14 +196,15 @@ def test_minimal_data_leases_before_hash_and_closes_constructor_failure(tmp_path
         raise RuntimeError('identity interrupted')
     cls.database_uuid = database_uuid
     configuration = dict(environmentMysqlClientPath='/unused', maxExpandedBytes=1024,
-        dataLimits={}, deadlineMilliseconds=60000, formalModuleDirectory='/unused')
+        dataLimits=dict(max_rows=10, max_nodes=100, max_bytes=1024, seconds=30),
+        deadlineMilliseconds=60000, formalModuleDirectory=str(ROOT/'ops/backup_engine/formal'))
     policy = dict(businessInvariants=[])
     target = dict(dataPolicy={}, services=[dict(role='mysql', id='unit-target')],
         dockerPin=reference, iptablesPin=reference)
     material = dict(recoveryPoint={}, objects=dict(method='PHYSICAL_FILES'),
         payloadPins=[reference], versionPins=[], sourceDatabaseUuid='unused')
     with pytest.raises(RuntimeError, match='interrupted'):
-        cls(configuration, dict(operationId='unit-lease'), {}, policy,
+        cls(configuration, dict(operationId='unit-lease', targetConfigRef='unit-target'), {}, policy,
             [(reference, {}, material, reference)], target, tmp_path, [])
     assert observed == (['hash'] if stage == 'first_hash' else ['hash', 'identity'])
     assert fd_count() == before

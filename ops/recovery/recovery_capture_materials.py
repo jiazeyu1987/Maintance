@@ -133,7 +133,10 @@ def prepare_materials(config,identity,root,*,output_budget,originals,transport):
     if 'passwordPin' in redis:secret_refs.append(redis['passwordPin'])
     secrets={reference['path'] for reference in secret_refs}
     for reference in secret_refs:
-        require(stat.S_IMODE(path_checked(reference['path']).stat().st_mode)==0o600,
+        # Provisioned immutable S3 credentials are owner-read-only. Other
+        # secret transports retain their existing exact owner-read/write mode.
+        modes=(0o400,0o600) if reference==descriptor['credentialReference'] else (0o600,)
+        require(stat.S_IMODE(path_checked(reference['path']).stat().st_mode) in modes,
                 'MINIMAL_SECRET_MODE_REQUIRED')
     mysql,data_mysql=transport._mysql(source,limits)
     mysql.database_log_mode=source.get('databaseLogMode','GTID')

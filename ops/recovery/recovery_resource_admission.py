@@ -129,6 +129,28 @@ def _successful_program_calls(proof):
         row['terminalObservation']['state'] == 'SUCCEEDED' for row in calls)
 
 
+def _unmutated_program_preparation(proof):
+    """Accept only fully validated preparation with every barrier uninstalled."""
+    states = proof['protectionStates']
+    return (proof['resultState'] == proof['replacementState'] == 'FAILED_RETAINED' and
+        proof['phase'] == 'PREPARATION' and proof['bindingPin'] is not None and
+        proof['contextPin'] is not None and proof['generationPin'] is None and
+        not proof['mutationDispatched'] and not proof['terminalUnknown'] and
+        proof['protectionState'] == 'ACTIVE' and type(states) is dict and
+        set(states) == {'archive', 'fence', 'scheduler'} and
+        all(row['state'] in ('NOT_INSTALLED', 'ABSENT') for row in states.values()) and
+        _successful_program_calls(proof) and
+        all(row['phase'] == 'PREPARATION' for row in proof['invocations']))
+
+
+def _unmutated_program_history(proof):
+    return _unmutated_program_preparation(proof) or (
+        proof['resultState'] == proof['replacementState'] == 'FAILED_RETAINED' and
+        proof['phase'] == 'NOT_STARTED' and proof['bindingPin'] is None and
+        proof['contextPin'] is None and proof['generationPin'] is None and
+        not proof['invocations'] and not proof['mutationDispatched'] and not proof['terminalUnknown'])
+
+
 def release_success(configuration, request, root, result_pin, exit_pin):
     """Only a validated successful child permits normal release; failures retain it."""
     from recovery_engine import load, pin, pinned_json, utc, write
@@ -191,8 +213,7 @@ def release_no_mutation(configuration, request, root, result_pin, exit_pin):
          output.get('data', {}).get('mutationDispatched') is False and
          type(exited.get('actualExitCode')) is int and exited['actualExitCode'] == 1 and
          exited.get('timedOut') is False, 'RESTORE_RESOURCE_NO_MUTATION_NOT_PROVEN')
-    need(not any(root.rglob('importer-*.json')) and
-         not (root / 'replacement-preparation/replacement-intent.json').exists(),
+    need(not any(root.rglob('importer-*.json')),
          'RESTORE_RESOURCE_NO_MUTATION_NOT_PROVEN')
     for reference in output['originalResultPins']:
         check_pin(reference)
@@ -204,12 +225,11 @@ def release_no_mutation(configuration, request, root, result_pin, exit_pin):
              'RESTORE_RESOURCE_NO_MUTATION_NOT_PROVEN')
     with _host_lock():
         program = _program_release_evidence(configuration, request, root, result_pin)
+        prepared = program is not None and _unmutated_program_preparation(program)
+        need(prepared or not (root / 'replacement-preparation/replacement-intent.json').exists(),
+             'RESTORE_RESOURCE_NO_MUTATION_NOT_PROVEN')
         if program is not None:
-            need(program['resultState'] == program['replacementState'] == 'FAILED_RETAINED' and
-                 program['phase'] == 'NOT_STARTED' and program['bindingPin'] is None and
-                 program['contextPin'] is None and program['generationPin'] is None and
-                 not program['invocations'] and not program['mutationDispatched'] and
-                 not program['terminalUnknown'], 'RESTORE_RESOURCE_NO_MUTATION_NOT_PROVEN')
+            need(_unmutated_program_history(program), 'RESTORE_RESOURCE_NO_MUTATION_NOT_PROVEN')
         binding = _binding(configuration, request, root)
         reservation = pin(root / 'resource-reservation.json')
         original = pinned_json(reservation)

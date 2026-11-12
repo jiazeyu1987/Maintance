@@ -49,6 +49,55 @@ def _redis_authentication(target,redis):
         require(not registered and 'passwordPin' not in redis,'PROGRAM_CAPTURE_REDIS_CREDENTIAL_CHANGED')
 
 
+class _CaptureJournalLease:
+    """Keep completed pins authoritative through overlapping kernel leases.
+
+    Active intents retain their separate full-read check. No event is waived
+    for a terminal rewrite: that path enters this set only after completion.
+    A fault permanently removes admission, while later failure/exit records
+    may still be retained as evidence without acquiring execution authority.
+    """
+    def __init__(self):
+        self._guard=None;self._pins={};self._fault=None;self._closed=False
+
+    def retain(self,reference):
+        require(not self._closed,'PROGRAM_CAPTURE_JOURNAL_CLOSED')
+        if self._fault is not None:return  # Evidence only after permanent failure.
+        candidate=None
+        try:
+            require(reference['path'] not in self._pins,'PROGRAM_CAPTURE_JOURNAL_CHANGED')
+            self.check(self._pins)
+            pins={**self._pins,reference['path']:deepcopy(reference)}
+            from recovery_archive_guard import ArchivePathGuard
+            candidate=ArchivePathGuard.capture(pins)
+            require(actual_pin(reference['path'])==reference,'PROGRAM_CAPTURE_JOURNAL_CHANGED')
+            # The previous lease stays alive throughout setup and hashing.
+            # Its queued changes cannot be discarded by the replacement set.
+            self.check(self._pins);candidate.check()
+            previous=self._guard;self._guard=candidate;candidate=None;self._pins=pins
+            if previous is not None:previous.close()
+        except BaseException as error:
+            self._fault=error
+            raise
+        finally:
+            if candidate is not None:candidate.close()
+
+    def check(self,pins):
+        require(not self._closed,'PROGRAM_CAPTURE_JOURNAL_CLOSED')
+        if self._fault is not None:raise self._fault
+        try:
+            require(pins==self._pins,'PROGRAM_CAPTURE_JOURNAL_CHANGED')
+            if self._guard is not None:self._guard.check()
+        except BaseException as error:
+            self._fault=error
+            raise
+
+    def close(self):
+        self._closed=True
+        if self._guard is not None:
+            guard=self._guard;self._guard=None;guard.close()
+
+
 class _CaptureProcessObserver:
     """Own actual stream children and the original context's exact intent token."""
     def __init__(self,session):
@@ -103,9 +152,8 @@ class _CaptureProcessObserver:
             state='SUCCEEDED' if process.returncode==0 else 'FAILED_RETAINED')
         reference=write(row['path'],row['value'])
         s._view.finish_invocation(row['token'],reference)
-        s._pins[reference['path']]=reference
-        s._native.original_pins.append(deepcopy(reference))
         self.active=None
+        s._retain(reference)
         if row['dump']:s._lease._finish_export(process)
         s.guard(force=row['dump'])
 
@@ -167,6 +215,7 @@ class MainTargetCapture:
         result.root=result._parent/'capture';result.root.mkdir(mode=0o700)
         result._identities={path:_directory(path,'PROGRAM_CAPTURE_DIRECTORY_CHANGED')
             for path in (result._parent,result._journal,result.root)}
+        result._journal_lease=_CaptureJournalLease()
         result.budget=_MainCaptureBudget(result.root,config['limits'],context)
         result.limits=result.config['limits'];result.runtime=result
         result.worker=__import__('minimal_capture_worker')
@@ -195,7 +244,9 @@ class MainTargetCapture:
             result._state='PREPARED';result.check()
             return result
         except BaseException as error:
-            result._fail(error);raise
+            try:result._fail(error)
+            finally:result.close()
+            raise
 
     @staticmethod
     def _configuration(native,capture_ref,config):
@@ -290,9 +341,15 @@ class MainTargetCapture:
 
     def _record(self,name,value):
         reference=exclusive_json(self._journal/name,value)
+        self._retain(reference)
+        return reference
+
+    def _retain(self,reference):
+        # Record the actual published bytes/exit before validating admission.
+        # A lost lease must never discard a dispatched child's terminal proof.
         self._pins[reference['path']]=reference
         self._native.original_pins.append(deepcopy(reference))
-        return reference
+        self._journal_lease.retain(reference)
 
     def check(self):
         require(not self._closed,'PROGRAM_CAPTURE_CLOSED')
@@ -307,8 +364,7 @@ class MainTargetCapture:
             row=self._observer.active;expected.add(row['path'].name)
             require(actual_pin(row['path'])==row['intent_pin'],'PROGRAM_CAPTURE_JOURNAL_CHANGED')
         require({p.name for p in self._journal.iterdir()}==expected,'PROGRAM_CAPTURE_JOURNAL_CHANGED')
-        for reference in self._pins.values():
-            require(actual_pin(reference['path'])==reference,'PROGRAM_CAPTURE_JOURNAL_CHANGED')
+        self._journal_lease.check(self._pins)
 
     def guard(self,*,force=False):
         self.check();self.budget.check();self._view.guard_native(self._native);self._custody._validate(self._native)
@@ -487,3 +543,4 @@ class MainTargetCapture:
 
     def close(self):
         self._closed=True
+        self._journal_lease.close()

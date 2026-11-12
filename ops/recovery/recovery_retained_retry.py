@@ -243,7 +243,8 @@ def observe(configuration,request,root,expected_tables,running=False):
 
 def verify_no_mutation(configuration,request,root,refs,release_ref):
     """Read the exact original no-mutation release; never release a pointer here."""
-    from recovery_resource_admission import _binding
+    from recovery_resource_admission import (_binding, _program_release_evidence,
+        _unmutated_program_preparation, _unmutated_program_history)
     from recovery_engine import check_pin
     require(release_ref['path']==str(root/'resource-no-mutation-release.json'),
             'RECOVERY_NO_MUTATION_NOT_PROVEN')
@@ -259,8 +260,12 @@ def verify_no_mutation(configuration,request,root,refs,release_ref):
             result.get('data',{}).get('mutationDispatched') is False and
             type(exited.get('actualExitCode')) is int and exited['actualExitCode']==1 and
             exited.get('timedOut') is False and
-            not any(root.rglob('importer-*.json')) and
-            not (root/'replacement-preparation/replacement-intent.json').exists(),
+            not any(root.rglob('importer-*.json')),
+            'RECOVERY_NO_MUTATION_NOT_PROVEN')
+    program = _program_release_evidence(configuration, request, root, refs['resultPin'])
+    prepared = program is not None and _unmutated_program_preparation(program)
+    require(program is None or _unmutated_program_history(program), 'RECOVERY_NO_MUTATION_NOT_PROVEN')
+    require(prepared or not (root/'replacement-preparation/replacement-intent.json').exists(),
             'RECOVERY_NO_MUTATION_NOT_PROVEN')
     require(type(result.get('originalResultPins')) is list,'RECOVERY_NO_MUTATION_NOT_PROVEN')
     for reference in result['originalResultPins']:check_pin(reference)

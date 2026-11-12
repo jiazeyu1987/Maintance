@@ -254,6 +254,47 @@ def session(h,native):
     return MainTargetCapture.prepare(native,capture_ref='source57',reservation_pin=h.reservation)
 
 
+@pytest.mark.parametrize('mode',[0o400,0o600])
+def test_main_owner_only_object_credential_prepares_without_stopping_writers(capture_protocol,mode):
+    h=capture_protocol
+    descriptor=pinned_json(h.capture_config['source']['objectSourcePin'])
+    Path(descriptor['credentialReference']['path']).chmod(mode)
+    claim(h.case)
+    with locked(h.case) as fd:
+        _,binding,_=started(h,fd)
+        with context(h,binding,fd) as ctx:
+            native=construct(h,ctx);capturer=session(h,native)
+            assert capturer.snapshot()['state']=='PREPARED'
+            state=json.loads(h.state_path.read_bytes())
+            assert state['actions']==[] and state['flags']==['0','0']
+            assert all(state['containers'][identity]['running'] for identity in state['writers'])
+            assert not h.transport.releases
+
+
+@pytest.mark.parametrize('role,mode',[
+    *[('objects',mode) for mode in (0o644,0o640,0o440,0o000,0o200,0o700)],
+    ('mysql',0o400),('redis',0o400)])
+def test_main_invalid_secret_permissions_fail_before_writer_barriers(capture_protocol,role,mode):
+    h=capture_protocol;source=h.capture_config['source']
+    if role=='objects':reference=pinned_json(source['objectSourcePin'])['credentialReference']
+    elif role=='mysql':reference=source['passwordPin']
+    else:reference=source['redisSnapshot']['passwordPin']
+    Path(reference['path']).chmod(mode);claim(h.case)
+    with locked(h.case) as fd:
+        _,binding,_=started(h,fd)
+        with context(h,binding,fd) as ctx:
+            native=construct(h,ctx)
+            if mode in (0o000,0o200):
+                with pytest.raises(PermissionError):session(h,native)
+            else:
+                with pytest.raises(FormalSnapshotError,match='MINIMAL_SECRET_MODE_REQUIRED'):
+                    session(h,native)
+            state=json.loads(h.state_path.read_bytes())
+            assert state['actions']==[] and state['flags']==['0','0']
+            assert all(state['containers'][identity]['running'] for identity in state['writers'])
+            assert not h.transport.releases
+
+
 def test_main_actual_full_materials_hold_without_releasing_original_protections(capture_protocol):
     h=capture_protocol;claim(h.case)
     with locked(h.case) as fd:
