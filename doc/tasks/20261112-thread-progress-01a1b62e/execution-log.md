@@ -25,3 +25,11 @@
 - EVIDENCE：目标execution-log.md最新02:08/02:12 UTC记录：identity-fixture-red-r1两项准确FAIL，green-r1所在20项PASS；修复12文件提交0119156，专用worktree C:/Spug/runtime/private/u-main-0119156-r1开始构建预检，尚未完成本轮安装/续办/恢复。
 - VERIFICATION：对比最新快照与公开日志，旧计划头部92/94标记已落后，按实际后续验证更新结论；未将待执行构建当成功。
 - CLOSEOUT：追加剩余工作审阅completed，无任务自有资源待清理；仅精确提交本次四份文档新增内容，原请求日志其它任务9行改动继续保留。
+
+## 追加问询：为什么安装新组件
+
+- 用户要求解释“组件”具体含义、修复交付与更新运行程序的关系；继续同一审阅任务，仅本地只读核对。
+- EVIDENCE：git show 0119156确认四个生产模块修改；execution-log最新构建预检与repeat-target-control-successor-plan固定前代/4成员差异合同一致。
+- DIAGNOSTIC：尝试rg读取ops/backup_engine/variants.py返回文件不存在，未以该不存在文件形成构建清单结论；解释采用真实提交与正式设计，不修改文件或掩盖错误。
+- RESULT：更正“安装新组件”的表达为“升级现有备份恢复执行程序”，说明本机代码提交不会自动更新服务器正在执行的旧版本，以及配套后续升级合同的必要性。
+- CLOSEOUT：仅解释与记录，审阅completed，无实际安装或服务器操作。
