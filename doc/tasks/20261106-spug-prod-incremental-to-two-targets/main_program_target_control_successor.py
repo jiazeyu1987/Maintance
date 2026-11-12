@@ -41,6 +41,9 @@ PACKAGE_GROWTH_PROFILES={
     'MAIN_TARGET_RETAINED_RETRY_FROM_READER/v1':RETAINED_RETRY_CHANGED|
         PACKAGE_DELTA_PROFILES['MAIN_TARGET_CAPTURE_PREPARATION_COMPATIBILITY/v1'],
 }
+PACKAGE_SAME_154_PROFILES={
+    'MAIN_TARGET_RELEASED_STATE_PROJECTION/v1':frozenset(('control/recovery_control_smallapp_native.py',)),
+}
 
 
 def need(condition,code):
@@ -60,9 +63,19 @@ def _official_package(raw,build,*,payload_count=153):
 
 
 def _delta_payload_count(review):
-    """Only source-reviewed profiles, never a caller count, authorize growth."""
+    """Only source-reviewed profiles, never a caller count, authorize 154."""
     if type(review) is dict and review.get('schemaVersion')=='MainProgramTargetControlPackageDeltaReview/v2':
         need(review.get('profileId') in PACKAGE_GROWTH_PROFILES,'PACKAGE_DELTA_PROFILE_REQUIRED')
+        return 154
+    if type(review) is dict and review.get('schemaVersion')=='MainProgramTargetControlPackageDeltaReview/v3':
+        need(review.get('profileId') in PACKAGE_SAME_154_PROFILES,'PACKAGE_DELTA_PROFILE_REQUIRED')
+        return 154
+    return 153
+
+
+def _delta_previous_payload_count(review):
+    if type(review) is dict and review.get('schemaVersion')=='MainProgramTargetControlPackageDeltaReview/v3':
+        _delta_payload_count(review)
         return 154
     return 153
 
@@ -117,7 +130,7 @@ def _predecessor(value,reference,selection_raw,build,build_raw,raw,host):
     return core,build_pin
 
 
-def _repeat_predecessor(value,reference,selection_raw,build,build_raw,raw,host):
+def _repeat_predecessor(value,reference,selection_raw,build,build_raw,raw,host,*,payload_count=153):
     partial=type(value) is dict and value.get('status')=='PARTIALLY_ACTIVATED'
     formal_partial=(partial and value.get('installationVerified') is False and
         value.get('activationVerifiedHosts')==['57'] and value.get('retainedBaseHosts')==['58','59'])
@@ -134,7 +147,13 @@ def _repeat_predecessor(value,reference,selection_raw,build,build_raw,raw,host):
         need(version in (SELECTION_SCHEMA,REPEAT_SELECTION_SCHEMA,MIXED_SELECTION_SCHEMA),'PREDECESSOR_SELECTION')
         fields={'schemaVersion','predecessorSelectionPin','buildPin','standardPackagePin','targetActivationEvidencePins'}
         if version==REPEAT_SELECTION_SCHEMA:fields=fields|{'packageDeltaReviewPin'}
-        if version==MIXED_SELECTION_SCHEMA:fields=fields|{'packageDeltaReviewPinsByHost'}
+        if version==MIXED_SELECTION_SCHEMA:
+            fields=fields|{'packageDeltaReviewPinsByHost'}
+            if 'archiveOwnerVerificationPinsByHost' in selection:
+                refs=selection['archiveOwnerVerificationPinsByHost']
+                need(type(refs) is dict and set(refs)=={'58'},'ARCHIVE_OWNER_VERIFICATION_HOST')
+                _private_input_pin(refs['58'])
+                fields=fields|{'archiveOwnerVerificationPinsByHost'}
     need(set(selection)==fields,'PREDECESSOR_SELECTION')
     _pinned_document(reference,selection_raw,selection)
     need(value.get('selectionPin')==reference,'PREDECESSOR_SELECTION_PIN')
@@ -150,7 +169,8 @@ def _repeat_predecessor(value,reference,selection_raw,build,build_raw,raw,host):
         'PREDECESSOR_CONTROLLERS')
     core=rows[-1];commit=build.get('targetCommit')
     need(core.get('schemaVersion')=='MainProgramControlActivation/v1' and core.get('status')=='PASS' and
-        core.get('host')=='172.30.30.'+host and core.get('sourceCommit')==commit and core.get('fileCount')==153 and
+        core.get('host')=='172.30.30.'+host and core.get('sourceCommit')==commit and
+        payload_count in (153,154) and core.get('fileCount')==payload_count and
         type(core.get('service')) is str and re.fullmatch(r'[A-Za-z0-9_.@-]+\.service',core['service']) is not None,
         'PREDECESSOR_CONTROLLER')
     need(value.get('controllerBuildBindings',{}).get(host,{}).get('target')==dict(buildPin=build_pin,sourceCommit=commit),
@@ -185,11 +205,13 @@ def _predecessor_artifacts(value,host):
 def _review_delta(review,reference,raw,*,predecessor,old_build,build,build_pin,build_raw,previous,package,host):
     fields={'schemaVersion','status','profileId','predecessorSelectionPin','predecessorCommit','sourceCommit',
         'predecessorBuildPin','buildPin','previousPackagePin','standardPackagePin','changedMembers'}
-    growth=_delta_payload_count(review)==154
+    count=_delta_payload_count(review);previous_count=_delta_previous_payload_count(review)
+    growth=type(review) is dict and review.get('schemaVersion')=='MainProgramTargetControlPackageDeltaReview/v2'
+    same_154=previous_count==154
     need(type(review) is dict and set(review)==fields|({'addedMembers'} if growth else set()) and
-        review['schemaVersion']=='MainProgramTargetControlPackageDeltaReview/'+('v2' if growth else 'v1') and review['status']=='REVIEWED',
+        review['schemaVersion']=='MainProgramTargetControlPackageDeltaReview/'+('v3' if same_154 else ('v2' if growth else 'v1')) and review['status']=='REVIEWED',
         'PACKAGE_DELTA_REVIEW_REQUIRED')
-    profiles=PACKAGE_GROWTH_PROFILES if growth else PACKAGE_DELTA_PROFILES
+    profiles=PACKAGE_SAME_154_PROFILES if same_154 else (PACKAGE_GROWTH_PROFILES if growth else PACKAGE_DELTA_PROFILES)
     need(type(review['profileId']) is str and review['profileId'] in profiles,
         'PACKAGE_DELTA_PROFILE_REQUIRED')
     _pinned_document(reference,raw,review);_pinned_document(build_pin,build_raw,build)
@@ -202,7 +224,8 @@ def _review_delta(review,reference,raw,*,predecessor,old_build,build,build_pin,b
     need(review['standardPackagePin']['bytes']==package['rawBytes'] and
         review['standardPackagePin']['sha256']==package['packageSha256'],'PACKAGE_DELTA_REVIEW_PACKAGE')
     old=previous['payloadFiles'];new=package['payloadFiles']
-    need(len(old)==153 and (set(new)==set(old)|RETAINED_RETRY_ADDED if growth else set(old)==set(new)),
+    need(len(old)==previous_count and len(new)==count and
+        (set(new)==set(old)|RETAINED_RETRY_ADDED if growth else set(old)==set(new)),
         'UNREVIEWED_PACKAGE_DELTA')
     changes=[dict(member=n,previousSha256=planner.digest(old[n]),sha256=planner.digest(new[n]))
         for n in sorted(old) if old[n]!=new[n]]
@@ -282,10 +305,12 @@ def build_target_control_successor_candidate(*,predecessor,predecessor_selection
     """Bind exactly four successor documents; never read or mutate a filesystem."""
     repeated=any(v is not None for v in (package_delta_review,package_delta_review_pin,package_delta_review_raw,build_pin,build_raw))
     predecessor_check=_repeat_predecessor if repeated else _predecessor
+    previous_count=_delta_previous_payload_count(package_delta_review) if repeated else 153
     core,old_build_pin=predecessor_check(predecessor,predecessor_selection_pin,predecessor_selection_raw,
-        predecessor_build,predecessor_build_raw,predecessor_package_raw,host)
+        predecessor_build,predecessor_build_raw,predecessor_package_raw,host,**(dict(payload_count=previous_count) if repeated else {}))
     count=_delta_payload_count(package_delta_review) if repeated else 153
-    previous=_official_package(predecessor_package_raw,predecessor_build);package=_official_package(package_raw,build,payload_count=count)
+    previous=_official_package(predecessor_package_raw,predecessor_build,payload_count=previous_count)
+    package=_official_package(package_raw,build,payload_count=count)
     files=package['payloadFiles'];old_files=previous['payloadFiles'];commit=build['targetCommit']
     previous_commit=predecessor_build['targetCommit']
     if repeated:
@@ -363,7 +388,7 @@ def build_target_control_successor_candidate(*,predecessor,predecessor_selection
             previousControlPin=deepcopy(core['controlConfigurationPin']),previousOwnerPin=deepcopy(core['ownerConfigurationPin']),
             controlPin=control_pin,ownerPin=owner_pin),newDocuments=docs,retainedPreservationDocuments=retained,
         package=dict(fileCount=count,fileManifestSha256=package['fileManifestSha256'],packageSha256=package['packageSha256']),
-        previousPackage=dict(fileCount=153,fileManifestSha256=previous['fileManifestSha256'],packageSha256=previous['packageSha256']),
+        previousPackage=dict(fileCount=previous_count,fileManifestSha256=previous['fileManifestSha256'],packageSha256=previous['packageSha256']),
         retainedFailurePins=deepcopy(retained_failure_pins),retainedSourceConfigurationUnchanged=True,
         installationPerformed=False,restoreDispatched=False)
     if repeated:result.update(schemaVersion='MainProgramTargetControlSuccessorCandidate/'+('v3' if count==154 else 'v2'),
@@ -375,8 +400,9 @@ def build_target_successor_staging_plan(*,candidate,**inputs):
     """Return exclusive writes and original pins; the caller enforces IO gates."""
     rebuilt=build_target_control_successor_candidate(**inputs);need(candidate==rebuilt,'CANDIDATE_REBUILD')
     count=_delta_payload_count(inputs.get('package_delta_review'))
+    previous_count=_delta_previous_payload_count(inputs.get('package_delta_review'))
     package=_official_package(inputs['package_raw'],inputs['build'],payload_count=count)
-    previous=_official_package(inputs['predecessor_package_raw'],inputs['predecessor_build'])
+    previous=_official_package(inputs['predecessor_package_raw'],inputs['predecessor_build'],payload_count=previous_count)
     writes=[dict(pin=_content_pin(binding.path(candidate['controller']['engine'])/name,raw),raw=raw,mode=0o400,exclusive=True)
         for name,raw in sorted(package['files'].items())]
     writes.extend(dict(pin=deepcopy(row['pin']),raw=planner.canonical(row['value']),mode=0o400,exclusive=True)
@@ -386,7 +412,7 @@ def build_target_successor_staging_plan(*,candidate,**inputs):
     retained.extend(deepcopy(row['pin']) for row in candidate['retainedPreservationDocuments'])
     retained.extend(deepcopy(candidate['previousController'][key]) for key in ('ownerConfigurationPin','controlConfigurationPin'))
     locations={r['pin']['path'] for r in writes};originals={p['path'] for p in retained}
-    need(len(writes)==len(locations)==count+5 and len(retained)==len(originals)==170 and not locations&originals,'PATH_COLLISION')
+    need(len(writes)==len(locations)==count+5 and len(retained)==len(originals)==previous_count+17 and not locations&originals,'PATH_COLLISION')
     version=candidate['schemaVersion'].rsplit('/',1)[-1]
     return dict(schemaVersion='MainProgramTargetSuccessorStagingPlan/'+version,status='PLANNED_NOT_STAGED',
         payloadFileCount=count,packageFileCount=count+1,documentCount=4,writes=writes,retainedPins=retained,
@@ -411,7 +437,10 @@ class _PureTransition(transition.TargetControlRuntimeTransition):
             current_spec['targetConfigRef']==retained_history_spec['targetConfigRef']==candidate['targetConfigRef'],
             'RUNTIME_SCOPE')
         self.index=len(rows)-1;self.old=deepcopy(rows[self.index])
-        need(self.old==candidate['previousController'] and self.old.get('fileCount')==153 and
+        previous_count=candidate['previousPackage']['fileCount']
+        need(previous_count==153 or (repeated and candidate['schemaVersion']=='MainProgramTargetControlSuccessorCandidate/v3' and
+            previous_count==154 and candidate['package']['fileCount']==154),'RUNTIME_PREVIOUS_PACKAGE_COUNT')
+        need(self.old==candidate['previousController'] and self.old.get('fileCount')==previous_count and
             (repeated or self.old.get('sourceCommit')==PREDECESSOR_COMMIT),'RUNTIME_CURRENT_BINDING')
         if repeated:
             need(continuation_dropin_pin is None and type(self.old.get('sourceCommit')) is str and
@@ -603,7 +632,7 @@ def _preservation_from_candidate(predecessor,host,candidate):
         for key in ('MINIO_ROOT_USER','MINIO_ROOT_PASSWORD')]+deepcopy(originals))
 
 
-def _verify_repeat_api(r,owner,old_owner,context,archive_owner_verification=None):
+def _verify_repeat_api(r,owner,old_owner,context,archive_owner_verification=None,*,predecessor_retry_native=None):
     """Keep unavailable predecessor HTTP evidence explicit; after stays strict."""
     state=r.get('beforeApiState');target=r['targetConfigRef'];old=r['candidate']['previousController']
     need(state in ('AVAILABLE','RETAINED_FAILURE_UNAVAILABLE'),'BEFORE_API_STATE')
@@ -611,11 +640,18 @@ def _verify_repeat_api(r,owner,old_owner,context,archive_owner_verification=None
         r['candidate'].get('schemaVersion')=='MainProgramTargetControlSuccessorCandidate/v3','ARCHIVE_OWNER_EXPLICIT_V3_CONTEXT')
     retry=activated._native_evidence(r,owner,allow_retained_retry=
         r['candidate'].get('schemaVersion')=='MainProgramTargetControlSuccessorCandidate/v3')
-    need(retry is None or state=='RETAINED_FAILURE_UNAVAILABLE','RETRY_RETAINED_FAILURE_REQUIRED')
+    if predecessor_retry_native is not None:
+        need(state=='AVAILABLE' and r['host']=='172.30.30.58' and
+            r['candidate'].get('schemaVersion')=='MainProgramTargetControlSuccessorCandidate/v3' and
+            r['candidate'].get('previousPackage',{}).get('fileCount')==154 and retry is not None and
+            retry['sourceConfigRef']==activated.activation.SOURCES[0] and
+            r['nativeBefore']==r['nativeAfter']==predecessor_retry_native,'PREDECESSOR_AVAILABLE_RETRY_NATIVE')
+    need(retry is None or state=='RETAINED_FAILURE_UNAVAILABLE' or predecessor_retry_native is not None,
+        'RETRY_RETAINED_FAILURE_REQUIRED')
     activated._api_selection(r['apiSelection'],target,admitted_source=None if retry is None else retry['sourceConfigRef'])
     if state=='AVAILABLE':
         need(r.get('retainedFailureAdmission') is None and context is None,'UNEXPECTED_FAILURE_ADMISSION')
-        activated._api_selection(r['originalApi'],target);return
+        activated._api_selection(r['originalApi'],target,admitted_source=None if retry is None else retry['sourceConfigRef']);return
     old_error=r['originalApi']=={'errorCode':'RECOVERY_NO_MUTATION_NOT_PROVEN'}
     if not old_error:
         activated._api_selection(r['originalApi'],target,available=False)
@@ -686,7 +722,9 @@ def _verify_target_successor_host(*,host,activation,predecessor,build,build_pin,
     repeated=any(v is not None for v in (build_raw,package_delta_review,package_delta_review_pin,package_delta_review_raw))
     planner.local_pin(build_pin);previous_build=json.loads(predecessor_build_raw.decode('utf-8'),object_pairs_hook=planner.document)
     count=_delta_payload_count(package_delta_review) if repeated else 153
-    package=_official_package(package_raw,build,payload_count=count);previous=_official_package(previous_package_raw,previous_build)
+    previous_count=_delta_previous_payload_count(package_delta_review) if repeated else 153
+    package=_official_package(package_raw,build,payload_count=count)
+    previous=_official_package(previous_package_raw,previous_build,payload_count=previous_count)
     wrapper=activation
     has_context=CONTINUATION_LOCAL in wrapper
     if has_context:
@@ -750,8 +788,14 @@ def _verify_target_successor_host(*,host,activation,predecessor,build,build_pin,
     for phase in ('before','after'):
         props=r[phase]['controllers'][-1]['properties']
         need(all(dependency in props[key].split() for key in ('Requires','After')),'SUCCESSOR_PRESERVATION_DEPENDENCY')
-    if repeated:_verify_repeat_api(r,owner,predecessor['targetOwners'][host],retained_failure_admissions.get(host),
-        None if archive_owner_verifications is None else archive_owner_verifications.get(host))
+    if repeated:
+        previous_retry=None
+        if package_delta_review.get('schemaVersion')=='MainProgramTargetControlPackageDeltaReview/v3':
+            native=predecessor.get('currentRetainedRetryNativeByHost',{})
+            need(type(native) is dict and set(native)<={'58'},'PREDECESSOR_AVAILABLE_RETRY_HOST')
+            previous_retry=native.get(host)
+        _verify_repeat_api(r,owner,predecessor['targetOwners'][host],retained_failure_admissions.get(host),
+            None if archive_owner_verifications is None else archive_owner_verifications.get(host),predecessor_retry_native=previous_retry)
     else:activated._native_and_api(r,owner)
     receipt=PurePosixPath(r['activationReceiptPin']['path']);parent=PurePosixPath(old['engine']).parent
     need(receipt.name=='result-activate.private.json' and receipt.parent.parent==parent and
@@ -779,7 +823,10 @@ def verify_target_successor_activations(*,predecessor,activations,build,build_pi
     need(type(retained_failure_admissions) is dict and set(retained_failure_admissions)<=set(HOSTS) and
         (repeated or not retained_failure_admissions),'FAILURE_ADMISSION_HOSTS')
     planner.local_pin(build_pin);previous_build=json.loads(predecessor_build_raw.decode('utf-8'),object_pairs_hook=planner.document)
-    package=_official_package(package_raw,build);previous=_official_package(previous_package_raw,previous_build)
+    count=_delta_payload_count(package_delta_review) if repeated else 153
+    previous_count=_delta_previous_payload_count(package_delta_review) if repeated else 153
+    package=_official_package(package_raw,build,payload_count=count)
+    previous=_official_package(previous_package_raw,previous_build,payload_count=previous_count)
     rows=deepcopy(predecessor['effectiveControllersByHost']);bindings=deepcopy(predecessor['controllerBuildBindings'])
     owners={};controls={};specs={};receipts=[]
     for host in HOSTS:
@@ -889,7 +936,7 @@ def _repeat_selection_chain(records,selection_file):
         chain.append((name,selection));reference=planner.local_pin(selection['predecessorSelectionPin'])
         need(reference['file'] not in seen,'SELECTION_CYCLE')
         selection=records.pinned(reference);name=reference['file']
-    need(selection.get('schemaVersion') in (activated.SCHEMA,SELECTION_SCHEMA),'PREDECESSOR_SELECTION')
+    need(selection.get('schemaVersion') in (activated.SCHEMA,SELECTION_SCHEMA,MIXED_SELECTION_SCHEMA),'PREDECESSOR_SELECTION')
     return name,list(reversed(chain))
 
 
@@ -898,16 +945,21 @@ def _bind_verified_current(result,wrappers):
     result['retainedFailurePinsByHost']={host:deepcopy(wrappers[host]['result'].get('retainedFailurePins',
         [wrappers[host]['result']['continuationFailurePin']] if 'continuationFailurePin' in wrappers[host]['result'] else []))
         for host in HOSTS}
+    result['currentRetainedRetryNativeByHost']={host:deepcopy(wrappers[host]['result']['nativeAfter'])
+        for host in HOSTS if wrappers[host]['result'].get('nativeAfter',{}).get('retainedRetryAdmission') is not None}
 
 
 def load_repeated_target_successor_installation(task,private,*,selection_file,historical_source_custody_pin=None):
     """Replay every pinned generation, preserving the historical v1 validators."""
     publication=activated.publication;records=contract.Records(task)
+    _bounded_target_ancestry(records,selection_file)
     root,chain=_repeat_selection_chain(records,selection_file)
     need(bool(chain),'REPEAT_SELECTION_REQUIRED')
     args={} if historical_source_custody_pin is None else dict(historical_source_custody_pin=historical_source_custody_pin)
     root_selection=records.read(root)
-    loader=activated.load_activated_target_installation if root_selection['schemaVersion']==activated.SCHEMA else load_activated_target_successor_installation
+    loader={activated.SCHEMA:activated.load_activated_target_installation,
+        SELECTION_SCHEMA:load_activated_target_successor_installation,
+        MIXED_SELECTION_SCHEMA:load_mixed_target_successor_installation}[root_selection['schemaVersion']]
     result=loader(task,private,selection_file=root,**args)
     need(result.get('selectionPin')==records.references[root],'SUCCESSOR_SELECTION_PREDECESSOR_PIN')
     pins=[];root_wrappers={}
