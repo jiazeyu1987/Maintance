@@ -16,9 +16,10 @@ from recovery_control_smallapp_native import Native
 pytestmark=pytest.mark.skipif(not sys.platform.startswith('linux'),reason='real Linux locks/program proof')
 
 
-@pytest.mark.parametrize('fault',['none','release_missing','release_wrong','worker_changed',
-    'exit_missing','exit_timeout','exit_request','wrong_reason','not_main','live_pid','boot','outer_exit'])
-def test_original_unknown_closes_only_from_released_same_program_failure(retained,tmp_path,fault):
+@pytest.mark.parametrize('fault,entry',[(fault,entry) for entry in ('refresh','reconcile') for fault in
+    ('none','release_missing','release_wrong','worker_changed','exit_missing','exit_timeout',
+     'exit_request','wrong_reason','not_main','live_pid','boot','outer_exit')])
+def test_original_unknown_closes_only_from_released_same_program_failure(retained,tmp_path,fault,entry):
     h=retained; e=h.e
     operation=tmp_path/'control-operation'; (operation/'execute').mkdir(parents=True,mode=0o700)
     request_pin=write(operation/'request.json',e.request)
@@ -59,8 +60,31 @@ def test_original_unknown_closes_only_from_released_same_program_failure(retaine
             assert value==e.request and selected==selection
             return e.root
     native=Routed.__new__(Routed)
+    if entry=='reconcile':
+        output=write(operation/'execute/stdout.log',{'launcher':'stdout protocol'})
+        error=write(operation/'execute/stderr.log',{'launcher':'stderr protocol'})
+        exited.update(stdoutPin=output,stderrPin=error)
+        if fault!='exit_missing':write(operation/'execute/native-original-exit.json',exited)
+        from recovery_control_smallapp import fingerprint
+        write(operation/'completion.json',dict(operationId=e.request['operationId'],
+            uiRequestSha256=fingerprint(e.request),selection=selection,
+            result=dict(schemaVersion='SmallAppBackupUiResult/v1',operationId=e.request['operationId'],
+                action='RESTORE',state='FAILED',errorCode='PROGRAM_EVIDENCE_RESULT_TERMINAL_INVALID'),
+            terminal=exited))
     before={p:p.read_bytes() for p in tmp_path.rglob('*') if p.is_file()}
-    reply=native.refresh_original(e.request,operation,selection)
+    if entry=='reconcile' and fault in ('exit_request','exit_missing'):
+        from recovery_control_smallapp import Failure
+        with pytest.raises((Failure,FileNotFoundError)):
+            native.reconcile(e.request,operation,selection)
+        assert all(p.read_bytes()==raw for p,raw in before.items())
+        return
+    reply=getattr(native,'refresh_original' if entry=='refresh' else 'reconcile')(e.request,operation,selection)
+    if entry=='reconcile' and fault=='not_main':
+        assert reply['state']=='FAILED'
+        assert reply['errorCode']=='PROGRAM_EVIDENCE_RESULT_TERMINAL_INVALID'
+        assert not (operation/'queries').exists()
+        assert all(p.read_bytes()==raw for p,raw in before.items())
+        return
     assert reply['state']==('FAILED' if fault=='none' else 'RUNNING')
     if fault=='none':
         assert reply['errorCode']=='PROGRAM_TEST_RETAINED'

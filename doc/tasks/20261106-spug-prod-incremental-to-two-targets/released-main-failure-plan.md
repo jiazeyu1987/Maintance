@@ -24,3 +24,15 @@ Trigger：已退出原操作外层未知但已有正式无变更释放。Preflig
 - 独立原resource-release回归14 PASS/36.954秒，原source模块，未冒充包认证。
 - mixed formal及候选来源失败、Docker关闭期间未执行的两份失败报告完整保留。Docker进程/服务均已退出且API named pipe消失，启动原本机Desktop后原18080/18081容器恢复；未重启远端、未重派业务POST。
 - 本次产品仅native控制文件修改；59项通过后可单独提交。整体真实新恢复/安装/融合/清理仍未完成。
+
+## 真实入口缓存失败续办
+
+c2bc8b8 已在57/58实际激活，原GET仍返回同错误。只读原件证明 completion.json 早已记录控制层 FAILED，terminal exit2；该缓存路径先调用 owner_result 严格校验外层，尚未进入新增 refresh_original，已有测试只覆盖直接 refresh。因此此前修复测试边界不完整，不能认定实际问题已解决。
+
+BDD：Given 原缓存FAILED、同一已退出MAIN外层UNKNOWN且正式无变更释放完整；When 真实 reconcile 查询；Then 走同一严格 refresh_original，投影原worker失败，原completion及所有原件保持。缺释放、原件漂移、错误操作/退出/PID等仍RUNNING或明确拒绝。其它缓存失败保持原 owner_result 校验，不改原终态。
+
+设计约束与经验门禁保持。先在既有真实Linux夹具增加 reconcile 场景并复现，再最小接入，原直接路径及相邻用例回归。仍只有同一native控制成员变化；产品须提交后新建独立构建worktree，正式包认证后才能安装。不在服务器直接改已安装代码或历史completion。
+
+- RED released-cached-native-red-r1：实际24项，11 FAIL、0 error/skip，13.094秒；缓存有效案例在 owner_result 抛 PROGRAM_EVIDENCE_RESULT_TERMINAL_INVALID，直接12项通过。额外修正两项既有拒绝合同的测试断言：原 request 绑定错误直接拒绝；非 MAIN 缓存失败保持原结果，均不得投影为成功或解除 MAIN 互斥。
+- 最小实现：仅已绑定的 MAIN 缓存 FAILED、指定控制层错误和严格整数 original exit2，转同一 refresh_original 全量验证；该入口继续验证 timeout、进程、原 result 和正式无变更释放，缓存原件不修改。
+- GREEN released-cached-native-green-r1：24 PASS，9.204秒；REGRESSION released-cached-native-regression-r1：24个直接/缓存场景及47个既有 native 场景，共71 PASS，9.688秒，均0 failure/error/skip。实际认证 SAFE 模块输入、运行时输入未变，隔离容器已移除；没有远端动作或业务写入。实际安装与真实 Spug 验证仍待完成。

@@ -1587,6 +1587,12 @@ class Native:
             if original['resultPin'] is not None:
                 executor.verify(original['resultPin'])
                 if program_owner and reply['state'] == 'FAILED':
+                    if (reply.get('errorCode') == 'PROGRAM_EVIDENCE_RESULT_TERMINAL_INVALID' and
+                            original['actualExitCode'] == 2):
+                        # Revisit this control-layer failure through the same
+                        # original-exit, process and released-program checks.
+                        # The cached failure and owner originals stay immutable.
+                        return self.refresh_original(value, operation_directory, selection)
                     # A cached control failure is not a bypass around its
                     # program owner's fixed result and complete history.
                     self.owner_result(value, original, selection=selection)
