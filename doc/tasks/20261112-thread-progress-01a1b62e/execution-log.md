@@ -62,3 +62,13 @@
 - EVIDENCE：现有v2失败续办与新capture pin尚须正式修复；此前实现已合入3f3e873且融合工作树已清理，不能外推为最新修复或真实恢复验收成功。
 - RESULT：已开始范围收敛，尚未交付收口，当前仍有直接缺陷返工；没有宣称已恢复或给出无依据完成率。
 - CLOSEOUT：只读审阅completed，无本任务worktree、服务器、业务或控制台动作；请求日志原有9行他项修改继续保留。
+
+## 2026-11-13 再次进度复核
+
+- 用户询问当前进度及是否开始收敛。先读取本任务状态completed和经验索引/PowerShell规则，继续同一审阅任务。
+- 意图：读取目标最新状态、消息及任务证据，核对实际恢复、剩余阻塞和收敛效果，不重复派发或访问服务器。
+- READ：wait_threads即时状态和read_thread最新turn均确认active/inProgress；本地公开task/execution-log及相关失败/诊断/旧格式计划交叉核对。
+- EVIDENCE：2717修复交付后af273/47a23523/764三次新恢复失败；764为MINIMAL_INPUT_CHANGED/PREPARATION、无业务mutation、未知终态false，正式同点续办PASS且新恢复未派。
+- EVIDENCE：94c5f51只补可定位诊断，不称根因已修复；首构包因core.autocrlf导致成员差异过大拒绝，最新消息为Git原字节重构包。历史兼容及SQL参考回放仍并行。
+- RESULT：范围约束存在但交付未收敛，最新真实恢复成功与数据/服务/页面验收仍缺，不给无依据完成率。
+- CLOSEOUT：本审阅completed，无新增跨对话消息或服务器/业务操作；仅更新四份本任务文档，请求日志既有9行其它任务改动保留。
