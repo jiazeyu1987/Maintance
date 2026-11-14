@@ -1,0 +1,23 @@
+{
+  "status": "PASS",
+  "scope": "read-only package bytes, manifest and AST review; no package execution or server operation",
+  "targetCommit": "52d0b1ecd0ab25187d0a09b684daa817f74fbfcb",
+  "package": "C:\\Spug\\runtime\\private\\prod-incremental-to-two-targets-20261106\\package-native-capacity-52d0b1e-r1\\backup-restore-standard.tgz",
+  "bytes": 899033,
+  "sha256": "f6767cf1f1d5df9335acc826df1b72d5f1e7977331700c552882cdb0e0047315",
+  "fileManifestSha256": "07fd0c22f9e4179cc0842123a2d48787cda065cf73f134f53f38716210870b6f",
+  "memberCount": 156,
+  "changedMembers": [
+    "common/recovery_data.py",
+    "common/recovery_main_target.py",
+    "common/recovery_minimal_worker.py",
+    "common/recovery_program_native.py",
+    "common/recovery_replace.py",
+    "common/recovery_target_capture.py",
+    "common/recovery_target_preservation.py"
+  ],
+  "allMemberDigestsMatch": true,
+  "capacityDispatchImplementationMatchesSource": true,
+  "installedVerified": false,
+  "realRestoreVerified": false
+}

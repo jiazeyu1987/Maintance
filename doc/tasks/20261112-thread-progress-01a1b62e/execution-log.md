@@ -166,3 +166,7 @@
 - RECHECK：用户再次询问逻辑是否正确；即时revision98和最新review-summary/execution-log核对。容量消费者Linux验证18 PASS/1 FAIL，失败为正式协议操作文件缺失，正在补载体；不得认定容量全流程已通过。旧d26的真实原件缺失仍独立阻塞实际恢复。
 - JUDGMENT：核心增量链模型合理；当前工程可靠性与失败闭环仍有缺口。安全拒绝符合当前规则，但缺证据后无正式接管是设计债；前置容量拒绝不等于恢复可用。原修改后检查任务保持in_progress，此次仅阶段答复，无新增服务器动作或重复派发。
 - VERIFY：独立只读核c66f28c实际STANDARD包大小/SHA、156个成员SHA以及AST诊断helper存在 -> PASS；读取实际包108项零失败回执。包不含未提交容量改动，未执行包代码或远端调用。
+- 用户再次明确要求通知指定线程修改、修改后本对话检查：沿原授权协调链发送最新两项缺口，保持新数据/I2到58范围和既有验收，不把缺证据现场接管误归为可无限后置的平台扩展；实际处理仍必须满足可验证安全边界。
+- SEND/ACK：发送成功返回指定threadId；revision101开发方明确确认两项交付，并承诺旧d26正式处置保留失败和原件、标明历史未知，不以当前状态证明从未覆盖。
+- CHECKPOINT：容量准入提交98cbfec，Linux r4报告150 PASS、0 fail/error/skip；独立读取实际提交确认preflight在intent写入前检查、按pending分别预留4MiB终态、finish释放为实际大小，未提高64MiB上限。该局部修复不证明当前规模的完整恢复；2MiB原件引用预算、pending stream全流程及旧失败处置仍需实际证据。最终新包正在构建，尚未判验收通过。
+- VERIFY：52d0b1e实际STANDARD只读核包SHA/大小、156成员摘要、manifest、预期七成员差异，以及native/target_capture和data真实派发方法AST -> PASS；结果写package-review-52d0b1e.json。无代码执行、服务器写入或产品变更；等待真实规模和旧现场正式处置。
