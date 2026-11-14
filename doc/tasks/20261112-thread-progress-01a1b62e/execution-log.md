@@ -201,3 +201,9 @@
 
 - 前轮追加审阅：capture-hotpath-dev-r1已有投影/同轮挂载复用/集中SQL草稿；ProtectedContentRead按单对象scope尚未证明大量小对象轮数可接受，已向开发线程反馈同工作量实测及必要跨对象批次，工具确认投递。挂载去重在当前58 inactive/preserved均0，不能计为本次实际节省。native-segment-linux-r1实际74PASS/1FAIL，失败为非法terminal被拒后snapshot抛PROGRAM_DOCUMENT_CHANGED；无完整回归通过证据。尝试读取不存在的result.xml返回失败后，改从实际stdout.log/result.json核对，未伪称取得XML。
 - 用户中途状态查询：上一等待cell已不存在；新即时revision130与最近7项实际消息/命令表明正核58旧控制配置、引擎路径和安装身份，完成接管验证与安装准备；目标自述局部性能检查已通过，尚无新安装/真实恢复。总体仍in_progress。UTF-8及精确diff验证后仅提交本任务记录和共享日志本轮一行，保留9行他人改动。
+
+- 2026-11-15重复检查复审：先记录范围与门禁，随后只读即时目标与已提交/在改代码，不沿用昨日缺陷判今日状态；不操作服务器或新增产品范围。
+- 核对capture-release-integration-r1 HEAD a327d21及暂存代码，逐层审阅target_preservation、program_native、target_capture、program_protection、capture_read、capture_sql、formal_data_evidence和数据库观察；独立读取既有58只读性能JSON，确认26→10条/约40.15%组件耗时下降，完整本地保护未计入。源码与既有测试回执均非本对话重新执行恢复或Linux测试。
+- 新发现与调用链位置已写modification-review.md并沿既有授权发送原开发线程；发送工具PASS，最新wait revision133明确接受，整体仍inProgress。分段75PASS/1FAIL和Docker故障分别记录，未以环境故障掩盖代码缺口。
+- 工具边界：read_thread两轮超大返回失败后改读最近一轮及compact快照取得当前消息；未宣称全历史审阅。git全局status输出过大后改为仅当前四份文档的差异与空暂存区核对；未处理无关改动。
+- 本轮文档验证：四份文档UTF-8严格解码、无BOM/替换字符及git diff --check PASS；暂存区起始为空，共享请求日志分为本轮1行与其他任务9行两个独立hunk，仅精确暂存本轮记录。此为阶段审阅提交，原最终恢复验收未完成。

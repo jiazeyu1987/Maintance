@@ -114,3 +114,17 @@ in_progress：已派发并获开发线程确认，等待修改完成后核验。
 
 - 热路径草稿继续审查：按角色投影、同轮挂载复用、集中数据库观察已有实现但尚待主流程/实际STANDARD接线；已反馈单对象16MiB scope可能无法摊薄大量小对象的完整检查，要求以实际分布证明或按授权采用跨对象有界批次。当前58 inactive/preserved均0，该条件分支去重仅合同收益。分段首次联合回归74PASS/1FAIL，原失败保留，未作整体通过结论。
 - 最新revision130：开发线程正完成剩余接管验证和安装准备；最新实际命令提取58当前恢复控制配置、引擎路径与版本pins。局部性能通过为对方最新进度报告，当前未据此宣称完整性能、安装或真实恢复成功。此前130项接管基础回归已独立核证，完整功能仍待交付，原审阅in_progress。
+
+## 原地恢复与重复检查再次复审（2026-11-15）
+
+- 版本与证据边界：即时revision131至133仍inProgress。本轮主要审阅私密根目录prod-incremental-to-two-targets-20261106下capture-release-integration-r1，HEAD a327d21加正在暂存的集成修改；integration-20261112-r5仍98cbfec，已核实际封包52d0b1e、既有安装2ac4b37。不能把当前暂存源码视为最终封包或服务器运行版本。审阅端不执行服务器操作和恢复。
+- 方向：现有58实例核新FULL/I1/I2完整链、持续停写保护、一次完整当前状态保全、导入全量和顺序增量、恢复对象并核引用、启动和页面验收，符合用户最小目标。保全服务于现有目标的可恢复性；取消旧格式兼容不等于允许丢弃现有测试数据。旧d26须保留未知事实并做最小安全接管，不能无限扩大成通用历史兼容或新机部署项目。
+- 已有实质改进：全宿主容器按角色投影并同轮复用；五条SQL同连接保持语句边界（直接合并成单条SELECT曾引入自身事务计数问题，已纠正）；对象读取已是跨对象有界批次，通常每批至多64对象、16MiB，时间段30秒，单个大对象另受分段边界约束。不能继续把昨日单对象scope问题说成当前尚未修改。命令证据已采用有界分组，不把旧无限扩展问题重复计入。
+- 独立核真实58只读组件对照capture-guard-real58-r3.private.json：三轮baseline平均3.870867秒、26条远端命令，candidate平均2.316647秒、10条，约降40.15%；同轮观察摘要相等、远端写入为0。baseline是当前函数禁用观察复用的对照，不是历史安装版本重放。fullMainTargetCaptureGuard=false，未包含完整本地custody/context/claim/budget等成本，不能外推完整恢复提速。当前58为MAIN/v1、storage/v2，部分挂载复用分支不能计为此次实际收益。
+- 明确重复一，优先处理证据收尾：recovery_target_preservation.py的_publish在838调用context.snapshot()，该函数于recovery_program_native.py:611–628遍历全部segments并读取terminal/pending文档；紧接着_publish:843–849再次iter_rows并读取terminal文档，而且每条记录调用session.guard()。后者达到节流条件会发远端检查，审计旧命令时又增加新命令。并非断言无限循环，但重复全读及逐记录保护成本随记录数量增长。建议一次严格流式校验同时产出摘要和成功状态，遍历中用轻量本地检查，前后边界完成必要保护验证；不能仅信摘要、吞掉UNKNOWN或删掉唯一一次原始完整校验。
+- 明确重复二，失败路径：同文件capture_and_publish:761取得context.snapshot()，769又调用session.snapshot()，后者recovery_target_capture.py:588再次context.snapshot()；在这两次调用之间无必要远端状态迁移，造成相同证据全量重读。应同一失败收尾内复用已验证快照和捕获状态，发生变更则失效。handoff前后有真实租约状态迁移，两侧快照不能一概删除。
+- 本地检查仍有重叠，实际耗时尚未量化：recovery_target_capture.guard:433先执行check、view.guard_native、custody._validate才进入轻量scope分支。recovery_program_protection._validate:335–356又对固定输入逐个_input校验，_input:312–333会完整读文件算SHA，_verify_journals:358–377还读取证据记录；recovery_capture_read._binding:51和formal_capture_semantics._read_content:550–552在块前后继续嵌套上述检查。不能因无SSH就当作廉价内存检查，也不能把未知大小的输入夸大为大包全读。应先量化同工作量完整guard中的本地文件读取和校验次数，再在持续租约及变化失效约束下消除同回调/同批次重复；保留初始完整性和必要持续变化监测。
+- 明确重复三，数据库身份：recovery_replace.verify_services:178独立native.database_uuid()，同轮MainTargetCapture.guard:474集中数据库观察仍查@@server_uuid。可在捕获轮次复用同一次有效观察并调整顺序，保留其他调用路径的默认校验，不能删除身份判断。
+- 条件化优化，避免扩范围：recovery_capture_sql._boundary:77–85及表scope进入/退出分别完整guard，formal_data_evidence._observe_data:367–386逐表使用。小表很多时远端保护轮数仍可能偏高，可在现有受保护边界内做有界批次，但应先量化；表行数、逻辑摘要、schema前后校验是不同语义，不因多条检查就删除，也不把这项后续优化变成无限追加验收前置。
+- 回归和环境分别报告：开发证据native-segment-linux-r14为75通过、1失败、0跳过，失败涉及pending证据在保护范围外的处理；尚未取得修复后的完整通过回执。开发线程另报告本机Docker客户端崩溃和只读info超时，已暂停重型测试；这只能解释当前测试受阻，不能解释全部历史耗时。新包安装及真实新I2到58恢复仍无完成证据。
+- 已沿用户既有明确授权发送上述具体位置、去重语义、成本计量和不扩范围要求。工具确认投递，revision133开发方明确接受，优先核实审计时再产生检查命令、失败重复扫描，并分别计量本地检查和UUID读取；发送与接受均不算修复完成。此轮评审完成，原修改后独立验收继续in_progress。
