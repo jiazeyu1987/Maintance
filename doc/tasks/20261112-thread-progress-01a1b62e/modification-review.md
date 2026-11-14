@@ -111,3 +111,6 @@ in_progress：已派发并获开发线程确认，等待修改完成后核验。
 - 独立查看相关任务工作树后，e958476已在unresolved-takeover-dev-r1提交基础合同与预约交接；native-scale-dev-r1尚有分段生产/消费未提交修改，受限installer尚未集成。主源码98cbfec、发布线52d0b1e不变。此为阶段快照，非最终交付集合。
 - e958476只读初审：授权/preview保持oldOutcome=UNKNOWN、historicalCompletenessProven=false、restorePermitted=false；只由真实请求绑定新operation，消费目录排他、原物理锁与host mutex下原子替换active，无清空窗口；不补写旧成功。当前静态材料不能产生_LiveAdmission，实时观察、epoch接管、受限capture及完整保全/恢复接线明确仍未完成。未发现所读基础部分直接绕过覆盖权限，但不得将此解读为整个接管安全验收已通过。
 - 独立读取private/unresolved-takeover-core-regression-core-r1/result.xml：130 tests、0 failures/errors/skipped，4.658秒；result.json exitCode=0、containerRemoved=true。只证明已有局部Linux回归回执，不是本对话重跑，不证明真实新包安装或业务恢复。原独立验收保持in_progress。
+
+- 热路径草稿继续审查：按角色投影、同轮挂载复用、集中数据库观察已有实现但尚待主流程/实际STANDARD接线；已反馈单对象16MiB scope可能无法摊薄大量小对象的完整检查，要求以实际分布证明或按授权采用跨对象有界批次。当前58 inactive/preserved均0，该条件分支去重仅合同收益。分段首次联合回归74PASS/1FAIL，原失败保留，未作整体通过结论。
+- 最新revision130：开发线程正完成剩余接管验证和安装准备；最新实际命令提取58当前恢复控制配置、引擎路径与版本pins。局部性能通过为对方最新进度报告，当前未据此宣称完整性能、安装或真实恢复成功。此前130项接管基础回归已独立核证，完整功能仍待交付，原审阅in_progress。

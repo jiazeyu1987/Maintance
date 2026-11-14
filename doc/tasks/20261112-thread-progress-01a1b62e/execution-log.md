@@ -198,3 +198,6 @@
 
 - 消息投递PASS，跟踪到revision126仍inProgress；只读核当前主/发布HEAD、相关子工作树及新验收计划。只读初审e958476基础授权/独占预约交接，核真实JUnit130/0fail/0error/0skip和exit0原件；剩余实时观察/保全/恢复接线与性能优化未完成，未提前验收。无产品、服务器或工作树生命周期写操作。
 - 阶段文档核验：UTF-8严格解码与git diff --check PASS；精确提交本任务记录和共享日志本轮一行，原9行其他任务修改保留。当前仅检查点提交，整体保持in_progress。
+
+- 前轮追加审阅：capture-hotpath-dev-r1已有投影/同轮挂载复用/集中SQL草稿；ProtectedContentRead按单对象scope尚未证明大量小对象轮数可接受，已向开发线程反馈同工作量实测及必要跨对象批次，工具确认投递。挂载去重在当前58 inactive/preserved均0，不能计为本次实际节省。native-segment-linux-r1实际74PASS/1FAIL，失败为非法terminal被拒后snapshot抛PROGRAM_DOCUMENT_CHANGED；无完整回归通过证据。尝试读取不存在的result.xml返回失败后，改从实际stdout.log/result.json核对，未伪称取得XML。
+- 用户中途状态查询：上一等待cell已不存在；新即时revision130与最近7项实际消息/命令表明正核58旧控制配置、引擎路径和安装身份，完成接管验证与安装准备；目标自述局部性能检查已通过，尚无新安装/真实恢复。总体仍in_progress。UTF-8及精确diff验证后仅提交本任务记录和共享日志本轮一行，保留9行他人改动。
