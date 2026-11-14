@@ -74,3 +74,11 @@ in_progress：已派发并获开发线程确认，等待修改完成后核验。
 - 材料合同包含数据库SQL、对象内容/物理载荷、原程序镜像及恢复元数据；实际STANDARD recovery_capture_materials.py:180生成original-application-images.tar、:206生成database.sql.gz。凭据有独立引用且:167拒绝作为普通material归档，不能把备份当作包括凭据/操作系统/宿主机配置的整机镜像。具体新目标必须准备和登记运行环境、隔离数据卷、目标身份、网络与安全配置和可用凭据。
 - 当前真实UI预览证据main-three-target-preview-startup-r3.json确认的是既有MAIN三服目标；当前MAIN程序装载/派生/保全入口属于replacement流程。代码有execute_empty不证明当前MAIN全量包到任意新实例的程序部署、配置映射和真实登录均已打通，未找到该新空目标验收证据，故不宣称现在即可一键换机恢复。
 - 判断：现有全量是空目标重建可复用的备份基础；若仅恢复全量对应时点，不需要后续I1/I2；若要到I2时点仍需完整连续链。无需因旧目标保全失败就认定全量包不可用或重复备份。下一验证应是登记独立空目标并用该全量实际恢复，核数据、附件、程序和页面；本轮仅核能力，没有执行或改派该验证。旧失败现场保持，原I2→58修改验收仍未完成。
+
+## 增量备份点到全新机器的能力结论
+
+- 独立读取实际2ac4b37 STANDARD：recovery_minimal_plan.selected_chain:53–122从选中点递归parent，强制完整父前缀、同源/同代次、日志结束位置与下一开始位置连续，并校验对象链。选I2会得到FULL/I1/I2，不是只导入I2文件。
+- 当前新I2成功摘要已核：e7b668的parent为20a1bb、baseFull为3c2395、chainDepth=2、SUCCEEDED_VERIFIED；其restoreDispatched=false明确仅为备份成功证据。
+- 空目标入口execute_empty接收同一个selected_chain，按顺序先full_database再incremental_database，随后恢复对象链和跨存储一致性、Redis与应用启动。因此数据引擎已具备在空目标重建到增量点的组合能力，不要求目标预存旧业务数据。
+- target_configuration:125–150仍要求已登记目标身份、Docker/network/services、隔离数据路径、程序配置和secrets；新机器并非任意裸机。完整全量及所有中间增量、对象内容和所需元数据必须可读，不能跳过缺段或只搬增量包。
+- 当前MAIN包到一台全新机器的部署/路径与凭据迁移、真实恢复和页面验收尚无完整成功证据，不能将底层组合能力说成已交付的一键换机功能。本轮仅回答能力边界，不扩大原I2到58任务，不执行恢复。
