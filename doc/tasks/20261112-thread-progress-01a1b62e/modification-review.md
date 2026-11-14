@@ -102,3 +102,12 @@ in_progress：已派发并获开发线程确认，等待修改完成后核验。
 - 已修项不重复计错：候选_CaptureServiceObservation已将目标角色inspect合并并在同轮复用，writer process/event count已合并为一条SQL；这些尚不能证明整条恢复已提速。Redis CONFIG/ACL/CLIENT等不同语义检查不能只因使用同一服务就当重复删除。
 - 必须保留：目标及实际可写目录/挂载身份、受保护目录不重叠、其他容器共享存储检查、源链及内容完整性、真实停写与持续保护、覆盖边界重验、最终数据库/附件/引用及页面验证。已有完整读回的有效证据应复用，不追加相同输入的独立全读。
 - 已按原授权将以上具体位置与条件反馈指定开发线程，工具确认投递；不等于开发已经修改或验收通过。当前审阅结论：技术方向合理、执行粒度和采集量过重；正在实施的优化方向合理，最终仍待实际安装和真实I2到58恢复、阶段耗时/命令数/读取量证据。原独立验收保持in_progress。
+
+
+## 再次明确修改授权后的跟踪（2026-11-14）
+
+- 已向原threadId发送四项明确实施要求：全宿主必要字段与同轮inspect合并、受保护批次、同轮挂载观察去重、数据库查询传输合并；保留原新I2到58最小范围和真实验收。工具确认投递；revision124–126仍inProgress，不将发送当修改完成。
+- 读取新i2-test58-final-acceptance-plan：明确完整FULL/I1/I2三步、真实Spug单次请求、严格新终态与数据库/对象引用/服务/实际登录页面；旧固定两步验证脚本不直接用作此次成功证明。计划无实际新恢复结果。
+- 独立查看相关任务工作树后，e958476已在unresolved-takeover-dev-r1提交基础合同与预约交接；native-scale-dev-r1尚有分段生产/消费未提交修改，受限installer尚未集成。主源码98cbfec、发布线52d0b1e不变。此为阶段快照，非最终交付集合。
+- e958476只读初审：授权/preview保持oldOutcome=UNKNOWN、historicalCompletenessProven=false、restorePermitted=false；只由真实请求绑定新operation，消费目录排他、原物理锁与host mutex下原子替换active，无清空窗口；不补写旧成功。当前静态材料不能产生_LiveAdmission，实时观察、epoch接管、受限capture及完整保全/恢复接线明确仍未完成。未发现所读基础部分直接绕过覆盖权限，但不得将此解读为整个接管安全验收已通过。
+- 独立读取private/unresolved-takeover-core-regression-core-r1/result.xml：130 tests、0 failures/errors/skipped，4.658秒；result.json exitCode=0、containerRemoved=true。只证明已有局部Linux回归回执，不是本对话重跑，不证明真实新包安装或业务恢复。原独立验收保持in_progress。
