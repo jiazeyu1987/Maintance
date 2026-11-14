@@ -159,3 +159,10 @@
 - SEND：send_message_to_thread成功返回指定threadId，传达四项修改、后置范围和集中交付证据要求。
 - ACK：wait_threads revision16明确回复按四项收敛，根因尚未确认、真实恢复须等待正式失败处理，真实查询对照中位数约0.50秒到0.25秒只是局部改善。
 - REVIEW-PREP：只读当前integration-20261112-r5 HEAD=9614f9f及三个未提交生产文件diff，建立modification-review.md验收表；此为准备，不是最终代码通过或恢复成功结论。
+- CHECK：实际Linux r3回执82项通过/零失败错误跳过，摘要仍BLOCKED_FOR_REAL_RESTORE，最新a440513提交本轮去重与诊断；尚无最新实际包安装和新恢复。
+- FEEDBACK：已向开发线程澄清mutation不等同业务覆盖，要求区分已知停写/服务/保护变更和未知调用，提供最小正式解除条件；对方明确接受措辞，已见变更为停服务、只读和MinIO启动，不能因终结回执缺失断言历史完整。
+- FINDING：独立只读源码确认recovery_program_restore的64MiB native汇总写入先于custody/terminal receipt，_write_once超限抛出，异常收尾也复用同一路径。结合原日志至少78,151,751B记录量，要求验证该直接收尾边界；不推断它是最初OSError根因。消息已投递，等待修复或证据。
+- FOLLOW-UP：开发方接受容量缺口，正实现命令派发前容量准入及终态空间预留，未提高上限、未删记录。实际包曾缺新诊断helper，已由c888737修复；发布分支c66f28c实际STANDARD 108项通过，尚未安装。
+- RECHECK：用户再次询问逻辑是否正确；即时revision98和最新review-summary/execution-log核对。容量消费者Linux验证18 PASS/1 FAIL，失败为正式协议操作文件缺失，正在补载体；不得认定容量全流程已通过。旧d26的真实原件缺失仍独立阻塞实际恢复。
+- JUDGMENT：核心增量链模型合理；当前工程可靠性与失败闭环仍有缺口。安全拒绝符合当前规则，但缺证据后无正式接管是设计债；前置容量拒绝不等于恢复可用。原修改后检查任务保持in_progress，此次仅阶段答复，无新增服务器动作或重复派发。
+- VERIFY：独立只读核c66f28c实际STANDARD包大小/SHA、156个成员SHA以及AST诊断helper存在 -> PASS；读取实际包108项零失败回执。包不含未提交容量改动，未执行包代码或远端调用。
