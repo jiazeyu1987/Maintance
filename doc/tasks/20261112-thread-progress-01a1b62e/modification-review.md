@@ -128,3 +128,15 @@ in_progress：已派发并获开发线程确认，等待修改完成后核验。
 - 条件化优化，避免扩范围：recovery_capture_sql._boundary:77–85及表scope进入/退出分别完整guard，formal_data_evidence._observe_data:367–386逐表使用。小表很多时远端保护轮数仍可能偏高，可在现有受保护边界内做有界批次，但应先量化；表行数、逻辑摘要、schema前后校验是不同语义，不因多条检查就删除，也不把这项后续优化变成无限追加验收前置。
 - 回归和环境分别报告：开发证据native-segment-linux-r14为75通过、1失败、0跳过，失败涉及pending证据在保护范围外的处理；尚未取得修复后的完整通过回执。开发线程另报告本机Docker客户端崩溃和只读info超时，已暂停重型测试；这只能解释当前测试受阻，不能解释全部历史耗时。新包安装及真实新I2到58恢复仍无完成证据。
 - 已沿用户既有明确授权发送上述具体位置、去重语义、成本计量和不扩范围要求。工具确认投递，revision133开发方明确接受，优先核实审计时再产生检查命令、失败重复扫描，并分别计量本地检查和UUID读取；发送与接受均不算修复完成。此轮评审完成，原修改后独立验收继续in_progress。
+
+## 明确修改授权后再次核验（2026-11-15，revision136）
+
+- 上轮用户明确要求修改后检查，四项正式指令已成功投递；实际线程记录已分别安排证据扫描/本地成本和UUID去重。中途再次问方向，沿原任务审查，不重派相同指令、不新建任务、不执行服务器动作。上一等待cell因中断已不存在，改取即时revision136与最近实际消息。
+- 最新实现仍为capture-release-integration-r1 HEAD a327d21加集成修改，已与上一轮出现明确差异。保全成功收尾recovery_target_preservation.py:837–844改为前边界完整guard、snapshot(require_success=True, guard=scan_guard, after_scan=...)一次严格扫描；扫描中只作本地检查，后边界新增的有限命令尾部另行校验。recovery_program_native.py:611–663对原件成功状态、实际exitCode、完整性失败、扫描期间追加、尾部上限和后边界失败均做拒绝处理，尾部live_row重新读terminal原件，不能再将昨日双重全遍历和逐记录远端guard当作尚未修复。
+- 失败路径recovery_target_preservation.py:761–769只取一次context.snapshot并结合session._unknown，不再调用session.snapshot造成第二遍扫描。跨真实handoff变化的快照仍保留，未误删变化后的验证。
+- UUID去重已经接入：recovery_replace.py:158–191仅在正式capture且绑定同轮观察时使用CaptureDatabaseObservation.for_round；recovery_target_capture.py:469–477同轮取得同一对象。helper:38–65拒绝失败轮重建、校验原native及观察生命周期，parse仍核databaseUuid；非capture保留独立database_uuid。未简单删除数据库身份验证。
+- 本地去重已部分落实：MainTargetCapture.guard:433不再直接重复session.check，因view.guard_native内已执行；custody._validate移至scope分支后，内容/SQLscope内由lease._guard执行一次。新增test_capture_local_guard_dedup覆盖单回调一次session/custody、下一回调重新验证、异常传播、scope身份/序号/期限和force分支。这不是跨批次长期缓存。
+- 仍可优化但需成本证据：ProtectedContentRead.before_read/after_read各做scope.check，内容读取函数块前后另调用guard；每次scope._binding仍经过lease._guard→custody._validate，对固定输入SHA和日志读取。单次guard内去重不等于每1MiB块只校验一次；不能把这些全部说成已消除，也不能未经持续变化保护证明直接删除。逐表scope前后完整guard仍在，属于可量化的频率疑点，优先完成现有本地成本测量及最小恢复，不无限扩范围。
+- 独立读取capture-guard-real58-r5.private.json：三轮远端组件调用均26→9，平均3.965837→2.173243秒，约下降45.20%，观察摘要完全相同，remoteWrites=0，fullMainTargetCaptureGuard=false。对照为当前函数关闭复用，不是历史安装版重放，不代表整条恢复提速45%。新test_native_local_guard_cost测真实Linux本地文件/锁/监视，但远端准备是声明的协议fixture，不是完整测试服保护证明；本轮未取得其测量完成回执，r16结果目录尚未生成。
+- 实际最近命令显示单次扫描及segment context两文件pytest退出0，线程报告修正object.__new__夹具缺失_takeover后19项通过；未以此证明Linux全链通过。r15记录77PASS/1setupERROR，原pending失败场景已通过，剩余SQL夹具导入修复待重跑，不再沿用r14旧失败当当前缺陷。Docker只读查询已自然恢复，未重启Docker或服务器；原崩溃/超时保留，不能继续把基础设施故障说成当前唯一阻塞。
+- 结论：原地保全后按新FULL/I1/I2恢复的方向仍合理，已开始在代码层面收敛；四项问题有实际修复，其中本地检查粒度和完整成本仍待验证。现有已验证封包52d0b1e、安装2ac4b37，尚未发起新的真实恢复；最终提交/封包/安装和同一I2到58成功仍待独立验收。用户当前咨询已复核，原修改后审阅继续in_progress。
