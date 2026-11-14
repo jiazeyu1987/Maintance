@@ -48,3 +48,12 @@ in_progress：已派发并获开发线程确认，等待修改完成后核验。
 - 已独立读提交：真实command/import/stream入口在intent写入前核容量；每个pending预留现有4MiB文档上限，finish用实际大小回收额度，同轮不反复编码全历史；总量64MiB、原件引用2MiB。正常容量拒绝的终态路径已获得局部证据，pending stream全生命周期、所有非native聚合以及当前规模是否能完成仍未证明。
 - 等待新容量修复实际包及旧失败处置实现。c66f28c旧候选的既有验证继续有效，但不用于冒称新代码已打包或安装；总体检查保持in_progress。
 - 新候选52d0b1e的独立只读检查通过：899033字节，SHA256 f6767cf1f1d5df9335acc826df1b72d5f1e7977331700c552882cdb0e0047315；156个文件摘要与manifest一致，相对已安装旧版仅七个预期成员改变。AST核native/target_capture及data的command/import_sql与发布源码一致，容量派发入口确实进入STANDARD。证据见package-review-52d0b1e.json；未执行包代码，尚不代表安装或恢复成功。
+
+## 四万多条命令的原因核对
+
+- 独立读取原2ac4b37实际STANDARD包代码：formal_capture_semantics._read_content在对象读取前及每个1MiB块读取前后调用guard；MainTargetCapture.guard非force时只在距上轮完成不足0.5秒时省略远端检查。stream开始和完成使用force=True。
+- 一次完整guard串行调用verify_services、verify_runtime、application_runtime_inputs、verify_writer_quiescence及保护lease.verify；多个函数再次inspect同一服务，旧writer校验分别执行两条SQL，Redis继续查询身份、CONFIG、ACL、CLIENT，另有网络、调度器及已发布端口规则核对。小粒度数据回调与整套远端检查耦合，同轮重复采集进一步放大命令数量。
+- 既有d26-command-distribution-r1统计独立重算：43922条native、26种argv指纹，其中18种重复指纹包含43914条命令；全部已见终态SUCCEEDED。记录里的命令累计耗时11822.213371秒（约3小时17分），是命令计时累计，不能直接冒充完整壁钟耗时分解；也不说明这些相同命令全部可取消。
+- 更正表述：capture-000754.bin是捕获临时文件序号，不能作为754个附件成功恢复的证明。该阶段仍是覆盖前保全；现有704内容文件还涉及内容去重。此次解释不改变历史覆盖完整性未知及原OSError原因未知结论。
+- 结论：主要放大来自检查调用粒度与重复采集设计，不能简单归因附件数；新候选已解决部分同轮重复，但完整5916对象与失败终态预算仍待证明。用户追问已答复，原修改后独立验收继续。
+- 用户再问是否已修复：即时核integration HEAD仍98cbfec，产品目录无未提交变化；guard:391仍0.5秒，块级回调未改。判断为部分修复，尚未解决或验证大量轮次开销。revision116确认仅在评估分段证据和旧现场正式接管；分段容量处理不能替代性能修复。已再次要求两项分别交付：降低冗余调用并以同工作量计数/耗时验证、有界证据保证正常和失败收尾；新包未安装/完整恢复未验收。
