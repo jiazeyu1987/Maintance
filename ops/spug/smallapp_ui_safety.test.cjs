@@ -82,6 +82,20 @@ test('selection and automatic routes have bounded 60 second deadlines without ch
   }
 });
 
+test('only prepare preview POST gets an 85 second deadline while preparation submission stays at 20 seconds',async()=>{
+  const p=page(),{timers,cleared}=requestTimers(p);
+  p.context.fetch=async()=>({ok:true,json:async()=>({})});
+  for(const [url,body,milliseconds] of [
+    ['/prepare-target/preview',{applicationId:'app',recoveryPointRef:'point'},85000],
+    ['/prepare-target/preview',undefined,20000],['/prepare-target/preview-other',{},20000],
+    ['/prepare-target/operations',{},20000],['/prepare-target/operations/prepare-original',undefined,20000],
+  ]){
+    await p.requestApi(url,body);
+    assert.equal(timers.at(-1).milliseconds,milliseconds,url);
+    assert.equal(cleared.at(-1),timers.at(-1),url);
+  }
+});
+
 test('selection deadline covers the real response body and clears stale admission after abort',async()=>{
   const p=page(),{timers,cleared}=requestTimers(p);
   let bodyReady;

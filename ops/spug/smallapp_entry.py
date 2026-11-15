@@ -351,6 +351,8 @@ def reserve_locked(request, config, bridge, user_id, root, display_context_facto
         record = adapter.read_json(path)
         need(record.get('request') == request, 'OPERATION_ID_REQUEST_REUSE_REJECTED')
         return record, False
+    import prepare_target
+    prepare_target.block_while_preparing(request)
     # An unknown original cannot be bypassed by generating another operation ID.
     for prior_path in Path(root).glob('*.json'):
         prior = adapter.read_json(prior_path)
@@ -643,7 +645,17 @@ def handler():
         def do_GET(self):
             try:
                 self.authorize()
-                if self.path == '/simple-config':
+                if self.path.startswith('/prepare-target/'):
+                    import prepare_target
+                    if self.path == '/prepare-target/config':
+                        self.reply(200, prepare_target.public_configuration())
+                    elif self.path == '/prepare-target/history':
+                        self.reply(200, prepare_target.history())
+                    elif self.path.startswith('/prepare-target/operations/') and self.path.count('/') == 3:
+                        self.reply(200, prepare_target.query(self.path.rsplit('/',1)[1]))
+                    else:
+                        raise adapter.Refused('ENTRY_ROUTE_UNKNOWN')
+                elif self.path == '/simple-config':
                     import smallapp_simple
                     self.reply(200, smallapp_simple.public_configuration())
                 elif urlsplit(self.path).path == '/incremental-plan':
@@ -703,7 +715,8 @@ def handler():
         def do_POST(self):
             try:
                 user_id = self.authorize(edit=True)
-                need(self.path in ('/operations', '/automatic-incremental', '/cancel-unaccepted', '/recover-reserved'), 'ENTRY_ROUTE_UNKNOWN')
+                need(self.path in ('/operations', '/automatic-incremental', '/cancel-unaccepted', '/recover-reserved',
+                                   '/prepare-target/preview', '/prepare-target/operations'), 'ENTRY_ROUTE_UNKNOWN')
                 need(not self.headers.get_all('Transfer-Encoding', []), 'ENTRY_BODY_INVALID')
                 sizes = self.headers.get_all('Content-Length', [])
                 need(len(sizes) == 1 and re.fullmatch('[0-9]+', sizes[0]), 'ENTRY_BODY_INVALID')
@@ -715,6 +728,13 @@ def handler():
                     value = json.loads(raw.decode('utf-8'))
                 except (UnicodeError, ValueError):
                     raise adapter.Refused('ENTRY_BODY_INVALID') from None
+                if self.path.startswith('/prepare-target/'):
+                    import prepare_target
+                    if self.path == '/prepare-target/preview':
+                        self.reply(200, prepare_target.preview(value))
+                    else:
+                        self.reply(202, prepare_target.submit(value, user_id))
+                    return
                 if self.path == '/automatic-incremental':
                     validate_automatic_incremental_intent(value)
                     path = record_path(value['operationId'])

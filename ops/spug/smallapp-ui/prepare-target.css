@@ -1,0 +1,7 @@
+#prepare-target-field{margin-top:22px;padding-top:18px;border-top:1px solid #edf0f4}
+#prepare-target-progress-section{margin-top:24px;padding-top:12px;border-top:1px solid #edf0f4}
+#prepare-target-progress-section .execution-heading{margin-bottom:12px}
+#prepare-target-confirm label{display:flex;align-items:flex-start;gap:8px;font-size:13px;line-height:1.7}
+#prepare-target-confirm input{flex:none;width:auto;margin-top:4px}
+#prepare-target-summary{max-height:45vh}
+#prepare-target-progress-section[hidden],#prepare-target-field[hidden]{display:none}

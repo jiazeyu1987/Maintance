@@ -40,7 +40,7 @@ services:
       - service:/data/spug
       - repositories:/data/repos
       - ./:/opt/intruoyi-spug:ro
-      - ${SPUG_PRIVATE_DIR:?private directory required}:/run/intruoyi-spug:ro
+      - ${SPUG_PRIVATE_DIR:?private directory required}:/run/intruoyi-spug
       - integration_records:/var/lib/intruoyi-spug
     depends_on:
       db:

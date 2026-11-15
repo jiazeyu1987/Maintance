@@ -147,7 +147,9 @@ async function api(path, body){
   const planning=method==='GET'&&path.split('?')[0]==='/incremental-plan'||method==='POST'&&path==='/automatic-incremental';
   // Selection reads share a 50 s bridge budget; ordinary operations keep 20 s.
   const selections=method==='GET'&&path.split('?')[0]==='/selections';
-  const controller=new AbortController(), timer=setTimeout(()=>controller.abort(),planning||selections?60000:20000);
+  // Preparation preview has a 75 s upstream budget and an 80 s proxy deadline.
+  const preparePreview=method==='POST'&&path==='/prepare-target/preview';
+  const controller=new AbortController(), timer=setTimeout(()=>controller.abort(),preparePreview?85000:planning||selections?60000:20000);
   try{
     const response=await fetch('/backup-entry-api'+path,{method,
       headers:{'X-Token':token,'Content-Type':'application/json'},cache:'no-store',signal:controller.signal,
