@@ -299,3 +299,19 @@
 独立证据：P/takeover58-restore-e898-third.private.json观察时间11:35:13Z，含同号source-takeover-admission、worker-process、operation/configuration、resource-reservation及resource-takeover-admission/transfer/active；processes为13575/17500/17537。第五份观察11:39:49Z仍见相同三进程，尚无worker-result或完整恢复结果。此处serverWrites=false是观察命令本身只读，不能解释为恢复过程未写入。未依据进程累计读取字节推断数据库导入或附件恢复进度。
 
 判断：本轮开始把完整授权链一起验证，提前发现策略比较真实缺陷，且已实装并启动实际恢复进程，有实质收敛；大量耗时依然属于执行前衔接。重复全文证明读取、反复出现的路径/依赖/测试装载问题属于可避免的工程返工；必要互斥、身份和覆盖前保全不能直接删掉。不能精确把全部3小时分成必要/浪费，也不能据进程启动宣布恢复完成。仍须同一1fd7的数据库、附件、服务/页面及最终结果验收。原d26 UNKNOWN与f6bf FAILED保持，无新备份或扩大目标。
+
+
+## 当前流程正确性与剩余重复读取评审（2026-11-15，revision151）
+
+结论：主流程方向正确，不能据此说实现已经精简或恢复已验收。最新11:45:40Z compact状态为同一1fd7真实页面RUNNING、无错误，worker正校验附件内容，数据库导入尚未开始。本轮仅只读本地文件与线程，不操作服务器、派新任务或运行产品测试。
+
+正确顺序：固定I2并解析同一FULL/I1/I2完整链及数据库日志连续性、对象变化/删除；校验来源载荷、所需程序镜像、目标身份与资源；持来源/目标互斥，完成停写与目标当前状态保全；切换已停程序并按FULL→I1→I2恢复数据库/对象，再核数据/结构、附件引用/内容及服务/页面；成功后释放对应保护并记录同号终态。来源大文件检查尽量在正常目标停写前，覆盖前保全须在停写后且任何重置前。已有UNKNOWN目标本就保留停写，不能把正常目标停写前准备的说法当它仍在线。失败或未知时保留原件和相应写保护，不直接重启半恢复服务。
+
+本轮实际审查STANDARD包9bfecd5d82576b2149436209b9395b4aff9fd971180baa4d194ed3eddee4314a（971947B），先独立核本地包完整SHA，再只读tar成员。仓库ops/recovery部分为构建模板，直接读取出现NOT_PERFORMED/无校验语义，已转查真实STANDARD成员，未把模板轻量路径误报为实际安装逻辑。构建记录installed=false是原构建时快照，实际安装状态由后续正式读取和运行记录认定，不用旧字段推翻实际安装。
+
+代码依据与剩余问题（行号为该固定包成员）：
+- common/recovery_program_restore.py 241创建PREPARATION native，265完整inspect_program_archive，274进入prepare_image_import；后者common/recovery_program_import.py 110又对相同来源归档完整inspect。inspect_program_archive在common/recovery_program_archive.py 165全文件SHA，169再读配置/层内容；这是相邻阶段相同输入的重复完整检查。生成新images.tar后的独立核验验证转换结果，与相同来源重复读取不是同一问题，不能全部删除。
+- common/recovery_minimal_runtime.py 108创建archive_guard、109—116完整校验references；common/recovery_program_restore.py 323调用原execute_empty后，runtime473再次新建MinimalData，构造仍走同一输入全读；runtime524—527结束前又全文核payloadPins。已核构造48—56没有共享验证结果短路。主调用持有旧native/guard直到close_execution，存在将来源证明放到同一执行上下文持续监视并跨阶段复用的明确空间；不能仅按mtime或未证明的跨操作缓存跳过完整性校验。
+- selected_chain在固定STANDARD中完整核parent prefix、generation、日志起止连续和对象索引（common/recovery_minimal_plan.py 53—121），实际恢复按数据库链再对象链，最后一致性、派生数据和应用启动；本轮未发现把I2当独立完整备份恢复或先覆盖后保全的调用顺序错误。没有据此声称所有运行分支和数据库内容验收通过。
+
+收敛建议：正常恢复固定版本下只走一次预检→准备→停写/保全→恢复→验收。安装/升级仅代码版本变化时需要；本次旧UNKNOWN/FAILED接管是遗留现场处理分支，不应变成每次新备份恢复的固定前置。新数据无需兼容旧格式，不代表可删除既有现场的互斥和身份保护。重复大读取改为本次上下文一次完整验证加连续监视、阶段边界复核；目标读回必须验证实际恢复结果，不能用来源SHA替代。正在运行的1fd7先跟踪完成或明确失败，不为非阻断优化另开恢复、重装或中断；若性能阶段实际阻断，按证据修对应问题。当前仅评审与记录，未主动追加开发指令，原验收in_progress。
