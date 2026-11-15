@@ -695,6 +695,42 @@ def physical_restore_reads(payload, root):
     ))
 
 
+def prepared_database_readback(payload, root):
+    """Prepared targets prove SQL completion, not whole-database equivalence."""
+    member = 'common/recovery_data.py'
+    text = payload[member].decode('utf-8').replace('\r\n', '\n')
+    changes = (
+        ('database_readback',
+         "        self.bound()\n",
+         "        self.bound()\n"
+         "        if self.config.get('preparedEmptyTarget') is True:\n"
+         "            require(self.mysql.schema_query('SELECT 1;', database=self.config['database'],\n"
+         "                expected_uuid=self.db_uuid) == [['1']], 'PREPARED_DATABASE_NOT_QUERYABLE')\n"
+         "            self.bound()\n"
+         "            # Reached only after SQL application returned successfully.\n"
+         "            return dict(recoveryPoint=self.material['recoveryPoint'], databaseUuid=self.db_uuid,\n"
+         "                endPosition=self.material['database']['endPosition'],\n"
+         "                operationId=self.original['operationId'], targetId=self.config['targetId'],\n"
+         "                databaseApplyCompleted=True, databaseQueryable=True, verificationState='NOT_PERFORMED',\n"
+         "                fullSchemaDataEquivalenceVerified=False, incrementalReplayAndAffectedDataVerified=False,\n"
+         "                applicationVerified=False)\n"),
+        ('incremental_database',
+         "                 previous.get('incrementalReplayAndAffectedDataVerified') is True),\n",
+         "                 previous.get('incrementalReplayAndAffectedDataVerified') is True or\n"
+         "                 (self.config.get('preparedEmptyTarget') is True and\n"
+         "                  previous.get('databaseApplyCompleted') is True and previous.get('databaseQueryable') is True and\n"
+         "                  previous.get('operationId') == self.original['operationId'] and\n"
+         "                  previous.get('targetId') == self.config['targetId'])),\n"),
+    )
+    for name, before, after in changes:
+        method = _preservation_declaration(text, 'NativeData', name)
+        # database_readback has entry and exit bounds; only its entry branches.
+        if before not in method:
+            raise ValueError('STANDARD_PREPARED_DATABASE_CONTEXT_CHANGED ' + name)
+        text = text.replace(method, method.replace(before, after, 1))
+    payload[member] = text.encode('utf-8')
+
+
 def apply(payload):
     payload = dict(payload)
     root = Path(__file__).resolve().parents[2]
@@ -1248,4 +1284,5 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     restore_admission_metadata(payload, root)
     physical_restore_reads(payload, root)
     prepare_target_bind_mounts(payload, root)
+    prepared_database_readback(payload, root)
     return payload
