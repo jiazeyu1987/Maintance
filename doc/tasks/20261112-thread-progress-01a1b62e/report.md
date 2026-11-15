@@ -351,3 +351,30 @@
 当前用户要求的新数据、固定测试58、已有FULL/I1/I2原地恢复，应以一次选择明确恢复点→目标覆盖前保全→数据库及对象整链恢复→内容/引用/服务/页面验证→明确结果为最小交付。代码和其它路径的历史局部成果不能说完全不存在，但不足以宣布当前场景交付。恢复本身的数据一致性、不可逆覆盖和失败状态有真实难点，近期大量时间却明确耗在控制升级/授权消费/初始化时序/采集证据容量等实现衔接，而不是数据库和附件恢复耗时；不以“恢复复杂”解释所有迟延。
 
 主要工程问题为完整纵向路径验证过晚、局部去重未统一源验证生命周期、失败后不断叠加接管/续办边界、局部通过未转成实际包与运行验收。审查也有责任：多轮给局部建议而没有始终固定整体交付边界。不能据此主张删除必要保护、清除未知现场或仓促重写整个系统。已固定范围继续：初始化顺序和重复来源读取、必要的当前遗留续办；非阻断优化后置。revision156明确确认接受，不再新开设计或扩验收范围。后续只认实际包/安装/数据与附件/服务页面结果，不承诺无依据完成时长。
+
+## 备份服清理为最小恢复环境的技术可行性（2026-11-15）
+
+结论：可行，建议将新MVP定义为固定.59空目标上恢复选定的新格式FULL/I1/I2。用户明确.59无人使用且无实际业务，并允许数据盘旧内容清理至恢复所需最小单元，因此不新增业务用途调查、旧应用数据保全或业务回滚要求。本轮完成技术分析，没有执行清理、停服或恢复，没有擅自切换开发线程正在修复的测试58任务。
+
+### 实机与备份事实
+- .59：CentOS 7/x86_64，16 CPU，MemTotal 33565089792 bytes（约32 GiB）；/mnt/intruoyi-data实挂/dev/mapper/cl-home，文件系统约994.5 GB，可用131.0 GB；根盘仅可用10.1 GB，新的恢复数据及展开目录应放数据盘。
+- Docker 26.1.4，实际data-root=/mnt/intruoyi-data/docker-engine。docker ps -a逐项状态汇总201个容器，其中14 running、157 exited、30 created；docker info汇总却显示114 running，属于观察不一致，本文运行数量据逐项ps而非info，不以其作为恢复准入证明。
+- 当前备份路径位于CIFS共享//172.30.30.4的既有视图：/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives。它是外部NAS，不属于允许删除的本地数据盘内容。/mnt/nas本身不是该备份的实际独立挂载点，不能按目录名字猜删除边界。
+- 从.59直接读取选定FULL smallapp-3c2395ff88bd474e9fc007649565b848、I1 smallapp-20a1bb9b78ac402693289675d16c63dd、I2 smallapp-e7b668792c8f4bce945a52f984d3c660的point.json；三个SHA与已有来源证据一致，父链引用匹配且integrityState=COMPLETE。清单共14521项载荷引用、约30.35 GB；本轮仅核元数据和指定镜像包文件存在/大小，未重复全读30 GB载荷，不宣称本轮已完成内容验收。
+- I2的original-application-images.tar存在且大小2081399296 bytes与清单一致，050-original-images.json列出五个镜像ID，与已观察前端、后端、MySQL、Redis、MinIO镜像对应。因此可从备份重建这五个服务，不需以保留原业务数据作为前提；目标密码和访问配置仍需独立准备。
+- 当前运行控制程序是engine-main-program-2ac4b37；从活进程--config-pin解析到configuration/main-target-2ac4b37-r1/control-target.json及main-recovery.json。target-installation.json仍指b5fa4c5，不能把该旧安装回执当实际运行版本。当前目标配置仍绑定原main应用、容器、网络及数据卷，不能清空后原样使用它。
+
+### 最小保留和重建集合
+1. 保留操作系统、SSH、Docker服务及NAS访问能力；保留NAS备份原件和完整父链。无需把重装系统列为MVP前置项。
+2. 先收拢一套确定版本的恢复执行程序、Python运行时、配置、来源清单和必要凭据。当前Python在/mnt/intruoyi-data/backup-restore-lab/20261012-w01-w07/tools/python；当前执行器/配置位于spug-main-restore-20261104-v3；目标MySQL/MinIO凭据在prod-nas-restore-prep-20261020/.../private，Redis凭据在执行器private目录，均已核文件存在。旧目录名不等于可直接删除，最小依赖迁出并验证后其历史剩余内容才可清理。
+3. 本地旧应用数据、旧演练容器/卷、过期镜像、失败恢复展开目录可纳入清理范围；无需为用户已声明可丢弃的旧业务数据再做一次全量保全。清理须按本地实体路径和挂载边界执行，避免递归进入NAS/绑定挂载。不能直接删运行中的Docker data-root。
+4. 清理后只建立一套前后端、MySQL、MinIO、Redis；使用新的空数据库、空附件目录及独立恢复工作目录。镜像可由归档载入；数据盘最终保留Docker运行存储、恢复工作区和这套新数据，不要求保留全部历史目录。
+
+### 代码与验收边界
+现有recovery_minimal_runtime.execute_empty已包含FULL后顺序增量、对象整链恢复、一致性、Redis重建和启动步骤，但它要求目标服务/配置已登记，且_registered main能力及STANDARD封包可能进一步限定入口；不能据函数名宣称已交付任意裸机一键恢复。当前.59仍是已有main原地覆盖配置，应补齐固定新目标初始化和入口接线，并核实际交付包。新目标不需要旧目标保全、旧失败接管和旧业务回滚；来源完整性、正确父链和恢复结果检查仍保留。来源重复全读/FD生命周期问题可能同样影响空目标，不能把换机器当这些缺陷已经修复。
+
+建议顺序：收拢最小恢复依赖→清理并初始化固定空目标→登记新目标而不复用旧容器身份→选择同一I2自动使用FULL/I1/I2→核数据库、附件、服务及真实登录页面。MVP只认这一条新路径成功；不同时建设通用裸机安装器、旧数据兼容、多种目标适配或原地回滚。
+
+历史.59 operation smallapp-e0946cfc3fd842b1a85a021e236c6317有SUCCEEDED记录，但对应旧恢复点ae9f83；不能据此认定本轮I2已在干净目标成功。待完成项是最小依赖集合落盘验证、新目标初始化/实际入口、当前链完整恢复验收；并非机器不可用或备份路径不可达。
+
+证据在本机私密目录C:/Spug/runtime/private/prod-incremental-to-two-targets-20261106/clean59-assessment-20261115-{inventory,contract,current-points,active-contract,minimum}.private.json。凭据内容未输出或写入维护仓。
