@@ -5969,3 +5969,5 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 2026-11-15 用户明确要求通知“查找未登记目标的含义 (3)”修改：先核revision152并经send_message_to_thread投递来源跨阶段/尾部重复全读、镜像相邻复检和正常主线收敛三项要求；保持当前1fd7、必要保护与目标最终读回，实际STANDARD封包BDD/TDD及读取性能证据，修改后独立复核。工具发送成功，未操作服务器或重复恢复。
 
 - 2026-11-15 本轮通知后revision153报告1fd7 FAILED/UNRESOLVED_PROCESS_LIMIT、数据库未导入；已补充通知定位具体采集上限和实际规模/轮次、拒绝盲目加阈值或同号重派，按真实失败状态正式续办。发送成功，原验收未完成。
+
+- 2026-11-15 用户再次询问指定开发线程原地恢复方向及额外检查：revision154、R38b43d3及source-read计划/测试、实际源规模与失败proof只读评审。主方向正确，先采进程后建立大源租约合理；服务器e898仍有跨阶段输入/相邻镜像全读，退出statHex和轮次清单仍可收敛。核心修复未交付，诊断通过不算恢复；保留必要保护/最终目标读回，不操作服务器或重复派发。
