@@ -37,3 +37,11 @@
 - GREEN: experience-preflight -> PASS。父任务已读 worktree-memory，核主工作区 `int_main` 仍为 `3278dce`、`ops/spug` 无未提交改动、暂存区为空。
 - 本任务初始两份文档与共享日志已由父任务备份至 `C:/Spug/runtime/private/spug-prepare-target-20261115/integration`。
 - 父任务只 ff 合入本分支；合并后重跑上述受影响 Python/JS 集合，通过后只归档本任务 managed worktree，不触及并发任务。
+
+## 父任务融合验证（2026-11-16）
+
+- `int_main` 已从 `3278dce` fast-forward 到 `7ebfc6a`，包含实现 `92f2a96`；仅替换本任务已备份的初始文档，无关改动未纳入。
+- GREEN: 合并结果执行上述同一 Python 受影响集合 -> PASS，79/79，5.623 秒；JS 同一集合（dot reporter）-> PASS，85/85；`git diff --check 3278dce..HEAD` -> PASS；`ops/spug` 无未提交改动。
+- GREEN: experience-preflight -> PASS。核本任务 managed worktree 已 clean、分支明确、提交已融合且合并结果验证通过；只归档 `C:/Users/D01021/.codex/worktrees/spug-prepare-empty-target/Maintance`。未启动或修改运行控制台/服务器，不存在本任务需迁回的控制台路径。
+- BLOCKER: worktree-closeout -> 应用 `archive_worktree` 返回 `The task's primary checkout cannot be removed.`。工作树未删除，保持 clean；不绕过主检出保护。代码已融合且验证通过，最终状态保留 `ready_for_closeout`。
+- 本地实现、融合验证及收尾结果单独记录；未执行发布构建、服务器安装、清理或恢复，没有冒充真实 `.59` READY。

@@ -27,10 +27,12 @@
 ## Current Status
 ready_for_closeout
 
-工作树：`C:/Users/D01021/.codex/worktrees/spug-prepare-empty-target/Maintance`，分支 `codex/spug-prepare-empty-target`，基线 `3278dce`。本轮是本地功能实现，不是发布工作树；未部署到运行 Spug 或执行 `.59` 停服/清理/恢复。父 agent 独立审查及必要验证完成后先提交实现，保留工作树等待融合收口。
+工作树：`C:/Users/D01021/.codex/worktrees/spug-prepare-empty-target/Maintance`，分支 `codex/spug-prepare-empty-target`，基线 `3278dce`。本轮是本地功能实现，不是发布工作树；未部署到运行 Spug 或执行 `.59` 停服/清理/恢复。实现 `92f2a96`、任务记录 `7ebfc6a` 已合入 `int_main`，父任务在合并结果上独立验证通过。
 
 当前范围已按用户“最小实现”收敛：一个固定目标按钮、一次确认、三阶段和持久历史；提交不重复预览或整链查询。保留固定机器、NAS/工具边界、同目标互斥、真实初始化和登记准入。无自动续办、回滚、旧业务保全或通用安装平台。
 
 安装约束见 `ops/spug/prepare-target.md`：执行程序与 Python 必须先安装到保留工具目录；私密配置、现有恢复引擎模板及真实备份身份由部署提供；界面未配置时明确阻止执行。代码完成不等于 `.59` 已 READY。
 
-最终本地验证：Python 79/79、JS 85/85 通过，无 skip；父审查指出的实际控制参数/目录、二次准备资源、重复预览、多应用 catalogue 返回合同及历史终态重复查询均已修正。必要实现验证已完成，待父任务融合后验证和工作树收口。
+最终本地验证：Python 79/79、JS 85/85 通过，无 skip；父审查指出的实际控制参数/目录、二次准备资源、重复预览、多应用 catalogue 返回合同及历史终态重复查询均已修正。合并后同一集合再次通过，代码和必要验证已完成。
+
+唯一收尾阻塞：2026-11-16 使用应用 `archive_worktree` 归档本任务工作树时，返回 `The task's primary checkout cannot be removed.`。保留该干净工作树，不绕过应用的主检出保护手工删除；任务因此仍为 `ready_for_closeout`，不伪报 completed。此限制不影响已融合代码。服务器部署和实际清理仍未执行，属于明确区分的后续运行范围。

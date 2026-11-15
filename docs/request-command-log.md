@@ -5979,3 +5979,5 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 2026-11-15｜备份服最小干净恢复环境评估｜按用户无业务、数据盘可清理前提，只读核.59资源/挂载/现用控制配置、NAS FULL/I1/I2和五角色镜像；确认技术可行，需先保留恢复依赖和凭据再初始化新空目标；未清理、停服或恢复。证据见doc/tasks/20261112-thread-progress-01a1b62e/report.md。
 
 - 2026-11-15｜Spug准备空恢复环境按钮方案｜只读核现有fresh选择、进度/派发及登记器，确认可新增固定.59三阶段准备操作；明确独立工具目录、NAS保留、空目标READY与失败重试边界。未实现按钮或操作服务器；详doc/tasks/20261112-thread-progress-01a1b62e/report.md。
+
+- 2026-11-16：按用户要求由子agent最小实现Spug固定.59空目标准备按钮；实现92f2a96已合入int_main，合并后Python79/79、JS85/85通过。未远端部署/清理/恢复；应用拒绝归档当前任务主检出，保留干净工作树，任务ready_for_closeout。证据：doc/tasks/20261115-spug-prepare-empty-target/execution-log.md。
