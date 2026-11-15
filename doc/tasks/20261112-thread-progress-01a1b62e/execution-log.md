@@ -216,3 +216,6 @@
 - 再次方向评审：先更新任务后读revision138和最新实际消息；核R742ce1e、冻结final进程候选、snapshot/NativeSnapshotWatch和调用链。读取真实r18成本JSON、只读进程r2 JSON及两套JUnit/result，确认226PASS和1PASS/exit0、同输入SHA、原容器保持。没有在本对话运行产品测试、访问服务器或再派同一修改。
 - 初次按推测文件名rg出现不存在文件，随后从实际import确认NativeSnapshotWatch位于recovery_native_segments.py并读取；JUnit实际名junit.xml已找到并严格解析。结论区分本地真实文件/外部协议fixture与真实58恢复，旧summary不覆盖最新execution-log。阶段记录仅精确暂存自有文档和共享日志本轮一行，保持其他9行及其他任务改动。
 - 本轮UTF-8严格解码、无BOM/替换字符、限定diff与暂存diff检查PASS；仅提交本轮阶段审阅，原独立恢复验收保持未完成。
+- 用户授权通知最新收敛修改：先更新任务，再向指定开发线程明确只处理当前阻断和必要局部去重，保留保护、其余优化后置并推进既定真实恢复；不新建任务、不重复发起恢复、不直接操作服务器。
+- 发送工具确认成功；即时revision139仍inProgress，最新报告发布包构建完、79核心模块与测试文件一致，准备安装测试58控制并检查Spug恢复链。本轮未独立核新包，未把此进度报告当安装或恢复成功。修改后独立验收保持in_progress。
+- 本轮UTF-8与限定diff检查PASS，精确暂存本任务记录及共享日志1行，其他任务9行保留；通知完成不等于修改或真实恢复验收完成。
