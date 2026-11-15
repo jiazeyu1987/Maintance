@@ -267,6 +267,8 @@ function history(){
     td.append(button);tr.append(td);$('history').append(tr);
   }
 }
+// Preparation can read source choices before a new destination exists.
+let selectionTargetForDraft=(_applicationId,targetRef)=>targetRef;
 async function refresh(applicationOverride){
   if(interactionLocked())return;
   retryEvidence=null;
@@ -275,7 +277,7 @@ async function refresh(applicationOverride){
     const applicationId=typeof applicationOverride==='string'?applicationOverride:active?.applicationId || $('application').value || pending?.applicationId;
     const targetRef=active?.request.action==='RESTORE'?active.request.targetConfigRef:
       typeof simpleTargetServers==='function'&&simpleRestoring&&currentBinding()?.applicationId===applicationId?
-        simpleTargetServers()[S('simple-target').value]:null;
+        selectionTargetForDraft(applicationId,simpleTargetServers()[S('simple-target').value]):null;
     const selectionQuery=applicationId?'?applicationId='+encodeURIComponent(applicationId)+
       (targetRef?'&targetConfigRef='+encodeURIComponent(targetRef):''):'';
     const value=await api('/selections'+selectionQuery);options=value.applications;initialIds=value.initialOperationIds;versions=value.registrationVersions;

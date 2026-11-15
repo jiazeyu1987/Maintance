@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from contextlib import contextmanager
 from copy import deepcopy
 from unittest.mock import patch
 
@@ -12,6 +13,96 @@ import prepare_target_native as native
 
 
 class NativePreparationTests(unittest.TestCase):
+    @contextmanager
+    def local_volume_bind(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);data=root/'data';source=data/'old'/'minio'
+            target=data/'docker'/'volumes'/'old-minio'/'_data'
+            source.mkdir(parents=True);target.mkdir(parents=True)
+            calls=[]
+            config=dict(host=native.HOST,stateRoot=str(root/'state'),dataRoot=str(data),
+                toolRoot=str(root/'tools'),dockerRoot=str(data/'docker'),archiveRoots=[str(root/'nas')],
+                cleanup=dict(volumeNames=['old-minio'],bindMounts=[dict(target=str(target),source=str(source))]))
+            class Local(native.NativePreparation):
+                def docker(self,*args,**kwargs):
+                    calls.append(args)
+                    if args[:2]==('volume','ls'):return 'old-minio'
+                    if args[:2]==('volume','inspect'):return json.dumps([dict(Name='old-minio',Mountpoint=str(target),Options=None)])
+                    return ''
+            mounts=[dict(target=str(data),root='/',device='253:2',filesystem='xfs',source='/dev/mapper/data'),
+                    dict(target=str(target),root='/old/minio',device='253:2',filesystem='xfs',source='/dev/mapper/data')]
+            with patch.object(native,'mount_paths',return_value=[]),patch.object(native,'mount_entries',create=True,return_value=mounts), \
+                 patch.object(native,'command',side_effect=lambda argv,**kwargs:calls.append(tuple(argv)) or ''):
+                yield Local(config),calls,source,target,mounts
+
+    def test_declared_local_bind_unmounts_before_volume_deletion(self):
+        with self.local_volume_bind() as (worker,calls,source,target,mounts):
+            worker.cleanup()
+            self.assertLess(calls.index(('umount','--',str(target))),calls.index(('volume','rm','old-minio')))
+            self.assertTrue(source.is_dir())
+
+    def test_absent_old_bind_does_not_unmount_or_prevent_new_preparation(self):
+        with self.local_volume_bind() as (worker,calls,source,target,mounts):
+            mounts.pop();worker.cleanup()
+            self.assertIn(('volume','rm','old-minio'),calls)
+            self.assertFalse(any(call[0]=='umount' for call in calls))
+
+    def test_changed_bind_source_or_network_mount_is_refused_before_deletion(self):
+        for change in ('root','filesystem','unlisted'):
+            with self.subTest(change=change),self.local_volume_bind() as (worker,calls,source,target,mounts):
+                if change=='root':mounts[-1]['root']='/different'
+                elif change=='filesystem':mounts[0]['filesystem']=mounts[-1]['filesystem']='nfs4'
+                else:worker.config['cleanup']['volumeNames']=[]
+                with self.assertRaises(native.PreparationError):worker.cleanup()
+                self.assertFalse(any(call[0]=='umount' or call[:2]==('volume','rm') for call in calls))
+
+    def test_command_failure_retains_safe_action_object_and_exit_code(self):
+        with patch.object(native.subprocess,'run',return_value=native.subprocess.CompletedProcess(
+                [],1,b'',b'unlinkat /private-secret-token: device or resource busy')):
+            with self.assertRaises(native.PreparationError) as raised:
+                native.command(['docker','volume','rm','old-minio','secret-argv'],action='DOCKER_VOLUME_RM',subject='old-minio')
+        self.assertEqual(raised.exception.failure,dict(action='DOCKER_VOLUME_RM',object='old-minio',exitCode=1,reason='RESOURCE_BUSY'))
+        self.assertNotIn('secret',str(raised.exception)+json.dumps(raised.exception.failure))
+
+    def test_failed_unmount_stops_before_volume_delete_and_persists_diagnostic(self):
+        failure=dict(action='UNMOUNT',object='old-minio',exitCode=32,reason='RESOURCE_BUSY')
+        with self.local_volume_bind() as (worker,calls,source,target,mounts),tempfile.TemporaryDirectory() as folder:
+            with patch.object(worker,'dependencies'),patch.object(worker,'initialize') as initialize, \
+                 patch.object(native,'command',side_effect=native.PreparationError('PREPARE_NATIVE_COMMAND_FAILED',failure)):
+                result=worker.run_stages(dict(operationId='failed-unmount',applicationId='app',recoveryPointRef='point'),
+                                         Path(folder),lambda event:None)
+            initialize.assert_not_called()
+            self.assertEqual(native.read(Path(folder)/'result.json')['failure'],failure)
+            self.assertEqual(result['state'],'FAILED')
+            self.assertEqual(result['stages'][-1]['failure'],failure)
+            self.assertNotIn(('volume','rm','old-minio'),calls)
+
+    def test_unknown_query_fences_stopped_operation_before_allowing_reset(self):
+        with tempfile.TemporaryDirectory() as folder:
+            request=dict(operationId='unknown-operation',applicationId='app',recoveryPointRef='point',confirmed=True,planDigest='a'*64)
+            worker=native.NativePreparation(dict(host=native.HOST,stateRoot=folder,
+                hostReservationRoot='/var/lib/spug-restore-resources'))
+            @contextmanager
+            def unlocked():yield
+            with patch.object(worker,'host_lock',unlocked),patch.object(worker,'identity'):
+                result=worker.query(request)
+                self.assertEqual(worker.execute(request,lambda event:None)['state'],'FAILED')
+            self.assertTrue(result['workerStopped']);self.assertEqual(result['state'],'FAILED')
+            root=Path(folder)/native.hashlib.sha256(request['operationId'].encode()).hexdigest()
+            self.assertEqual(native.read(root/'request.json'),request)
+            self.assertEqual(native.read(root/'result.json')['state'],'FAILED')
+
+    def test_unknown_query_never_calls_busy_worker_stopped(self):
+        with tempfile.TemporaryDirectory() as folder:
+            worker=native.NativePreparation(dict(host=native.HOST,stateRoot=folder,
+                hostReservationRoot='/var/lib/spug-restore-resources'))
+            @contextmanager
+            def busy():
+                raise native.PreparationError('PREPARE_TARGET_BUSY')
+                yield
+            with patch.object(worker,'host_lock',busy),patch.object(worker,'identity'):
+                result=worker.query({'operationId':'unknown-operation'})
+            self.assertFalse(result['workerStopped']);self.assertEqual(result['state'],'UNKNOWN')
     def test_cleanup_rejects_root_protected_ancestors_and_mounts(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
@@ -67,6 +158,7 @@ class NativePreparationTests(unittest.TestCase):
         target=native.fresh_target(old,observed,{})
         self.assertEqual(target['services'],observed['services'])
         self.assertEqual(target['networkId'],'new-net')
+        self.assertIs(target['preparedEmptyTarget'],True)
         self.assertEqual(target['dataPolicy']['databaseUuid'],'new-uuid')
         self.assertNotIn('old-uuid',json.dumps(target))
         self.assertEqual(target['application']['container'],'new-backend')
@@ -153,13 +245,15 @@ class NativePreparationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder)
             for name in ('ledger','registry','registry/applications','registry/points'):(root/name).mkdir()
+            for role in ('recovery','repository'):(root/(role+'_entry.py')).write_bytes(role.encode())
             executable=native.pin(sys.executable)
             template=dict(schemaVersion='SmallAppExecutionServiceConfig/v2',taskRoot='/old',ledgerRoot='/old/ledger',
                 registryRoot='/old/registry',listenAddress='127.0.0.1',listenPort=43059,authCredentialRef={},
                 allowedClientAddresses=['127.0.0.1'],pythonPin=executable,programPins={'repository':executable,'recovery':executable},
                 workingDirectory='/old',environment={'PATH':'/usr/bin'},deadlineMilliseconds=60000,
                 engineSelectionRef='installed-engine',sourceConfigurations={'source':executable},restoreConfigurations={})
-            setting={'listenAddress':'172.30.30.59','listenPort':43059,'pythonPath':sys.executable,'engineDirectory':str(root)}
+            setting={'listenAddress':'172.30.30.59','listenPort':43059,'pythonPath':sys.executable,'engineDirectory':str(root),
+                     'allowedClientAddresses':['192.168.109.82']}
             receipt={'sourceConfigRef':'source','targetConfigRef':'fresh','ownerPin':executable}
             document=native.control_document(template,setting,root,receipt,{})
             reference=native.write(root/'control.json',document)
@@ -168,6 +262,84 @@ class NativePreparationTests(unittest.TestCase):
                 actual=consumer.Native(reference).configuration()
             self.assertEqual(actual['restoreConfigurations']['source']['fresh'],executable)
             self.assertIn(Path(actual['taskRoot']),Path(actual['registryRoot']).parents)
+            self.assertEqual(actual['allowedClientAddresses'],['192.168.109.82'])
+            self.assertEqual(actual['authCredentialRef'],template['authCredentialRef'])
+
+    def test_control_uses_selected_engine_entries_and_module_paths(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);engine=root/'engine';engine.mkdir()
+            for role in ('recovery','repository'):(engine/(role+'_entry.py')).write_bytes(('new-'+role).encode())
+            old='/installed/old-engine'
+            old_pins={role:dict(path=old+'/'+role+'_entry.py',bytes=5,sha256='a'*64)
+                      for role in ('recovery','repository')}
+            template=dict(programPins=old_pins,environment=dict(PATH='/usr/bin',
+                PYTHONPATH=old+'/control:'+old+'/common:'+old+'/formal:/python/site-packages:'+old+'-other/common'))
+            before=deepcopy(template)
+            setting=dict(listenAddress=native.HOST,listenPort=43059,pythonPath=sys.executable,
+                engineDirectory=str(engine),allowedClientAddresses=['127.0.0.1'])
+            receipt=dict(sourceConfigRef='source',targetConfigRef='target',ownerPin={})
+            actual=native.control_document(template,setting,root,receipt,{})
+            for role in ('recovery','repository'):
+                expected=engine/(role+'_entry.py')
+                self.assertTrue(Path(actual['programPins'][role]['path']).is_absolute())
+                self.assertEqual(actual['programPins'][role],native.pin(expected))
+            expected_paths=[engine.as_posix()+'/'+name for name in ('control','common','formal')]
+            expected_paths+=['/python/site-packages',old+'-other/common']
+            self.assertEqual(actual['environment']['PYTHONPATH'],':'.join(expected_paths))
+            self.assertEqual(actual['environment']['PATH'],'/usr/bin')
+            self.assertEqual(actual['workingDirectory'],str(engine))
+            self.assertEqual(template,before)
+
+    def test_control_does_not_reuse_old_entry_when_selected_program_is_missing(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            setting=dict(listenAddress=native.HOST,listenPort=43059,pythonPath=sys.executable,
+                engineDirectory=str(root),allowedClientAddresses=['127.0.0.1'])
+            receipt=dict(sourceConfigRef='source',targetConfigRef='target',ownerPin={})
+            for missing in ('recovery','repository'):
+                for role in ('recovery','repository'):
+                    path=root/(role+'_entry.py')
+                    if role==missing:path.unlink(missing_ok=True)
+                    else:path.write_bytes(role.encode())
+                with self.subTest(missing=missing),self.assertRaisesRegex(native.PreparationError,'PREPARE_CONTROL_PROGRAM_MISSING'):
+                    native.control_document({'programPins':{'recovery':native.pin(sys.executable),'repository':native.pin(sys.executable)}},
+                        setting,root,receipt,{})
+
+    def test_control_clients_require_explicit_canonical_ip_addresses(self):
+        setting=dict(listenAddress='172.30.30.59',listenPort=43059,pythonPath=sys.executable,engineDirectory='/engine')
+        receipt=dict(sourceConfigRef='source',targetConfigRef='target',ownerPin={})
+        for value in [None,[],['*'],['192.168.109.0/24'],['192.168.109.082']]:
+            with self.subTest(value=value),self.assertRaisesRegex(native.PreparationError,'PREPARE_CONTROL_CLIENTS_INVALID'):
+                native.control_document({},dict(setting,allowedClientAddresses=value),Path('/task'),receipt,{})
+
+    def test_installed_control_service_receives_private_configuration_environment(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);engine=root/'engine';engine.mkdir();systemd=root/'systemd';systemd.mkdir()
+            executable=root/'python';executable.write_bytes(b'python')
+            (engine/'control_entry.py').write_bytes(b'entry')
+            for role in ('recovery','repository'):(engine/(role+'_entry.py')).write_bytes(role.encode())
+            environment=dict(LANG='C.UTF-8',PATH='/usr/bin',PYTHONDONTWRITEBYTECODE='1',
+                             PYTHONPATH='/kept/control:/kept/common:/kept/formal:/kept/site-packages')
+            native.write(root/'control-template.json',dict(engineSelectionRef='engine',environment=environment,
+                                                         authCredentialRef={'path':'/kept/auth'}))
+            native.write(root/'registration-template.json',dict(applicationId='app',sourceConfigRef='source'))
+            setting=dict(serviceName='spug-prepare59-restore.service',engineDirectory=str(engine),pythonPath=str(executable),
+                         listenAddress=native.HOST,listenPort=43059,allowedClientAddresses=['192.168.109.82'])
+            worker=native.NativePreparation(dict(host=native.HOST,toolRoot=str(root),control=setting))
+            def local_path(value):return systemd if value=='/etc/systemd/system' else Path(value)
+            with patch.object(native,'Path',side_effect=local_path),patch.object(native,'command',return_value='active'):
+                receipt=worker.install_control(dict(applicationId='app'),root,
+                    dict(sourceConfigRef='source',targetConfigRef='target',ownerPin={}),{})
+            unit=(systemd/setting['serviceName']).read_text(encoding='utf-8')
+            self.assertIn('EnvironmentFile=',unit)
+            self.assertNotIn(environment['PYTHONPATH'],unit)
+            # systemd 219 consumes this directive as a path, without stripping quotes.
+            environment_file=next(line.split('=',1)[1] for line in unit.splitlines() if line.startswith('EnvironmentFile='))
+            self.assertEqual(environment_file,str(root/'control.env'))
+            self.assertTrue(Path(environment_file).is_absolute())
+            content=Path(environment_file).read_text(encoding='utf-8')
+            for key,value in environment.items():self.assertIn(key+'="'+value+'"\n',content)
+            self.assertEqual(native.read(receipt['controlPin']['path'])['environment'],environment)
 
     def test_main_template_is_projected_to_fresh_owner_without_old_program_policies(self):
         original={'schemaVersion':'RecoveryMinimalConfiguration/v1','operationsRoot':'/old',

@@ -30,6 +30,16 @@ python ops/backup_engine/build_variants.py --output-directory output/backup-rest
 该原包原样保留。新标准包除归档路径前缀外，应用经过验证的修复：Redis 密码 pin、同库启动 DDL 解析、按请求绑定全量/增量父点、排除已占用恢复目标，以及备份恢复阶段计时。修复集中在 `standard_fixes.py` 和 `standard_timing.py`；补丁上下文变化立即失败，计时包装必须保持原语句 AST 一致。标准包继续启用内容与文件核验。
 轻量版明确读取当前工作区允许清单内源码，不冒充干净 Git 发布版本。
 
+标准版恢复准入只解析所选备份链的元数据，不重复扫描归档树、对象索引及物理载荷。
+运行期仅对链元数据、执行器和任务输入保持文件租约，避免附件数量耗尽文件描述符；
+恢复末尾不再把全部备份载荷重新哈希。物理附件链只为实际复制读取载荷，不重复内容扫描，
+不在启动后重新导出全部 S3 对象；结果明确记录 `payloadContentVerified=false`、`NOT_PERFORMED`。
+实际 SQL 导入、附件复制、引用元数据及数据库结果检查继续执行，
+目标身份、隔离、任务互斥和 MAIN 合同保持。此变更由 `standard_fixes.py` 的正式构建过程生成，
+安装时必须同步生成包清单摘要，并让控制配置的程序入口指向同一个引擎目录。
+准备功能生成的 `preparedEmptyTarget=true` 目标只允许其精确登记的三个数据目录 bind，
+保留机器、容器及内部网络检查；这类目标不再依赖旧演练服务器的 iptables 文件或规则。
+
 ## 安装与入口
 
 两包分别解压到不同引擎目录，例如 `engine-standard/`、`engine-lightweight/`。

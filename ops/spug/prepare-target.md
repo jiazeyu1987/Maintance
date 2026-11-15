@@ -2,7 +2,7 @@
 
 在 `/backup-restore/` 选择应用、备份点和备份服务器 `172.30.30.59`，点击“准备空恢复环境”，核对清理范围后确认一次。后台顺序执行准备最小依赖、清理旧环境、初始化空目标；随后用原恢复入口验证并登记新目标，显示 `READY`。此按钮不开始恢复，用户继续使用原“开始恢复”按钮。
 
-只支持固定 `.59`。原地覆盖目标及其历史保留为原登记记录；新空目标每次使用新引用。失败立即停止并保留记录，不自动重试或回滚；连接结果未知时查询原任务，不能另起一次清理。恢复或准备正在使用同一目标时拒绝并行准备。
+只支持固定 `.59`。原地覆盖目标及其历史保留为原登记记录；新空目标每次使用新引用。失败立即停止并保留记录，页面允许重新准备，不自动重试或回滚。连接结果未知时查询原任务，远端持原执行锁确认已停止后才允许重新准备；超时不会解除阻止。恢复或准备正在使用同一目标时拒绝并行准备。
 
 ## 安装
 
@@ -11,6 +11,8 @@
 3. 在 `.59` 数据盘的独立 `toolRoot` 先安装 Python、`prepare_target_native.py` 及原恢复引擎完整依赖。安装位置必须在清理范围外；不能继续从计划删除的旧 `backup-restore-lab` 运行 Python。`stateRoot` 保存本功能记录和独立恢复控制服务配置，也必须在清理范围外。NAS 挂载和 Docker 数据根目录均保留。
 4. 根据已核实的 `.59` 机器、旧资源和所选备份填写 native 私密配置，再将其和程序的真实字节数/SHA 填入 Spug 配置。禁止提交私密文件、凭据或镜像归档。未安装配置时界面显示“准备功能未配置”。
 5. 新控制服务固定为 `spug-prepare59-restore.service`，监听 `.59` 的指定专用端口，复用既有控制认证。该端口必须能从 Spug 容器访问；它与旧控制入口分别运行。准备完成时，后台用原 `HttpBridge` 和恢复选择准入验证新控制器，再更新 entry、bridge、simple 三份配置。
+
+控制配置中的 `environment` 同时写入本次操作目录下权限 `0600` 的 `control.env`，由服务的 `EnvironmentFile` 加载；既有 `PYTHONPATH` 必须包含保留的运行依赖路径。环境值不写入 unit 或公开日志，不为缺失启动环境重新安装组件。
 
 本地开发验证不执行上述服务器安装、停服、清理或恢复。`.59` 是否实际 READY 以已安装版本的任务记录及真实选择结果为准。
 
@@ -53,6 +55,7 @@
 | `hostReservationRoot`, `sourceLockPaths` | 固定 `/var/lib/spug-restore-resources`；需要协作的现有来源锁路径数组 |
 | `archiveRoots` | 已挂载且必须保留的 NAS 根目录数组 |
 | `cleanup` | 明确的 `directories`、完整 `containerIds`、`volumeNames`、完整 `networkIds`、`serviceNames` 数组，无通配符 |
+| `cleanup.bindMounts` | 可选 `{target,source}` 数组；仅用于待清卷 `_data` 上的本地 OS bind。target 必须是明确待清卷 Mountpoint，source 必须位于本地数据盘且避开保留目录；实际来源匹配后普通卸载，不使用 force/lazy，不卸载 NAS |
 | `dependencies` | `{source,destination,mode?,uid?,gid?,rewriteJson?}` 数组；destination 相对 toolRoot；需改写引用的 JSON 按叶子到引用者排序 |
 | `ownerTemplatePath`, `ownerTemplateTargetRef` | 当前真实 `RecoveryMinimalConfiguration/v1` 及其中目标引用 |
 | `targetPrefix`, `subnet`, `templateSubnet`, `frontendPort` | 新目标名前缀、独立 IPv4 网段、旧模板网段和仅 loopback 暴露的前端端口 |
@@ -61,7 +64,7 @@
 | `resourceBudget` | 现有引擎的 `RestoreResourceBudget/v1`，使用实际内存及覆盖新数据/工具/状态目录的磁盘预算 |
 | `points` | 恢复点引用映射到 `{applicationId,sourceConfigRef,imageArchivePin,roleImages}`；roleImages 为五个角色的实际镜像 ID |
 | `services` | mysql/minio/redis/backend/frontend 五个角色的实际启动配置，见下方结构 |
-| `control` | `{templatePath,registrationPath,serviceName,engineDirectory,pythonPath,listenAddress,listenPort}`；模板为现有 `SmallAppExecutionServiceConfig/v2` 和 `ApplicationRegistration/v1`；serviceName 固定，listenAddress 固定 `.59` |
+| `control` | `{templatePath,registrationPath,serviceName,engineDirectory,pythonPath,listenAddress,listenPort,allowedClientAddresses}`；模板为现有 `SmallAppExecutionServiceConfig/v2` 和 `ApplicationRegistration/v1`；serviceName 固定，listenAddress 固定 `.59`；allowedClientAddresses 为实际 Spug 连接来源的规范 IP 字符串数组，显式覆盖旧模板名单，不接受网段或通配符，原 authCredentialRef 保持 |
 
 服务结构示例（各镜像的 UID/GID、环境和命令必须来自实际配置）：
 
@@ -80,6 +83,8 @@
 最小依赖阶段加载所选备份的镜像，收拢当前凭据、应用配置及被清理目录中的来源/control/catalogue JSON。保留模板和改写后的真实 pins 到 `toolRoot/prepared-inputs`，再次准备直接使用这些固定副本。NAS 归档本体不复制、不改写。已有 control 的认证、程序 pins、来源和归档目录必须全部指向保留文件。
 
 新目标使用 `dataRoot/<newRef>/{mysql,minio,redis}` 直接 bind。仅启动 MySQL/Redis 并验证为空；MinIO、前后端保持停止，MinIO 目录物理为空。后续再次准备只加入本功能上一轮记录的精确容器、网络及目录清单；明确已不存在的旧资源视为已清理，Docker 本身失败仍中止。
+
+清理先停止并删除明确容器，再普通卸载显式配置的本地卷 bind，然后删除原卷和网络。已不存在的挂载不重复卸载。命令失败时页面和记录显示固定动作、资源名、退出码及简短错误类型；原始 argv、环境和 stderr 不进入页面或公开记录。失败停止后可从页面重新准备新任务，不自动续跑原任务。
 
 ## 接口与记录
 

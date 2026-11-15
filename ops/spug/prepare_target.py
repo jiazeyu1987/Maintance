@@ -121,7 +121,18 @@ class Tasks:
 
 def public_record(row):
     return {key:row.get(key) for key in ('operationId', 'host', 'applicationId', 'recoveryPointRef', 'state',
-                                       'startedAt', 'finishedAt', 'errorCode', 'stages', 'targetConfigRef')}
+                                       'startedAt', 'finishedAt', 'errorCode', 'failure', 'stages', 'targetConfigRef')}
+
+
+def command_failure(value):
+    if value is None:return None
+    need(isinstance(value,dict) and set(value)=={'action','object','exitCode','reason'} and
+         isinstance(value['action'],str) and re.fullmatch('[A-Z_]{1,64}',value['action']) and
+         (value['object'] is None or isinstance(value['object'],str) and re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.-]{0,180}',value['object'])) and
+         (value['exitCode'] is None or type(value['exitCode']) is int) and
+         value['reason'] in ('COMMAND_FAILED','TIMEOUT','EXEC_FAILED','RESOURCE_BUSY','PERMISSION_DENIED','DAEMON_UNAVAILABLE','NOT_FOUND'),
+         'PREPARATION_PROGRESS_INVALID')
+    return value
 
 
 def remote(config, action, value, emit=None):
@@ -211,6 +222,19 @@ def block_while_preparing(value):
              'PREPARATION_TARGET_BUSY')
 
 
+def ready_target(value):
+    """Only the latest completed preparation identifies this independent target."""
+    if value.get('action')!='RESTORE' or not CONFIG.is_file():return False
+    config=configuration()
+    if value.get('sourceConfigRef')!=config['sourceConfigRef']:return False
+    records=Tasks(config['stateRoot']).history()
+    if not records:return False
+    row=records[0]
+    return row.get('state')=='READY' and row.get('host')==HOST and row.get('applicationId')==config['applicationId'] and \
+        row.get('targetConfigRef')==value.get('targetConfigRef') and \
+        [(stage.get('name'),stage.get('state')) for stage in row.get('stages',[])]==[(name,'SUCCEEDED') for name in STAGES]
+
+
 def target_refs():
     import smallapp_simple
     refs = set()
@@ -233,18 +257,8 @@ def submit(value, user_id):
         if store.path(value['operationId']).exists():
             row, _ = store.reserve(value,user_id)
             return public_record(row)
-        # Only this destination matters; do not re-query unrelated source history.
-        targets = target_refs()
-        for path in entry.ENTRIES.glob('*.json'):
-            row = adapter.read_json(path)
-            original = row.get('request',{})
-            if original.get('action') != 'RESTORE' or original.get('targetConfigRef') not in targets or row.get('dispatchState') == 'CANCELLED_UNACCEPTED':
-                continue
-            journal = adapter.RECORDS / (hashlib.sha256(original['operationId'].encode()).hexdigest()+'.json')
-            need(journal.is_file(), 'PREPARATION_TARGET_BUSY')
-            result = adapter.execute(original,adapter.request_bridge(original),root=adapter.RECORDS,
-                                     query_only=True,refresh_terminal=False)
-            need(result.get('state') in ('SUCCEEDED','FAILED'), 'PREPARATION_TARGET_BUSY')
+        # Native execution shares the restore host lock and active reservation.
+        # Retired endpoint reachability is not evidence of a current worker.
         from prepare_target_registration import preflight
         preflight(config,value)
         # Native execution checks the confirmed digest before its first stage.
@@ -275,9 +289,14 @@ def run_task(store, value, config, invoke, publish):
         current['errorCode'] = stage.get('errorCode')
         need(current['errorCode'] is None or isinstance(current['errorCode'],str) and re.fullmatch('[A-Z0-9_:-]{1,160}',current['errorCode']),
              'PREPARATION_PROGRESS_INVALID')
+        current['failure']=command_failure(stage.get('failure'))
+        if current['failure']:row['failure']=current['failure']
         store.save(row)
+    execution_returned = False
     try:
         result = invoke('execute', value, event)
+        execution_returned = True
+        row['failure']=command_failure(result.get('failure'))
         for stage in result.get('stages',[]):
             event(dict(type='stage',stage=stage))
         need(result.get('state') == 'INITIALIZED', result.get('errorCode') or 'PREPARATION_NATIVE_FAILED')
@@ -285,7 +304,7 @@ def run_task(store, value, config, invoke, publish):
         need(all(s['state']=='SUCCEEDED' for s in row['stages']), 'PREPARATION_STAGES_INCOMPLETE')
         row.update(state='READY',targetConfigRef=registered['targetConfigRef'],finishedAt=now())
     except Refused as error:
-        unknown = str(error) in ('PREPARATION_TRANSPORT_TIMEOUT','PREPARATION_REMOTE_FAILED','PREPARATION_RESPONSE_TOO_LARGE')
+        unknown = not execution_returned
         row.update(state='UNKNOWN' if unknown else 'FAILED',errorCode=str(error),finishedAt=now())
     except Exception:
         # A broken SSH response cannot prove whether the remote deletion stopped.
@@ -305,4 +324,19 @@ def query(operation_id):
     if row['state'] in ('PENDING','RUNNING') and row.get('workerProcess') != PROCESS:
         row.update(state='UNKNOWN',errorCode='PREPARATION_ENTRY_RESTARTED',finishedAt=now())
         store.save(row)
+    if row['state'] == 'UNKNOWN':
+        result=remote(config,'query',row['request'])
+        need(result.get('operationId')==operation_id,'PREPARATION_ORIGINAL_MISMATCH')
+        if result.get('workerStopped') is True and result.get('state') in ('FAILED','INITIALIZED'):
+            code=result.get('errorCode') if result['state']=='FAILED' else 'PREPARATION_FINISHED_NOT_REGISTERED'
+            need(adapter.symbolic_error(code),'PREPARATION_PROGRESS_INVALID')
+            for stage in result.get('stages',[]):
+                need(stage.get('name') in STAGES and stage.get('state') in ('RUNNING','SUCCEEDED','FAILED'),
+                     'PREPARATION_PROGRESS_INVALID')
+                row['stages'][STAGES.index(stage['name'])]={k:stage.get(k) for k in
+                    ('name','state','startedAt','finishedAt','errorCode')}
+                row['stages'][STAGES.index(stage['name'])]['failure']=command_failure(stage.get('failure'))
+            row['failure']=command_failure(result.get('failure'))
+            row.update(state='FAILED',errorCode=code,finishedAt=now())
+            store.save(row)
     return public_record(row)

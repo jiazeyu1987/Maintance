@@ -10,7 +10,7 @@ import hashlib
 import ipaddress
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import re
 import shutil
 import subprocess
@@ -23,7 +23,9 @@ STAGES = ('dependencies', 'cleanup', 'initialize')
 
 
 class PreparationError(RuntimeError):
-    pass
+    def __init__(self, code, failure=None):
+        super().__init__(code)
+        self.failure = failure
 
 
 def require(value, code):
@@ -82,10 +84,46 @@ def plain_path(path):
     return path
 
 
-def mount_paths():
+def mount_entries():
     def decode(value):
         return re.sub(r'\\([0-7]{3})', lambda m: chr(int(m[1], 8)), value)
-    return [decode(line.split()[4]) for line in Path('/proc/self/mountinfo').read_text().splitlines()]
+    result=[]
+    for line in Path('/proc/self/mountinfo').read_text(encoding='utf-8').splitlines():
+        fields=line.split();separator=fields.index('-')
+        result.append(dict(device=fields[2],root=decode(fields[3]),target=decode(fields[4]),
+                           filesystem=fields[separator+1],source=decode(fields[separator+2])))
+    return result
+
+
+def mount_paths():
+    return [entry['target'] for entry in mount_entries()]
+
+
+def volume_bind_unmounts(config, selected, volume_points, mounts):
+    """Only declared local binds belonging to this deletion set may be unmounted."""
+    expected={str(Path(config['dockerRoot'])/'volumes'/name/'_data'):name for name in selected['volumeNames']}
+    protected=[config['toolRoot'],config['stateRoot'],config['dockerRoot'],*config['archiveRoots']]
+    result=[]
+    for binding in config['cleanup'].get('bindMounts',[]):
+        target,source=plain_path(binding['target']),plain_path(binding['source'])
+        name=expected.get(str(target))
+        require(name is not None,'PREPARE_VOLUME_BIND_NOT_SELECTED')
+        require(source!=Path(config['dataRoot']) and inside(source,config['dataRoot']) and
+                not any(overlaps(source,path) for path in protected),'PREPARE_VOLUME_BIND_SOURCE_REFUSED')
+        actual=[item for item in mounts if Path(item['target'])==target]
+        if not actual:continue
+        require(len(actual)==1 and volume_points.get(name)==str(target),'PREPARE_VOLUME_BIND_CHANGED')
+        ancestors=[item for item in mounts if inside(source,item['target'])]
+        require(ancestors,'PREPARE_VOLUME_BIND_SOURCE_REFUSED')
+        origin=max(ancestors,key=lambda item:len(Path(item['target']).parts))
+        expected_root=PurePosixPath(origin['root']).joinpath(*source.relative_to(origin['target']).parts).as_posix()
+        require(origin['filesystem'] in ('ext4','xfs','btrfs') and origin['source'].startswith('/dev/') and
+                actual[0]['device']==origin['device'] and actual[0]['root']==expected_root and
+                actual[0]['filesystem']==origin['filesystem'],'PREPARE_VOLUME_BIND_CHANGED')
+        require(not any(Path(item['target'])!=target and inside(item['target'],target) for item in mounts),
+                'PREPARE_VOLUME_BIND_NESTED_MOUNT')
+        result.append((str(target),name))
+    return result
 
 
 def validate_cleanup_paths(paths, data_root, protected, mounts):
@@ -177,6 +215,7 @@ def fresh_target(template, observed, changes):
             changes[old[key]] = services[old['role']][key]
     target = mapped(deepcopy(template), changes)
     target.update({k: observed[k] for k in ('targetId', 'dataRoot', 'networkId', 'services')})
+    target['preparedEmptyTarget'] = True
     if 'dataPaths' in observed: target['dataPaths'] = observed['dataPaths']
     return target
 
@@ -199,18 +238,56 @@ def control_arguments(python, engine, reference):
     return [python, '-B', str(Path(engine)/'control_entry.py'), 'serve', '--config-pin', canonical(reference).decode()]
 
 
+def control_clients(setting):
+    clients=setting.get('allowedClientAddresses')
+    require(isinstance(clients,list) and clients,'PREPARE_CONTROL_CLIENTS_INVALID')
+    try:valid=all(isinstance(value,str) and str(ipaddress.ip_address(value))==value for value in clients)
+    except ValueError:valid=False
+    require(valid,'PREPARE_CONTROL_CLIENTS_INVALID')
+    return clients
+
+
 def control_document(template, setting, root, result, changes):
     control=mapped(deepcopy(template),changes)
     control.update(taskRoot=str(root),registryRoot=str(root/'registry'),ledgerRoot=str(root/'ledger'),
         restoreConfigurations={result['sourceConfigRef']:{result['targetConfigRef']:result['ownerPin']}},
         listenAddress=setting['listenAddress'],listenPort=setting['listenPort'],
+        allowedClientAddresses=control_clients(setting),
         workingDirectory=setting['engineDirectory'],pythonPin=pin(setting['pythonPath']))
+    engine=Path(setting['engineDirectory'])
+    old_roots={reference['path'].rsplit('/',1)[0]
+               for reference in control.get('programPins',{}).values()}
+    control['programPins']={}
+    for role in ('recovery','repository'):
+        entry=engine/(role+'_entry.py')
+        require(entry.is_file(),'PREPARE_CONTROL_PROGRAM_MISSING')
+        control['programPins'][role]=pin(entry)
+    if 'PYTHONPATH' in control.get('environment',{}):
+        paths=control['environment']['PYTHONPATH'].split(':')
+        for index,path in enumerate(paths):
+            for old in old_roots:
+                if path==old or path.startswith(old+'/'):
+                    paths[index]=engine.as_posix()+path[len(old):]
+                    break
+        control['environment']['PYTHONPATH']=':'.join(paths)
     return control
 
 
-def command(argv, *, input=None, timeout=120):
-    result = subprocess.run(argv, input=input, capture_output=True, timeout=timeout)
-    require(result.returncode == 0, 'PREPARE_NATIVE_COMMAND_FAILED')
+def command(argv, *, input=None, timeout=120, action='COMMAND', subject=None):
+    failure=dict(action=action,object=subject,exitCode=None,reason='COMMAND_FAILED')
+    try:
+        result = subprocess.run(argv, input=input, capture_output=True, timeout=timeout)
+    except (subprocess.TimeoutExpired,OSError) as error:
+        failure['reason']='TIMEOUT' if isinstance(error,subprocess.TimeoutExpired) else 'EXEC_FAILED'
+        raise PreparationError('PREPARE_NATIVE_COMMAND_FAILED',failure) from None
+    if result.returncode:
+        failure['exitCode']=result.returncode
+        # Emit fixed categories only: raw argv/stderr can contain environment secrets.
+        stderr=result.stderr.decode('utf-8',errors='replace').lower()
+        for fragment,reason in [('device or resource busy','RESOURCE_BUSY'),('permission denied','PERMISSION_DENIED'),
+                                ('cannot connect to the docker daemon','DAEMON_UNAVAILABLE'),('no such','NOT_FOUND')]:
+            if fragment in stderr:failure['reason']=reason;break
+        raise PreparationError('PREPARE_NATIVE_COMMAND_FAILED',failure)
     return result.stdout.decode('utf-8').strip()
 
 
@@ -233,7 +310,14 @@ class NativePreparation:
         self.config = config
 
     def docker(self, *args, **kwargs):
-        return command([self.config.get('dockerPath', '/usr/bin/docker'), *args], **kwargs)
+        action='DOCKER';subject=None
+        if args[0] in ('volume','network','image') and args[1] in ('ls','inspect','rm','load','create'):
+            action+='_'+args[0].upper()+'_'+args[1].upper()
+            if args[1]=='rm':subject=args[-1]
+        elif args[0] in ('stop','rm','start','create','inspect','exec','info','ps'):
+            action+='_'+args[0].upper()
+            if args[0] in ('stop','rm','start'):subject=args[-1]
+        return command([self.config.get('dockerPath', '/usr/bin/docker'), *args],action=action,subject=subject,**kwargs)
 
     def identity(self):
         require(os.name == 'posix' and os.geteuid() == 0, 'PREPARE_LINUX_ROOT_REQUIRED')
@@ -253,6 +337,7 @@ class NativePreparation:
     def plan(self, request):
         self.identity()
         c = self.config
+        control_clients(c['control'])
         point = c['points'].get(request['recoveryPointRef'])
         require(point and point['applicationId'] == request['applicationId'], 'PREPARE_POINT_NOT_CONFIGURED')
         require(set(point['roleImages']) == set(ROLES), 'PREPARE_IMAGES_INCOMPLETE')
@@ -268,6 +353,7 @@ class NativePreparation:
             cleanupSummary=[str(p) for p in paths] + [str(len(selected['containerIds'])) + ' containers',
                 str(len(selected['volumeNames'])) + ' volumes', str(len(selected['networkIds'])) + ' networks'],
             preserveSummary=[c['toolRoot'], c['stateRoot'], *c['archiveRoots']], stages=list(STAGES))
+        public['cleanupSummary'] += ['local bind: '+b['source']+' -> '+b['target'] for b in c['cleanup'].get('bindMounts',[])]
         public['planDigest'] = digest(dict(configuration=c, cleanup=selected,
             request={k: request[k] for k in ('applicationId', 'recoveryPointRef')}))
         return public
@@ -313,23 +399,27 @@ class NativePreparation:
             if identity not in containers:continue
             container = json.loads(self.docker('inspect', identity))[0]
             require(container['Id'] == identity, 'PREPARE_CONTAINER_CHANGED')
+        volume_points={}
         for name in selected['volumeNames']:
             require(re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.-]{0,180}', name), 'PREPARE_VOLUME_INVALID')
             if name not in volumes:continue
             volume = json.loads(self.docker('volume', 'inspect', name))[0]
+            volume_points[name]=volume['Mountpoint']
             require(not volume.get('Options'), 'PREPARE_MOUNTED_VOLUME_REFUSED')
             require(not any(overlaps(volume['Mountpoint'], p) for p in [c['toolRoot'], c['stateRoot'], *c['archiveRoots']]),
                     'PREPARE_PROTECTED_VOLUME')
+        binds=volume_bind_unmounts(c,selected,volume_points,mount_entries()) if c['cleanup'].get('bindMounts') else []
         for identity in selected['networkIds']:
             require(re.fullmatch('[a-f0-9]{64}',identity),'PREPARE_NETWORK_ID_INVALID')
             if identity not in networks:continue
             members=json.loads(self.docker('network','inspect',identity))[0].get('Containers') or {}
             require(set(members) <= set(selected['containerIds']),'PREPARE_NETWORK_SHARED')
-        for name in selected['serviceNames']:command(['systemctl', 'stop', name])
+        for name in selected['serviceNames']:command(['systemctl', 'stop', name],action='SERVICE_STOP',subject=name)
         for identity in selected['containerIds']:
             if identity not in containers:continue
             self.docker('stop', '--time', '30', identity)
             self.docker('rm', identity)
+        for target,name in binds:command(['umount','--',target],action='UNMOUNT',subject=name)
         for name in selected['volumeNames']:
             if name in volumes:self.docker('volume', 'rm', name)
         for identity in selected['networkIds']:
@@ -465,9 +555,18 @@ class NativePreparation:
         entry=Path(setting['engineDirectory'])/'control_entry.py'
         require(entry.is_file() and Path(setting['pythonPath']).is_file(),'PREPARE_CONTROL_RUNTIME_MISSING')
         control_pin=write(root/'control.json',control)
+        environment_path=root/'control.env'
+        environment=[]
+        for key,value in control['environment'].items():
+            require(re.fullmatch('[A-Za-z_][A-Za-z0-9_]*',key) and isinstance(value,str) and
+                    not any(char in value for char in ('\x00','\r','\n')),'PREPARE_CONTROL_ENVIRONMENT_INVALID')
+            environment.append(key+'="'+value.replace('\\','\\\\').replace('"','\\"')+'"\n')
+        with environment_path.open('x',encoding='utf-8',newline='\n') as stream:
+            os.chmod(environment_path,0o600)
+            stream.write(''.join(environment))
         def quoted(value):return '"'+str(value).replace('%','%%').replace('\\','\\\\').replace('"','\\"')+'"'
         args=control_arguments(setting['pythonPath'],setting['engineDirectory'],control_pin)
-        unit='[Unit]\nDescription=Spug backup host fresh restore control\nAfter=docker.service\n[Service]\nType=simple\nExecStart='+ ' '.join(quoted(v) for v in args)+'\nRestart=no\nUMask=0077\n'
+        unit='[Unit]\nDescription=Spug backup host fresh restore control\nAfter=docker.service\n[Service]\nType=simple\nEnvironmentFile='+str(environment_path)+'\nExecStart='+ ' '.join(quoted(v) for v in args)+'\nRestart=no\nUMask=0077\n'
         path=Path('/etc/systemd/system')/service
         temporary=path.with_suffix('.service.new');temporary.write_text(unit,encoding='utf-8');os.chmod(temporary,0o600)
         os.replace(temporary,path)
@@ -480,9 +579,8 @@ class NativePreparation:
         operation=request['operationId'];require(re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.:-]{7,159}',operation),'PREPARE_OPERATION_INVALID')
         root=plain_path(self.config['stateRoot'])/hashlib.sha256(operation.encode()).hexdigest()
         with ExitStack() as stack:
-            lock_root=plain_path(self.config['hostReservationRoot'])
-            require(str(lock_root)=='/var/lib/spug-restore-resources','PREPARE_SHARED_LOCK_REQUIRED')
-            stack.enter_context(exclusive(lock_root/'lock'))
+            lock_root=Path(self.config['hostReservationRoot'])
+            stack.enter_context(self.host_lock())
             require(not (lock_root/'active.json').exists(),'PREPARE_RESTORE_ACTIVE')
             for path in sorted(self.config.get('sourceLockPaths',[])):stack.enter_context(exclusive(path))
             if root.exists():
@@ -493,6 +591,39 @@ class NativePreparation:
             require(request.get('confirmed') is True and request.get('planDigest')==plan['planDigest'],'PREPARE_PLAN_CHANGED')
             root.mkdir(mode=0o700);write(root/'request.json',request)
             return self.run_stages(request,root,emit)
+
+    def host_lock(self):
+        require(self.config['hostReservationRoot']=='/var/lib/spug-restore-resources','PREPARE_SHARED_LOCK_REQUIRED')
+        return exclusive(Path(self.config['hostReservationRoot'])/'lock')
+
+    def query(self, request):
+        """Prove the original stopped under its execution lock, fencing delayed starts."""
+        operation=request['operationId']
+        require(re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.:-]{7,159}',operation),'PREPARE_OPERATION_INVALID')
+        root=plain_path(self.config['stateRoot'])/hashlib.sha256(operation.encode()).hexdigest()
+        self.identity()
+        try:
+            with self.host_lock():
+                if (root/'request.json').exists():
+                    require(read(root/'request.json')==request,'PREPARE_OPERATION_REUSED')
+                else:
+                    root.mkdir(mode=0o700,exist_ok=True)
+                    write(root/'request.json',request)
+                if (root/'result.json').exists():
+                    result=read(root/'result.json')
+                else:
+                    result=read(root/'status.json') if (root/'status.json').exists() else dict(
+                        operationId=operation,host=HOST,applicationId=request['applicationId'],
+                        recoveryPointRef=request['recoveryPointRef'],stages=[])
+                    result.update(state='FAILED',errorCode='PREPARE_INTERRUPTED',finishedAt=now())
+                    for stage in result['stages']:
+                        if stage['state']=='RUNNING':stage.update(state='FAILED',errorCode='PREPARE_INTERRUPTED',finishedAt=now())
+                    # execute returns this terminal if its SSH request arrives later.
+                    write(root/'result.json',result)
+                return dict(result,workerStopped=True)
+        except PreparationError as error:
+            if str(error)!='PREPARE_TARGET_BUSY':raise
+            return dict(operationId=operation,state='UNKNOWN',workerStopped=False)
 
     def run_stages(self,request,root,emit):
         record=dict(operationId=request['operationId'],host=HOST,applicationId=request['applicationId'],recoveryPointRef=request['recoveryPointRef'],
@@ -510,8 +641,10 @@ class NativePreparation:
         except Exception as error:
             code=str(error) if isinstance(error,PreparationError) else 'PREPARE_NATIVE_FAILED'
             record.update(state='FAILED',errorCode=code,finishedAt=now())
+            if isinstance(error,PreparationError) and error.failure:record['failure']=error.failure
             if record['stages']:
                 record['stages'][-1].update(state='FAILED',errorCode=code,finishedAt=now())
+                if record.get('failure'):record['stages'][-1]['failure']=record['failure']
                 emit(dict(type='stage',stage=record['stages'][-1]))
         write(root/'result.json',record);emit(dict(type='result',record=record));return record
 
@@ -524,9 +657,7 @@ def handle(payload, emit):
     if action=='preview':return native.plan(payload['request'])
     if action=='execute':return native.execute(payload['request'],emit)
     require(action=='query','PREPARE_ACTION_INVALID')
-    operation=payload['operationId'];require(re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.:-]{7,159}',operation),'PREPARE_OPERATION_INVALID')
-    root=Path(native.config['stateRoot'])/hashlib.sha256(operation.encode()).hexdigest()
-    return read(root/'result.json') if (root/'result.json').exists() else read(root/'status.json')
+    return native.query(payload['request'])
 
 
 if __name__=='__main__':

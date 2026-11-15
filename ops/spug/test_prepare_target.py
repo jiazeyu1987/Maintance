@@ -2,6 +2,7 @@
 import tempfile
 from pathlib import Path
 import unittest
+from types import SimpleNamespace
 from unittest.mock import patch
 import prepare_target as p
 
@@ -27,6 +28,37 @@ class TaskContract(unittest.TestCase):
         self.store.reserve(self.request, 1)
         with self.assertRaisesRegex(p.Refused, 'TARGET_BUSY'):
             self.store.reserve(dict(self.request, operationId='prepare-test-5678'), 1)
+
+    def test_ready_unconsumed_target_ignores_only_other_target_restore_history(self):
+        import smallapp_entry as entry
+        config_file=Path(self.temp.name)/'private.conf';config_file.write_text('{}',encoding='utf-8')
+        cfg=dict(applicationId='app',sourceConfigRef='source',stateRoot=str(self.store.root))
+        request=dict(schemaVersion='SmallAppBackupUiRequest/v1',operationId='first-fresh-restore',action='RESTORE',
+                     sourceConfigRef='source',targetConfigRef='new-target',recoveryPointRef='point',parentChainRef=None)
+        bridge=SimpleNamespace(fingerprint='binding');bridge.for_request=lambda original:bridge
+        app=dict(applicationId='app',registrationSha256='a'*64)
+        for scenario in ('fresh','same-target','not-ready','source-backup'):
+            with self.subTest(scenario=scenario):
+                ui=Path(self.temp.name)/scenario;ui.mkdir();journal=ui/'journal';journal.mkdir()
+                old=dict(request,operationId='smallapp-1fd7a5899db54511bee4daec85e271f8',targetConfigRef='old-58')
+                if scenario=='same-target':old['targetConfigRef']='new-target'
+                if scenario=='source-backup':old.update(action='FULL',targetConfigRef=None,recoveryPointRef=None)
+                p.adapter.write_json(entry.record_path(old['operationId'],ui),dict(request=old,bridgeFingerprint='binding'))
+                row=dict(operationId='preparation-ready',state='READY' if scenario!='not-ready' else 'FAILED',
+                         targetConfigRef='new-target',host=p.HOST,applicationId='app',startedAt=p.now(),
+                         stages=[dict(name=name,state='SUCCEEDED') for name in p.STAGES])
+                self.store.save(row)
+                with patch.object(p,'CONFIG',config_file),patch.object(p,'configuration',return_value=cfg), \
+                     patch.object(p,'target_refs',return_value={'new-target'}),patch.object(p.adapter,'RECORDS',journal), \
+                     patch.object(entry,'admit_selection',return_value=app) as admission:
+                    if scenario=='fresh':
+                        record,created=entry.reserve(request,{'tasks':{'RESTORE':1}},bridge,1,ui)
+                        self.assertTrue(created);self.assertEqual(record['request'],request)
+                        admission.assert_called_once_with(request,{'tasks':{'RESTORE':1}},bridge)
+                    else:
+                        with self.assertRaisesRegex(p.Refused,'ORIGINAL_OPERATION_STILL_UNRESOLVED'):
+                            entry.reserve(request,{'tasks':{'RESTORE':1}},bridge,1,ui)
+                        admission.assert_not_called()
 
     def test_failed_initialization_never_ready_and_does_not_publish(self):
         self.store.reserve(self.request, 1)
@@ -57,6 +89,18 @@ class TaskContract(unittest.TestCase):
         row=self.store.get(self.request['operationId'])
         self.assertEqual(row['state'],'FAILED')
         self.assertEqual(row['errorCode'],'REGISTRATION_FAILED')
+
+    def test_native_command_failure_is_visible_in_public_record_and_stopped(self):
+        self.store.reserve(self.request,1)
+        failure=dict(action='DOCKER_VOLUME_RM',object='old-minio',exitCode=1,reason='RESOURCE_BUSY')
+        stage=dict(name='cleanup',state='FAILED',errorCode='PREPARE_NATIVE_COMMAND_FAILED',failure=failure)
+        result=dict(state='FAILED',errorCode='PREPARE_NATIVE_COMMAND_FAILED',failure=failure,stages=[stage])
+        p.run_task(self.store,self.request,{},lambda *a:result,lambda *a:self.fail('must not publish'))
+        row=p.public_record(self.store.get(self.request['operationId']))
+        self.assertEqual(row['state'],'FAILED')
+        self.assertEqual(row['failure'],failure)
+        self.assertEqual(row['stages'][1]['failure'],failure)
+        self.assertTrue(self.store.reserve(dict(self.request,operationId='prepare-again-1234'),1)[1])
 
     def test_configuration_missing_is_explicit(self):
         self.assertEqual(p.public_configuration(Path(self.temp.name)/'absent.json'),
@@ -104,7 +148,7 @@ class TaskContract(unittest.TestCase):
             self.assertEqual(p.preview(selection),plan)
             remote.assert_called_once()
 
-    def test_completed_restore_reuses_existing_terminal_without_refresh(self):
+    def test_old_restore_history_cannot_block_new_preparation(self):
         import smallapp_entry as entry
         import prepare_target_registration as registration
         entries=Path(self.temp.name)/'entry';entries.mkdir()
@@ -112,15 +156,35 @@ class TaskContract(unittest.TestCase):
         original=dict(schemaVersion='SmallAppBackupUiRequest/v1',operationId='old-restore',action='RESTORE',
             sourceConfigRef='source',targetConfigRef='target59',recoveryPointRef='point',parentChainRef=None)
         p.adapter.write_json(entries/'old.json',dict(request=original,dispatchState='DISPATCHED'))
-        p.adapter.write_json(journal/(p.hashlib.sha256(b'old-restore').hexdigest()+'.json'),
-                             dict(lastResult={'state':'FAILED'}))
         config=dict(applicationId='app',sourceConfigRef='source',stateRoot=str(Path(self.temp.name)/'tasks'))
         with patch.object(p,'configuration',return_value=config),patch.object(entry,'ENTRIES',entries), \
              patch.object(p.adapter,'RECORDS',journal),patch.object(p,'target_refs',return_value={'target59'}), \
-             patch.object(p.adapter,'request_bridge'),patch.object(p.adapter,'execute',return_value={'state':'FAILED'}) as query, \
+             patch.object(p.adapter,'request_bridge'),patch.object(p.adapter,'execute',side_effect=AssertionError('old history query')) as query, \
              patch.object(entry,'original_result',side_effect=AssertionError('terminal remote refresh')), \
              patch.object(registration,'preflight'),patch.object(p.threading,'Thread'):
             self.assertEqual(p.submit(self.request,1)['state'],'PENDING')
-            self.assertIs(query.call_args.kwargs['refresh_terminal'],False)
+            query.assert_not_called()
+
+    def test_unknown_query_unlocks_only_after_remote_confirms_stopped(self):
+        self.store.reserve(self.request,1)
+        row=self.store.get(self.request['operationId']);row.update(state='UNKNOWN')
+        self.store.save(row)
+        config={'stateRoot':str(self.store.root)}
+        remote=dict(operationId=self.request['operationId'],state='FAILED',workerStopped=False,
+                    errorCode='PREPARE_INTERRUPTED',stages=[])
+        with patch.object(p,'configuration',return_value=config),patch.object(p,'remote',return_value=remote) as query:
+            self.assertEqual(p.query(self.request['operationId'])['state'],'UNKNOWN')
+            remote['workerStopped']=True
+            self.assertEqual(p.query(self.request['operationId'])['state'],'FAILED')
+            self.assertEqual(query.call_args.args[1],'query')
+        self.assertTrue(self.store.reserve(dict(self.request,operationId='new-prepare-id'),1)[1])
+
+    def test_unknown_query_connection_failure_does_not_unlock(self):
+        self.store.reserve(self.request,1)
+        row=self.store.get(self.request['operationId']);row.update(state='UNKNOWN');self.store.save(row)
+        with patch.object(p,'configuration',return_value={'stateRoot':str(self.store.root)}), \
+             patch.object(p,'remote',side_effect=p.Refused('PREPARATION_REMOTE_FAILED')):
+            with self.assertRaises(p.Refused):p.query(self.request['operationId'])
+        self.assertEqual(self.store.get(self.request['operationId'])['state'],'UNKNOWN')
 
 if __name__=='__main__':unittest.main()

@@ -353,11 +353,18 @@ def reserve_locked(request, config, bridge, user_id, root, display_context_facto
         return record, False
     import prepare_target
     prepare_target.block_while_preparing(request)
-    # An unknown original cannot be bypassed by generating another operation ID.
-    for prior_path in Path(root).glob('*.json'):
-        prior = adapter.read_json(prior_path)
+    priors=[adapter.read_json(prior_path) for prior_path in Path(root).glob('*.json')]
+    fresh_prepared=prepare_target.ready_target(request) and not any(
+        prior.get('request',{}).get('action')=='RESTORE' and
+        prior['request'].get('targetConfigRef')==request['targetConfigRef'] and
+        prior.get('dispatchState')!='CANCELLED_UNACCEPTED' for prior in priors)
+    # A fresh prepared target is independent of other targets' old restores.
+    # Unresolved originals for this target or source backups still block.
+    for prior in priors:
         original = adapter.validate_request(prior.get('request'))
         if original['sourceConfigRef'] != request['sourceConfigRef']:
+            continue
+        if fresh_prepared and original['action']=='RESTORE' and original['targetConfigRef']!=request['targetConfigRef']:
             continue
         if prior.get('dispatchState') == 'CANCELLED_UNACCEPTED':
             validate_cancellation(prior)

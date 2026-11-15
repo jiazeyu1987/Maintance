@@ -35,7 +35,7 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
         'control/recovery_control_incremental_plan.py', 'control/recovery_control_smallapp.py',
         'common/recovery_backup_epoch.py', 'common/recovery_sql_stream.py', 'common/recovery_target_sources.py',
         'control/recovery_control_point_quarantine.py', 'formal/formal_binlog_scope.py',
-        'common/recovery_replace.py', 'common/recovery_data.py', 'formal/formal_data_evidence.py', 'formal/formal_schema_evidence.py',
+        'common/recovery_replace.py', 'common/recovery_data.py', 'common/recovery_data_files.py', 'formal/formal_data_evidence.py', 'formal/formal_schema_evidence.py',
         'common/recovery_main_target.py', 'common/recovery_archive_versions.py', 'common/recovery_program_archive.py',
         'common/recovery_program_containers.py',
         'common/recovery_program_generation.py',
@@ -52,7 +52,14 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
         'control/recovery_control_restore_catalogue.py', 'control/recovery_control_smallapp_http.py',
         'formal/minimal_capture_support.py', 'formal/minimal_capture_worker.py',
         'formal/formal_capture_semantics.py', 'formal/formal_capture_parent_guard.py',
-        'formal/minimal_redis_snapshot.py'}
+        'formal/minimal_redis_snapshot.py',
+        # Existing int_main preservation/retention transforms remain part of
+        # the reviewed standard package when the prepared-target fixes merge.
+        'common/recovery_capture_materials.py', 'common/recovery_preservation_inputs.py',
+        'common/recovery_preservation_source.py', 'common/recovery_program_retry.py',
+        'common/recovery_restore_inputs.py', 'common/recovery_target_capture.py',
+        'common/recovery_target_preservation.py', 'common/repository_native_readback.py',
+        'common/repository_retention.py', 'formal/formal_snapshot_linux.py'}
     assert {name for name, raw in reviewed.items() if original.get(name) != raw} <= allowed
     with tarfile.open(packages/'backup-restore-standard.tgz') as archive:
         version = json.load(archive.extractfile('package.json'))
@@ -413,16 +420,16 @@ print(json.dumps({'prepared':True,'destructiveSqlTracked':True}))
 
 @pytest.mark.parametrize('registered_main',[True,False])
 def test_safe_registered_main_archive_inputs_do_not_require_rehearsal_firewall(packages,tmp_path,registered_main):
-    """Execute the shipped initializer's actual lease/hash block on real files."""
+    """Lease real metadata and tools without opening all archived payloads."""
     if sys.platform!='linux':pytest.skip('Real Linux O_PATH/inotify lease required')
     with tarfile.open(packages/'backup-restore-standard.tgz') as archive:
         archive.extractall(tmp_path/'package',filter='data')
     program=r'''
-import ast,json,sys
+import ast,json,resource,sys
 from pathlib import Path
 from types import SimpleNamespace
 sys.path.insert(0,sys.argv[1]+'/common')
-from recovery_engine import pin,require,absolute,signature,check_pin
+from recovery_engine import pin,require,absolute,signature,check_pin,RecoveryError
 root=Path(sys.argv[2]);root.mkdir()
 files=[]
 for name in ('payload','version','material','docker','input'):
@@ -431,7 +438,10 @@ payload,version,material,docker,control=[pin(p) for p in files]
 target={'dockerPin':docker,'iptablesPin':{'path':str(root/'missing-rehearsal-iptables'),'bytes':1,'sha256':'0'*64}}
 main=sys.argv[3]=='True'
 if main:target['mainApplication']={'contract':'registered MAIN path selected before initialization'}
-chain=[(material,None,{'payloadPins':[payload],'versionPins':[version]},material)]
+payloads=[dict(payload,path=str(root/('unopened-payload-%d'%i))) for i in range(15000)] if main else [payload]
+chain=[(material,None,{'payloadPins':payloads,'versionPins':[version]},material)]
+soft,hard=resource.getrlimit(resource.RLIMIT_NOFILE)
+resource.setrlimit(resource.RLIMIT_NOFILE,(min(1024,hard),hard))
 self=SimpleNamespace(input_pins=[control])
 tree=ast.parse((Path(sys.argv[1])/'common/recovery_minimal_runtime.py').read_text())
 klass=next(n for n in tree.body if isinstance(n,ast.ClassDef) and n.name=='MinimalData')
@@ -448,15 +458,142 @@ try:
   assert not main,'Registered MAIN must not lease an unused rehearsal firewall executable'
  else:
   assert main,'Rehearsal must still require its actual firewall executable'
-  assert set(self.payload_signatures)=={str(p) for p in files}
-  assert set(self.archive_guard.path_fds)>={str(p) for p in files} or set(map(str,self.archive_guard.path_fds))>={str(p) for p in files}
+  assert set(self.payload_signatures)=={str(p) for p in files[1:]}
+  held=set(map(str,self.archive_guard.path_fds))
+  assert held>={str(p) for p in files[1:]}
+  assert not held.intersection(ref['path'] for ref in payloads)
   self.archive_guard.check()
+  (root/'input').write_bytes(b'changed-input')
+  try:self.archive_guard.check()
+  except RecoveryError as error:assert str(error)=='ARCHIVED_PAYLOAD_CHANGED'
+  else:raise AssertionError('input mutation was not detected')
 finally:
  if getattr(self,'archive_guard',None) is not None:self.archive_guard.close()
-print(json.dumps({'registeredMain':main,'allArchiveVersionDockerAndInputLeasesRequired':True}))
+print(json.dumps({'registeredMain':main,'metadataAndExecutableLeasesOnly':True}))
 '''
     result=subprocess.run([sys.executable,'-B','-c',program,str(tmp_path/'package'),str(tmp_path/'files'),str(registered_main)],capture_output=True,text=True)
     assert result.returncode==0,result.stderr
+
+
+def test_standard_selected_chain_avoids_payload_admission_and_restores_real_delta(packages,tmp_path):
+    """Use the existing full/delta fixture with the actual standard file engine."""
+    with tarfile.open(packages/'backup-restore-standard.tgz') as archive:
+        archive.extractall(tmp_path/'package',filter='data')
+    program=r'''
+import ast,gzip,hashlib,json,sys,tempfile,unittest
+from pathlib import Path
+from unittest.mock import patch
+sys.executable=str(Path(sys.executable).resolve())
+sys.path.insert(0,sys.argv[1]+'/common')
+from recovery_engine import canonical,pin,write
+from recovery_data_files import apply_tree,inventory,physical_chain_inputs,tree_delta
+import recovery_data_files as files
+import recovery_minimal_plan as plan
+selected_chain=plan.selected_chain
+tree=ast.parse(Path(sys.argv[2]).read_text(encoding='utf-8'))
+fixture=next(n for n in tree.body if isinstance(n,ast.ClassDef) and n.name=='MinimalTests')
+fixture.body=[n for n in fixture.body if isinstance(n,ast.FunctionDef) and n.name in ('setUp','tearDown','chain')]
+exec(compile(ast.Module(body=[fixture],type_ignores=[]),'existing-full-delta-fixture','exec'))
+case=MinimalTests();case.setUp()
+try:
+ with patch.object(plan,'archived_tree',side_effect=AssertionError('duplicate archive scan')), \
+      patch.object(plan,'object_index_chain',side_effect=AssertionError('duplicate object scan')):
+  _,_,chain=case.chain()
+ assert [step[1]['pointType'] for step in chain]==['FULL','INCREMENTAL']
+ target=case.root/'target';target.mkdir()
+ opened=[];original_open=Path.open
+ source_paths={ref['path'] for step in chain for ref in step[2]['objects']['filePayloadPins'].values()}
+ def observed_open(path,*args,**kwargs):
+  if str(path) in source_paths:opened.append(str(path))
+  return original_open(path,*args,**kwargs)
+ with patch.object(files,'check_pin',side_effect=AssertionError('duplicate physical payload hash')), \
+      patch.object(files,'pin',side_effect=AssertionError('duplicate copied file readback')), \
+      patch.object(Path,'open',observed_open):
+  steps=physical_chain_inputs(chain,verify_content=False)
+  for index,(_,before,after,payloads,_,_) in enumerate(steps):
+   result=apply_tree(target,before,after,payloads,full=index==0,guard=lambda:None,verify_content=False)
+   assert result['completeTreeReadback'] is False
+ assert sorted(opened)==sorted(source_paths)
+ assert set(inventory(target,lambda:None))=={'new.bin'}
+ assert (target/'new.bin').read_bytes()==b'real-delta-fixture-bytes'
+ _,before,after,payloads,_,_=steps[0]
+ from recovery_engine import RecoveryError
+ try:apply_tree(target,before,after,payloads,full=True,guard=lambda:None,verify_content=False)
+ except RecoveryError:pass
+ else:raise AssertionError('nonempty target overwritten')
+ missing=case.root/'missing-target';missing.mkdir()
+ for ref in payloads.values():Path(ref['path']).unlink()
+ try:apply_tree(missing,before,after,payloads,full=True,guard=lambda:None,verify_content=False)
+ except (RecoveryError,OSError):pass
+ else:raise AssertionError('missing source reported success')
+finally:case.tearDown()
+'''
+    result=subprocess.run([sys.executable,'-B','-c',program,str(tmp_path/'package'),
+        str(ROOT/'ops/recovery/test_recovery_minimal.py')],capture_output=True,text=True)
+    assert result.returncode==0,result.stderr
+
+
+def test_standard_physical_result_avoids_content_readback_and_reports_unverified(packages,tmp_path):
+    with tarfile.open(packages/'backup-restore-standard.tgz') as archive:
+        archive.extractall(tmp_path/'package',filter='data')
+    program=r'''
+import ast,hashlib,json,re,sys
+from pathlib import Path
+from types import SimpleNamespace
+from unittest.mock import Mock
+sys.path.insert(0,sys.argv[1]+'/common')
+from recovery_engine import canonical,check_pin,pinned_json,require,utc,write
+root=Path(sys.argv[2]);root.mkdir()
+source=(Path(sys.argv[1])/'common/recovery_minimal_runtime.py').read_text()
+klass=next(n for n in ast.parse(source).body if isinstance(n,ast.ClassDef) and n.name=='MinimalData')
+physical=next(n for n in klass.body if isinstance(n,ast.FunctionDef) and n.name=='physical_object_chain')
+calls=[ast.unparse(n) for n in ast.walk(physical) if isinstance(n,ast.Call)]
+assert not any('export_s3_versions' in call or 'compare_indexed_restore' in call for call in calls)
+returned=next(n for n in physical.body if isinstance(n,ast.Return))
+assert any(k.arg=='payloadContentVerified' and isinstance(k.value,ast.Constant) and k.value.value is False
+           for k in returned.value.keywords)
+source=(Path(sys.argv[1])/'common/recovery_data.py').read_text()
+klass=next(n for n in ast.parse(source).body if isinstance(n,ast.ClassDef) and n.name=='NativeData')
+method=next(n for n in klass.body if isinstance(n,ast.FunctionDef) and n.name=='consistency')
+mapping=dict(sourceBucket='b',targetBucket='b',key='x',sourceVersionId='v',targetVersionId='v',kind='version',isLatest=True)
+mapping_pin=write(root/'mapping.jsonl',mapping)
+db=write(root/'db.json',dict(recoveryPoint='point'))
+objects=write(root/'objects.json',dict(recoveryPoint='point',versionMappingPin=mapping_pin,payloadContentVerified=False))
+references=write(root/'references.json',dict(schemaVersion='RecoveryReferenceInventory/v1',recoveryPoint='point',
+ complete=True,databaseRows=[],objectReferences=[dict(bucket='b',key='x',sourceVersionId='v',bytes=1,sha256='0'*64)]))
+client=SimpleNamespace(content=Mock(side_effect=AssertionError('duplicate reference content read')))
+self=SimpleNamespace(bound=lambda:None,object_client=lambda:client,
+ request=dict(databaseResultPin=db,objectResultPin=objects),plan=dict(recoveryPoint='point'),
+ material=dict(referenceInventoryPin=references),policy=dict(referenceQueries=[],businessInvariants=[]),
+ target=dict(targetIdentityPin={}))
+scope=dict(globals());exec(compile(ast.Module(body=[method],type_ignores=[]),'packaged-consistency','exec'),scope)
+result=scope['consistency'](self)
+assert result['payloadContentVerified'] is False
+client.content.assert_not_called()
+'''
+    result=subprocess.run([sys.executable,'-B','-c',program,str(tmp_path/'package'),str(tmp_path/'work')],
+                          capture_output=True,text=True)
+    assert result.returncode==0,result.stderr
+
+
+def test_standard_final_archive_step_checks_metadata_without_reopening_payloads(packages):
+    import ast
+    from contextlib import nullcontext
+    from types import SimpleNamespace
+    from unittest.mock import Mock
+    with tarfile.open(packages/'backup-restore-standard.tgz') as archive:
+        tree=ast.parse(archive.extractfile('common/recovery_minimal_runtime.py').read())
+    execute=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name=='execute_empty')
+    final=next(n for n in ast.walk(execute) if isinstance(n,ast.With) and
+        any(isinstance(arg,ast.Constant) and arg.value=='archive-verification'
+            for item in n.items for arg in getattr(item.context_expr,'args',[])))
+    guard=Mock()
+    scope=dict(native=SimpleNamespace(root=Path('/unused'),archive_guard=guard),
+        chain=[(None,None,{'payloadPins':[{'path':'/never-open'}]})],
+        step_timing=lambda *args:nullcontext(),
+        check_pin=Mock(side_effect=AssertionError('duplicate final payload scan')))
+    exec(compile(ast.Module(body=[final],type_ignores=[]),'packaged-final-archive-step','exec'),scope)
+    guard.check.assert_called_once_with()
 
 
 @pytest.mark.parametrize('variant', builder.VARIANTS)

@@ -1,7 +1,7 @@
 """Reviewed safe-engine fixes applied to the authenticated frozen baseline.
 
-Patch contexts fail closed. The stored baseline and its original checks remain
-intact; timing transforms additionally compare the original statement AST.
+Patch contexts fail closed. The stored baseline stays intact; only the reviewed
+transforms alter delivered behavior. Timing also compares the original AST.
 """
 from pathlib import Path
 import ast
@@ -529,6 +529,170 @@ def target_preservation_repository(payload, root):
             raise ValueError('STANDARD_PRESERVATION_RETENTION_CONTEXT_CHANGED')
         text = text.replace(selected, selected.replace(before, after))
     payload[member] = text.encode()
+
+
+def prepare_target_bind_mounts(payload, root):
+    """Use the resources explicitly created by the empty-target preparer."""
+    member = 'common/recovery_minimal_runtime.py'
+    source = payload[member].decode('utf-8').replace('\r\n', '\n')
+    helper = '''def prepared_data_bind(config, source, role, mount):
+    destinations = {'mysql': '/var/lib/mysql', 'minio': '/data', 'redis': '/data'}
+    if (config.get('preparedEmptyTarget') is not True or role not in destinations or
+            mount['Type'] != 'bind' or mount['RW'] is not True):
+        return False
+    path, root = absolute(mount['Source']), absolute(config['dataRoot'])
+    return (path == root / role and mount['Source'] in config['dataPaths'] and
+            mount['Destination'] == destinations[role] and
+            all(disjoint(str(path), protected) for protected in
+                (*source['sourcePaths'], *source['archiveRoots'])))
+
+
+'''
+    changes = (
+        ('class MinimalData(NativeData):', helper + 'class MinimalData(NativeData):'),
+        ("        app = self.config['application']\n",
+         "        app = self.config['application']\n"
+         "        if self.config.get('preparedEmptyTarget') is True:\n"
+         "            # Native creation and bound() already bind actual images and mounts.\n"
+         "            applications = set(self.config_services) - {'mysql', 'minio', 'redis'}\n"
+         "            require(set(app['startOrder']) == applications and len(app['startOrder']) == len(applications),\n"
+         "                    'APPLICATION_START_ORDER_INVALID')\n"
+         "            return\n"),
+        ("        if not registered_main(target):\n            executables.append(target['iptablesPin'])\n",
+         "        if not registered_main(target) and target.get('preparedEmptyTarget') is not True:\n"
+         "            executables.append(target['iptablesPin'])\n"),
+        ("                require(mount['Type'] != 'bind' or mount['RW'] is False, 'WRITABLE_HOST_BIND_REJECTED')\n",
+         "                require(mount['Type'] != 'bind' or mount['RW'] is False or\n"
+         "                        prepared_data_bind(self.config, self.source, role, mount), 'WRITABLE_HOST_BIND_REJECTED')\n"),
+        ("        for rule in rules:\n", "        for rule in ([] if self.config.get('preparedEmptyTarget') is True else rules):\n"),
+        ("                    require(mount['Type'] == 'volume' and mount['Source'] not in writable, 'SHARED_TARGET_DATA_VOLUME')\n"
+         "                    writable[mount['Source']] = self.config_services[role]['id']\n",
+         "                    require((mount['Type'] == 'volume' or prepared_data_bind(self.config, self.source, role, mount))\n"
+         "                            and mount['Source'] not in writable, 'SHARED_TARGET_DATA_VOLUME')\n"
+         "                    writable[mount['Source']] = self.config_services[role]['id']\n"
+         "                    if mount['Type'] == 'bind':\n                        continue\n"),
+        ("            require(len(mounts) == 1 and mounts[0]['Type'] == 'volume' and mounts[0]['RW'],\n"
+         "                    'DEDICATED_MINIO_DATA_VOLUME_REQUIRED')\n"
+         "            mount = mounts[0]\n"
+         "            volume = json.loads(self.docker(['volume', 'inspect', mount['Name']]))[0]\n"
+         "            require(volume['Driver'] == 'local' and not volume['Options'] and volume['Mountpoint'] == mount['Source'],\n"
+         "                    'PHYSICAL_TARGET_VOLUME_INVALID')\n",
+         "            require(len(mounts) == 1 and mounts[0]['RW'] and (mounts[0]['Type'] == 'volume' or\n"
+         "                    prepared_data_bind(self.config, self.source, 'minio', mounts[0])),\n"
+         "                    'DEDICATED_MINIO_DATA_VOLUME_REQUIRED')\n"
+         "            mount = mounts[0]\n"
+         "            if mount['Type'] == 'volume':\n"
+         "                volume = json.loads(self.docker(['volume', 'inspect', mount['Name']]))[0]\n"
+         "                require(volume['Driver'] == 'local' and not volume['Options'] and volume['Mountpoint'] == mount['Source'],\n"
+         "                        'PHYSICAL_TARGET_VOLUME_INVALID')\n"),
+        ("                    require(all(item.get('Name') != mount['Name'] and item['Source'] != mount['Source']\n",
+         "                    require(all((mount['Type'] != 'volume' or item.get('Name') != mount['Name'])\n"
+         "                        and item['Source'] != mount['Source']\n"),
+    )
+    for before, after in changes:
+        if source.count(before) != 1:
+            raise ValueError('STANDARD_PREPARED_TARGET_CONTEXT_CHANGED ' + member)
+        source = source.replace(before, after)
+    compile(source, member, 'exec')
+    payload[member] = source.encode('utf-8')
+
+
+def restore_admission_metadata(payload, root):
+    """Resolve the selected chain without reopening or leasing every payload.
+
+    Keep the frozen target/MAIN contracts and actual SAFE data readers. Payloads
+    are read by the restore steps; admission protects only its metadata/tools.
+    """
+    member = 'common/recovery_minimal_plan.py'
+    source = payload[member].decode('utf-8').replace('\r\n', '\n')
+    current = (root/'ops/recovery/recovery_minimal_plan.py').read_text(encoding='utf-8')
+    before = _preservation_declaration(source, None, 'selected_chain')
+    after = _preservation_declaration(current, None, 'selected_chain')
+    payload[member] = source.replace(before, after).encode('utf-8')
+
+    member = 'common/recovery_minimal_runtime.py'
+    source = payload[member].decode('utf-8').replace('\r\n', '\n')
+    changes = (
+        ("            for ref in step[2]['payloadPins'] + step[2]['versionPins'] + [step[0], step[3]]:\n",
+         "            # Payloads are consumed by the actual restore, not leased en masse.\n"
+         "            for ref in step[2]['versionPins'] + [step[0], step[3]]:\n"),
+        ("        with step_timing(native.root, 'archive-verification'):\n"
+         "            for step in chain:\n"
+         "                for ref in step[2]['payloadPins']:\n"
+         "                    check_pin(ref, content=False)\n",
+         "        with step_timing(native.root, 'archive-verification'):\n"
+         "            native.archive_guard.check()\n"),
+    )
+    for before, after in changes:
+        if source.count(before) != 1:
+            raise ValueError('STANDARD_RESTORE_ADMISSION_CONTEXT_CHANGED ' + member)
+        source = source.replace(before, after)
+    payload[member] = source.encode('utf-8')
+
+
+def physical_restore_reads(payload, root):
+    """Read physical payloads for copying, without extra whole-content passes."""
+    def update(member, owner, name, changes):
+        text = payload[member].decode('utf-8').replace('\r\n', '\n')
+        before = _preservation_declaration(text, owner, name)
+        after = before
+        for old, new in changes:
+            if after.count(old) != 1:
+                raise ValueError('STANDARD_PHYSICAL_READ_CONTEXT_CHANGED ' + name)
+            after = after.replace(old, new)
+        payload[member] = text.replace(before, after).encode('utf-8')
+
+    member = 'common/recovery_data_files.py'
+    update(member, None, 'physical_chain_inputs', (
+        ('def physical_chain_inputs(chain):', 'def physical_chain_inputs(chain, *, verify_content=True):'),
+        ('"""Validate every capture/delta/content before stopping or clearing storage."""',
+         '"""Resolve capture/delta metadata, optionally checking payload content."""'),
+        ('            check_pin(ref, content=False)\n',
+         '            if verify_content:\n                check_pin(ref, content=False)\n'),
+    ))
+    update(member, None, 'apply_tree', (
+        ('*, full, guard, ownership=None):', '*, full, guard, ownership=None, verify_content=True):'),
+        ("    require(inventory(root, guard) == before, 'OFFLINE_TARGET_TREE_CHANGED')\n",
+         "    if verify_content:\n        require(inventory(root, guard) == before, 'OFFLINE_TARGET_TREE_CHANGED')\n"),
+        ("        require(not before, 'FULL_FILE_TARGET_NOT_EMPTY')\n",
+         "        require(not before and not any(root.iterdir()), 'FULL_FILE_TARGET_NOT_EMPTY')\n"),
+        ('        relative(name); check_pin(ref, content=False)\n',
+         '        relative(name)\n        if verify_content:\n            check_pin(ref, content=False)\n'),
+        ("            check_pin(payloads[name], content=False)\n"
+         "            require(pin(temporary)['sha256'] == item['sha256'] and pin(temporary)['bytes'] == item['bytes'],\n"
+         "                    'COPIED_FILE_READBACK_MISMATCH')\n",
+         "            if verify_content:\n"
+         "                check_pin(payloads[name], content=False)\n"
+         "                require(pin(temporary)['sha256'] == item['sha256'] and pin(temporary)['bytes'] == item['bytes'],\n"
+         "                        'COPIED_FILE_READBACK_MISMATCH')\n"),
+        ("    require(inventory(root, guard) == after, 'OFFLINE_FILE_READBACK_MISMATCH')\n",
+         "    if verify_content:\n        require(inventory(root, guard) == after, 'OFFLINE_FILE_READBACK_MISMATCH')\n"),
+        ("'completeTreeReadback': True", "'completeTreeReadback': verify_content"),
+    ))
+    update('common/recovery_minimal_runtime.py', 'MinimalData', 'physical_object_chain', (
+        ('        from recovery_data_objects import compare_indexed_restore\n', ''),
+        ('physical_chain_inputs(self.chain)', 'physical_chain_inputs(self.chain, verify_content=False)'),
+        ("                               ownership=self.policy['minioFileOwnership'])",
+         "                               ownership=self.policy['minioFileOwnership'], verify_content=False)"),
+        ("        export = self.modules['formal_s3_export'].export_s3_versions(self.object_client(), self.config['buckets'],\n"
+         "            self.root/'physical-export', guard=self.guard, timeout=self.seconds())\n"
+         "        self.bound()\n"
+         "        comparison = compare_indexed_restore(self.chain, self.policy, self.root/'physical-export', export,\n"
+         "            self.modules['formal_physical_restore_readback'], self.guard)\n",
+         "        comparison = dict(state='NOT_PERFORMED', payloadContentVerified=False,\n"
+         "            exactVersionIdentityVerified=False, productionEvidence=False)\n"),
+        ('            permissionEvidencePin=self.check_bucket_permissions(), originalVersionIdsPreserved=True)',
+         '            permissionEvidencePin=self.check_bucket_permissions(), originalVersionIdsPreserved=True,\n'
+         '            payloadContentVerified=False)'),
+    ))
+    update('common/recovery_data.py', 'NativeData', 'consistency', (
+        ("            response, headers = client.content(match['targetBucket'], match['key'], match['targetVersionId'])\n",
+         "            if objects.get('payloadContentVerified') is False:\n                continue\n"
+         "            response, headers = client.content(match['targetBucket'], match['key'], match['targetVersionId'])\n"),
+        ('                    invariantsVerified=True, applicationVerified=False, observedAt=utc())',
+         "                    invariantsVerified=True, payloadContentVerified=objects.get('payloadContentVerified', True),\n"
+         '                    applicationVerified=False, observedAt=utc())'),
+    ))
 
 
 def apply(payload):
@@ -1081,4 +1245,7 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     program_worker_handoff(payload, root)
     target_preservation_capture(payload, root)
     target_preservation_repository(payload, root)
+    restore_admission_metadata(payload, root)
+    physical_restore_reads(payload, root)
+    prepare_target_bind_mounts(payload, root)
     return payload

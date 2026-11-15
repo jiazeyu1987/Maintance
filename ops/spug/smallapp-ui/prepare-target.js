@@ -12,7 +12,10 @@ function createPrepareTarget({document,api,storage,randomId,selection,isBusy,onR
   const validRef=value=>typeof value==='string'&&/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,159}$/.test(value);
   const current=()=>{const s=selection();return {applicationId:s.applicationId,recoveryPointRef:s.recoveryPointRef};};
   const same=(left,right)=>left?.applicationId===right?.applicationId&&left?.recoveryPointRef===right?.recoveryPointRef;
-  const blocked=()=>storageError||working||!!plan||!!operation&&operation.state!=='READY';
+  const blocked=()=>storageError||working||!!plan||!!operation&&!['READY','FAILED'].includes(operation.state);
+  const restoreBlocked=()=>blocked()||operation?.state==='FAILED';
+  const targetReady=(applicationId,targetRef)=>[operation,...history].some(row=>
+    row?.state==='READY'&&row.applicationId===applicationId&&row.targetConfigRef===targetRef);
   const eligible=()=>{const s=selection();return s.restoring&&s.host===host&&validRef(s.applicationId)&&validRef(s.recoveryPointRef);};
   function validateRecord(value,expected) {
     if(!value||!validId(value.operationId)||value.host!==host||!validRef(value.applicationId)||!validRef(value.recoveryPointRef)||
@@ -38,6 +41,7 @@ function createPrepareTarget({document,api,storage,randomId,selection,isBusy,onR
     const note=error||(configuration===null?'正在读取空目标准备配置…':!configuration.configured?
       '准备功能未配置：'+(configuration.errorCode||'PREPARE_NOT_CONFIGURED'):
       s.host!==host?'空目标准备仅支持备份服务器 172.30.30.59。':!eligible()?'请选择应用和备份点。':
+      operation?.state==='FAILED'?'本次准备已停止，可以重新准备空目标。':
       operation&&operation.state!=='READY'?'已有准备任务，请查看执行进度。':'准备依赖、清理旧环境并初始化空目标。');
     get('prepare-target-status').textContent=note;
     get('prepare-target-start').disabled=!configuration?.configured||!eligible()||blocked()||isBusy();
@@ -49,9 +53,10 @@ function createPrepareTarget({document,api,storage,randomId,selection,isBusy,onR
         `备份点：${operation.recoveryPointRef}`];
       for(const stage of operation.stages)rows.push(`${stageNames[stage.name]}：${stateNames[stage.state]||'状态未知'}${stage.errorCode?' · '+stage.errorCode:''}`);
       if(operation.errorCode)rows.push('原因：'+operation.errorCode);
+      if(operation.failure){const f=operation.failure;rows.push(`失败动作：${f.action} · 对象：${f.object||'—'} · 退出码：${f.exitCode??'—'} · ${f.reason}`);}
       if(error)rows.push(error);
       if(operation.state==='READY')rows.push('可恢复目标：'+operation.targetConfigRef);
-      if(operation.state==='FAILED')rows.push('本次准备已停止，保留现场和原任务记录。');
+      if(operation.state==='FAILED')rows.push('本次准备已停止，保留原任务记录，可以重新准备空目标。');
       if(operation.state==='UNKNOWN')rows.push('请查询原任务，暂不重新提交清理。');
       get('prepare-target-progress').textContent=rows.join('\n');
     }
@@ -127,7 +132,12 @@ function createPrepareTarget({document,api,storage,randomId,selection,isBusy,onR
     try {save(request);}catch(cause){storageError=true;error='无法保存原任务编号，未提交：'+textError(cause);render();return;}
     operation=provisional(request);working=true;plan=null;error='';get('prepare-target-confirm').close();render();onDispatch();
     try {await apply(await api('/prepare-target/operations',request));}
-    catch(cause) {error='准备提交结果未知，请查询原任务：'+textError(cause);}
+    catch(cause) {
+      if(cause.status===409&&cause.rejection?.errorCode==='PREPARATION_TARGET_BUSY'){
+        try {storage.removeItem(storageKey);operation=null;error='准备未受理：'+textError(cause);}
+        catch(storageCause){storageError=true;error='未受理，但原编号清除失败：'+textError(storageCause);}
+      } else error='准备提交结果未知，请查询原任务：'+textError(cause);
+    }
     finally {working=false;render();}
     await loadHistory();
   }
@@ -138,7 +148,7 @@ function createPrepareTarget({document,api,storage,randomId,selection,isBusy,onR
   get('prepare-target-cancel').onclick=cancel;
   get('prepare-target-agree').onchange=render;
   get('prepare-target-confirm').oncancel=event=>{event.preventDefault();cancel();};
-  return {initialize,preview,submit,query,render,blocked,loadHistory,poll:async()=>{if(operation&&['PENDING','RUNNING','UNKNOWN'].includes(operation.state))await query();}};
+  return {initialize,preview,submit,query,render,blocked,restoreBlocked,targetReady,loadHistory,poll:async()=>{if(operation&&['PENDING','RUNNING','UNKNOWN'].includes(operation.state))await query();}};
 }
 
 if(typeof module!=='undefined'&&module.exports)module.exports={createPrepareTarget};
@@ -161,8 +171,16 @@ else {
         }
       }
     },
-    onChange:()=>{if(prepareTarget.blocked()){S('simple-submit').disabled=true;S('submit').disabled=true;}}
+    onChange:()=>{
+      if(prepareTarget.restoreBlocked()||selectionTargetForDraft(currentBinding()?.applicationId,
+        simpleTargetServers()[S('simple-target').value])===null){
+        S('simple-submit').disabled=true;S('submit').disabled=true;
+      }
+    }
   });
+  selectionTargetForDraft=(applicationId,targetRef)=>simpleRestoring&&S('simple-target').value==='172.30.30.59'&&
+    S('simple-restore-mode').value==='fresh'&&(!prepareTarget.targetReady(applicationId,targetRef)||
+      records.some(row=>row.request.action==='RESTORE'&&row.request.targetConfigRef===targetRef&&row.spugHistoryId&&!row.cancelledUnaccepted))?null:targetRef;
   render=function(){prepareTarget.render();};
   prepareTarget.initialize();
   setInterval(()=>{if(!document.hidden)prepareTarget.poll();},5000);
