@@ -140,3 +140,14 @@ in_progress：已派发并获开发线程确认，等待修改完成后核验。
 - 独立读取capture-guard-real58-r5.private.json：三轮远端组件调用均26→9，平均3.965837→2.173243秒，约下降45.20%，观察摘要完全相同，remoteWrites=0，fullMainTargetCaptureGuard=false。对照为当前函数关闭复用，不是历史安装版重放，不代表整条恢复提速45%。新test_native_local_guard_cost测真实Linux本地文件/锁/监视，但远端准备是声明的协议fixture，不是完整测试服保护证明；本轮未取得其测量完成回执，r16结果目录尚未生成。
 - 实际最近命令显示单次扫描及segment context两文件pytest退出0，线程报告修正object.__new__夹具缺失_takeover后19项通过；未以此证明Linux全链通过。r15记录77PASS/1setupERROR，原pending失败场景已通过，剩余SQL夹具导入修复待重跑，不再沿用r14旧失败当当前缺陷。Docker只读查询已自然恢复，未重启Docker或服务器；原崩溃/超时保留，不能继续把基础设施故障说成当前唯一阻塞。
 - 结论：原地保全后按新FULL/I1/I2恢复的方向仍合理，已开始在代码层面收敛；四项问题有实际修复，其中本地检查粒度和完整成本仍待验证。现有已验证封包52d0b1e、安装2ac4b37，尚未发起新的真实恢复；最终提交/封包/安装和同一I2到58成功仍待独立验收。用户当前咨询已复核，原修改后审阅继续in_progress。
+
+## 再次核对方向、必要保护与过重预检（2026-11-15，revision138）
+
+- 最新来源：只读即时快照、最近实际命令、R集成742ce1e与独立冻结process-fact-final-own-r1候选（main SHA06bb67c15bcf76a133ee0e1a9d9e7325b5f0a361322b8d0b9a71db215057a537）。R已提交原四项修复、监视和挂载规范化；最终进程转换修复仍以冻结输入/原回执核实，不能混称已全部融合、安装。review-summary部分旧段落落后，已优先以最新execution-log及原件判断。
+- 方向未变：保全已有目标后恢复新FULL/I1/I2仍合理；当前新增工作主要属于旧UNKNOWN现场安全接管和消除预检误判。应只核目标身份、写入隔离、存储占用/进程关联、备份完整性和实际覆盖条件；无关进程正常生灭或列表顺序变化不应成为持续返工原因。必要的原进程退出证明不能删除，也不能把当前观察当作旧操作成功证据。
+- 扫描持续保护缺口已有代码修复：recovery_program_native.py:611–693在成功扫描前取得context唯一NativeSnapshotWatch，先登记每个原件/段再读；中途、后边界和返回前检查，有限尾部也纳入监视。recovery_native_segments.py:286起使用本地inode事件、目录句柄及挂载变化检测，故障粘滞阻断；只在挂载表变化时逐路径复核，非每条原件都全量重扫。test_native_single_scan新增已读前缀/段在后边界变化、后续回调变化、连续snapshot复用监视的测试。该持续保护弥补单次扫描盲区，不应视为可删除的额外校验；不能沿用revision137说缺口仍完全未修。
+- 已确认并修复的过重检查：742ce1e将Docker Mounts按既有Destination规则规范化，仅消除列表顺序差异，完整挂载内容仍比较。最终进程候选recovery_main_target.py:1846–1878不因无关进程产生而重读全部稳定PID的cmdline/cgroup/exe，保留同句柄stat身份/关系闭合，仅变化时重采完整事实；原两轮FD/事实采样保留。实际只读probe-r2原JSON为357进程、22瞬态、6轮、26571次本地保护回调、11.967920秒、remoteWrites=0、fullAdmission=false。26571不是远端命令数，也不能仅因数量大判多余；前一失败探针原样保留。最终退出边界变更仍待父线程最终现场复核。
+- 本地成本已取得原件native-local-guard-cost-r18.json：真实Linux文件/flock/inotify、外部有限协议fixture。3次本地回调49.756782ms→26.90625ms；custody6→3、输入读36→18、日志读60→36。一次完整force回调仍有custody12、输入读72、日志读254、context265、lease3623，实测190.875389ms。计时项含嵌套不能相加，fixture并非真实测试服性能。说明重复层级确实仍在，但该证据不能证明它仍是小时级阻塞；不应凭调用数再无限追加优化前置。
+- 剩余可评估优化：块前后scope与guard仍多次进入固定输入/日志校验，逐表入口出口仍完整保护检查，可在持续保护和失效条件下减少同一状态重复读取、按实测决定小表批次。当前未发现足以支持直接删除停写保护、完整性/挂载身份或覆盖边界校验的新依据。应先修确切正确性/准入失败，再冻结候选执行真实恢复；非阻断优化后置。
+- 独立核JUnit及result.json：unresolved-process-full-fact-final-regression-r1为226 tests/0 failures/0 errors/0 skipped，pytest14.456秒、载体exit0；同sourceSha256的preservation-final为1 test/0 failures/0 errors/0 skipped，pytest121.459秒、载体130.203秒exit0，自有容器移除、原容器不变。后者是本地完整当前保全、发布、读回和handoff测试，不能误称测试服完整I2恢复成功。此前19PASS、r16失败均为历史阶段，不能当最新终态。
+- 发布运行边界更新：04b34ac已有正式161成员包并上传本任务私密控制材料，但INITIAL在STAGE前失败，未激活新控制；安装仍旧2ac4b37，尚无新真实Spug恢复。最新父线程明确226及完整保全交接通过，准备最终只读采样与精确交付。PF_EXITING组件诊断整体FAIL（后续发现EACCES），两条退出子事实不等于整体成功；保留具体缺口，不用新增泛化校验替代收敛。原修改后独立验收仍in_progress。

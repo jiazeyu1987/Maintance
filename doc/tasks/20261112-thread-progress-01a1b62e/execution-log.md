@@ -213,3 +213,6 @@
 - 查询工具修正：测试最初在tests/与ops/recovery/未命中，实际位于scripts/tests；PowerShell传rg通配路径报错后改用明确文件。过长输出改用摘要字段与精确范围，不从截断内容推断成功。原无关改动保留，计划仅精确提交本任务记录与共享日志本轮一行。
 - 本阶段文档UTF-8严格解码与差异检查PASS；空暂存区下仅选择三份自有记录和共享日志本轮1行，其他任务9行保留。此为阶段审阅记录提交，不将原恢复验收标为completed。
 - 追问完整恢复是否开始：只读wait revision137及read_thread最近9项，确认当前本机单次扫描持续保护修复、成本/SQL回归；r16命令exit1，目标明确候选不安装。答复尚未开始完整恢复，不把局部19PASS当完整通过；本轮不重复派发或操作服务器。记录UTF-8与精确差异检查后仅提交自有记录及共享日志本轮一行。
+- 再次方向评审：先更新任务后读revision138和最新实际消息；核R742ce1e、冻结final进程候选、snapshot/NativeSnapshotWatch和调用链。读取真实r18成本JSON、只读进程r2 JSON及两套JUnit/result，确认226PASS和1PASS/exit0、同输入SHA、原容器保持。没有在本对话运行产品测试、访问服务器或再派同一修改。
+- 初次按推测文件名rg出现不存在文件，随后从实际import确认NativeSnapshotWatch位于recovery_native_segments.py并读取；JUnit实际名junit.xml已找到并严格解析。结论区分本地真实文件/外部协议fixture与真实58恢复，旧summary不覆盖最新execution-log。阶段记录仅精确暂存自有文档和共享日志本轮一行，保持其他9行及其他任务改动。
+- 本轮UTF-8严格解码、无BOM/替换字符、限定diff与暂存diff检查PASS；仅提交本轮阶段审阅，原独立恢复验收保持未完成。
