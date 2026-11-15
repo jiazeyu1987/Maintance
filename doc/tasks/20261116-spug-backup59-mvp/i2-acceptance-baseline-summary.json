@@ -1,0 +1,170 @@
+{
+  "backupId": "smallapp-e7b668792c8f4bce945a52f984d3c660",
+  "chain": [
+    "smallapp-3c2395ff88bd474e9fc007649565b848",
+    "smallapp-20a1bb9b78ac402693289675d16c63dd",
+    "smallapp-e7b668792c8f4bce945a52f984d3c660"
+  ],
+  "metadataPinsVerified": true,
+  "metadataBytesRead": 28312705,
+  "expectedDatabaseTableCounts": {
+    "infra_file": 9074,
+    "system_users": 2155,
+    "system_tenant": 4,
+    "mes_pro_work_order": 19091,
+    "mes_pro_batch_record_execution": 53,
+    "mes_pro_batch_record_template": 11,
+    "dcc_product_catalog": 213,
+    "erp_product": 15996
+  },
+  "databaseChanges": [
+    {
+      "backupId": "smallapp-20a1bb9b78ac402693289675d16c63dd",
+      "affectedTables": [
+        "erp_kingdee_sync_run",
+        "infra_job_log",
+        "qrtz_fired_triggers",
+        "qrtz_scheduler_state",
+        "qrtz_triggers"
+      ],
+      "tableChanges": {
+        "erp_kingdee_sync_run": {
+          "beforeRows": 476,
+          "afterRows": 480,
+          "rowCountDelta": 4,
+          "contentHashChanged": true
+        },
+        "infra_job_log": {
+          "beforeRows": 85151,
+          "afterRows": 85859,
+          "rowCountDelta": 708,
+          "contentHashChanged": true
+        },
+        "qrtz_scheduler_state": {
+          "beforeRows": 1,
+          "afterRows": 1,
+          "rowCountDelta": 0,
+          "contentHashChanged": true
+        },
+        "qrtz_triggers": {
+          "beforeRows": 36,
+          "afterRows": 36,
+          "rowCountDelta": 0,
+          "contentHashChanged": true
+        }
+      }
+    },
+    {
+      "backupId": "smallapp-e7b668792c8f4bce945a52f984d3c660",
+      "affectedTables": [
+        "dcc_registration_certificate_daily_run",
+        "infra_job_log",
+        "qrtz_fired_triggers",
+        "qrtz_scheduler_state",
+        "qrtz_triggers"
+      ],
+      "tableChanges": {
+        "dcc_registration_certificate_daily_run": {
+          "beforeRows": 68,
+          "afterRows": 72,
+          "rowCountDelta": 4,
+          "contentHashChanged": true
+        },
+        "infra_job_log": {
+          "beforeRows": 85859,
+          "afterRows": 87458,
+          "rowCountDelta": 1599,
+          "contentHashChanged": true
+        },
+        "qrtz_scheduler_state": {
+          "beforeRows": 1,
+          "afterRows": 1,
+          "rowCountDelta": 0,
+          "contentHashChanged": true
+        },
+        "qrtz_triggers": {
+          "beforeRows": 36,
+          "afterRows": 36,
+          "rowCountDelta": 0,
+          "contentHashChanged": true
+        }
+      }
+    }
+  ],
+  "attachmentChanges": [
+    {
+      "fromBackupId": "smallapp-3c2395ff88bd474e9fc007649565b848",
+      "toBackupId": "smallapp-20a1bb9b78ac402693289675d16c63dd",
+      "counts": {
+        "objects": {
+          "added": 0,
+          "deleted": 0,
+          "modified": 0
+        },
+        "fileRecords": {
+          "added": 0,
+          "deleted": 0,
+          "modified": 0
+        }
+      }
+    },
+    {
+      "fromBackupId": "smallapp-20a1bb9b78ac402693289675d16c63dd",
+      "toBackupId": "smallapp-e7b668792c8f4bce945a52f984d3c660",
+      "counts": {
+        "objects": {
+          "added": 0,
+          "deleted": 0,
+          "modified": 0
+        },
+        "fileRecords": {
+          "added": 0,
+          "deleted": 0,
+          "modified": 0
+        }
+      }
+    },
+    {
+      "fromBackupId": "smallapp-3c2395ff88bd474e9fc007649565b848",
+      "toBackupId": "smallapp-e7b668792c8f4bce945a52f984d3c660",
+      "counts": {
+        "objects": {
+          "added": 0,
+          "deleted": 0,
+          "modified": 0
+        },
+        "fileRecords": {
+          "added": 0,
+          "deleted": 0,
+          "modified": 0
+        }
+      }
+    }
+  ],
+  "payloadBytesRead": 0,
+  "serverWrites": false,
+  "restoredTargetVerified": false,
+  "countScope": "whole captured database; carry forward unaffected table metadata, overwrite affected table final snapshots; not tenant-filtered UI totals",
+  "attachmentSnapshotCounts": [
+    {
+      "backupId": "smallapp-3c2395ff88bd474e9fc007649565b848",
+      "fileReferences": 9074,
+      "objectReferenceRows": 8786,
+      "uniqueObjects": 5001
+    },
+    {
+      "backupId": "smallapp-20a1bb9b78ac402693289675d16c63dd",
+      "fileReferences": 9074,
+      "objectReferenceRows": 8786,
+      "uniqueObjects": 5001
+    },
+    {
+      "backupId": "smallapp-e7b668792c8f4bce945a52f984d3c660",
+      "fileReferences": 9074,
+      "objectReferenceRows": 8786,
+      "uniqueObjects": 5001
+    }
+  ],
+  "attachmentCoverage": "No attachment additions, modifications or deletions occurred in this chain; confirms preservation, not non-empty attachment delta behavior.",
+  "verificationStatus": "BASELINE_READY_RESTORE_NOT_EXECUTED"
+}

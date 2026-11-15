@@ -5981,3 +5981,17 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 2026-11-15｜Spug准备空恢复环境按钮方案｜只读核现有fresh选择、进度/派发及登记器，确认可新增固定.59三阶段准备操作；明确独立工具目录、NAS保留、空目标READY与失败重试边界。未实现按钮或操作服务器；详doc/tasks/20261112-thread-progress-01a1b62e/report.md。
 
 - 2026-11-16：按用户要求由子agent最小实现Spug固定.59空目标准备按钮；实现92f2a96已合入int_main，合并后Python79/79、JS85/85通过。未远端部署/清理/恢复；应用拒绝归档当前任务主检出，保留干净工作树，任务ready_for_closeout。证据：doc/tasks/20261115-spug-prepare-empty-target/execution-log.md。
+
+- 2026-11-16：启动备份服.59真实恢复MVP目标，先全量后增量。已核本机Spug挂载及.59无活动恢复worker，修复失败后重置3156318，Python83/83与JS86/86通过；真实登录旧私密账号被拒，停止重复尝试并查正确凭据引用。安装载体准备中，尚未清理或恢复。证据doc/tasks/20261116-spug-backup59-mvp/execution-log.md。
+
+- 2026-11-16：继续真实恢复MVP；实际Spug44cc4bb与.59恢复工具已安装。真实页面登录和safe源15点读取成功，fresh .59引用失效旧目标使备份列表清空，子agent修复准备阶段对旧目标的依赖；.59仅新增执行机/32访问tcp43059的必要防火墙规则并回读通过。未宣称准备或恢复成功，执行证据见同任务日志。
+
+# 2026-11-16 Spug 最小恢复 MVP 续接
+
+- 用户要求：按准备空目标、完整恢复验收、再清空并恢复增量链顺序推进，子 agent 实现、主 agent 审查。
+
+- 执行意图：v8修复既有systemd的环境文件语法；真实UI准备成功后，v9解除新空目标对其它目标旧恢复历史的依赖，保留实际互斥和当前目标准入。
+
+- 已验证：prepare-261bf06f-3c35-404d-8c86-c6a42dbdf701 READY；v8定向43项、v9必要68项测试通过。v9两文件安装exit0，入口PID897→1395。全量/增量恢复及业务验收尚待完成。
+
+- 恢复 MVP 续接：核原失败终态，审查 v11 最小空目标合同修复，以已提交新 release 安装后走 Spug FULL 恢复验收；未完成前不执行增量。
