@@ -14,6 +14,96 @@ import prepare_target_native as native
 
 class NativePreparationTests(unittest.TestCase):
     @contextmanager
+    def retained_restore(self):
+        with tempfile.TemporaryDirectory() as folder:
+            base=Path(folder);state=base/'state';state.mkdir();host=base/'host';host.mkdir()
+            data=base/'data';data.mkdir();old_id='prepare-original'
+            previous=state/native.hashlib.sha256(old_id.encode()).hexdigest();previous.mkdir()
+            target='spug-empty59-'+previous.name[:12];(data/target).mkdir()
+            native.write(previous/'request.json',dict(operationId=old_id))
+            native.write(previous/'result.json',dict(operationId=old_id,state='INITIALIZED',targetConfigRef=target))
+            native.write(state/'last-target.json',dict(directories=[str(data/target)],containerIds=['old-container'],
+                volumeNames=[],networkIds=[],serviceNames=[]))
+            restore=previous/'recovery-operations'/'restore-original';restore.mkdir(parents=True)
+            native.write(restore/'request.json',dict(operationId=restore.name,action='RESTORE',targetConfigRef=target))
+            binding=dict(operationId=restore.name,targetConfigRef=target,operationRoot=str(restore),machineId='machine')
+            reservation=native.write(restore/'resource-reservation.json',binding)
+            active=dict(binding,reservationPin=reservation);native.write(host/'active.json',active)
+            result=dict(operationId=restore.name,action='RESTORE',state='FAILED_RETAINED',actualExitCode=1,
+                        finishedAt='finished',data=dict(mutationDispatched=True,partialTargetRetained=True))
+            worker_pin=native.write(restore/'worker-result.json',result)
+            exit_pin=native.write(restore/'child-exit.json',dict(operation='W04_RESTORE_CHILD',actualExitCode=1,
+                timedOut=False,finishedAt='finished'))
+            native.write(restore/'result.json',dict(result,originalResultPins=[reservation,worker_pin,exit_pin]))
+            worker=native.NativePreparation(dict(host=native.HOST,stateRoot=str(state),dataRoot=str(data),
+                targetPrefix='spug-empty59',hostReservationRoot=str(host),machineId='machine'))
+            events=[]
+            @contextmanager
+            def locked():
+                events.append('locked')
+                try:yield
+                finally:events.append('unlocked')
+            def dependencies(request,root):
+                self.assertTrue((host/'active.json').exists());events.append('dependencies')
+            def cleanup():
+                self.assertFalse((host/'active.json').exists());self.assertNotIn('unlocked',events)
+                events.append('cleanup')
+            request=dict(operationId='prepare-reset',applicationId='app',recoveryPointRef='point',
+                         planDigest='confirmed-digest',confirmed=True)
+            with patch.object(worker,'host_lock',locked),patch.object(worker,'plan',return_value=dict(planDigest='confirmed-digest')), \
+                 patch.object(worker,'dependencies',side_effect=dependencies),patch.object(worker,'cleanup',side_effect=cleanup), \
+                 patch.object(worker,'initialize',return_value=dict(targetConfigRef='new-target')):
+                yield worker,request,restore,host,events
+
+    def test_confirmed_preparation_resets_only_exited_current_failed_target(self):
+        with self.retained_restore() as (worker,request,restore,host,events):
+            original=(restore/'result.json').read_bytes()
+            result=worker.execute(request,lambda event:None)
+            self.assertEqual(result['state'],'INITIALIZED')
+            self.assertEqual(events,['locked','dependencies','cleanup','unlocked'])
+            self.assertEqual((restore/'result.json').read_bytes(),original)
+            root=Path(worker.config['stateRoot'])/native.hashlib.sha256(request['operationId'].encode()).hexdigest()
+            receipt=native.read(root/'restore-reset.json')
+            self.assertEqual(receipt['previousReservation']['operationId'],restore.name)
+            self.assertEqual(receipt['reason'],'PREPARED_TARGET_REINITIALIZATION')
+            self.assertFalse((host/'active.json').exists())
+            self.assertEqual(worker.execute(request,lambda event:None),result)
+            self.assertEqual(events,['locked','dependencies','cleanup','unlocked','locked','unlocked'])
+            self.assertEqual(native.read(root/'restore-reset.json'),receipt)
+
+    def test_running_unknown_and_other_targets_cannot_be_reset(self):
+        for scenario in ('running','unknown-exit','other-target','not-current'):
+            with self.subTest(scenario=scenario),self.retained_restore() as (worker,request,restore,host,events):
+                if scenario=='running':
+                    result=native.read(restore/'result.json');result['state']='RUNNING';native.write(restore/'result.json',result)
+                elif scenario=='unknown-exit':
+                    exited=native.read(restore/'child-exit.json');exited['actualExitCode']=None
+                    native.write(restore/'child-exit.json',exited)
+                elif scenario=='other-target':
+                    active=native.read(host/'active.json');active['targetConfigRef']='other-target';native.write(host/'active.json',active)
+                else:
+                    native.write(Path(worker.config['stateRoot'])/'last-target.json',dict(directories=['/different-target']))
+                before=(host/'active.json').read_bytes()
+                with self.assertRaisesRegex(native.PreparationError,'PREPARE_RESTORE_ACTIVE'):
+                    worker.execute(request,lambda event:None)
+                self.assertEqual((host/'active.json').read_bytes(),before)
+                self.assertEqual(events,['locked','unlocked'])
+
+    def test_unconfirmed_or_dependency_failure_keeps_failed_reservation(self):
+        for scenario in ('unconfirmed','dependencies'):
+            with self.subTest(scenario=scenario),self.retained_restore() as (worker,request,restore,host,events):
+                before=(host/'active.json').read_bytes()
+                if scenario=='unconfirmed':
+                    request['confirmed']=False
+                    with self.assertRaisesRegex(native.PreparationError,'PREPARE_PLAN_CHANGED'):
+                        worker.execute(request,lambda event:None)
+                else:
+                    with patch.object(worker,'dependencies',side_effect=native.PreparationError('DEPENDENCIES_FAILED')):
+                        self.assertEqual(worker.execute(request,lambda event:None)['state'],'FAILED')
+                self.assertEqual((host/'active.json').read_bytes(),before)
+                self.assertNotIn('cleanup',events)
+
+    @contextmanager
     def local_volume_bind(self):
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);data=root/'data';source=data/'old'/'minio'

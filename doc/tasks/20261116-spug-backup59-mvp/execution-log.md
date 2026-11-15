@@ -14,3 +14,4 @@
 - GREEN: 父批准精确补齐已生成模块allowlist，复跑test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names -> 1 PASS；之前11项无新增受影响变化，无重复运行。
 - `git diff --cached --check` -> PASS。工作区产生本任务融合提交后保留待审，不合回int_main、不删除；父后续v12增量另行合入本工作区。
 - GREEN: v12差异bcaf0e3..31a670f精确三文件通过bytes传递git apply --3way --index -> PASS无冲突。现有Linux隔离载体test_prepared_database_readback.py -> 4 passed in 3.26s，其他已PASS组未重跑。实际恢复健康检查失败待后续修复，最终融合/发布仍未完成。
+- GREEN: v13差异31a670f..c4fa257通过bytes传递git apply --3way --index -> PASS无冲突。Linux test_prepared_service_health.py -> 5 passed in 4.22s；Python unittest ops.spug.test_prepare_target_native -> 28 tests PASS。未重复数据库或其它已PASS组；只提交独立融合工作区，不部署/合主线/清理。

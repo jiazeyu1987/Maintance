@@ -48,3 +48,10 @@ Given 主线已有首版准备入口与独立任务修复，When 迁入已验证
 - prepared数据库路径仅实际导入及SELECT1，同操作同目标连续链消费；未执行的全库数据摘要明确false/NOT_PERFORMED，不伪造证明。
 - GREEN: 同一现有隔离Linux载体运行test_prepared_database_readback.py -> 4/4 PASS，未重复既有已通过组。
 - 发布独立release-v12已固定该提交，默认只读预检输出ACTIVE；没有安装/停止服务。父随后确认真实恢复因容器健康检查失败且active保留，暂停v12发布，等待健康检查最终修复。此融合工作区继续保留，未合入主线。
+
+## v13 健康探测与终态目标重置融合
+
+- 精确来源31a670f..c4fa257d207c83c0179eaae83fa889b1861663b9：标准生成runtime正式健康探测、native本目标终态失败准备重置及对应测试/记录。三方应用无冲突；主线已有代码保持。
+- GREEN: test_prepared_service_health.py Linux5/5、test_prepare_target_native Python28/28。未重复数据库4项或其他既有已PASS组。
+- 独立发布release-v13与此融合工作区分开：前者基原integration固定c4fa257，精确安装data/runtime/native/package；默认预检证实原bc9aafdc终态active可保留，未apply。本地融合仅准备提交，禁止部署此主线基线包。
+- 当前状态ready_for_review；仍待真实完整/增量验收，未合int_main、未清理工作区。

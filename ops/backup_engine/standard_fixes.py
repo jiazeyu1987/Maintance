@@ -731,6 +731,48 @@ def prepared_database_readback(payload, root):
     payload[member] = text.encode('utf-8')
 
 
+def prepared_service_health(payload, root):
+    """Probe prepared services without requiring image-defined HEALTHCHECKs."""
+    member = 'common/recovery_minimal_runtime.py'
+    text = payload[member].decode('utf-8').replace('\r\n', '\n')
+    method = _preservation_declaration(text, 'MinimalData', 'wait_healthy')
+    before = '        self.bound()\n'
+    branch = '''        if self.config.get('preparedEmptyTarget') is True:
+            from recovery_main_health import ROLES, STARTUP_SECONDS, probe
+            require(role in ROLES, 'PREPARED_HEALTH_ROLE_UNSUPPORTED')
+            self.bound()
+            service = self.config_services[role]
+            port, path = ROLES[role]
+            url = 'http://' + service['ip'] + ':' + str(port) + path
+            deadline = time.monotonic() + min(STARTUP_SECONDS, self.budget.remaining())
+            while True:
+                self.guard()
+                require(time.monotonic() < deadline, 'PREPARED_SERVICE_HEALTH_TIMEOUT')
+                row = self.inspect(service['id']); state = row['State']
+                require(row['Id'] == service['id'] and row['Image'] == service['imageId'] and
+                        state['Running'] and not state['Paused'] and not state['Restarting'],
+                        'PREPARED_HEALTH_SERVICE_CHANGED')
+                declared = bool(row['Config'].get('Healthcheck')); health = state.get('Health')
+                if declared or health is not None:
+                    require(type(health) is dict and health.get('Status') in ('starting', 'healthy'),
+                            'APPLICATION_OR_STORAGE_UNHEALTHY')
+                observed = probe(url, role, max(0.001, min(5, deadline-time.monotonic(), self.budget.remaining())))
+                if observed['ready'] and (health is None or health['Status'] == 'healthy'):
+                    require(time.monotonic() < deadline, 'PREPARED_SERVICE_HEALTH_TIMEOUT')
+                    self.bound()
+                    evidence = write(self.root/('prepared-health-'+role+'.json'), dict(role=role,
+                        containerId=row['Id'], imageId=row['Image'], endpoint=url, observedAt=utc(),
+                        dockerHealthcheckConfigured=declared, **observed))
+                    return dict(containerId=row['Id'], imageId=row['Image'], status='healthy',
+                        observedAt=utc(), readinessPin=evidence)
+                require(time.monotonic() < deadline, 'PREPARED_SERVICE_HEALTH_TIMEOUT')
+                time.sleep(min(0.25, deadline-time.monotonic(), self.budget.remaining()))
+'''
+    if before not in method:
+        raise ValueError('STANDARD_PREPARED_HEALTH_CONTEXT_CHANGED')
+    payload[member] = text.replace(method, method.replace(before, branch+before, 1)).encode('utf-8')
+
+
 def apply(payload):
     payload = dict(payload)
     root = Path(__file__).resolve().parents[2]
@@ -1285,4 +1327,5 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     physical_restore_reads(payload, root)
     prepare_target_bind_mounts(payload, root)
     prepared_database_readback(payload, root)
+    prepared_service_health(payload, root)
     return payload

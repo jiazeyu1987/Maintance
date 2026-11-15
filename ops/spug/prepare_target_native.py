@@ -579,9 +579,7 @@ class NativePreparation:
         operation=request['operationId'];require(re.fullmatch('[A-Za-z0-9][A-Za-z0-9_.:-]{7,159}',operation),'PREPARE_OPERATION_INVALID')
         root=plain_path(self.config['stateRoot'])/hashlib.sha256(operation.encode()).hexdigest()
         with ExitStack() as stack:
-            lock_root=Path(self.config['hostReservationRoot'])
             stack.enter_context(self.host_lock())
-            require(not (lock_root/'active.json').exists(),'PREPARE_RESTORE_ACTIVE')
             for path in sorted(self.config.get('sourceLockPaths',[])):stack.enter_context(exclusive(path))
             if root.exists():
                 require(read(root/'request.json')==request,'PREPARE_OPERATION_REUSED')
@@ -589,8 +587,51 @@ class NativePreparation:
                 emit(dict(type='result',record=result));return result
             plan=self.plan(request)
             require(request.get('confirmed') is True and request.get('planDigest')==plan['planDigest'],'PREPARE_PLAN_CHANGED')
+            retained=self.resettable_reservation()
             root.mkdir(mode=0o700);write(root/'request.json',request)
-            return self.run_stages(request,root,emit)
+            return self.run_stages(request,root,emit,retained)
+
+    def resettable_reservation(self):
+        """The host lock is held: admit only our current target's exited failed worker."""
+        active_path=Path(self.config['hostReservationRoot'])/'active.json'
+        if not active_path.exists():return None
+        code='PREPARE_RESTORE_ACTIVE';active=read(active_path)
+        restore=plain_path(active['operationRoot']);previous=restore.parent.parent
+        state=plain_path(self.config['stateRoot'])
+        require(previous.parent==state and restore.parent.name=='recovery-operations' and
+                restore.name==active['operationId'] and active['machineId']==self.config['machineId'],code)
+        paths=[previous/'request.json',previous/'result.json',state/'last-target.json',
+               *(restore/name for name in ('request.json','result.json','worker-result.json','child-exit.json','resource-reservation.json'))]
+        require(all(path.is_file() for path in paths),code)
+        prepared_request=read(previous/'request.json');prepared=read(previous/'result.json')
+        expected_hash=hashlib.sha256(prepared_request['operationId'].encode()).hexdigest()
+        target=self.config['targetPrefix']+'-'+expected_hash[:12]
+        require(previous.name==expected_hash and active['targetConfigRef']==target and
+                prepared.get('operationId')==prepared_request['operationId'] and
+                prepared.get('state')=='INITIALIZED' and prepared.get('targetConfigRef')==target and
+                read(state/'last-target.json').get('directories')==[str(Path(self.config['dataRoot'])/target)],code)
+        original_request=read(restore/'request.json')
+        require(original_request.get('operationId')==restore.name and original_request.get('action')=='RESTORE' and
+                original_request.get('targetConfigRef')==target,code)
+        result=read(restore/'result.json');worker=read(restore/'worker-result.json');exited=read(restore/'child-exit.json')
+        for value in (result,worker):
+            require(value.get('operationId')==restore.name and value.get('action')=='RESTORE' and
+                    value.get('state')=='FAILED_RETAINED' and type(value.get('actualExitCode')) is int and
+                    value['actualExitCode']==1 and value.get('finishedAt'),code)
+        # recovery_minimal.run_child writes this only after wait/poll reports the original exit.
+        require(exited.get('operation')=='W04_RESTORE_CHILD' and type(exited.get('actualExitCode')) is int and
+                exited['actualExitCode']==1 and exited.get('timedOut') is False and exited.get('finishedAt'),code)
+        worker_pin=pin(restore/'worker-result.json');exit_pin=pin(restore/'child-exit.json')
+        reservation_pin=pin(restore/'resource-reservation.json')
+        require(active.get('reservationPin')==reservation_pin and
+                all(reference in result.get('originalResultPins',[]) for reference in (worker_pin,exit_pin,reservation_pin)),code)
+        return dict(previousReservation=active,resultPin=pin(restore/'result.json'),workerResultPin=worker_pin,childExitPin=exit_pin)
+
+    def release_reset_reservation(self, retained, root):
+        active_path=Path(self.config['hostReservationRoot'])/'active.json'
+        require(read(active_path)==retained['previousReservation'],'PREPARE_RESTORE_ACTIVE')
+        write(root/'restore-reset.json',dict(retained,reason='PREPARED_TARGET_REINITIALIZATION',releasedAt=now()))
+        active_path.unlink()
 
     def host_lock(self):
         require(self.config['hostReservationRoot']=='/var/lib/spug-restore-resources','PREPARE_SHARED_LOCK_REQUIRED')
@@ -625,7 +666,7 @@ class NativePreparation:
             if str(error)!='PREPARE_TARGET_BUSY':raise
             return dict(operationId=operation,state='UNKNOWN',workerStopped=False)
 
-    def run_stages(self,request,root,emit):
+    def run_stages(self,request,root,emit,retained=None):
         record=dict(operationId=request['operationId'],host=HOST,applicationId=request['applicationId'],recoveryPointRef=request['recoveryPointRef'],
             state='RUNNING',startedAt=now(),finishedAt=None,errorCode=None,targetConfigRef=None,stages=[])
         try:
@@ -633,7 +674,9 @@ class NativePreparation:
                 stage=dict(name=name,state='RUNNING',startedAt=now(),finishedAt=None,errorCode=None)
                 record['stages'].append(stage);write(root/'status.json',record);emit(dict(type='stage',stage=stage))
                 if name=='dependencies':self.dependencies(request,root)
-                elif name=='cleanup':self.cleanup()
+                elif name=='cleanup':
+                    if retained:self.release_reset_reservation(retained,root)
+                    self.cleanup()
                 else:record.update(self.initialize(request,root))
                 stage.update(state='SUCCEEDED',finishedAt=now());write(root/'status.json',record);emit(dict(type='stage',stage=stage))
             # Spug still has to publish its binding and verify authenticated selections.
