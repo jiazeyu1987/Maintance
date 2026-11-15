@@ -290,3 +290,5 @@ in_progress
 - fallback/降级/吞异常=否；根因长期维护=是；临时补丁/绕过=否。Current Status保持in_progress。
 
 - 投递前revision152仍为同一1fd7覆盖前准备、读取增长、未见终态或错误。已经send_message_to_thread成功发送三项局部修改：来源验证跨阶段生命周期复用、同镜像相邻完整复检合并、正常主线与按需安装/遗留接管分支。要求持续监视/变更拒绝、实际STANDARD封包BDD/TDD和总读取量证据；当前运行不为非阻断优化中断/重装/重派。发送完成，修复与最终恢复独立验收仍in_progress。
+
+- 投递后revision153新报1fd7在覆盖前准备FAILED/UNRESOLVED_PROCESS_LIMIT、未进入数据库导入。已追加状态对齐通知：保留失败与保护，定位具体limit/实测数量字节/阶段轮次，区分真实规模与重复累积；不简单加阈值、忽略进程或同号重派。发送工具成功；修改及独立验收仍in_progress。
