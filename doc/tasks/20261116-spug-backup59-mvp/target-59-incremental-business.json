@@ -1,0 +1,42 @@
+{
+  "label": "59-incremental",
+  "realBrowser": true,
+  "realLogin": true,
+  "businessMutations": 0,
+  "blockedWriteAttempts": 1,
+  "observedAt": "2026-11-16T00:59:56.208Z",
+  "loginHttpStatus": 200,
+  "loginCode": 0,
+  "authenticatedUser": {
+    "id": 1,
+    "username": "admin"
+  },
+  "roleCount": 24,
+  "menuCount": 15,
+  "blockedPaths": [
+    "/admin-api/workbench/context"
+  ],
+  "businessPage": {
+    "name": "用户管理",
+    "url": "http://127.0.0.1:18089/system/user",
+    "visibleRows": 20,
+    "headers": [
+      "",
+      "用户编号",
+      "用户名称",
+      "用户昵称",
+      "部门",
+      "角色",
+      "岗位",
+      "手机号码",
+      "状态",
+      "锁定状态",
+      "创建时间",
+      "操作"
+    ],
+    "totalRows": 2117
+  },
+  "url": "http://127.0.0.1:18089/system/user",
+  "version": "2026-11-03-12-15-42",
+  "status": "PASS"
+}

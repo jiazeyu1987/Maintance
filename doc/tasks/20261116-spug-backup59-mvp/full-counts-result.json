@@ -1,0 +1,75 @@
+{
+  "host": "172.30.30.59",
+  "targetConfigRef": "spug-empty59-73fa820ee324",
+  "tables": [
+    {
+      "table": "infra_file",
+      "expected": 9074,
+      "actual": 9074,
+      "matched": true
+    },
+    {
+      "table": "system_users",
+      "expected": 2155,
+      "actual": 2155,
+      "matched": true
+    },
+    {
+      "table": "system_tenant",
+      "expected": 4,
+      "actual": 4,
+      "matched": true
+    },
+    {
+      "table": "mes_pro_work_order",
+      "expected": 19091,
+      "actual": 19091,
+      "matched": true
+    },
+    {
+      "table": "mes_pro_batch_record_execution",
+      "expected": 53,
+      "actual": 53,
+      "matched": true
+    },
+    {
+      "table": "mes_pro_batch_record_template",
+      "expected": 11,
+      "actual": 11,
+      "matched": true
+    },
+    {
+      "table": "dcc_product_catalog",
+      "expected": 213,
+      "actual": 213,
+      "matched": true
+    },
+    {
+      "table": "erp_product",
+      "expected": 15996,
+      "actual": 15996,
+      "matched": true
+    },
+    {
+      "table": "erp_kingdee_sync_run",
+      "expected": 476,
+      "actual": 476,
+      "matched": true
+    },
+    {
+      "table": "infra_job_log",
+      "expected": 85151,
+      "actual": 85151,
+      "matched": true
+    },
+    {
+      "table": "dcc_registration_certificate_daily_run",
+      "expected": 68,
+      "actual": 68,
+      "matched": true
+    }
+  ],
+  "matched": true,
+  "serverWrites": false,
+  "backupId": "smallapp-3c2395ff88bd474e9fc007649565b848"
+}

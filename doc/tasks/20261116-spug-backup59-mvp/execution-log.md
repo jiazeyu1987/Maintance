@@ -160,7 +160,14 @@ GREEN: prepare_incremental_baseline.py -> PASS；13份pin元数据最终成功�
 - GREEN: experience-preflight -> PASS。完整验收已完成，现按用户顺序通过Spug准备新空目标，再选I2 smallapp-e7b668792c8f4bce945a52f984d3c660恢复FULL+I1+I2；仍固定.59，NAS/工具/凭据保留，仅清本目标，不手工清锁。
 - 完整验收后新prepare681e546d已READY（约119秒），target spug-empty59-e4261b44a5f3。真实I2恢复 smallapp-f0c503e401204fd0a2d263937e1d3b13 已202接受，worker31437→31540→31548实际运行。入场1.494秒、target1.016秒成功，23:08:47 UTC进入FULL数据库暂存；仅原任务查询，不重复提交。
 
+- GREEN: experience-preflight -> PASS。续接已核Spug I2真实SUCCEEDED、11表I2计数与真实登录用户页PASS；现仅使用原验收隧道对当前.59目标进行三附件真实页面读取，禁止业务写入，不重复恢复。
+
+- 增量附件真实验收 session75010 exit0：三附件通过真实页面点击，图片response/PDF原生下载的bytes与SHA匹配；登录成功、actual业务写入0、阻断工作台写入1，浏览器正常关闭。所选I1/I2附件变更为0，不宣称覆盖附件增删改增量。
+- GREEN: experience-preflight -> PASS。全部页面验收结束，精确核PID32632是本任务SSH 18089→.59 frontend隧道后停止，仅释放临时验收入口；保留Spug及恢复后的远端服务。
+- GREEN: stop owned SSH PID32632 -> PASS；本机18089已无监听。恢复后的.59服务保留，验收隧道不是产品常驻入口。
+
 ## 最终融合验证记录（独立融合工作区）
+
 
 - GREEN: 真实FULL完成后父授权同步指定7个缺失文件、当前父日志快照及本节13条独立融合证据；请求日志仅附本任务7个非空行，主线dirty不动。另仅取b11977f的workbench-context-review.md；task状态in_progress，I2请求f0c503e401204fd0a2d263937e1d3b13仍运行未验收。三runner node --check与git diff --check均PASS；本次不部署、不合main、不清worktree。
 

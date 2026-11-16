@@ -128,3 +128,8 @@
 - 本子任务一次只读观察：restore-admission1.470秒成功、target-checks1.020秒成功；database-000/database-restore与sql-stage已开始（21:07:10/11Z）。无终态文件，不将当前mutation状态猜为false或成功。
 - 实际进程32674→360→469→480；control worker、recovery_entry、recovery_minimal_worker均为recovery-tools/engine路径。共享active存在符合运行中。未扫描载荷或干预。
 - 可复用私密observer：observe_restore_once.py <prepare-id> <operation-id>，仅读精确任务小回执及/proc程序路径。证据restore-observation-smallapp-bc9aafdc3b284a9582f6dd09f6bc9816.private.json。
+
+## 最终增量原生回执核查
+- 指定操作 smallapp-f0c503e401204fd0a2d263937e1d3b13 原生 SUCCEEDED、退出码 0；实际链顺序 FULL3c2395 → I1 20a1bb → I2 e7b668，与恢复点父 pin 一致。
+- 准备三阶段均成功，保护路径仍存在、NAS 挂载保留；恢复暂存清理成功，共享资源已按 VALIDATED_CHILD_SUCCESS 正式释放，无恢复 worker 和共享 active.json。
+- 已生成可提交脱敏摘要 [final-native-audit.md](final-native-audit.md)。仅只读小元数据与路径/进程状态，不增加全量扫描或载荷读回；业务页面及附件验收沿用父任务独立证据。

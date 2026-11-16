@@ -1,0 +1,10 @@
+{
+  "phase": "full",
+  "status": "PASS",
+  "realLogin": true,
+  "businessMutations": 0,
+  "blockedWriteAttempts": 1,
+  "passedAttachments": 3,
+  "expectedAttachments": 3,
+  "origin": "http://127.0.0.1:18089"
+}
