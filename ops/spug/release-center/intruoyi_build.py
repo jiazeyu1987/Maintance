@@ -19,6 +19,7 @@ from intruoyi_login import verify_login
 from build_artifact_guard import (validate_source_contract, validate_required_gxp_mode,
                                   verify_backend_jar, validate_offline_cli_report, verify_backend_image)
 from build_worktree_cleanup import cleanup_build_worktree
+from candidate_history import requires_candidate_history
 
 MAINTENANCE_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(MAINTENANCE_ROOT))
@@ -335,7 +336,8 @@ def build(executor, job):
         readiness['targets'][env] = target_input_plan(migrations, records, env)
     for prior in executor.state['packages']:
         _, previous = executor.manifest(prior['releaseTag'])
-        historical_package_integrity(migrations, references, previous)
+        if requires_candidate_history(prior, executor.state):
+            historical_package_integrity(migrations, references, previous)
     (folder/'migration-readiness.json').write_text(json.dumps(readiness, ensure_ascii=False, indent=2), 'utf-8')
     menu_gate = worktree/'scripts/preflight/check-menu-migrations.py'
     require(menu_gate.is_file(), 'Pinned menu migration gate missing')
