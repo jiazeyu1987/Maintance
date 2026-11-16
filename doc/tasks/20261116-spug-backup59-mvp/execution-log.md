@@ -184,3 +184,13 @@ GREEN: prepare_incremental_baseline.py -> PASS；13份pin元数据最终成功�
 - `git diff --cached --check` -> PASS。工作区产生本任务融合提交后保留待审，不合回int_main、不删除；父后续v12增量另行合入本工作区。
 - GREEN: v12差异bcaf0e3..31a670f精确三文件通过bytes传递git apply --3way --index -> PASS无冲突。现有Linux隔离载体test_prepared_database_readback.py -> 4 passed in 3.26s，其他已PASS组未重跑。实际恢复健康检查失败待后续修复，最终融合/发布仍未完成。
 - GREEN: v13差异31a670f..c4fa257通过bytes传递git apply --3way --index -> PASS无冲突。Linux test_prepared_service_health.py -> 5 passed in 4.22s；Python unittest ops.spug.test_prepare_target_native -> 28 tests PASS。未重复数据库或其它已PASS组；只提交独立融合工作区，不部署/合主线/清理。
+
+
+## 最终融合与工作区清理
+
+- GREEN: experience-preflight -> PASS；双方真实恢复验收通过，独立只读审查PASS；仅清理本任务13个固定release工作区及已融合clean的final-integration。无本任务发布目录进程消费者，原integration及受保护父工作区保留。
+- GREEN: int_main以ff-only从25fe7ed融合fd0b45d；精确脏日志补丁预验证及恢复成功，1699项原状态集合与原index均未变化。
+- GREEN: 融合结果50个任务文件一致，正式生成154模块，runtime/data编译PASS，3个runner node --check PASS；未重复历史测试矩阵。
+
+- GREEN: closeout_worktrees.py -> exit0；13/13自有发布工作区与已融合final-integration逐项git remove成功，目录及登记不存在。未使用force，未删除原integration/父managed工作区。
+- completed：真实FULL/增量验收、独立审查、精确融合与最小验证、工作区清理及运行控制台恢复均已完成；逐路径提交与删除结果见closeout.md。
