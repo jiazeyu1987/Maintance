@@ -792,6 +792,22 @@ def prepared_service_health(payload, root):
     payload[member] = text.replace(method, method.replace(before, branch+before, 1)).encode('utf-8')
 
 
+def prepared_file_storage(payload, root):
+    member = 'common/recovery_minimal_runtime.py'
+    text = payload[member].decode('utf-8').replace('\r\n', '\n')
+    method = _preservation_declaration(text, 'MinimalData', 'start_application')
+    before = '        self.bound(); self.application_inputs()\n'
+    if before not in method:
+        raise ValueError('STANDARD_FILE_STORAGE_START_CONTEXT_CHANGED')
+    changed = method.replace(before, before +
+        '        from recovery_prepared_storage import adapt_file_storage\n'
+        '        storage_binding = adapt_file_storage(self)\n', 1)
+    changed = changed.replace('return dict(services=observations,',
+        'return dict(fileStorageBindingPin=storage_binding, services=observations,', 1)
+    payload[member] = text.replace(method, changed).encode('utf-8')
+    payload['common/recovery_prepared_storage.py'] = (root/'ops/recovery/recovery_prepared_storage.py').read_bytes()
+
+
 def apply(payload):
     payload = dict(payload)
     root = Path(__file__).resolve().parents[2]
@@ -1348,4 +1364,5 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     prepared_database_readback(payload, root)
     prepared_service_health(payload, root)
     application_database_phase(payload)
+    prepared_file_storage(payload, root)
     return payload
