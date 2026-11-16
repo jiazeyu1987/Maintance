@@ -10,6 +10,25 @@ import hashlib
 from standard_timing import backup_timings, restore_timings
 
 
+def application_database_phase(payload):
+    """Application writers are expected after start; identity and scope remain fixed."""
+    name = 'common/recovery_minimal_runtime.py'
+    source = payload[name].decode('utf-8').replace('\r\n', '\n')
+    before = "        (sql.import_database_state if importing else sql.database_state)(self.mysql, self.db_target)\n"
+    after = """        if self.running_applications:
+            sql.import_database_state(self.mysql, self.db_target)
+            databases = self.mysql.query('SHOW DATABASES;').splitlines()
+            require(len(databases) == len(set(databases)) and
+                    set(databases) == sql.SYSTEM_DATABASES | {self.db_target['database']},
+                    'FORMAL_SQL_DATABASE_SCOPE_INVALID')
+        else:
+            (sql.import_database_state if importing else sql.database_state)(self.mysql, self.db_target)
+"""
+    if source.count(before) != 1:
+        raise ValueError('STANDARD_APPLICATION_DATABASE_PHASE_CONTEXT_CHANGED')
+    payload[name] = source.replace(before, after).encode('utf-8')
+
+
 def incremental_sql_stream(payload, root):
     """Replace only the frozen SQL marker read, retaining safe digest gates."""
     name = 'common/recovery_data.py'
@@ -1328,4 +1347,5 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     prepare_target_bind_mounts(payload, root)
     prepared_database_readback(payload, root)
     prepared_service_health(payload, root)
+    application_database_phase(payload)
     return payload
