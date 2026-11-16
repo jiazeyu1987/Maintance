@@ -220,6 +220,12 @@ def fresh_target(template, observed, changes):
     return target
 
 
+def bind_file_storage_policy(target, point):
+    target.pop('preparedFileStorage', None)
+    if point.get('fileStorage'):
+        target['preparedFileStorage'] = deepcopy(point['fileStorage'])
+
+
 def fresh_owner(original, target_ref, source_ref):
     """Reuse installed application settings; main-replacement history is inapplicable to new resources."""
     owner = deepcopy(original)
@@ -370,6 +376,7 @@ class NativePreparation:
             require(json.loads(self.docker('image', 'inspect', identity))[0]['Id'] == identity, 'PREPARE_IMAGE_MISSING')
         owner = fresh_owner(templates['owner'],c['ownerTemplateTargetRef'],point['sourceConfigRef'])
         template = owner['targets'][c['ownerTemplateTargetRef']]
+        bind_file_storage_policy(template, point)
         require(len(c['services']) == len(ROLES) and {s['role'] for s in c['services']} == set(ROLES), 'PREPARE_SERVICES_INCOMPLETE')
         for spec in c['services']:
             for mount in spec.get('binds', []):

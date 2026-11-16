@@ -38,3 +38,15 @@ def test_actual_safe_package_adapts_before_application_start():
     start = source[source.index('    def start_application(self):'):]
     assert start.index('adapt_file_storage(self)') < start.index("self.docker(['start'")
     assert b'def adapt_file_storage(' in payload['common/recovery_prepared_storage.py']
+
+
+def test_preparation_binds_only_selected_point_policy():
+    sys.path.insert(0, str(ROOT / 'ops/spug'))
+    from prepare_target_native import bind_file_storage_policy
+    policy = [dict(id=28, bucket='yudao', sourceEndpoints=['http://host.docker.internal:9000'])]
+    target = {'preparedFileStorage': ['old']}
+    bind_file_storage_policy(target, {'fileStorage': policy})
+    assert target['preparedFileStorage'] == policy
+    assert target['preparedFileStorage'] is not policy
+    bind_file_storage_policy(target, {})
+    assert 'preparedFileStorage' not in target
