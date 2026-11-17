@@ -167,12 +167,12 @@ Fail Fast：任何未确认远端效果、原包冲突或真实验证失败必�
 ## Spug 构建产物与安全清理门禁
 
 - Trigger: IntRuoyi构建/构建预检、封包后清理、NAS原包重传或普通执行器更新。
-- Preflight check: 选择包含完整发布配套的Git已提交内容；构建预检与正常构建均先执行`validate_source_contract`，不能用工作区未提交修复替代。配置可登录的`gxpConfigurationSourceUrl`，关闭要求显式设置`requiredGxpAuditMode=DEVELOPMENT_DISABLED`；真实页面保存及运行模式一致、auditEnabled=false、无待重启。
+- Preflight check: 选择包含完整发布配套的Git已提交内容；构建预检与正常构建均先执行`validate_source_contract`，不能用工作区未提交修复替代。配置可登录的`gxpConfigurationSourceUrl`，关闭要求显式设置`requiredGxpAuditMode=DEVELOPMENT_DISABLED`；真实页面登录后，通过平台只读get-value-by-key与runtime-mode作最终配置核验，保存及运行模式一致、auditEnabled=false、无待重启。平台配置不属于租户CRUD，禁止用租户config/page空列表判定平台配置丢失。
 - 阶段必查项与推荐命令: 在独立维护修复副本运行`python -X utf8 -m unittest test_build_recurrence_guards test_build_worktree_cleanup test_intruoyi_login test_nas_package_retry test_release_precheck`。正常构建在docker save/封包前从实际镜像提取JAR并运行断网、只读、无数据库凭据的Boot CLI，验证退出码3、报告身份和类唯一归属；不能仅检查源码或release-info。完整封包后使用`cleanup_sealed_build`，删除前保存归属检查点；NAS重传沿同入口验证原包并完成清理，不能重新编译。
 - Blocker / Fail Fast: 缺源码契约、镜像JAR与冻结产物不同、类加载失败/超时/报告身份不符、GxP不一致、工作副本提交/登记漂移、未知文件、嵌套Git、未核实链接或进程引用，停止相应阶段并保留证据。Git移除非零不等同于物理删除失败或成功，必须分别核对登记和真实目录。
-- Verification: 真实已有镜像离线验证和真实GxP页面通过；Windows临时真实Git、>260字符目录及junction验证必须保留外部哨兵。仅从已核定生成目录移除链接自身再交给Git，绝不跟随到外部目标；残留删除再次核对源码字节及未知文件。安装前后完整校验工作资源包、唯一普通执行器入口及SQLite payload；凭据仅新增已批准非敏感策略字段，其余字段保持。
+- Verification: 真实已有镜像离线验证、真实页面登录及平台配置只读核验通过；旧租户编辑页面的缺口须独立记录，不能称页面通过。Windows临时真实Git、>260字符目录及junction验证必须保留外部哨兵。仅从已核定生成目录移除链接自身再交给Git，绝不跟随到外部目标；残留删除再次核对源码字节及未知文件。安装前后完整校验工作资源包、唯一普通执行器入口及SQLite payload；凭据仅新增已批准非敏感策略字段，其余字段保持。
 - Forbidden action: 禁止通过改摘要掩盖原校验失败、重新编译解决已封包上传失败、任意递归删除、自动融合int_main、恢复已取消演练、固定64GiB门槛、重复正式全量备份或将单元测试称为真实业务验收。
-- 必须记录 / Evidence: 目标/维护提交、RED/GREEN/REGRESSION、实际JAR及封包摘要、原校验及更新清单、工作副本归属/检查点/Git退出码/物理删除、普通PID/入口/文件摘要、私有历史保持证据；见`doc/tasks/20261101-release-recurrence-guards/execution-log.md`及该任务脱敏JSON。
+- 必须记录 / Evidence: 目标/维护提交、RED/GREEN/REGRESSION、实际JAR及封包摘要、原校验及更新清单、工作副本归属/检查点/Git退出码/物理删除、普通PID/入口/文件摘要、私有历史保持证据；见`doc/tasks/20261101-release-recurrence-guards/execution-log.md`及该任务脱敏JSON；平台读取契约见`doc/tasks/20261117-sixstep-repeat/execution-log.md`。运行`node --test test_platform_gxp_read.cjs`覆盖平台值缺失/非法/运行不一致及HTTP失败；真实浏览器核验不由单元测试代替。
 
 ## Spug 恢复包接口合同与保留失败续恢复门禁
 

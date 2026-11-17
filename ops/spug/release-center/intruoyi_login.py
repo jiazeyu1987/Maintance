@@ -51,40 +51,25 @@ _SCRIPT = r'''async (page) => {
   await login.waitFor({state: 'hidden', timeout: 45000});
   let gxpAuditMode, runtimeGxpAuditMode, auditEnabled, pendingRestart;
   if (input.readGxpMode) {
+    // Platform settings are deployment-owned and excluded from tenant config CRUD.
+    // Login remains a real UI operation; these GETs only verify its final configuration.
+    const tenantId = response.request().headers()['tenant-id'];
+    if (!tenantId) throw new Error('Authenticated tenant identity is required');
+    const options = {headers: {Authorization: 'Bearer ' + body.data.accessToken, 'tenant-id': tenantId},
+      timeout: 45000, maxRedirects: 0};
     const [configResponse, runtimeResponse] = await Promise.all([
-      page.waitForResponse(response => {
-        const url = new URL(response.url());
-        return url.origin === origin && url.pathname === '/admin-api/infra/config/page' &&
-          url.searchParams.get('key') === 'system.gxp.audit-mode' && response.request().method() === 'GET';
-      }, {timeout: 45000}),
-      page.waitForResponse(response => {
-        const url = new URL(response.url());
-        return url.origin === origin && url.pathname === '/admin-api/system/gxp-audit-event/runtime-mode' &&
-          response.request().method() === 'GET';
-      }, {timeout: 45000}),
-      page.goto(origin + '/infra/config/basic', {waitUntil: 'domcontentloaded', timeout: 45000})
+      page.request.get(origin + '/admin-api/infra/config/get-value-by-key?key=system.gxp.audit-mode', options),
+      page.request.get(origin + '/admin-api/system/gxp-audit-event/runtime-mode', options)
     ]);
     const config = await configResponse.json();
     const runtime = await runtimeResponse.json();
-    const rows = config.data?.list?.filter(row => row.key === 'system.gxp.audit-mode');
-    if (configResponse.status() !== 200 || config.code !== 0 || rows?.length !== 1 ||
-        rows[0].visible !== true || rows[0].type !== 1 ||
-        !['FORMAL', 'DEVELOPMENT_DISABLED'].includes(rows[0].value))
-      throw new Error('A unique saved server GxP mode is required');
-    if (runtimeResponse.status() !== 200 || runtime.code !== 0 || runtime.data?.mode !== rows[0].value ||
-        runtime.data?.auditEnabled !== (rows[0].value === 'FORMAL'))
+    if (configResponse.status() !== 200 || config.code !== 0 ||
+        !['FORMAL', 'DEVELOPMENT_DISABLED'].includes(config.data))
+      throw new Error('A valid saved platform GxP mode is required');
+    if (runtimeResponse.status() !== 200 || runtime.code !== 0 || runtime.data?.mode !== config.data ||
+        runtime.data?.auditEnabled !== (config.data === 'FORMAL'))
       throw new Error('Saved and runtime GxP modes must agree before building');
-    const modePanel = page.getByTestId('gxp-mode-setting');
-    await modePanel.locator('.el-form-item').filter({hasText: '已保存模式'}).waitFor({state: 'visible', timeout: 45000});
-    await modePanel.locator('.el-loading-mask').waitFor({state: 'hidden', timeout: 45000});
-    await modePanel.scrollIntoViewIfNeeded();
-    const savedField = modePanel.locator('.el-form-item').filter({hasText: '已保存模式'});
-    const runtimeField = modePanel.locator('.el-form-item').filter({hasText: '当前运行模式'});
-    await runtimeField.waitFor({state: 'visible', timeout: 45000});
-    if (rows[0].value === 'DEVELOPMENT_DISABLED' &&
-        (!(await savedField.innerText()).includes('关闭审计') || !(await runtimeField.innerText()).includes('关闭审计')))
-      throw new Error('Closed GxP mode is not visible in the configuration page');
-    gxpAuditMode = rows[0].value;
+    gxpAuditMode = config.data;
     runtimeGxpAuditMode = runtime.data.mode;
     auditEnabled = runtime.data.auditEnabled;
     pendingRestart = gxpAuditMode !== runtimeGxpAuditMode;
