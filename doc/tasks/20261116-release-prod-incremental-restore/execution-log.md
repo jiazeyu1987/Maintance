@@ -599,3 +599,10 @@ GREEN: experience-preflight -> PASS。清理两个修复开发worktree及09-55-5
 GREEN: 主线合并后前端22测试、Java91+5=96测试通过，失败/错误/跳过0。GREEN: experience-preflight -> PASS。integration27候选与主线和持久副本相同；无untracked；ignored仅Maven产物/缓存及已另存原件的任务说明。HEAD已融合。删除前精确还原候选，不丢主线dirty及原始记录。ready_for_closeout。
 
 CLOSEOUT: 两个修复开发及两个失败应用构建worktree物理删除PASS；修复收尾提交6b442f7。主线JUnit96、前端22测试PASS。29220隧道身份匹配后停止，26748发布执行器18112保持原source/config。integration还原后零dirty；git worktree remove --force移除注册但删除因Filename too long失败；随后精确PowerShell Remove-Item被自动审批拒绝blocked by policy，未给具体原因，未绕过。剩余物理目录保留，唯一源码/原件/报告均已在主线及持久证据目录，ready_for_closeout，整体未完成。
+
+USER ISSUE: .59:8081/index无法访问。继续原六步目标，先只读核外部入口、宿主端口和恢复容器映射。此前隧道验收不证明公开入口通过；不重做恢复，不改变数据。
+
+BDD: Given恢复完成且前端内部200，When用户打开.59:8081/index，Then网页可达且真实登录通过。RED现场：外部超时、宿主8081拒绝，内部172.29.238.36:80返回200；internal Docker网络未提供宿主端口，firewalld无8081。方案：持久systemd socket/proxyd入口，仅绑定.59:8081并精确放行该目的地址端口；使用现有组件、原容器、原数据。准备配置固定subnet/角色位置，入口不依赖动态容器ID，重做空目标后仍适用。独立修复工作区，先测试单位生成，后安装真实验证。
+GREEN: experience-preflight -> PASS。创建本任务修复worktree只基于维护主线已提交HEAD，不复制无关dirty；公开入口修复属于原恢复交付范围。
+
+PUBLIC INGRESS FIXED: 提交246a1ca/f33673f已安装并融合。原5容器身份不变，systemd原有proxyd将.59:8081转到固定前端.36:80，firewalld仅放行目的.59:8081。最终systemd verify exit0/stderr空。真实Playwright通过公开URL登录，用户管理20可见行/总2117、版本18-57-58通过。主线3测试PASS，自有入口修复worktree已删。原integration长路径目录仍存在，用户手动清理中；原公开入口验收遗漏已修复，整体仅待原目录删除。

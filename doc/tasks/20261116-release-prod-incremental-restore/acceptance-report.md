@@ -26,3 +26,6 @@ PDF 9198354887566 的对象206586字节、SHA256 452fe10a52f2232db1b430a963c5648
 
 ## 收尾状态
 ready_for_closeout。自有临时worktree已完成Git融合和注册清理；仅integration-20261116-sixstep存在Windows长路径物理残留。精确递归删除被自动审批拒绝（blocked by policy），未绕过。验收隧道已停止，发布执行器仍在原稳定路径。整体未标记completed。
+
+## 公开入口补验
+用户报告.59:8081不可达，确认原验收使用SSH隧道，不能证明对外入口。现已持久配置systemd网页入口及精确防火墙规则，原5容器不变；真实浏览器通过http://172.30.30.59:8081登录、用户管理2117条及版本验证PASS。修复f33673f已融合并清理自有worktree。证据acceptance/target-59-public-incremental-business.private.json。原integration目录仍等待用户清理。
