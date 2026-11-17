@@ -1,0 +1,116 @@
+{
+  "observedAt": "2026-11-17T06:45:11.232075+00:00",
+  "operations": [
+    {
+      "operationId": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+      "startedAt": "2026-11-16T17:10:28.341695Z",
+      "finishedAt": "2026-11-16T19:14:08.040260Z",
+      "state": "SUCCEEDED",
+      "seconds": 7419.698565,
+      "stages": [
+        {
+          "stage": "archive-admission",
+          "start": "2026-11-16T17:10:28.483678Z",
+          "end": "2026-11-16T17:41:33.925090Z",
+          "seconds": 1865.441412,
+          "completed": true
+        },
+        {
+          "stage": "archive-chain-readback",
+          "start": "2026-11-16T18:50:37.916362Z",
+          "end": "2026-11-16T19:14:08.020055Z",
+          "seconds": 1410.103693,
+          "completed": true
+        },
+        {
+          "stage": "archive-final-verification",
+          "start": "2026-11-16T18:26:36.151607Z",
+          "end": "2026-11-16T18:50:03.770385Z",
+          "seconds": 1407.618778,
+          "completed": true
+        },
+        {
+          "stage": "archive-metadata",
+          "start": "2026-11-16T18:19:56.623764Z",
+          "end": "2026-11-16T18:19:56.925376Z",
+          "seconds": 0.301612,
+          "completed": true
+        },
+        {
+          "stage": "capture-cleanup",
+          "start": "2026-11-16T18:50:03.783065Z",
+          "end": "2026-11-16T18:50:37.907846Z",
+          "seconds": 34.124781,
+          "completed": true
+        },
+        {
+          "stage": "capture-validation",
+          "start": "2026-11-16T18:16:03.560234Z",
+          "end": "2026-11-16T18:16:12.454911Z",
+          "seconds": 8.894677,
+          "completed": true
+        },
+        {
+          "stage": "nas-readback",
+          "start": "2026-11-16T18:19:56.930405Z",
+          "end": "2026-11-16T18:26:35.886246Z",
+          "seconds": 398.955841,
+          "completed": true
+        },
+        {
+          "stage": "nas-upload",
+          "start": "2026-11-16T18:16:12.491691Z",
+          "end": "2026-11-16T18:19:56.611367Z",
+          "seconds": 224.119676,
+          "completed": true
+        },
+        {
+          "stage": "source-capture",
+          "start": "2026-11-16T17:41:33.927260Z",
+          "end": "2026-11-16T18:16:03.557955Z",
+          "seconds": 2069.630695,
+          "completed": true
+        }
+      ]
+    },
+    {
+      "operationId": "smallapp-4c3942b0fdeb42f8b95b5db8c732d99d",
+      "startedAt": "2026-11-17T05:45:44.594150Z",
+      "finishedAt": "2026-11-17T06:10:37.947399Z",
+      "state": "FAILED_RETAINED",
+      "seconds": 1493.353249,
+      "stages": [
+        {
+          "stage": "archive-admission",
+          "start": "2026-11-17T05:45:44.734995Z",
+          "end": "2026-11-17T06:10:37.055330Z",
+          "seconds": 1492.320335,
+          "completed": true
+        },
+        {
+          "stage": "source-capture",
+          "start": "2026-11-17T06:10:37.057149Z",
+          "end": "2026-11-17T06:10:37.934979Z",
+          "seconds": 0.87783,
+          "completed": false
+        }
+      ]
+    },
+    {
+      "operationId": "smallapp-9d06cdef2d6d4a589db0506193629d5c",
+      "startedAt": "2026-11-17T06:23:12.446543Z",
+      "finishedAt": null,
+      "state": "RUNNING_NO_TERMINAL",
+      "seconds": 1318.785532,
+      "stages": [
+        {
+          "stage": "archive-admission",
+          "start": "2026-11-17T06:23:12.629399Z",
+          "end": null,
+          "seconds": 1318.602676,
+          "completed": false
+        }
+      ]
+    }
+  ]
+}

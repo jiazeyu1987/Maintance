@@ -6025,3 +6025,11 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 验证结果：发票助手约3.01GB，含8,600份上传发票PDF、9,208份结果PDF、9,240份结果JSON及金蝶连接资料；分贝通约75.8MB，含3,349条同步单据、222条凭证处理、批次日志、幂等状态与2条独立租户接入配置；OnlyOffice含内部数据库/队列/日志/WOPI密钥，文档修改和任务表当前均0行，本地Redis连接拒绝，未宣称其内存为空或服务健康。
 - 菜单权限：主系统菜单、角色、数据范围、角色菜单、用户角色、租户套餐及部门岗位等12表整表指纹与冻结备份点匹配；辅助服务本地目录/卷未在该条主链覆盖，之后正式变更不视为已恢复。
 - 证据：doc/tasks/20261117-service-local-data-permissions-audit/data-classification-report.md、execution-log.md及脱敏probe输出；未记录密码/token/个人信息/业务正文。UTF-8、JSON、Python语法和证据聚合检查通过。
+
+### 2026-11-17 增量备份从分析到结束耗时核查（20261117-incremental-backup-duration）
+
+- 用户要求：当前增量备份一次从分析到备份结束需要多久。
+- 执行意图：只读最近成功bf67及当前9d06的原repository start/result/timing元数据和Spug受理时间；不触发备份、不改活动worker、不发送线程消息。
+- 验证结果：bf67从前置分析至最终SUCCEEDED实测2小时3分40秒，Spug受理到成功2小时4分22秒；分析31分05秒、采集34分30秒、上传3分44秒、NAS回读6分39秒、最终校验与链回读46分58秒，其余约44秒。子任务/manifest时间不能代替owner最终成功。
+- 当前边界：9d06截至北京时间14:45已运行约22分钟，仍在父链准入且无终态；4c3942失败不纳入成功样本；单次实测不保证每次固定时长，范围不包含前序发现的三个辅助服务本地数据。
+- 证据：doc/tasks/20261117-incremental-backup-duration/duration-report.md、source-timing.json、timing-summary.json、acceptance-time-evidence.json、execution-log.md。UTF-8/JSON/Python语法与时间差复算通过，未记录秘密。

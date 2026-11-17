@@ -1,0 +1,1025 @@
+{
+  "observedAt": "2026-11-17T06:45:11.232075+00:00",
+  "serverWrites": false,
+  "operations": [
+    {
+      "operationId": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+      "exists": true,
+      "files": [
+        {
+          "name": "capture-output.json",
+          "bytes": 1288,
+          "fields": [
+            {
+              "field": ".action",
+              "value": "INCREMENTAL"
+            },
+            {
+              "field": ".actualExitCode",
+              "value": null
+            },
+            {
+              "field": ".failureCode",
+              "value": "MINIMAL_OPERATION_IN_PROGRESS"
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-16T17:41:39.231998+00:00"
+            },
+            {
+              "field": ".operationId",
+              "value": "smallapp-bf67a867d3ec4e369ca31657c45e62c6"
+            },
+            {
+              "field": ".requestId",
+              "value": "smallapp-bf67a867d3ec4e369ca31657c45e62c6"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-16T17:41:34.214884+00:00"
+            },
+            {
+              "field": ".state",
+              "value": "TERMINAL_UNKNOWN"
+            }
+          ],
+          "topKeys": [
+            "action",
+            "actualExitCode",
+            "data",
+            "failureCode",
+            "finishedAt",
+            "message",
+            "operationId",
+            "originalResultPins",
+            "requestId",
+            "schemaVersion",
+            "startedAt",
+            "state"
+          ]
+        },
+        {
+          "name": "capture-process.json",
+          "bytes": 113,
+          "fields": [
+            {
+              "field": ".operationId",
+              "value": "smallapp-bf67a867d3ec4e369ca31657c45e62c6"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-16T17:41:33.933676Z"
+            }
+          ],
+          "topKeys": [
+            "operationId",
+            "pid",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "capture-terminal.json",
+          "bytes": 219,
+          "fields": [
+            {
+              "field": ".actualExitCode",
+              "value": 3
+            },
+            {
+              "field": ".at",
+              "value": "2026-11-16T17:41:39.278280Z"
+            },
+            {
+              "field": ".operationId",
+              "value": "smallapp-bf67a867d3ec4e369ca31657c45e62c6"
+            },
+            {
+              "field": ".state",
+              "value": "EXITED"
+            }
+          ],
+          "topKeys": [
+            "actualExitCode",
+            "at",
+            "operationId",
+            "pid",
+            "processTerminated",
+            "schemaVersion",
+            "state"
+          ]
+        },
+        {
+          "name": "readback-preflight.json",
+          "bytes": 60,
+          "fields": [
+            {
+              "field": ".observedAt",
+              "value": "2026-11-16T17:41:33.917379Z"
+            },
+            {
+              "field": ".state",
+              "value": "READY"
+            }
+          ],
+          "topKeys": [
+            "observedAt",
+            "state"
+          ]
+        },
+        {
+          "name": "request.json",
+          "bytes": 284,
+          "fields": [
+            {
+              "field": ".action",
+              "value": "INCREMENTAL"
+            },
+            {
+              "field": ".operationId",
+              "value": "smallapp-bf67a867d3ec4e369ca31657c45e62c6"
+            }
+          ],
+          "topKeys": [
+            "action",
+            "operationId",
+            "parentChainRef",
+            "recoveryPointRef",
+            "schemaVersion",
+            "sourceConfigRef",
+            "targetConfigRef"
+          ]
+        },
+        {
+          "name": "result.json",
+          "bytes": 5233,
+          "fields": [
+            {
+              "field": ".action",
+              "value": "INCREMENTAL"
+            },
+            {
+              "field": ".actualExitCode",
+              "value": 0
+            },
+            {
+              "field": ".failureCode",
+              "value": null
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-16T19:14:08.040260Z"
+            },
+            {
+              "field": ".operationId",
+              "value": "smallapp-bf67a867d3ec4e369ca31657c45e62c6"
+            },
+            {
+              "field": ".requestId",
+              "value": "smallapp-bf67a867d3ec4e369ca31657c45e62c6"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-16T17:10:28.341695Z"
+            },
+            {
+              "field": ".state",
+              "value": "SUCCEEDED"
+            }
+          ],
+          "topKeys": [
+            "action",
+            "actualExitCode",
+            "data",
+            "failureCode",
+            "finishedAt",
+            "message",
+            "operationId",
+            "originalResultPins",
+            "requestId",
+            "schemaVersion",
+            "startedAt",
+            "state"
+          ]
+        },
+        {
+          "name": "start.json",
+          "bytes": 449,
+          "fields": [
+            {
+              "field": ".startedAt",
+              "value": "2026-11-16T17:10:28.341695Z"
+            }
+          ],
+          "topKeys": [
+            "configurationPin",
+            "deadlineMonotonic",
+            "readbackOnly",
+            "requestSha256",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "timing-archive-admission-end.json",
+          "bytes": 115,
+          "fields": [
+            {
+              "field": ".completed",
+              "value": true
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-16T17:41:33.925090Z"
+            },
+            {
+              "field": ".stage",
+              "value": "archive-admission"
+            }
+          ],
+          "topKeys": [
+            "completed",
+            "elapsedSeconds",
+            "finishedAt",
+            "stage"
+          ]
+        },
+        {
+          "name": "timing-archive-admission-start.json",
+          "bytes": 71,
+          "fields": [
+            {
+              "field": ".stage",
+              "value": "archive-admission"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-16T17:10:28.483678Z"
+            }
+          ],
+          "topKeys": [
+            "stage",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "timing-archive-chain-readback-end.json",
+          "bytes": 120,
+          "fields": [
+            {
+              "field": ".completed",
+              "value": true
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-16T19:14:08.020055Z"
+            },
+            {
+              "field": ".stage",
+              "value": "archive-chain-readback"
+            }
+          ],
+          "topKeys": [
+            "completed",
+            "elapsedSeconds",
+            "finishedAt",
+            "stage"
+          ]
+        },
+        {
+          "name": "timing-archive-chain-readback-start.json",
+          "bytes": 76,
+          "fields": [
+            {
+              "field": ".stage",
+              "value": "archive-chain-readback"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-16T18:50:37.916362Z"
+            }
+          ],
+          "topKeys": [
+            "stage",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "timing-archive-final-verification-end.json",
+          "bytes": 124,
+          "fields": [
+            {
+              "field": ".completed",
+              "value": true
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-16T18:50:03.770385Z"
+            },
+            {
+              "field": ".stage",
+              "value": "archive-final-verification"
+            }
+          ],
+          "topKeys": [
+            "completed",
+            "elapsedSeconds",
+            "finishedAt",
+            "stage"
+          ]
+        },
+        {
+          "name": "timing-archive-final-verification-start.json",
+          "bytes": 80,
+          "fields": [
+            {
+              "field": ".stage",
+              "value": "archive-final-verification"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-16T18:26:36.151607Z"
+            }
+          ],
+          "topKeys": [
+            "stage",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "timing-archive-metadata-end.json",
+          "bytes": 111,
+          "fields": [
+            {
+              "field": ".completed",
+              "value": true
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-16T18:19:56.925376Z"
+            },
+            {
+              "field": ".stage",
+              "value": "archive-metadata"
+            }
+          ],
+          "topKeys": [
+            "completed",
+            "elapsedSeconds",
+            "finishedAt",
+            "stage"
+          ]
+        },
+        {
+          "name": "timing-archive-metadata-start.json",
+          "bytes": 70,
+          "fields": [
+            {
+              "field": ".stage",
+              "value": "archive-metadata"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-16T18:19:56.623764Z"
+            }
+          ],
+          "topKeys": [
+            "stage",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "timing-capture-cleanup-end.json",
+          "bytes": 111,
+          "fields": [
+            {
+              "field": ".completed",
+              "value": true
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-16T18:50:37.907846Z"
+            },
+            {
+              "field": ".stage",
+              "value": "capture-cleanup"
+            }
+          ],
+          "topKeys": [
+            "completed",
+            "elapsedSeconds",
+            "finishedAt",
+            "stage"
+          ]
+        },
+        {
+          "name": "timing-capture-cleanup-start.json",
+          "bytes": 69,
+          "fields": [
+            {
+              "field": ".stage",
+              "value": "capture-cleanup"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-16T18:50:03.783065Z"
+            }
+          ],
+          "topKeys": [
+            "stage",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "timing-capture-validation-end.json",
+          "bytes": 113,
+          "fields": [
+            {
+              "field": ".completed",
+              "value": true
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-16T18:16:12.454911Z"
+            },
+            {
+              "field": ".stage",
+              "value": "capture-validation"
+            }
+          ],
+          "topKeys": [
+            "completed",
+            "elapsedSeconds",
+            "finishedAt",
+            "stage"
+          ]
+        },
+        {
+          "name": "timing-capture-validation-start.json",
+          "bytes": 72,
+          "fields": [
+            {
+              "field": ".stage",
+              "value": "capture-validation"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-16T18:16:03.560234Z"
+            }
+          ],
+          "topKeys": [
+            "stage",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "timing-nas-readback-end.json",
+          "bytes": 109,
+          "fields": [
+            {
+              "field": ".completed",
+              "value": true
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-16T18:26:35.886246Z"
+            },
+            {
+              "field": ".stage",
+              "value": "nas-readback"
+            }
+          ],
+          "topKeys": [
+            "completed",
+            "elapsedSeconds",
+            "finishedAt",
+            "stage"
+          ]
+        },
+        {
+          "name": "timing-nas-readback-start.json",
+          "bytes": 66,
+          "fields": [
+            {
+              "field": ".stage",
+              "value": "nas-readback"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-16T18:19:56.930405Z"
+            }
+          ],
+          "topKeys": [
+            "stage",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "timing-nas-upload-end.json",
+          "bytes": 106,
+          "fields": [
+            {
+              "field": ".completed",
+              "value": true
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-16T18:19:56.611367Z"
+            },
+            {
+              "field": ".stage",
+              "value": "nas-upload"
+            }
+          ],
+          "topKeys": [
+            "completed",
+            "elapsedSeconds",
+            "finishedAt",
+            "stage"
+          ]
+        },
+        {
+          "name": "timing-nas-upload-start.json",
+          "bytes": 64,
+          "fields": [
+            {
+              "field": ".stage",
+              "value": "nas-upload"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-16T18:16:12.491691Z"
+            }
+          ],
+          "topKeys": [
+            "stage",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "timing-source-capture-end.json",
+          "bytes": 112,
+          "fields": [
+            {
+              "field": ".completed",
+              "value": true
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-16T18:16:03.557955Z"
+            },
+            {
+              "field": ".stage",
+              "value": "source-capture"
+            }
+          ],
+          "topKeys": [
+            "completed",
+            "elapsedSeconds",
+            "finishedAt",
+            "stage"
+          ]
+        },
+        {
+          "name": "timing-source-capture-start.json",
+          "bytes": 68,
+          "fields": [
+            {
+              "field": ".stage",
+              "value": "source-capture"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-16T17:41:33.927260Z"
+            }
+          ],
+          "topKeys": [
+            "stage",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "worker-process.json",
+          "bytes": 112,
+          "fields": [
+            {
+              "field": ".operationId",
+              "value": "smallapp-bf67a867d3ec4e369ca31657c45e62c6"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-16T17:10:28.352020Z"
+            }
+          ],
+          "topKeys": [
+            "operationId",
+            "pid",
+            "startedAt"
+          ]
+        }
+      ]
+    },
+    {
+      "operationId": "smallapp-4c3942b0fdeb42f8b95b5db8c732d99d",
+      "exists": true,
+      "files": [
+        {
+          "name": "capture-output.json",
+          "bytes": 1630,
+          "fields": [
+            {
+              "field": ".action",
+              "value": "INCREMENTAL"
+            },
+            {
+              "field": ".actualExitCode",
+              "value": 1
+            },
+            {
+              "field": ".failureCode",
+              "value": "MINIMAL_SELECTED_CONTAINER_NOT_READY"
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-17T06:10:37.835641+00:00"
+            },
+            {
+              "field": ".operationId",
+              "value": "smallapp-4c3942b0fdeb42f8b95b5db8c732d99d"
+            },
+            {
+              "field": ".requestId",
+              "value": "smallapp-4c3942b0fdeb42f8b95b5db8c732d99d"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-17T06:10:37.261994+00:00"
+            },
+            {
+              "field": ".state",
+              "value": "FAILED_RETAINED"
+            }
+          ],
+          "topKeys": [
+            "action",
+            "actualExitCode",
+            "data",
+            "failureCode",
+            "finishedAt",
+            "message",
+            "operationId",
+            "originalResultPins",
+            "requestId",
+            "schemaVersion",
+            "startedAt",
+            "state"
+          ]
+        },
+        {
+          "name": "capture-process.json",
+          "bytes": 113,
+          "fields": [
+            {
+              "field": ".operationId",
+              "value": "smallapp-4c3942b0fdeb42f8b95b5db8c732d99d"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-17T06:10:37.061047Z"
+            }
+          ],
+          "topKeys": [
+            "operationId",
+            "pid",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "capture-terminal.json",
+          "bytes": 219,
+          "fields": [
+            {
+              "field": ".actualExitCode",
+              "value": 1
+            },
+            {
+              "field": ".at",
+              "value": "2026-11-17T06:10:37.930420Z"
+            },
+            {
+              "field": ".operationId",
+              "value": "smallapp-4c3942b0fdeb42f8b95b5db8c732d99d"
+            },
+            {
+              "field": ".state",
+              "value": "EXITED"
+            }
+          ],
+          "topKeys": [
+            "actualExitCode",
+            "at",
+            "operationId",
+            "pid",
+            "processTerminated",
+            "schemaVersion",
+            "state"
+          ]
+        },
+        {
+          "name": "readback-preflight.json",
+          "bytes": 60,
+          "fields": [
+            {
+              "field": ".observedAt",
+              "value": "2026-11-17T06:10:37.050203Z"
+            },
+            {
+              "field": ".state",
+              "value": "READY"
+            }
+          ],
+          "topKeys": [
+            "observedAt",
+            "state"
+          ]
+        },
+        {
+          "name": "request.json",
+          "bytes": 284,
+          "fields": [
+            {
+              "field": ".action",
+              "value": "INCREMENTAL"
+            },
+            {
+              "field": ".operationId",
+              "value": "smallapp-4c3942b0fdeb42f8b95b5db8c732d99d"
+            }
+          ],
+          "topKeys": [
+            "action",
+            "operationId",
+            "parentChainRef",
+            "recoveryPointRef",
+            "schemaVersion",
+            "sourceConfigRef",
+            "targetConfigRef"
+          ]
+        },
+        {
+          "name": "result.json",
+          "bytes": 1320,
+          "fields": [
+            {
+              "field": ".action",
+              "value": "INCREMENTAL"
+            },
+            {
+              "field": ".actualExitCode",
+              "value": 1
+            },
+            {
+              "field": ".failureCode",
+              "value": "MINIMAL_SELECTED_CONTAINER_NOT_READY"
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-17T06:10:37.947399Z"
+            },
+            {
+              "field": ".operationId",
+              "value": "smallapp-4c3942b0fdeb42f8b95b5db8c732d99d"
+            },
+            {
+              "field": ".requestId",
+              "value": "smallapp-4c3942b0fdeb42f8b95b5db8c732d99d"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-17T05:45:44.594150Z"
+            },
+            {
+              "field": ".state",
+              "value": "FAILED_RETAINED"
+            }
+          ],
+          "topKeys": [
+            "action",
+            "actualExitCode",
+            "data",
+            "failureCode",
+            "finishedAt",
+            "message",
+            "operationId",
+            "originalResultPins",
+            "requestId",
+            "schemaVersion",
+            "startedAt",
+            "state"
+          ]
+        },
+        {
+          "name": "start.json",
+          "bytes": 449,
+          "fields": [
+            {
+              "field": ".startedAt",
+              "value": "2026-11-17T05:45:44.594150Z"
+            }
+          ],
+          "topKeys": [
+            "configurationPin",
+            "deadlineMonotonic",
+            "readbackOnly",
+            "requestSha256",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "timing-archive-admission-end.json",
+          "bytes": 114,
+          "fields": [
+            {
+              "field": ".completed",
+              "value": true
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-17T06:10:37.055330Z"
+            },
+            {
+              "field": ".stage",
+              "value": "archive-admission"
+            }
+          ],
+          "topKeys": [
+            "completed",
+            "elapsedSeconds",
+            "finishedAt",
+            "stage"
+          ]
+        },
+        {
+          "name": "timing-archive-admission-start.json",
+          "bytes": 71,
+          "fields": [
+            {
+              "field": ".stage",
+              "value": "archive-admission"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-17T05:45:44.734995Z"
+            }
+          ],
+          "topKeys": [
+            "stage",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "timing-source-capture-end.json",
+          "bytes": 110,
+          "fields": [
+            {
+              "field": ".completed",
+              "value": false
+            },
+            {
+              "field": ".finishedAt",
+              "value": "2026-11-17T06:10:37.934979Z"
+            },
+            {
+              "field": ".stage",
+              "value": "source-capture"
+            }
+          ],
+          "topKeys": [
+            "completed",
+            "elapsedSeconds",
+            "finishedAt",
+            "stage"
+          ]
+        },
+        {
+          "name": "timing-source-capture-start.json",
+          "bytes": 68,
+          "fields": [
+            {
+              "field": ".stage",
+              "value": "source-capture"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-17T06:10:37.057149Z"
+            }
+          ],
+          "topKeys": [
+            "stage",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "worker-process.json",
+          "bytes": 113,
+          "fields": [
+            {
+              "field": ".operationId",
+              "value": "smallapp-4c3942b0fdeb42f8b95b5db8c732d99d"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-17T05:45:44.604621Z"
+            }
+          ],
+          "topKeys": [
+            "operationId",
+            "pid",
+            "startedAt"
+          ]
+        }
+      ]
+    },
+    {
+      "operationId": "smallapp-9d06cdef2d6d4a589db0506193629d5c",
+      "exists": true,
+      "files": [
+        {
+          "name": "request.json",
+          "bytes": 284,
+          "fields": [
+            {
+              "field": ".action",
+              "value": "INCREMENTAL"
+            },
+            {
+              "field": ".operationId",
+              "value": "smallapp-9d06cdef2d6d4a589db0506193629d5c"
+            }
+          ],
+          "topKeys": [
+            "action",
+            "operationId",
+            "parentChainRef",
+            "recoveryPointRef",
+            "schemaVersion",
+            "sourceConfigRef",
+            "targetConfigRef"
+          ]
+        },
+        {
+          "name": "start.json",
+          "bytes": 449,
+          "fields": [
+            {
+              "field": ".startedAt",
+              "value": "2026-11-17T06:23:12.446543Z"
+            }
+          ],
+          "topKeys": [
+            "configurationPin",
+            "deadlineMonotonic",
+            "readbackOnly",
+            "requestSha256",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "timing-archive-admission-start.json",
+          "bytes": 71,
+          "fields": [
+            {
+              "field": ".stage",
+              "value": "archive-admission"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-17T06:23:12.629399Z"
+            }
+          ],
+          "topKeys": [
+            "stage",
+            "startedAt"
+          ]
+        },
+        {
+          "name": "worker-process.json",
+          "bytes": 113,
+          "fields": [
+            {
+              "field": ".operationId",
+              "value": "smallapp-9d06cdef2d6d4a589db0506193629d5c"
+            },
+            {
+              "field": ".startedAt",
+              "value": "2026-11-17T06:23:12.459281Z"
+            }
+          ],
+          "topKeys": [
+            "operationId",
+            "pid",
+            "startedAt"
+          ]
+        }
+      ]
+    }
+  ]
+}

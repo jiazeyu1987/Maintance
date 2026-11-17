@@ -1,0 +1,10 @@
+{
+  "origin": "C:/SpugHandoff/release/sixstep-20261116/spug/backup-INCREMENTAL-latest.private.json",
+  "operationId": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+  "acceptedAt": "2026-11-16T17:09:45.954198+00:00",
+  "repositoryStartedAt": "2026-11-16T17:10:28.341695Z",
+  "finishedAt": "2026-11-16T19:14:08.040260Z",
+  "acceptedToSuccessSeconds": 7462.086062,
+  "sourceContainsPrivateData": true,
+  "onlyAllowlistedFieldsCopied": true
+}
