@@ -5,10 +5,10 @@
 
 ## Milestones
 - [x] 真实预览失败定位：host.docker.internal无法解析，源凭据与目标MinIO不一致。
-- [ ] BDD/RED：指定配置的endpoint/accessKey/accessSecret适配，非指定行不变，缺配置拒绝。
-- [ ] GREEN/REGRESSION：最小适配实现及实际SAFE封包接入。
-- [ ] 固定提交构建安装、通过原恢复流程执行、真实附件验收。
-- [ ] 合并验证、记录及自有工作区清理。
+- [x] BDD/RED：指定配置的endpoint/accessKey/accessSecret适配，非指定行不变，缺配置拒绝。
+- [x] GREEN/REGRESSION：最小适配实现及实际SAFE封包接入。
+- [x] 固定提交构建安装、通过原恢复流程执行、真实附件验收。
+- [x] 合并验证、记录及自有工作区清理。
 
 ## Expected Verification
 单测覆盖字段保持及错误暴露；真实目标只读核对适配结果；Spug恢复成功后真实登录、8表基线和3附件字节/SHA验证。历史失败保留。
@@ -26,4 +26,4 @@ Given空目标已恢复数据和对象且应用未启动，When执行显式文�
 Given配置不在显式范围或缺失，When适配，Then不修改无关配置，缺失配置报错。
 
 ## Current Status
-in_progress：诊断完成，待独立worktree实现。前一启动阶段修复已合入int_main54b0f54，整链业务验收仍受本缺口阻塞。
+completed：089a267已安装并融合维护仓，合并后67测试/20子测试通过。本轮9ddf恢复成功，endpoint指向目标MinIO，实际Docker secret核对accessMatches/secretMatches均true。8表、登录、版本通过；两图片真实页面及SHA通过、PDF对象206586字节/SHA通过。PDF页面不可见与正式源数据缺少受控/生效时间及项目归属一致，用户已确认保持最小范围并记录历史问题，不扩大历史迁移。两个纯构建worktree已删除，开发worktree已删除，历史PDF按用户明确范围记录。

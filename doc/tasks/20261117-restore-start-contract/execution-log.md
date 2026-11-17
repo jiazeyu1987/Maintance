@@ -10,3 +10,7 @@
 - REGRESSION：test_restore_application_database_phase、test_main_mysql_scheduler、test_prepared_service_health、test_prepared_database_readback -> 33 PASS、4 subtests PASS。
 - 宽回归第一次Windows main_readiness组包含1项CRLF解析失败；本次未改该模块或测试。Linux复制源码验证该明确用例PASS。Linux全组另有两项因Python3.9无sys.exception与测试副本没有Git元数据而失败；不把该轮写为全组通过。
 - 最终分环境覆盖：Windows main_readiness -k 'not test_host_frontend_uses_explicit_bound_original_listen' -> 21 PASS、10 subtests PASS；明确排除项在Linux原用例 -> 1 PASS。全部22项均获得真实执行通过，非静默跳过；实际封包生成测试在Windows通过。部署验收仍未完成。
+
+CLOSEOUT PENDING: 9ddf恢复成功及数据完整性已验证，父任务等待历史PDF页面范围和应用主线并行编辑状态确认；纯构建worktree已清理，开发worktree不删除。详细证据见六步父任务execution-log及C:/SpugHandoff/release/sixstep-20261116/acceptance。
+
+CLOSEOUT PASS: 实现已合入int_main且67测试/20子测试通过，真实9ddf恢复SUCCEEDED；历史PDF范围已获用户确认。自有开发/构建worktree已删除，start旧状态文档已保全至父任务integration-preservation。原task.md恢复到HEAD后Git换行缓存仍显示M，但blob与HEAD/index一致；精确git add刷新后零diff，未创建实现提交。仅测试缓存随worktree删除；发布执行器继续稳定路径，验收隧道已精确停止。任务completed。
