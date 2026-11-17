@@ -1,0 +1,37 @@
+{
+  "serverWrites": false,
+  "local": {
+    "sql": {
+      "type": "postgres",
+      "dbHost": "localhost",
+      "dbPort": "5432",
+      "dbName": "onlyoffice"
+    },
+    "redis": {},
+    "storageFs": {}
+  },
+  "default": {
+    "sql": {
+      "type": "postgres",
+      "dbHost": "localhost",
+      "dbPort": 5432,
+      "dbName": "onlyoffice"
+    },
+    "redis": {
+      "host": "127.0.0.1",
+      "port": 6379
+    },
+    "storageFs": {
+      "folderPath": "",
+      "urlExpires": 900
+    }
+  },
+  "fenbeitongModules": [
+    "./backend/src/assistant-session-context.js",
+    "./backend/src/config.js",
+    "./backend/src/routes.js"
+  ],
+  "redisLocalProbeFailureClassification": [
+    "Connection refused"
+  ]
+}

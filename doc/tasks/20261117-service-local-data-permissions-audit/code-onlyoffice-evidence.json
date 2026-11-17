@@ -1,0 +1,259 @@
+{
+  "serverWrites": false,
+  "codeEvidence": [
+    {
+      "service": "erp-invoice-voucher-print-assistant",
+      "file": "server.js",
+      "lines": 1801,
+      "evidence": [
+        {
+          "line": 27,
+          "references": [
+            "last-result"
+          ],
+          "functions": []
+        },
+        {
+          "line": 30,
+          "references": [
+            "KINGDEE"
+          ],
+          "functions": []
+        },
+        {
+          "line": 69,
+          "references": [
+            "readFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 318,
+          "references": [
+            "KINGDEE"
+          ],
+          "functions": []
+        },
+        {
+          "line": 319,
+          "references": [
+            "KINGDEE"
+          ],
+          "functions": []
+        },
+        {
+          "line": 320,
+          "references": [
+            "KINGDEE"
+          ],
+          "functions": []
+        },
+        {
+          "line": 321,
+          "references": [
+            "KINGDEE"
+          ],
+          "functions": []
+        },
+        {
+          "line": 322,
+          "references": [
+            "KINGDEE"
+          ],
+          "functions": []
+        },
+        {
+          "line": 323,
+          "references": [
+            "KINGDEE"
+          ],
+          "functions": []
+        },
+        {
+          "line": 324,
+          "references": [
+            "KINGDEE"
+          ],
+          "functions": []
+        },
+        {
+          "line": 325,
+          "references": [
+            "KINGDEE"
+          ],
+          "functions": []
+        },
+        {
+          "line": 332,
+          "references": [
+            ".env.kingdee"
+          ],
+          "functions": []
+        },
+        {
+          "line": 338,
+          "references": [
+            "writeFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 821,
+          "references": [
+            "writeFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 881,
+          "references": [
+            "readFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 895,
+          "references": [
+            "writeFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 972,
+          "references": [
+            "writeFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 973,
+          "references": [
+            "writeFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 975,
+          "references": [
+            "writeFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 981,
+          "references": [
+            "readFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 989,
+          "references": [
+            "writeFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 1023,
+          "references": [
+            "readFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 1052,
+          "references": [
+            "writeFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 1070,
+          "references": [
+            "writeFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 1176,
+          "references": [
+            "writeFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 1190,
+          "references": [
+            "readFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 1194,
+          "references": [
+            "writeFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 1611,
+          "references": [
+            "writeFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 1625,
+          "references": [
+            "readFile"
+          ],
+          "functions": []
+        }
+      ]
+    },
+    {
+      "service": "fenbeitong-assistant",
+      "file": "server.js",
+      "lines": 304,
+      "evidence": [
+        {
+          "line": 3,
+          "references": [
+            "readFile"
+          ],
+          "functions": []
+        },
+        {
+          "line": 223,
+          "references": [
+            "readFile"
+          ],
+          "functions": []
+        }
+      ]
+    }
+  ],
+  "onlyofficeDocumentTableCounts": [
+    "BEGIN",
+    "count|doc_changes|0",
+    "count|task_result|0",
+    "COMMIT"
+  ],
+  "onlyofficeRedisKeyspace": {
+    "exit": 1,
+    "rows": [],
+    "errorPresent": true
+  },
+  "onlyofficeRabbitQueueCounts": {
+    "exit": 0,
+    "rows": [
+      "messages_ready\tmessages_unacknowledged",
+      "0\t0",
+      "0\t0",
+      "0\t0",
+      "0\t0",
+      "0\t0"
+    ],
+    "errorPresent": false
+  }
+}

@@ -1,0 +1,296 @@
+{
+  "serverWrites": false,
+  "fenbeitongStateShape": {
+    "config": {
+      "type": "NoneType"
+    },
+    "integrationSelection": {
+      "type": "object",
+      "keyCount": 4,
+      "fields": {
+        "tenantKey": {
+          "type": "str"
+        },
+        "kingdeeAccountKey": {
+          "type": "str"
+        },
+        "kingdeeAcctIdKey": {
+          "type": "str"
+        },
+        "updatedAt": {
+          "type": "str"
+        }
+      }
+    },
+    "kingdee": {
+      "type": "object",
+      "keyCount": 2,
+      "fields": {
+        "selectedAccountKey": {
+          "type": "str"
+        },
+        "selectedAcctIdKey": {
+          "type": "str"
+        }
+      }
+    },
+    "fenbeitongRequesterCatalogs": {
+      "type": "keyedRecords",
+      "count": 1,
+      "recordFields": "list"
+    },
+    "syncedDocuments": {
+      "type": "keyedRecords",
+      "count": 3349,
+      "recordFields": {
+        "sourceSystem": "str",
+        "sourceType": "str",
+        "sourceKindName": "str",
+        "sourceHeader": "str",
+        "sourceForm": "str",
+        "sourceId": "str",
+        "sourceCode": "str",
+        "documentType": "str",
+        "reason": "str",
+        "applicationDate": "str",
+        "applicationDateSource": "str",
+        "paymentDate": "str",
+        "settlementMonth": "str",
+        "totalAmount": "int",
+        "reimbursementAmount": "int",
+        "requestPaymentAmount": "int",
+        "paymentAmount": "int",
+        "splitTaxAmount": "int",
+        "splitExcludingTaxAmount": "int",
+        "departmentAttributionAmount": "int",
+        "requesterName": "str",
+        "requesterCode": "str",
+        "employeeNumber": "str",
+        "employeeOpenBank": "str",
+        "employeeAccountName": "str",
+        "employeeBankAccount": "str",
+        "departmentName": "str",
+        "departmentCode": "str",
+        "requestOrganizationName": "str",
+        "requestOrganizationCode": "str",
+        "expenseOrganizationName": "str",
+        "expenseOrganizationCode": "str",
+        "sourceDocumentStatus": "str",
+        "businessLine": "str",
+        "startLocation": "str",
+        "arrivalLocation": "str",
+        "trafficType": "str",
+        "purpose": "str",
+        "expenseDepartment": "str",
+        "taxMappingComplete": "bool",
+        "expenseTypes": "str",
+        "batchId": "str",
+        "tenantKey": "str",
+        "sourceMode": "str",
+        "mockReplacement": "bool",
+        "mockReason": "str",
+        "processStatus": "int",
+        "processStage": "str",
+        "fixedJson": "str",
+        "createTime": "str",
+        "updateTime": "str"
+      }
+    },
+    "voucherRecords": {
+      "type": "keyedRecords",
+      "count": 222,
+      "recordFields": {
+        "sourceSystem": "str",
+        "sourceType": "str",
+        "sourceId": "str",
+        "sourceIds": "list",
+        "sourceCode": "str",
+        "idempotencyKey": "str",
+        "contentHash": "str",
+        "processStatus": "int",
+        "processStage": "str",
+        "targetFormId": "str",
+        "kingdeeAcctIdKey": "str",
+        "marker": "str",
+        "erpDocumentStatus": "str",
+        "erpFid": "str",
+        "erpNumber": "str",
+        "erpMode": "str",
+        "erpRawResponse": "str",
+        "previousErpPushes": "list",
+        "expenseReimbursementPayload": "str",
+        "createTime": "str",
+        "updateTime": "str",
+        "simulatedErp": "bool",
+        "erpMockReplacement": "bool",
+        "erpMockReason": "str",
+        "lastErpRetryErrorCode": "str",
+        "lastErpRetryErrorMessage": "str",
+        "lastErpRetryErrorAt": "str"
+      }
+    },
+    "syncBatches": {
+      "type": "keyedRecords",
+      "count": 4,
+      "recordFields": {
+        "batchId": "str",
+        "sourceSystem": "str",
+        "tenantKey": "str",
+        "sourceMode": "str",
+        "mockReplacement": "bool",
+        "mockReason": "str",
+        "status": "str",
+        "totalCount": "int",
+        "successCount": "int",
+        "failCount": "int",
+        "message": "str",
+        "startedAt": "str",
+        "finishedAt": "str"
+      }
+    },
+    "operationLogs": {
+      "type": "list",
+      "count": 200,
+      "elementShape": {
+        "type": "object",
+        "keyCount": 5,
+        "fields": {
+          "id": {
+            "type": "str"
+          },
+          "action": {
+            "type": "str"
+          },
+          "status": {
+            "type": "str"
+          },
+          "detail": {
+            "type": "object",
+            "keyCount": 7,
+            "fields": {
+              "sourceId": {
+                "type": "str"
+              },
+              "simulated": {
+                "type": "bool"
+              },
+              "erpMode": {
+                "type": "str"
+              },
+              "mockReplacement": {
+                "type": "bool"
+              },
+              "mockReason": {
+                "type": "str"
+              },
+              "erpFid": {
+                "type": "str"
+              },
+              "erpNumber": {
+                "type": "str"
+              }
+            }
+          },
+          "createdAt": {
+            "type": "str"
+          }
+        }
+      }
+    }
+  },
+  "invoiceConnectionFiles": [
+    {
+      "extension": ".env.kingdee",
+      "bytes": 309,
+      "format": "ENV",
+      "variableNames": [
+        "KINGDEE_BASE_URL",
+        "KINGDEE_ACCT_ID",
+        "KINGDEE_USERNAME",
+        "KINGDEE_PASSWORD",
+        "KINGDEE_APP_ID",
+        "KINGDEE_SIGNED_DATA",
+        "KINGDEE_TIMESTAMP",
+        "KINGDEE_LCID"
+      ]
+    },
+    {
+      "extension": ".env.kingdee",
+      "bytes": 309,
+      "format": "ENV",
+      "variableNames": [
+        "KINGDEE_BASE_URL",
+        "KINGDEE_ACCT_ID",
+        "KINGDEE_USERNAME",
+        "KINGDEE_PASSWORD",
+        "KINGDEE_APP_ID",
+        "KINGDEE_SIGNED_DATA",
+        "KINGDEE_TIMESTAMP",
+        "KINGDEE_LCID"
+      ]
+    }
+  ],
+  "erp-invoice-voucher-print-assistantSourceFiles": [
+    "./release-info.json",
+    "./server.js",
+    "./print-jobs.js",
+    "./tests/container-deploy-static.cjs",
+    "./tests/kingdee-env-missing-regression.cjs",
+    "./tests/run-settings-persistence-static.cjs",
+    "./tests/assistant-callback-erp-error-message-regression.cjs",
+    "./tests/container-chinese-fonts-static.cjs",
+    "./tests/sso-prompt-fail-fast-static.cjs",
+    "./tests/organization-switch-order-static.cjs",
+    "./tests/assistant-callback-replay-regression.cjs",
+    "./tests/webapi-query-regression.cjs",
+    "./tests/sales-org-copy-static.cjs",
+    "./tests/webapi-access-static.cjs",
+    "./tests/python-runtime-error-no-traceback-static.cjs",
+    "./tests/fixed-port-static.cjs",
+    "./tests/assistant-auth-static.cjs",
+    "./package.json"
+  ],
+  "erp-invoice-voucher-print-assistantEntryPoints": {},
+  "fenbeitong-assistantSourceFiles": [
+    "./server.js",
+    "./package-lock.json",
+    "./release-info.json",
+    "./package.json"
+  ],
+  "fenbeitong-assistantEntryPoints": {
+    "start": "node server.js"
+  },
+  "onlyofficeDataFileNames": [
+    "wopi_private.key",
+    "wopi_public.key",
+    ".private/ds_release_date"
+  ],
+  "onlyofficeDatabaseProbe": {
+    "exit": 0,
+    "schemaRows": [
+      "table|doc_changes",
+      "table|task_result",
+      "column|doc_changes|tenant|character varying",
+      "column|doc_changes|id|character varying",
+      "column|doc_changes|change_id|integer",
+      "column|doc_changes|user_id|character varying",
+      "column|doc_changes|user_id_original|character varying",
+      "column|doc_changes|user_name|character varying",
+      "column|doc_changes|change_data|text",
+      "column|doc_changes|change_date|timestamp without time zone",
+      "column|task_result|tenant|character varying",
+      "column|task_result|id|character varying",
+      "column|task_result|status|smallint",
+      "column|task_result|status_info|integer",
+      "column|task_result|created_at|timestamp without time zone",
+      "column|task_result|last_open_date|timestamp without time zone",
+      "column|task_result|user_index|integer",
+      "column|task_result|change_id|integer",
+      "column|task_result|callback|text",
+      "column|task_result|baseurl|text",
+      "column|task_result|password|text",
+      "column|task_result|additional|text"
+    ],
+    "errorPresent": false
+  }
+}

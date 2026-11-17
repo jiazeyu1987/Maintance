@@ -1,0 +1,285 @@
+{
+  "serverWrites": false,
+  "services": [
+    {
+      "name": "/erp-invoice-voucher-print-assistant",
+      "image": "erp-invoice-voucher-print-assistant:2026-11-03-09-27-31",
+      "workingDir": "/opt/invoice-voucher-print-assistant/app",
+      "mounts": [
+        {
+          "source": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/runtime",
+          "destination": "/opt/invoice-voucher-print-assistant/runtime",
+          "fileCount": 2,
+          "bytes": 618,
+          "extensions": {
+            ".kingdee": 2
+          },
+          "databases": [],
+          "controlFilePatterns": []
+        },
+        {
+          "source": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/uploads",
+          "destination": "/opt/invoice-voucher-print-assistant/服务器上传发票",
+          "fileCount": 8600,
+          "bytes": 1038241906,
+          "extensions": {
+            ".pdf": 8600
+          },
+          "databases": [],
+          "controlFilePatterns": []
+        },
+        {
+          "source": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/results",
+          "destination": "/opt/invoice-voucher-print-assistant/浏览器运行结果",
+          "fileCount": 18448,
+          "bytes": 1967855832,
+          "extensions": {
+            ".json": 9240,
+            ".pdf": 9208
+          },
+          "databases": [],
+          "controlFilePatterns": [
+            ".last-result.json",
+            "ERP凭证_<n>_数据.json",
+            "ERP直接查询结果.json",
+            "发票号提取结果.json",
+            "在线填写发票号.json",
+            "处理汇总.json",
+            "待查询发票号.json"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "/fenbeitong-assistant",
+      "image": "sha256:c02c393bc03896f08b975c4fd4853de7916e693b960d2473fb3e1387cf148768",
+      "workingDir": "/app",
+      "mounts": [
+        {
+          "source": "/var/lib/docker/fenbeitong-release/data",
+          "destination": "/data",
+          "fileCount": 4,
+          "bytes": 75788418,
+          "extensions": {
+            ".json": 1,
+            ".sqlite": 1,
+            ".sqlite-wal": 1,
+            ".sqlite-shm": 1
+          },
+          "databases": [
+            {
+              "relativePath": "fenbeitong-tenants.sqlite",
+              "tables": [
+                {
+                  "name": "fenbeitong_tenants",
+                  "rows": 2,
+                  "columns": [
+                    {
+                      "name": "tenant_key",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "name",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "status",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "auth_mode",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "base_url",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "auth_path",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "pull_path",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "detail_path",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "app_id",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "app_key",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "access_token",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "token_expires_at",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "refresh_interval_seconds",
+                      "type": "INTEGER"
+                    },
+                    {
+                      "name": "list_payload_json",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "display_order",
+                      "type": "INTEGER"
+                    },
+                    {
+                      "name": "created_at",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "updated_at",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "bill_base_url",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "bill_number_path",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "bill_detail_path",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "bill_sign_key",
+                      "type": "TEXT"
+                    },
+                    {
+                      "name": "bill_months_back",
+                      "type": "INTEGER"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "controlFilePatterns": [
+            "fenbeitong-tenants.sqlite",
+            "state.json"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "/intruoyi-onlyoffice",
+      "image": "onlyoffice/documentserver:latest",
+      "workingDir": "",
+      "mounts": [
+        {
+          "source": "/var/lib/docker/volumes/468e75d6cd1bb297daa187222372e94c7cbfe27e5470eaefca99c8b37703e64e/_data",
+          "destination": "/usr/share/fonts/truetype/custom",
+          "fileCount": 0,
+          "bytes": 0,
+          "extensions": {},
+          "databases": []
+        },
+        {
+          "source": "/var/lib/docker/volumes/37865cbf92fcb721afdcce50f2c83d3f283c50591ecc1555b206aed6aaee8e25/_data",
+          "destination": "/var/lib/onlyoffice",
+          "fileCount": 0,
+          "bytes": 0,
+          "extensions": {},
+          "databases": []
+        },
+        {
+          "source": "/var/lib/docker/volumes/275ed7ede69b9ec2876af51b92bf1e974a90c0d11d547136ebb00d5d0dae0367/_data",
+          "destination": "/var/lib/postgresql",
+          "fileCount": 1276,
+          "bytes": 64830276,
+          "extensions": {
+            "<no suffix>": 1265,
+            ".map": 5,
+            ".init": 3,
+            ".pid": 1,
+            ".opts": 1,
+            ".conf": 1
+          },
+          "databases": []
+        },
+        {
+          "source": "/var/lib/docker/volumes/471139f2a4012e32f993e8660e0c1ca7df9a3e6196bb41250563e849351f459f/_data",
+          "destination": "/var/lib/rabbitmq",
+          "fileCount": 119,
+          "bytes": 205112,
+          "extensions": {
+            "<no suffix>": 27,
+            ".dcd": 24,
+            ".dets": 15,
+            ".jif": 12,
+            ".dcl": 8,
+            ".wal": 6,
+            ".rdq": 6,
+            ".log": 5,
+            ".ets": 4,
+            ".dat": 3,
+            ".config": 3,
+            ".txt": 3,
+            ".dot": 2,
+            ".cookie": 1
+          },
+          "databases": []
+        },
+        {
+          "source": "/var/lib/docker/volumes/e8f12461ce576d65afdab49af4c175b244c487c709fb612c48d51d711da24dc5/_data",
+          "destination": "/var/lib/redis",
+          "fileCount": 0,
+          "bytes": 0,
+          "extensions": {},
+          "databases": []
+        },
+        {
+          "source": "/var/lib/docker/volumes/4ec6c9f14d57056a6b8c8a5fe8947dd47510c8b83521985b9fb5c365e060a0fc/_data",
+          "destination": "/var/log/onlyoffice",
+          "fileCount": 73,
+          "bytes": 12453,
+          "extensions": {
+            ".gz": 59,
+            ".log": 11,
+            ".log-20261116": 2,
+            ".log-20261105": 1
+          },
+          "databases": []
+        },
+        {
+          "source": "/var/lib/docker/volumes/cf29fc399475c24fed6d9e5c7b21299eecf61bc43a87fe2317f50928aec41861/_data",
+          "destination": "/var/www/onlyoffice/Data",
+          "fileCount": 3,
+          "bytes": 1991,
+          "extensions": {
+            ".key": 2,
+            "<no suffix>": 1
+          },
+          "databases": []
+        }
+      ]
+    }
+  ],
+  "erp-invoice-voucher-print-assistantCodeFiles": [
+    "./Probe-NormalLogin.py",
+    "./Probe-ArVoucherAction.py",
+    "./Merge-VoucherInvoicePdfs.py",
+    "./Extract-InvoiceNumbers.py",
+    "./README.md",
+    "./package.json",
+    "./Probe-SsoBrowser.py",
+    "./Query-ErpInvoiceVoucherMappings-List.py",
+    "./Generate-ErpVoucherPdf.py"
+  ],
+  "fenbeitong-assistantCodeFiles": [
+    "./package.json"
+  ]
+}

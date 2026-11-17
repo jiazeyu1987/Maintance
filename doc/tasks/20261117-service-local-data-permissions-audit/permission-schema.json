@@ -1,0 +1,529 @@
+{
+  "serverWrites": false,
+  "tables": {
+    "system_menu": [
+      {
+        "column": "id",
+        "type": "bigint"
+      },
+      {
+        "column": "name",
+        "type": "varchar(50)"
+      },
+      {
+        "column": "permission",
+        "type": "varchar(100)"
+      },
+      {
+        "column": "type",
+        "type": "tinyint"
+      },
+      {
+        "column": "sort",
+        "type": "int"
+      },
+      {
+        "column": "parent_id",
+        "type": "bigint"
+      },
+      {
+        "column": "path",
+        "type": "varchar(200)"
+      },
+      {
+        "column": "icon",
+        "type": "varchar(100)"
+      },
+      {
+        "column": "component",
+        "type": "varchar(255)"
+      },
+      {
+        "column": "component_name",
+        "type": "varchar(255)"
+      },
+      {
+        "column": "status",
+        "type": "tinyint"
+      },
+      {
+        "column": "visible",
+        "type": "bit(1)"
+      },
+      {
+        "column": "keep_alive",
+        "type": "bit(1)"
+      },
+      {
+        "column": "always_show",
+        "type": "bit(1)"
+      },
+      {
+        "column": "creator",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "create_time",
+        "type": "datetime"
+      },
+      {
+        "column": "updater",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "update_time",
+        "type": "datetime"
+      },
+      {
+        "column": "deleted",
+        "type": "bit(1)"
+      }
+    ],
+    "system_role": [
+      {
+        "column": "id",
+        "type": "bigint"
+      },
+      {
+        "column": "name",
+        "type": "varchar(30)"
+      },
+      {
+        "column": "code",
+        "type": "varchar(100)"
+      },
+      {
+        "column": "sort",
+        "type": "int"
+      },
+      {
+        "column": "category_id",
+        "type": "bigint"
+      },
+      {
+        "column": "data_scope",
+        "type": "tinyint"
+      },
+      {
+        "column": "data_scope_dept_ids",
+        "type": "varchar(500)"
+      },
+      {
+        "column": "status",
+        "type": "tinyint"
+      },
+      {
+        "column": "type",
+        "type": "tinyint"
+      },
+      {
+        "column": "remark",
+        "type": "varchar(500)"
+      },
+      {
+        "column": "creator",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "create_time",
+        "type": "datetime"
+      },
+      {
+        "column": "updater",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "update_time",
+        "type": "datetime"
+      },
+      {
+        "column": "deleted",
+        "type": "bit(1)"
+      },
+      {
+        "column": "tenant_id",
+        "type": "bigint"
+      }
+    ],
+    "system_role_menu": [
+      {
+        "column": "id",
+        "type": "bigint"
+      },
+      {
+        "column": "role_id",
+        "type": "bigint"
+      },
+      {
+        "column": "menu_id",
+        "type": "bigint"
+      },
+      {
+        "column": "creator",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "create_time",
+        "type": "datetime"
+      },
+      {
+        "column": "updater",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "update_time",
+        "type": "datetime"
+      },
+      {
+        "column": "deleted",
+        "type": "bit(1)"
+      },
+      {
+        "column": "tenant_id",
+        "type": "bigint"
+      }
+    ],
+    "system_user_role": [
+      {
+        "column": "id",
+        "type": "bigint"
+      },
+      {
+        "column": "user_id",
+        "type": "bigint"
+      },
+      {
+        "column": "role_id",
+        "type": "bigint"
+      },
+      {
+        "column": "creator",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "create_time",
+        "type": "datetime"
+      },
+      {
+        "column": "updater",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "update_time",
+        "type": "datetime"
+      },
+      {
+        "column": "deleted",
+        "type": "bit(1)"
+      },
+      {
+        "column": "tenant_id",
+        "type": "bigint"
+      }
+    ],
+    "system_tenant": [
+      {
+        "column": "id",
+        "type": "bigint"
+      },
+      {
+        "column": "name",
+        "type": "varchar(30)"
+      },
+      {
+        "column": "contact_user_id",
+        "type": "bigint"
+      },
+      {
+        "column": "contact_name",
+        "type": "varchar(30)"
+      },
+      {
+        "column": "contact_mobile",
+        "type": "varchar(500)"
+      },
+      {
+        "column": "status",
+        "type": "tinyint"
+      },
+      {
+        "column": "websites",
+        "type": "varchar(1024)"
+      },
+      {
+        "column": "package_id",
+        "type": "bigint"
+      },
+      {
+        "column": "expire_time",
+        "type": "datetime"
+      },
+      {
+        "column": "account_count",
+        "type": "int"
+      },
+      {
+        "column": "creator",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "create_time",
+        "type": "datetime"
+      },
+      {
+        "column": "updater",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "update_time",
+        "type": "datetime"
+      },
+      {
+        "column": "deleted",
+        "type": "bit(1)"
+      },
+      {
+        "column": "frontline_process_sequence_enabled",
+        "type": "bit(1)"
+      }
+    ],
+    "system_tenant_package": [
+      {
+        "column": "id",
+        "type": "bigint"
+      },
+      {
+        "column": "name",
+        "type": "varchar(30)"
+      },
+      {
+        "column": "status",
+        "type": "tinyint"
+      },
+      {
+        "column": "remark",
+        "type": "varchar(256)"
+      },
+      {
+        "column": "menu_ids",
+        "type": "longtext"
+      },
+      {
+        "column": "creator",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "create_time",
+        "type": "datetime"
+      },
+      {
+        "column": "updater",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "update_time",
+        "type": "datetime"
+      },
+      {
+        "column": "deleted",
+        "type": "bit(1)"
+      }
+    ],
+    "system_dept": [
+      {
+        "column": "id",
+        "type": "bigint"
+      },
+      {
+        "column": "name",
+        "type": "varchar(30)"
+      },
+      {
+        "column": "parent_id",
+        "type": "bigint"
+      },
+      {
+        "column": "sort",
+        "type": "int"
+      },
+      {
+        "column": "leader_user_id",
+        "type": "bigint"
+      },
+      {
+        "column": "phone",
+        "type": "varchar(11)"
+      },
+      {
+        "column": "email",
+        "type": "varchar(50)"
+      },
+      {
+        "column": "status",
+        "type": "tinyint"
+      },
+      {
+        "column": "creator",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "create_time",
+        "type": "datetime"
+      },
+      {
+        "column": "updater",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "update_time",
+        "type": "datetime"
+      },
+      {
+        "column": "deleted",
+        "type": "bit(1)"
+      },
+      {
+        "column": "tenant_id",
+        "type": "bigint"
+      }
+    ],
+    "system_post": [
+      {
+        "column": "id",
+        "type": "bigint"
+      },
+      {
+        "column": "code",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "name",
+        "type": "varchar(50)"
+      },
+      {
+        "column": "sort",
+        "type": "int"
+      },
+      {
+        "column": "status",
+        "type": "tinyint"
+      },
+      {
+        "column": "remark",
+        "type": "varchar(500)"
+      },
+      {
+        "column": "creator",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "create_time",
+        "type": "datetime"
+      },
+      {
+        "column": "updater",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "update_time",
+        "type": "datetime"
+      },
+      {
+        "column": "deleted",
+        "type": "bit(1)"
+      },
+      {
+        "column": "tenant_id",
+        "type": "bigint"
+      }
+    ],
+    "system_user_post": [
+      {
+        "column": "id",
+        "type": "bigint"
+      },
+      {
+        "column": "user_id",
+        "type": "bigint"
+      },
+      {
+        "column": "post_id",
+        "type": "bigint"
+      },
+      {
+        "column": "creator",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "create_time",
+        "type": "datetime"
+      },
+      {
+        "column": "updater",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "update_time",
+        "type": "datetime"
+      },
+      {
+        "column": "deleted",
+        "type": "bit(1)"
+      },
+      {
+        "column": "tenant_id",
+        "type": "bigint"
+      }
+    ],
+    "system_role_category": [
+      {
+        "column": "id",
+        "type": "bigint"
+      },
+      {
+        "column": "name",
+        "type": "varchar(30)"
+      },
+      {
+        "column": "code",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "sort",
+        "type": "int"
+      },
+      {
+        "column": "status",
+        "type": "tinyint"
+      },
+      {
+        "column": "remark",
+        "type": "varchar(500)"
+      },
+      {
+        "column": "creator",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "create_time",
+        "type": "datetime"
+      },
+      {
+        "column": "updater",
+        "type": "varchar(64)"
+      },
+      {
+        "column": "update_time",
+        "type": "datetime"
+      },
+      {
+        "column": "deleted",
+        "type": "bit(1)"
+      },
+      {
+        "column": "tenant_id",
+        "type": "bigint"
+      }
+    ]
+  }
+}

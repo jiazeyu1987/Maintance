@@ -1,0 +1,80 @@
+{
+  "frozenRecoveryPoint": "sha256:9d106914764c9e72cee2dd992c5a8c991a4ea2a36759f9d63aec438bdaa37c4e",
+  "evidenceOrigin": "20261117-backup-restore-completeness-audit",
+  "tables": {
+    "system_menu": {
+      "rows": 1930,
+      "jsonNodes": 0,
+      "multisetSha256": "0b749a167d70a965602b2e4d3893c3afda2e55b3d1923a5e344860fee324d911",
+      "fullRowMultisetMatched": true
+    },
+    "system_role": {
+      "rows": 81,
+      "jsonNodes": 0,
+      "multisetSha256": "e5d8d296f394b6c94acaf97d48c01b122fa6024849760532fa5c47ee2d053707",
+      "fullRowMultisetMatched": true
+    },
+    "system_role_menu": {
+      "rows": 7171,
+      "jsonNodes": 0,
+      "multisetSha256": "41c2d59f6093cd4c6463d2ca02dbab95a5d6799a51d963800c3cc51eaeda73ce",
+      "fullRowMultisetMatched": true
+    },
+    "system_user_role": {
+      "rows": 2201,
+      "jsonNodes": 0,
+      "multisetSha256": "34b927c4b7b701bfc8b65d6d2db0769f9c7cbaaa1b1153323904192012948768",
+      "fullRowMultisetMatched": true
+    },
+    "system_tenant": {
+      "rows": 4,
+      "jsonNodes": 0,
+      "multisetSha256": "4104e598cb56f1e535c4fe1add1065ae620f56c383bbcaa218109bbc62f9c4cd",
+      "fullRowMultisetMatched": true
+    },
+    "system_tenant_package": {
+      "rows": 1,
+      "jsonNodes": 0,
+      "multisetSha256": "08e71d833705c17c58a35dad76c770511a3805355d27e0b9554f8e890897f329",
+      "fullRowMultisetMatched": true
+    },
+    "system_dept": {
+      "rows": 347,
+      "jsonNodes": 0,
+      "multisetSha256": "656208629128e02b756227d936bb97975b5cb1421949db8f2c752465816bc91a",
+      "fullRowMultisetMatched": true
+    },
+    "system_post": {
+      "rows": 5,
+      "jsonNodes": 0,
+      "multisetSha256": "b9f214c356d1b473f19dbd691f63a0da55d311f3e4ee9c81592c57afe7e44155",
+      "fullRowMultisetMatched": true
+    },
+    "system_user_post": {
+      "rows": 13,
+      "jsonNodes": 0,
+      "multisetSha256": "fc063305bc8f4eab7fd1a2dcae6f13987c83adbd48ceb8bd64e9062e5c149d8e",
+      "fullRowMultisetMatched": true
+    },
+    "system_role_category": {
+      "rows": 30,
+      "jsonNodes": 0,
+      "multisetSha256": "272e11e4fbb7722a6a7813bdc4e1a1cda1e5dd93148a3cf204cb12df05449d4a",
+      "fullRowMultisetMatched": true
+    },
+    "system_temporary_role_grant": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446",
+      "fullRowMultisetMatched": true
+    },
+    "system_temporary_role_grant_audit": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446",
+      "fullRowMultisetMatched": true
+    }
+  },
+  "userTableRows": 2155,
+  "userTableContentDifferent": true
+}

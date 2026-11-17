@@ -1,0 +1,198 @@
+{
+  "serverWrites": false,
+  "modules": [
+    {
+      "file": "backend/src/config.js",
+      "lineCount": 406,
+      "references": [
+        {
+          "line": 1,
+          "identifiers": [
+            "readFile"
+          ]
+        },
+        {
+          "line": 25,
+          "identifiers": [
+            "readFile"
+          ]
+        }
+      ]
+    },
+    {
+      "file": "backend/src/tenant-store.js",
+      "lineCount": 330,
+      "references": [
+        {
+          "line": 12,
+          "identifiers": [
+            "fenbeitong_tenants"
+          ]
+        },
+        {
+          "line": 21,
+          "identifiers": [
+            "fenbeitong_tenants"
+          ]
+        },
+        {
+          "line": 58,
+          "identifiers": [
+            "fenbeitong_tenants"
+          ]
+        },
+        {
+          "line": 60,
+          "identifiers": [
+            "bill_sign_key"
+          ]
+        },
+        {
+          "line": 61,
+          "identifiers": [
+            "app_key",
+            "access_token"
+          ]
+        },
+        {
+          "line": 76,
+          "identifiers": [
+            "bill_sign_key"
+          ]
+        },
+        {
+          "line": 79,
+          "identifiers": [
+            "app_key"
+          ]
+        },
+        {
+          "line": 80,
+          "identifiers": [
+            "access_token"
+          ]
+        },
+        {
+          "line": 115,
+          "identifiers": [
+            "fenbeitong_tenants"
+          ]
+        },
+        {
+          "line": 116,
+          "identifiers": [
+            "access_token"
+          ]
+        },
+        {
+          "line": 128,
+          "identifiers": [
+            "fenbeitong-tenants.sqlite"
+          ]
+        },
+        {
+          "line": 157,
+          "identifiers": [
+            "fenbeitong_tenants"
+          ]
+        },
+        {
+          "line": 167,
+          "identifiers": [
+            "app_key"
+          ]
+        },
+        {
+          "line": 168,
+          "identifiers": [
+            "access_token"
+          ]
+        },
+        {
+          "line": 176,
+          "identifiers": [
+            "fenbeitong_tenants"
+          ]
+        },
+        {
+          "line": 177,
+          "identifiers": [
+            "fenbeitong_tenants"
+          ]
+        },
+        {
+          "line": 179,
+          "identifiers": [
+            "fenbeitong_tenants"
+          ]
+        },
+        {
+          "line": 184,
+          "identifiers": [
+            "bill_sign_key"
+          ]
+        },
+        {
+          "line": 188,
+          "identifiers": [
+            "fenbeitong_tenants"
+          ]
+        },
+        {
+          "line": 191,
+          "identifiers": [
+            "fenbeitong_tenants"
+          ]
+        },
+        {
+          "line": 198,
+          "identifiers": [
+            "bill_sign_key"
+          ]
+        },
+        {
+          "line": 212,
+          "identifiers": [
+            "fenbeitong_tenants"
+          ]
+        },
+        {
+          "line": 265,
+          "identifiers": [
+            "bill_sign_key"
+          ]
+        },
+        {
+          "line": 271,
+          "identifiers": [
+            "access_token"
+          ]
+        },
+        {
+          "line": 272,
+          "identifiers": [
+            "app_key"
+          ]
+        },
+        {
+          "line": 278,
+          "identifiers": [
+            "app_key"
+          ]
+        },
+        {
+          "line": 279,
+          "identifiers": [
+            "access_token"
+          ]
+        },
+        {
+          "line": 280,
+          "identifiers": [
+            "bill_sign_key"
+          ]
+        }
+      ]
+    }
+  ]
+}

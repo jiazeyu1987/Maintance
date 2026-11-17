@@ -6017,3 +6017,11 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 验证结果：归档14359+91载荷引用存在且大小一致；冻结907表/15957字段/62触发器均恢复，898表全内容相同、6表历史记录相同、1表配置适配、2表运行内容差异未完全归因；9342业务物理文件SHA-256全一致。原备份回读与恢复全量等价检查确实未执行，本次补核未改写历史。
 - 范围缺口：本链不包含发票助手约3GB本地数据、分贝通/data、OnlyOffice独立卷等；正式库新发布后新增2表不在旧冻结点。报告区分范围外、时间差异与恢复遗漏，不声明实时全量一致。
 - 证据：doc/tasks/20261117-backup-restore-completeness-audit/audit-report.md、audit-summary.json、execution-log.md及只读probe输出；凭据仅使用现有私密引用，未记录明文。
+
+### 2026-11-17 辅助服务本地数据与菜单权限备份核查（20261117-service-local-data-permissions-audit）
+
+- 用户要求：说明发票助手、分贝通助手、OnlyOffice独立卷实际保存的数据，以及菜单/权限配置是否备份恢复。
+- 执行意图：只读核正式服实际容器挂载、文件类型/聚合数量、真实SQLite/PostgreSQL/MySQL schema和代码引用；沿用前序固定FULL 8d9d+INCREMENTAL bf67/.59恢复9ddf的完整内容证据。未触发备份、恢复、重启或业务写入。
+- 验证结果：发票助手约3.01GB，含8,600份上传发票PDF、9,208份结果PDF、9,240份结果JSON及金蝶连接资料；分贝通约75.8MB，含3,349条同步单据、222条凭证处理、批次日志、幂等状态与2条独立租户接入配置；OnlyOffice含内部数据库/队列/日志/WOPI密钥，文档修改和任务表当前均0行，本地Redis连接拒绝，未宣称其内存为空或服务健康。
+- 菜单权限：主系统菜单、角色、数据范围、角色菜单、用户角色、租户套餐及部门岗位等12表整表指纹与冻结备份点匹配；辅助服务本地目录/卷未在该条主链覆盖，之后正式变更不视为已恢复。
+- 证据：doc/tasks/20261117-service-local-data-permissions-audit/data-classification-report.md、execution-log.md及脱敏probe输出；未记录密码/token/个人信息/业务正文。UTF-8、JSON、Python语法和证据聚合检查通过。
