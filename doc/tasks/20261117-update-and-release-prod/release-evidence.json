@@ -1,0 +1,249 @@
+{
+  "releaseTag": "2026-11-17-23-51-44",
+  "gitCommit": "5ad3fd94179395b3ca96849b893ef66c571b0de7",
+  "stage": "prod-accepted",
+  "recordedAt": "2026-11-17T17:18:49.764822+00:00",
+  "manifestSha256": "8e29d195e7e1d3c962d85b3d6aa7b9e1ca2a10a769c027759b56f37e0ec8c961",
+  "packageSha256": "e91215ed04afe7693a09af90be22720729ce4680aea673729594a10d744c4ddc",
+  "jobs": [
+    {
+      "id": "JOB-5961273dd4",
+      "action": "build-release",
+      "target": null,
+      "status": "succeeded",
+      "finishedAt": "2026-11-18-00-20-42"
+    },
+    {
+      "id": "JOB-7c977b7168",
+      "action": "check-prerequisites",
+      "target": "test",
+      "status": "succeeded",
+      "finishedAt": "2026-11-18-00-23-46"
+    },
+    {
+      "id": "JOB-0319e3ca4e",
+      "action": "publish-test",
+      "target": "test",
+      "status": "succeeded",
+      "finishedAt": "2026-11-18-00-53-30"
+    },
+    {
+      "id": "JOB-eeac1550d9",
+      "action": "mark-tested",
+      "target": "test",
+      "status": "succeeded",
+      "finishedAt": "2026-11-18-01-00-14"
+    },
+    {
+      "id": "JOB-d6a5d2d193",
+      "action": "check-prerequisites",
+      "target": "prod",
+      "status": "succeeded",
+      "finishedAt": "2026-11-18-01-02-30"
+    },
+    {
+      "id": "JOB-e5c2a3e732",
+      "action": "promote-prod",
+      "target": "prod",
+      "status": "succeeded",
+      "finishedAt": "2026-11-18-01-10-48"
+    },
+    {
+      "id": "JOB-34f8ee98b6",
+      "action": "accept-prod",
+      "target": "prod",
+      "status": "succeeded",
+      "finishedAt": "2026-11-18-01-17-10"
+    }
+  ],
+  "environments": {
+    "test": {
+      "operation": "SUCCESS",
+      "images": {
+        "backend": {
+          "id": "sha256:c925ae937aee176c72a07797711bf8bd652b6868be71852254d0242513740282",
+          "tag": "intruoyi-backend:2026-11-17-23-51-44",
+          "running": true
+        },
+        "frontend": {
+          "id": "sha256:871e43b2e2fed4014bbc9f1e3cffec0916678aa26bf54d5ac148abf308c3bb3e",
+          "tag": "intruoyi-frontend:2026-11-17-23-51-44",
+          "running": true
+        }
+      },
+      "envImageTag": "2026-11-17-23-51-44",
+      "backendHealth": {
+        "http": 200,
+        "status": "UP"
+      },
+      "frontend": {
+        "http": 200
+      },
+      "version": {
+        "http": 200,
+        "releaseTag": "2026-11-17-23-51-44"
+      },
+      "runtime": {
+        "http": 200,
+        "releaseTag": "2026-11-17-23-51-44",
+        "maintenance": false
+      },
+      "newMigrations": {
+        "applied": 6,
+        "checksumsMatch": true
+      },
+      "unresolvedMigrations": 0,
+      "remoteReceiptsSucceeded": 14,
+      "browser": {
+        "status": "PASS_WITH_OBSERVATIONS",
+        "realLogin": true,
+        "businessMutations": 0,
+        "blockedWriteAttempts": 1,
+        "businessPage": {
+          "name": "用户管理",
+          "url": "http://172.30.30.58:8081/system/user",
+          "visibleRows": 20,
+          "headers": [
+            "",
+            "用户编号",
+            "用户名称",
+            "用户昵称",
+            "部门",
+            "角色",
+            "岗位",
+            "手机号码",
+            "状态",
+            "锁定状态",
+            "创建时间",
+            "操作"
+          ],
+          "totalRows": 2117
+        },
+        "version": "2026-11-17-23-51-44",
+        "observations": [
+          "External Iconify connections failed",
+          "Historical external avatar was blocked by the browser",
+          "Workbench initialization POST was blocked to preserve admin business data"
+        ]
+      }
+    },
+    "prod": {
+      "operation": "SUCCESS",
+      "images": {
+        "backend": {
+          "id": "sha256:c925ae937aee176c72a07797711bf8bd652b6868be71852254d0242513740282",
+          "tag": "intruoyi-backend:2026-11-17-23-51-44",
+          "running": true
+        },
+        "frontend": {
+          "id": "sha256:871e43b2e2fed4014bbc9f1e3cffec0916678aa26bf54d5ac148abf308c3bb3e",
+          "tag": "intruoyi-frontend:2026-11-17-23-51-44",
+          "running": true
+        }
+      },
+      "envImageTag": "2026-11-17-23-51-44",
+      "backendHealth": {
+        "http": 200,
+        "status": "UP"
+      },
+      "frontend": {
+        "http": 200
+      },
+      "version": {
+        "http": 200,
+        "releaseTag": "2026-11-17-23-51-44"
+      },
+      "runtime": {
+        "http": 200,
+        "releaseTag": "2026-11-17-23-51-44",
+        "maintenance": false
+      },
+      "newMigrations": {
+        "applied": 6,
+        "checksumsMatch": true
+      },
+      "unresolvedMigrations": 0,
+      "remoteReceiptsSucceeded": 17,
+      "browser": {
+        "status": "PASS_WITH_OBSERVATIONS",
+        "realLogin": true,
+        "businessMutations": 0,
+        "blockedWriteAttempts": 1,
+        "businessPage": {
+          "name": "用户管理",
+          "url": "http://172.30.30.57:8081/system/user",
+          "visibleRows": 20,
+          "headers": [
+            "",
+            "用户编号",
+            "用户名称",
+            "用户昵称",
+            "部门",
+            "角色",
+            "岗位",
+            "手机号码",
+            "状态",
+            "锁定状态",
+            "创建时间",
+            "操作"
+          ],
+          "totalRows": 2117
+        },
+        "version": "2026-11-17-23-51-44",
+        "observations": [
+          "External Iconify connections failed",
+          "Historical external avatar was blocked by the browser",
+          "Workbench initialization POST was blocked to preserve admin business data"
+        ]
+      }
+    }
+  },
+  "buildWorktreeCleanup": {
+    "status": "passed",
+    "path": "C:\\SpugHandoff\\release\\build\\2026-11-17-23-51-44",
+    "commit": "5ad3fd94179395b3ca96849b893ef66c571b0de7",
+    "verifiedTrackedFiles": 24885,
+    "gitRemovalExitCode": 0,
+    "residualRemoved": false,
+    "ownershipVerified": true,
+    "generatedLinksDetached": 3103,
+    "registeredAfter": false,
+    "physicalPathExists": false,
+    "producedNewCommits": false
+  },
+  "closeout": {
+    "worktrees": [
+      {
+        "path": "C:/SpugHandoff/release/integration-20261117-prod-update",
+        "targetCommit": "5ad3fd94179395b3ca96849b893ef66c571b0de7",
+        "producedNewCommits": true,
+        "mergedInto": "int_main",
+        "cleanBeforeRemoval": true,
+        "gitRemovalExitCode": 0,
+        "exists": false,
+        "registered": false
+      },
+      {
+        "path": "C:/SpugHandoff/release/maintenance-20261117-env-metadata",
+        "targetCommit": "67ffd43c241cd39595d462729e2b2697d6b14cdd",
+        "producedNewCommits": true,
+        "mergedInto": "int_main",
+        "cleanBeforeRemoval": true,
+        "gitRemovalExitCode": 0,
+        "exists": false,
+        "registered": false
+      }
+    ],
+    "ownedSlot": {
+      "slot": 7,
+      "ports": [
+        8088,
+        48088
+      ],
+      "released": true,
+      "otherEntriesUnchanged": true
+    },
+    "stableExecutorPid": 11716,
+    "taskStartedServices": false
+  }
+}

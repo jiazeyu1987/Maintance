@@ -1,5 +1,16 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## 发布后 IMAGE_TAG 元数据一致性门禁
+
+- Trigger：Spug 已按不可变 digest 替换容器，但旧 compose `.env IMAGE_TAG` 仍落后，或发布收口核版本不一致。
+- Preflight check：从本次私密配置确认环境、stagingRoot 和实际 `.env` 路径；同一 releaseTag 部署及 version/upgrade/login 技术验收通过，manifest 摘要和登记包一致，无活动或未解决中断任务。记录原 IMAGE_TAG，使用 `runtime_env_metadata.py` 默认只读检查；远端必须取得与 Spug 相同的 runtime-operation 锁并核双镜像 digest、RepoTags 和运行态。
+- Blocker：部署或技术证明缺失、镜像不符、未知锁、标签缺失/重复/并发变化、路径身份不明时立即停止对齐；不得把应用健康当全部发布成功。
+- Verification：从本次维护 worktree 运行 `python -X utf8 scripts/tests/test_runtime_env_metadata.py`；只读检查通过后以相同参数增加 `--apply`，核单行原子更新、其他字节及 owner/mode 保持、0600 原件保留和读回。最终独立核 operation、manifest、IMAGE_TAG、实际镜像、health UP、HTTP 200 与真实业务页面版本。
+- Forbidden action：禁止重派已成功部署、先改标签掩盖旧镜像、全文件模板覆盖、打印配置凭据、无锁写入、忽略并发旧值变化或用元数据对齐代替业务验收。
+- Evidence：`doc/tasks/20261117-update-and-release-prod/execution-log.md`；工具说明 `ops/spug/release-center/runtime-env-metadata.md`；原始对齐回执与运行态摘要保存在该任务私密证据目录。
+
+阶段必查与推荐命令：部署阶段先等待原任务终态，不在活动期间对齐；技术验收阶段核同包三项证明。正式维护态普通frontend停止属于预期，须真实业务验收并按正常流程开放后再对齐，不能用独立验收容器代替正常双容器运行态；元数据阶段使用 `python -X utf8 ops/spug/release-center/runtime_env_metadata.py --config <实际私密配置> --environment <明确环境> --release-tag <同包tag> --expected-current-tag <事前实测tag> --env-file <已确认路径>`，通过后增加 `--apply`；最终再核真实页面与全部发布门禁。Fail Fast 按 Blocker 保留原件与原失败，不使用过期预期值盲重试。必须记录源提交、worktree、原/新标签、manifest 与包摘要、命令意图、原始退出、对齐读回及最终运行态。
+
 ## 发布来源同步与独立恢复收尾
 
 - Trigger: 发布后备份仍引用旧容器或 IMAGE_TAG；恢复缺源机 images.json、增量点缺附件策略；Windows 融合 worktree 长路径残留；链规划重复读取载荷。

@@ -1,5 +1,7 @@
 # 项目经验索引
 
+- Spug digest 部署后 `.env IMAGE_TAG` 落后 / runtime_env_metadata.py / 运行版本元数据对齐：`docs/release-agent-checklist.md#发布后-image_tag-元数据一致性门禁`。先核同包技术验收、真实双镜像及原标签；使用同一远端锁原子对齐单行，不重启或重派部署。
+
 - 发布后旧容器 / backupSourceBinding / 源机 images.json / 归档版本副本 / 增量附件策略 / integration_worktree_cleanup / 长路径清理重试 / chain重复load：`docs/release-agent-checklist.md#发布来源同步与独立恢复收尾`。正式 reopen 同步来源；恢复用归档版本和固定父策略；已融合工作区使用外置归属回执清理；只去除单次链规划的重复载荷读取。
 
 - NAS 单链接属性 / BACKUP_EPOCH_REGULAR_SINGLE_LINK_REQUIRED / 开前 nlink2 打开后1：`docs/release-agent-checklist.md#nas-元数据打开后单链接校验门禁`。只读记录同一文件完整路径/FD时序；开后FD、读后FD及最终路径仍强制单链接，开前后全部原身份/时间与内容pin保持。禁止重试预热、改历史元数据、放宽真实硬链接或修改挂载缓存。

@@ -1,0 +1,67 @@
+# 执行记录
+
+- 需求：先更新代码，然后通过 Spug 发布正式服。
+- 授权：测试服先行验证与正式服发布；不扩展审查服或数据清空/独立恢复。
+- Bootstrap：只读显式 UTF-8 读取规则、索引、PowerShell 经验及本会话前序任务。
+- BDD: 更新并晋级同包 -> Given 已确认当前实例和可追溯固定提交且无活动冲突；When 在专用 worktree 构建、测试发布并验收后晋级正式；Then 正式实际版本/镜像/迁移/健康/真实页面均与该包一致，业务验收后开放。
+- BDD: 发布失败保护 -> Given 预检、迁移或验收失败/状态未知；When 原任务终态未核清；Then 保留原记录及保护，不重复派发、不清锁或静默绕过。
+- 代码实现变更暂未计划；若发现需修复，先补 RED/GREEN/REGRESSION 证据再实施。
+
+- 上轮确认：实际执行器配置 C:/SpugHandoff/release/executor.private.json；应用仓库 C:/Users/D01021/Documents/ChatGPT/IntRuoyi，前后端实际属于同一 Git 仓库；普通 Python 执行器监听 18112，Spug 迁移入口 18081。
+- 上轮 Git fetch 成功：本地 16719d77c，origin/int_main 831ad4532，分叉 7/1；存在27项tracked开发改动，未修改、暂存或提交。
+- 上轮实例策略：direct-three-server-v1、productionRecovery=external、externalRecoveryConfirmed=true；本机发布 state 无 activeJobs，登记测试及正式为2026-11-17-11-53-04。登记状态不作为服务器实时验收。
+- 上轮浏览器结果：无法验证本机 URL 是否允许访问，Computer Use 强制终止；未发生发布。
+- 用户再次授权继续正式发布。保持同一任务，重核活动状态，保留上一轮未发布事实。
+- GREEN: experience-preflight -> PASS。已读取本任务命中的发布/服务器/登录/worktree/PowerShell/Spug 构建及直接发布门禁；授权覆盖测试与正式，后续每阶段仍须通过实际预检，失败保持保护。
+- UPDATE: git fetch 后 origin/int_main=831ad4532321246e9e1763ec2ef47fb249c645b1；本地发布契约7项提交与远端1项业务提交需要合并。
+- WORKTREE: C:/SpugHandoff/release/integration-20261117-prod-update，自16719d77c创建，本次专用；git merge --no-commit --no-ff origin/int_main 自动合并成功，无冲突，尚未提交。
+- GREEN: scripts/preflight/check-menu-migrations.py --staged -> PASS；git diff --cached --check -> PASS。无构建/发布服务器写入。
+- BDD: 新增SQL发布契约 -> Given 新业务提交新增6个迁移；When 解析固定源码；Then 每个SQL有明确发布归宿，菜单/数据迁移绑定只读目标预检，不修改旧迁移。
+- RED: source_preflight.py -> FAIL，6个20261117迁移未登记；test_release_source_registration.py -> FAIL，同样6项缺失。
+- 修复：登记6个正式前向迁移，按真实DESCRIBE为4个菜单/数据迁移新增只读预检；2个schema迁移继续由现有结构/迁移计划契约校验。未改变历史SQL字节或业务授权。
+- GREEN: source_preflight.py -> PASS，888 migrations、1188 artifacts；test_release_source_registration.py -> PASS。两服SHOW TABLES/DESCRIBE只读成功，私密探针目录 C:/SpugHandoff/release/task-20261117-prod-update，未输出凭据。
+- RED: 两服真实只读预检 -> 旧ID990230被无条件拒绝；核实名称/组件/权限均为合法分类菜单。后续检查发现已删除租户的历史角色被纳入授权对象。
+- 正式修复范围：仅调整本次尚未登记发布的新迁移，允许身份完整匹配的旧分类节点原ID继续使用；限定有效租户及平台角色，保留已删除租户历史记录。有效租户缺套餐/冲突仍阻断，无SQL绕过或远端数据修补。
+- GREEN: 两服4项真实只读迁移预检全部PASS；REGRESSION: 两服各3个只读CTE反例（注册证组件、重复分类节点、错配权限）全部BLOCKED。反例不写数据库，不作为真实E2E，实际登录/页面仍待发布阶段验证。
+- Spug真实Playwright页面登录成功；18081构建页可读取完整提交及正常按钮。未直接调用发布API。
+- GREEN: 菜单迁移、源码登记、迁移输入、diff检查通过；Git pre-commit原生门禁通过。Python shim及未登记临时分支导致的提交失败已通过进程内正确Python PATH与官方slot登记解决，未跳过hook。
+- COMMIT: 5ad3fd94179395b3ca96849b893ef66c571b0de7，干净集成worktree；含原始两侧已提交代码及本次发布契约修复。尚未合回主工作区，主工作区开发改动保持。
+- GREEN: experience-preflight -> PASS（主分支融合）。已保存27项开发文件SHA256、5项交集原补丁及基线；4项可干净三方重放，1项Mapper相邻行冲突已预合并，保留远端签名单元字段及用户PQC交接说明/状态过滤。仅暂存保护5项交集，其他22项和所有未跟踪内容不动；融合后恢复未暂存状态并逐项核验。
+- INTEGRATION: int_main fast-forward 至5ad3fd941；5项开发改动已三方重放，其他22项SHA256原样，27项均未暂存；Mapper XML解析通过，自有保护stash已删除。初次验证因stderr警告混入路径集合而误报，改为分离stdout后27项集合核验通过，没有丢失改动。
+- PRECHECK: JOB-cccf6a34c8 最终failed；源码/构建工具/本地与NAS存储、测试58及正式57全部检查passed。失败仅backup59：运行读取RuntimeError、登记staging目录缺失、相关资源检查失败。未把总报告判PASS，未操作59修复；按门禁“具体缺口只阻断对应动作”，此缺口阻断59部署/恢复，不阻断本次58→57同包构建与发布。构建继续使用已登记不可变迁移基线，后续测试/正式仍各自重新核实时计划和运行态。
+- BUILD: 页面真实点击build-release，JOB-5961273dd4，releaseTag=2026-11-17-23-51-44；构建输入5ad3fd941；新worktree C:/SpugHandoff/release/build/2026-11-17-23-51-44，源码审计模式真实页面读取通过，开始迁移策略和历史检查。无新提交，后续由执行器封包清理并核结果。
+- 运行态事前核对：两服原镜像及页面均11-53-04，health UP；正式.env同版本，测试.env仍是旧20260919标签。现行Spug以镜像digest替换容器，不维护旧compose元数据，不能把实际镜像成功等同.env一致。
+- 设计补充：为完成既定.env一致性门禁，新增正式可复用的元数据对齐工具与测试；仅在对应环境同包部署与技术验收通过后，校验manifest摘要、实际双镜像/标签及.env旧值，原子更新单一IMAGE_TAG并读回，保留0600配置原件，不重启或变更业务数据。使用维护仓本次专用worktree，先RED再实现，不安装或重启当前执行器。
+- WORKTREE: 维护仓 C:/SpugHandoff/release/maintenance-20261117-env-metadata，起点经Git核实为7d54e301532c05bcb2a885e59a2753e4cf039f7f（咨询提交后有其他维护提交推进），分支codex/20261117-release-env-metadata。RED: test_runtime_env_metadata.py因缺实现失败；GREEN: 5项测试通过，覆盖字节/换行保留、旧值变化、缺失/重复标签、非法tag、实际镜像/标签/运行态不符。
+- 维护仓int_main已fast-forward至67ffd43；仅新增对齐工具/使用说明/测试3文件，原有任务文档脏改动保留。合并结果与worktree已测提交一致；后续工具从本次专用维护worktree执行。
+- BUILD SUCCESS: JOB-5961273dd4，00:20:38；前后端编译、镜像版本读回及后端能力校验、原包/NAS完成。buildWorktreeCleanup passed，24885 tracked核验、3103 generated links脱离，git移除exit0、无残留/无新提交。测试/正式尚未部署本包。
+- GREEN: experience-preflight -> PASS（测试发布阶段）。同包2026-11-17-23-51-44、固定提交5ad3fd941、真实目标预检/恢复契约门禁继续执行；所有新增迁移目标只读检查此前两服通过，保护现有数据和/mnt/nas。
+- TEST PRECHECK PASS: JOB-7c977b7168，12项全部通过；manifestSHA256=8e29d195e7e1d3c962d85b3d6aa7b9e1ca2a10a769c027759b56f37e0ec8c961；packageSHA256=e91215ed04afe7693a09af90be22720729ce4680aea673729594a10d744c4ddc。开始同包publish-test。
+- 维护worktree使用no-checkout后稀疏初始化遗漏read-tree，首个本地提交误含删除；未融合/推送/执行该提交，立即恢复父提交索引并修正本任务提交。最终67ffd43严格只有3个新增文件、201行，worktree干净；未影响主工作区和服务器。后续提交必核cached文件集合及父提交diff统计。
+- TEST PROGRESS: 原publish-test任务JOB-0319e3ca4e仍运行；原容器已按流程停写，远端恢复快照recovery.sql.gz已生成约6.43GB，尚无本轮迁移台账写入、无活动数据库语句。保持原任务，不重派或清锁；正式未切换。
+- 经验沉淀：在release-agent-checklist新增发布后IMAGE_TAG一致性六字段门禁、阶段命令与Fail Fast，并在experience-index加入关键词路由；不安装或重启执行器。
+- TEST PROGRESS: 原任务继续存活，909张基础表的逐表校验阶段已推进至数据卷归档；recovery-volume-0.tar约4.6MB、volume-1约9.7GB且增长，无本轮迁移写入。此为现行测试部署内置恢复依据，不另起备份或操作正式共享盘。
+- TEST PROGRESS: 6项20261117迁移于16:45:06–13UTC均APPLIED，内置恢复记录已生成；新双镜像替换、维护模式health通过，deployment-pending已生成，当前reopen阶段二次启动。后端最新250行摘要ERROR=0；尚不宣称测试发布完成。
+- TEST TECHNICAL PASS: JOB-0319e3ca4e succeeded，00:53:27；version/upgrade/login技术检查通过，测试登记与实际版本均2026-11-17-23-51-44。
+- UI原始失败保留：r1登录/用户数据/版本通过，但脚本零控制台错误门禁失败；r2因直达用户页新增同名面包屑造成定位歧义；r3核清失败URL为受保护workbench/context主动拦截与外部Iconify连接关闭、历史外域头像ORB。通过当前机器既有代理的Iconify独立TLS探测同样失败，不能宣称外部资源正常。
+- UI验收范围与证据：登录后由真实用户菜单读取用户管理，20行/总数2117、版本匹配，业务写入0、pageError0、应用HTTP错误0。全局工作台context会初始化个人可见性版本，严格保护admin业务数据而拦截；未mock响应或改变产品。最终报告PASS_WITH_OBSERVATIONS，完整保留5条控制台资源错误及失败URL；已说明外部图标与历史头像观察，不把可见数据/版本通过扩展为所有页面或资源通过。
+- GREEN: experience-preflight -> PASS（测试运行元数据对齐）。同包部署与技术证明已成功，准备默认只读核实际双镜像/原标签/同锁，只有通过后才单行对齐；保留原文件0600，不重启应用。
+- TEST ENV ALIGN PASS: 默认只读通过后--apply成功，原sha8279d3b7→ac3da4c0；原IMAGE_TAG=release-20260919-button-prod-r6，现为2026-11-17-23-51-44，双镜像核验通过，businessRestarted=false。0600配置原件仅存远端配置证据目录。
+- TEST FINAL: collect_release_evidence.py test -> PASS。所有本任务远端回执succeeded，manifest/package摘要匹配，双镜像digest和RepoTags/运行态正确，.env标签匹配、health UP、前端HTTP200、runtime maintenance=false；6新迁移checksum匹配/APPLIED，未解决FAILED/RUNNING=0。安全摘要test-release-evidence.json。
+- 页面真实点击mark-tested，原任务JOB-eeac1550d9已受理；不因HTTP响应慢重复派发。
+- MARK TESTED PASS: JOB-eeac1550d9 succeeded，version/upgrade/login再次通过；同包保持tested。GREEN: experience-preflight -> PASS（正式晋级）。用户明确授权正式发布，.57原起点仍需实时预检绑定；仅推进此同包，保持external恢复责任、维护和业务验收开放门禁，不触碰.59或/mnt/nas。
+- PROD PRECHECK PASS: JOB-d6a5d2d193 succeeded，12项全部passed，operation=promote-prod；实际正式起点2026-11-17-11-53-04、测试2026-11-17-23-51-44。页面将真实派发同包promote-prod，原包与manifest摘要保持。
+- PROD RUNNING: 页面真实点击promote-prod，JOB-e5c2a3e732；实际运行根由该job.runtimeStagingRoots.prod绑定为/var/lib/docker/intruoyi-release-workflow/prod/packages/attempts/JOB-e5c2a3e732。只读探针初用基础staging路径失败，已按正式契约读取本任务绑定路径，未重派部署。
+- PROD MIGRATIONS: 6项新迁移01:06:40–46全部APPLIED，新后端running、启动日志ERROR=0；保留external-recovery责任记录，没有伪称已检查外部备份。正式仍待技术及业务验收。
+- PROD TECHNICAL PASS: JOB-e5c2a3e732 succeeded，01:10:46，version/upgrade/login通过；prod登记同包，maintenance=true，尚未开放。
+- PROD UI验收：真实Playwright访问.57:38084，实际登录、用户管理20行/总2117、版本2026-11-17-23-51-44，业务写入0、pageError0、应用HTTP错误0；PASS_WITH_OBSERVATIONS，同测试服的外部图标/头像及保护工作台初始化请求观察仍完整保留，不宣称所有资源正常。
+- GREEN: experience-preflight -> PASS（正式运行标签与开放）。原promote-prod已成功且业务验收证据形成，先默认只读核双镜像/原tag/远端锁，再单行对齐；随后通过真实Spug页面accept-prod，开放后重新核正常入口、health和全部同包证据。
+- 正式标签默认只读检查BLOCKED，未写文件；原因只读复核已证实：维护态正常frontend容器按契约保持stopped，验收frontend独立运行，工具要求实际双正常容器running因此正确阻断。调整顺序为业务验收已通过后正常accept-prod开放，再运行相同严格对齐工具；不放宽镜像/运行态守卫。backend UP，双digest及原.env标签均正确。
+- ACCEPT PROD PASS: JOB-34f8ee98b6 succeeded；同包状态prod-accepted，maintenance=false，业务已开放。正式标签默认只读通过后--apply成功，原sha8f1fcfa6→ae6b48dc，IMAGE_TAG=2026-11-17-23-51-44，未额外重启业务。
+- FINAL VERIFICATION PASS: collect_release_evidence.py test prod -> PASS；两服operation=SUCCESS、manifest/包摘要、双实际镜像digest及RepoTags、.env IMAGE_TAG、health UP、前端HTTP200、页面版本、runtime maintenance=false均一致；6项新迁移checksum/APPLIED匹配，无FAILED/RUNNING。
+- PROD NORMAL UI: 真实Playwright从正常.57:8081登录并点击用户管理，20行/总2117、版本同包，业务写入0；PASS_WITH_OBSERVATIONS，外部Iconify/TLS、历史外域头像及admin工作台写入保护观察保留。仅已验证用户页面，不扩充为所有功能回归结论。
+- STATUS: ready_for_closeout。安全汇总已输出release-evidence.json；原控制台18112仍PID11716、脚本/私密配置路径身份保持，未启动本地业务服务。待清理本任务自有集成和维护worktree/slot，其他任务资源保留。
+- GREEN: experience-preflight -> PASS（自有worktree收尾）。删除前核绝对路径属于C:/SpugHandoff/release、本任务分支/目标提交、干净状态、已合回int_main且发布验证已完成；只释放自身slot7，8088/48088无监听。不得清理其他worktree/进程/控制台。
+- CLOSEOUT PASS: 集成worktree HEAD5ad3fd941、维护worktree HEAD67ffd43c均干净且为对应int_main祖先；git -c core.longpaths=true worktree remove分别exit0，物理目录与Git登记均不存在。构建worktree已自动清理；无遗留本任务工作区。
+- SLOT CLOSEOUT PASS: 同一registry mutex下只将自身slot7设inactive，8088/48088无监听、其他登记内容相同；branch-runtime-port-guard.ps1在int_main通过，稳定入口8081/48081保持。未停止其他进程或控制台。
+- STATUS: completed。发布、真实页面/运行态、融合、清理与控制台稳定路径均核对完成；最终记录单独提交，仅纳入本任务文档、公开脱敏证据及本任务新增门禁段落。
