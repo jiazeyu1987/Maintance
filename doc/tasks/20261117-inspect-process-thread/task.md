@@ -25,7 +25,16 @@
 - Evidence：read_thread 最近轮次，目标标题“检测进程”，当前处于 active，最新正在修复迁移输入检查。
 
 ## Current Status
-completed
+completed：已核对后续数据一致性问题；上轮恢复点的8表计数及抽查附件相符，当前实时全库一致性没有新证据，不宣称完全一致。
+
+## Follow-up Milestone
+- [x] 核对当前线程最新恢复进度、上次恢复点时间及一致性验证范围。
+- [x] 给出当前可证明与不可证明的结论；不启动备份、恢复或数据库写入。
+
+## Follow-up Verification Result
+已读取 server-access.md、release-backup-restore.md、上轮验收报告及本轮任务状态，独立读取原始 selected-counts/PDF-object-integrity JSON。原始校验绑定 smallapp-bf67a867d3ec4e369ca31657c45e62c6 和目标 spug-empty59-a029c09a7b8b，expected/actual 8表计数全部相同，matched=true、serverWrites=false；PDF对象206586字节及SHA一致。计数与样本不能证明所有行内容相同，更不能证明备份点后无新增变化。
+
+最新线程已前进至新包2026-11-17-11-53-04测试服发布 JOB-800548d984 running，正式服发布、正式服新增量备份和.59恢复仍待执行。前文“尚未构建发布”为先前读取快照，后续进度以本段为准。本任务没有实时连接两台服务器比对，因此当前实时完全一致应答为尚未证明；可证明的是上轮恢复点的已验收范围一致。
 
 ## Verification Result
 已按游标读取最近十轮并对照命令输出。上一轮六步在目录删除确认后完成，收尾提交 de3da81；历史 PDF 页面问题按原用户确认范围保留。随后启动第二轮：同步代码、测试服发布、同包正式发布、正式服增量备份、备份服清空恢复、数据附件与真实公开 URL 验收。
