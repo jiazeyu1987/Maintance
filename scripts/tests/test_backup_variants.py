@@ -45,6 +45,8 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
         'common/recovery_program_source.py', 'common/recovery_program_protection.py',
         'common/recovery_program_resources.py', 'common/recovery_program_restore.py',
         'common/recovery_program_evidence.py',
+        # Reviewed in 08bebb3: prepared-target file storage binding.
+        'common/recovery_prepared_storage.py',
         'common/recovery_program_sql_staging.py',
         'common/recovery_replacement_storage.py', 'common/recovery_minimal_plan.py',
         'common/recovery_retained_retry.py', 'common/recovery_minimal_redis_dump.py', 'common/recovery_published_fence.py', 'common/recovery_archive_view.py',
