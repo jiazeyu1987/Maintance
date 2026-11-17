@@ -29,3 +29,6 @@ ready_for_closeout。自有临时worktree已完成Git融合和注册清理；仅
 
 ## 公开入口补验
 用户报告.59:8081不可达，确认原验收使用SSH隧道，不能证明对外入口。现已持久配置systemd网页入口及精确防火墙规则，原5容器不变；真实浏览器通过http://172.30.30.59:8081登录、用户管理2117条及版本验证PASS。修复f33673f已融合并清理自有worktree。证据acceptance/target-59-public-incremental-business.private.json。原integration目录仍等待用户清理。
+
+## 最终收尾完成
+用户手动删除最后残留目录，本轮只读验证不存在；全部9个自有临时checkout路径均已清理，保全证据仍在。六步任务状态completed，历史PDF页面缺口按已确认范围保留。前文ready_for_closeout及等待清理描述为历史阶段状态，以本节为最终结论。

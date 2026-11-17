@@ -606,3 +606,5 @@ BDD: Given恢复完成且前端内部200，When用户打开.59:8081/index，Then
 GREEN: experience-preflight -> PASS。创建本任务修复worktree只基于维护主线已提交HEAD，不复制无关dirty；公开入口修复属于原恢复交付范围。
 
 PUBLIC INGRESS FIXED: 提交246a1ca/f33673f已安装并融合。原5容器身份不变，systemd原有proxyd将.59:8081转到固定前端.36:80，firewalld仅放行目的.59:8081。最终systemd verify exit0/stderr空。真实Playwright通过公开URL登录，用户管理20可见行/总2117、版本18-57-58通过。主线3测试PASS，自有入口修复worktree已删。原integration长路径目录仍存在，用户手动清理中；原公开入口验收遗漏已修复，整体仅待原目录删除。
+
+FINAL CLOSEOUT PASS: 用户手动删除最后残留目录，本轮只读核Test-Path=False，全部9个自有临时checkout路径不存在。复核8表matched=true、PDF对象matched=true、公开入口真实登录/业务页面PASS及版本18-57-58，保全integration-result PASS仍在。已融合和必需验证证据完整，无新增远程写入或重复恢复；六步按用户确认历史PDF例外完成。Current Status=completed。
