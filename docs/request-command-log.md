@@ -5995,3 +5995,10 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 已验证：prepare-261bf06f-3c35-404d-8c86-c6a42dbdf701 READY；v8定向43项、v9必要68项测试通过。v9两文件安装exit0，入口PID897→1395。全量/增量恢复及业务验收尚待完成。
 
 - 恢复 MVP 续接：核原失败终态，审查 v11 最小空目标合同修复，以已提交新 release 安装后走 Spug FULL 恢复验收；未完成前不执行增量。
+
+### 2026-11-17 理解“检测进程”线程（20261117-inspect-process-thread）
+
+- 用户要求：理解指定聊天当前在做什么。
+- 执行意图：使用 read_thread 和分页只读核对最近目标、命令与输出；不干预目标线程及服务器。
+- 验证结果：上轮六步已收尾；第二轮正在代码整合和数据库迁移预检，ERP 菜单 ID 身份不符使测试及正式目标预检阻断；尚未看到本轮构建发布、备份或清空恢复的执行证据。
+- 证据：doc/tasks/20261117-inspect-process-thread/task.md、execution-log.md；目标线程 01a1cd7e-0968-7632-aa3f-edacd2e92c83。
