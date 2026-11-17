@@ -6040,3 +6040,11 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 验证结果：bf67从前置分析至最终SUCCEEDED实测2小时3分40秒，Spug受理到成功2小时4分22秒；分析31分05秒、采集34分30秒、上传3分44秒、NAS回读6分39秒、最终校验与链回读46分58秒，其余约44秒。子任务/manifest时间不能代替owner最终成功。
 - 当前边界：9d06截至北京时间14:45已运行约22分钟，仍在父链准入且无终态；4c3942失败不纳入成功样本；单次实测不保证每次固定时长，范围不包含前序发现的三个辅助服务本地数据。
 - 证据：doc/tasks/20261117-incremental-backup-duration/duration-report.md、source-timing.json、timing-summary.json、acceptance-time-evidence.json、execution-log.md。UTF-8/JSON/Python语法与时间差复算通过，未记录秘密。
+
+
+### 2026-11-17 发布备份恢复三项收敛（20261117-three-point-convergence）
+- 用户要求：收敛三项。本轮仅本机实现与融合，不操作服务器。
+- 执行意图：正式reopen同步备份来源；恢复读取归档版本并沿固定父链继承附件策略；已融合工作区长路径清理与单次链读取去重。
+- 验证结果：Linux封包37 PASS，来源激活边界14 PASS；Windows准备55 PASS、链行为3 PASS、清理/恢复组合90 PASS；主线融合后相关91 PASS，回执修正长路径场景PASS。边界替身测试不冒充线上E2E。
+- 交付：实现a76286f、回执修正4148683已合回int_main；专用worktree已删除，原主线无关改动保留，无业务控制台改动。未部署，待真实环境配置与验收。
+- 证据：doc/tasks/20261117-three-point-convergence/task.md、execution-log.md、分项日志及cleanup-result.json。

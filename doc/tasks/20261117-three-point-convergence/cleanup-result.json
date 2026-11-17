@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "path": "C:\\SpugHandoff\\converge-20261117",
+  "commit": "4148683bec58fe0a40e4960810b9ebaf10f2c405",
+  "verifiedTrackedFiles": 4908,
+  "gitRemovalExitCode": 0,
+  "residualRemoved": false,
+  "ownershipVerified": true,
+  "generatedLinksDetached": 0,
+  "registeredAfter": false,
+  "physicalPathExists": false,
+  "mergedInto": "int_main",
+  "branch": "codex/three-point-convergence-20261117"
+}

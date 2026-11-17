@@ -4,7 +4,7 @@
 ## Milestones
 - [x] 核实当前代码及最小边界
 - [x] 三项BDD/RED/GREEN与必要回归
-- [ ] 集成验证、提交和收尾
+- [x] 集成验证、提交和收尾
 ## Expected Verification
 真实发布结果可驱动来源更新且失败不得假成功；新备份点准备依赖完整且来源不可漂移；清理仅本任务路径；重复读取减少但内容变化仍拒绝。先本机实现，未授权的新服务器写入不执行。
 ## 设计约束检查
@@ -14,7 +14,7 @@
 ## 经验门禁
 Trigger：发布/恢复流程修复及重构。Preflight check：实际入口、运行包与源码关系、Git归属和既有脏文件、链与配置pin、路径边界。Blocker：配置身份不明、并发覆盖、实际依赖缺失。Verification：BDD和RED->GREEN->REGRESSION，实际入口集成验证，内容漂移拒绝。Forbidden action：不改生产NAS、不绕过校验、不混入其他改动、不以单测代称已部署。Evidence：本任务execution-log及上一轮验收报告。
 ## Current Status
-ready_for_closeout：三项正式入口实现与必要验证完成，待主线融合及收尾。未部署服务器。
+completed：三项本机实现及必要验证完成，已合回 int_main，本任务临时 worktree 已删除。未部署服务器；上线需配置真实来源绑定并执行发布验收。
 
 ## Implementation and evidence
 - 发布：finish_reopen 正常服务健康后生成并激活新备份来源；显式 profile，失败传播并保留同候选重试身份。普通未配置服务器不猜路径。
@@ -29,4 +29,6 @@ ready_for_closeout：三项正式入口实现与必要验证完成，待主线�
 - 基线：3f4a62e9d15e6566e65b87515b64ab898b84be7b
 - 不构建业务发布包；封包构造由 scripts/tests/test_backup_variants.py 验证。
 - 验证命令及分项 RED/GREEN：本目录 execution-log.md、source-sync-log.md、target-dependencies-log.md、readback-log.md、cleanup-log.md。
-- 新提交、合回 int_main 和删除结果待收尾记录；原主线已有并发文档提交及无关脏文件，不纳入本任务。
+- 实现提交 a76286f；融合提交 13769c3；清理回执修正 4148683。全部已合回 int_main，主线融合后 91 项测试通过，最后回执修正的真实长路径清理用例再次通过。
+- 清理结果：cleanup-result.json 为 passed，Git 登记与物理路径均不存在；cleanup-proof.json 保留删除前归属回执。4908 个跟踪文件核对通过。本次未启动或修改业务控制台，不涉及控制台路径恢复。
+- 融合前后原主线 diff/status 摘要一致，无关脏改动保留；最终日志仅精确提交本任务追加段落。
