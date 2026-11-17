@@ -1,0 +1,90 @@
+{
+  "serverWrites": false,
+  "observedAt": "2026-11-17T05:28:55.290397+00:00",
+  "schemaListAndTableCounts": [
+    "information_schema",
+    "mysql",
+    "performance_schema",
+    "ruoyi-vue-pro",
+    "sys",
+    "mysql\t38",
+    "performance_schema\t111",
+    "ruoyi-vue-pro\t909",
+    "sys\t1"
+  ],
+  "minioTopLevelDirectories": [
+    ".minio.sys",
+    "edhr-protected-storage",
+    "edhr-protected-storage-20260601",
+    "yudao"
+  ],
+  "configuredPhysicalScopes": [
+    ".minio.sys",
+    "yudao",
+    "edhr-protected-storage",
+    "edhr-protected-storage-20260601"
+  ],
+  "operations": [
+    {
+      "operation": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+      "payloadRefsChecked": 14359,
+      "expectedBytes": 26106043182,
+      "missingPayloads": [],
+      "sizeDifferences": [],
+      "statSeconds": 12.36
+    },
+    {
+      "operation": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+      "payloadRefsChecked": 91,
+      "expectedBytes": 2125525741,
+      "missingPayloads": [],
+      "sizeDifferences": [],
+      "statSeconds": 0.07
+    }
+  ],
+  "source-scope.json": {
+    "endpointHosts": [
+      "172.17.0.2",
+      "172.30.30.57",
+      "host.docker.internal"
+    ],
+    "schemaVersion": "RecoverySourceScope/v1",
+    "sourceIdentityPin": {
+      "bytes": 142,
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-identity.json",
+      "sha256": "c5bb2c51f9a8cb49caef56257345e97fb109bf8a9866e41c2ccacb7ad10e3884"
+    }
+  },
+  "derived-recipe.json": {
+    "classes": {
+      "queue": {
+        "classification": "NOT_PRESENT",
+        "configurationReferences": [
+          {
+            "bytes": 600,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/configuration/queue-policy.json",
+            "sha256": "f78e965ddb22043d4baaa4bd7703a59cda01d32d142b89fea3aa93b6cc9838c1"
+          }
+        ],
+        "executorKey": null,
+        "rebuildFrom": null,
+        "requiredForBusiness": false
+      },
+      "redis": {
+        "classification": "RESTORE",
+        "configurationReferences": [
+          {
+            "bytes": 455,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/configuration/redis-policy.json",
+            "sha256": "0639effa0cb9c51d33347e8cb751b855c3c7ca220dee612b3e68d08ebdb2ff13"
+          }
+        ],
+        "executorKey": "REDIS_DUMP_ABSOLUTE_EXPIRY",
+        "rebuildFrom": null,
+        "requiredForBusiness": true
+      }
+    },
+    "schemaVersion": "backup-capture-derived-recipe/v1",
+    "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690"
+  }
+}

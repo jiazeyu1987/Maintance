@@ -1,0 +1,136 @@
+{
+  "serverWrites": false,
+  "observedAt": "2026-11-17T05:42:26.365387+00:00",
+  "batch": 3,
+  "seconds": 0.25,
+  "tablesChecked": 25,
+  "matchingTables": 25,
+  "differences": {},
+  "observations": {
+    "srm_non_bidding_quote": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_non_bidding_quote_line": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_non_bidding_supplier_scope": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_outsource_execution": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_outsource_execution_event": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_payment_execution": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_payment_execution_event": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_procurement_approval_record": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_procurement_contract": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_procurement_contract_attachment": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_procurement_contract_payment": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_procurement_contract_signing": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_procurement_plan": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_procurement_plan_line": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_purchase_order": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_purchase_order_change": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_purchase_order_change_line": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_purchase_order_line": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_reconciliation": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_sourcing_project": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_sourcing_project_line": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_supplier_access": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_supplier_portal_application": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_supplier_risk": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_tender_candidate": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    }
+  }
+}

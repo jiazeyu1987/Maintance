@@ -1,0 +1,18 @@
+{
+  "serverWrites": false,
+  "observedAt": "2026-11-17T05:29:21.829761+00:00",
+  "batch": 1,
+  "seconds": 25.66,
+  "expectedTotalFiles": 9413,
+  "selectedFiles": 2000,
+  "contentChecked": 2000,
+  "bytesHashed": 1473732269,
+  "bucketCheckedCounts": {
+    "yudao": 2000
+  },
+  "completeBatch": true,
+  "missingFiles": [],
+  "sizeDifferences": [],
+  "hashDifferences": [],
+  "chainPayloadCoverageVerified": true
+}

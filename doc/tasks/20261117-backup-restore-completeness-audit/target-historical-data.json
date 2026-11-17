@@ -1,0 +1,41 @@
+{
+  "serverWrites": false,
+  "observedAt": "2026-11-17T05:43:45.899656+00:00",
+  "batch": 0,
+  "seconds": 1.44,
+  "tablesChecked": 6,
+  "matchingTables": 6,
+  "differences": {},
+  "observations": {
+    "dcc_controlled_file_access_log": {
+      "rows": 48,
+      "jsonNodes": 0,
+      "multisetSha256": "80c6182ac9c16398974daefb64ef1300819af8c9de33a4f7d89fcc68f29665e4"
+    },
+    "infra_api_access_log": {
+      "rows": 14926,
+      "jsonNodes": 0,
+      "multisetSha256": "a404dfee82f2a85ed8f2e2740f237231883e5b5c59ec0cb2e690c981dd1e0d3c"
+    },
+    "infra_api_error_log": {
+      "rows": 650,
+      "jsonNodes": 0,
+      "multisetSha256": "483191418db49981baf527debfa4dcad8391da5e8798eba0ce99c3b1a6e71d73"
+    },
+    "system_login_log": {
+      "rows": 4533,
+      "jsonNodes": 0,
+      "multisetSha256": "aad8d7a467a4cff5558ec83218753f5906e0c4c93ffbfa204921ad8bf92cc6d8"
+    },
+    "system_oauth2_access_token": {
+      "rows": 7719,
+      "jsonNodes": 0,
+      "multisetSha256": "847dd9a1b0f22eeb137fde2790bc1d5472661abea0d3524cbb77c8b5cb8fb7ea"
+    },
+    "system_oauth2_refresh_token": {
+      "rows": 4249,
+      "jsonNodes": 0,
+      "multisetSha256": "0139241fe0af4137ee4fdba09d33badd962242603c76b60486210ab622101c49"
+    }
+  }
+}

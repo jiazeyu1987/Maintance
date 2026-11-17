@@ -1,0 +1,407 @@
+{
+  "tableCounts": {
+    "serverWrites": false,
+    "observedAt": "2026-11-17T05:17:06.799247+00:00",
+    "expectedTableCount": 907,
+    "actualTableCount": 907,
+    "missingTables": [],
+    "extraTables": [],
+    "countChecked": 907,
+    "matchingCountTables": 901,
+    "differentCounts": {
+      "dcc_controlled_file_access_log": {
+        "expected": 48,
+        "actual": 51
+      },
+      "infra_api_access_log": {
+        "expected": 14926,
+        "actual": 15396
+      },
+      "infra_api_error_log": {
+        "expected": 650,
+        "actual": 651
+      },
+      "system_login_log": {
+        "expected": 4533,
+        "actual": 4551
+      },
+      "system_oauth2_access_token": {
+        "expected": 7719,
+        "actual": 7742
+      },
+      "system_oauth2_refresh_token": {
+        "expected": 4249,
+        "actual": 4267
+      }
+    }
+  },
+  "contentTablesChecked": 907,
+  "contentTablesMatchingFrozenPoint": 898,
+  "contentDifferences": {
+    "dcc_controlled_file_access_log": {
+      "expected": {
+        "jsonNodes": 0,
+        "multisetSha256": "80c6182ac9c16398974daefb64ef1300819af8c9de33a4f7d89fcc68f29665e4",
+        "rows": 48
+      },
+      "actual": {
+        "rows": 51,
+        "jsonNodes": 0,
+        "multisetSha256": "da1d7a022cf7db2ff1ab70e833c54308d05cc35b53d5078362e6aed4e4f2f591"
+      }
+    },
+    "infra_api_access_log": {
+      "expected": {
+        "jsonNodes": 0,
+        "multisetSha256": "a404dfee82f2a85ed8f2e2740f237231883e5b5c59ec0cb2e690c981dd1e0d3c",
+        "rows": 14926
+      },
+      "actual": {
+        "rows": 15413,
+        "jsonNodes": 0,
+        "multisetSha256": "48605fd07afe4ea44649bbdf0cf08e9942c6496ef48743f05e61f13d0114c235"
+      }
+    },
+    "infra_api_error_log": {
+      "expected": {
+        "jsonNodes": 0,
+        "multisetSha256": "483191418db49981baf527debfa4dcad8391da5e8798eba0ce99c3b1a6e71d73",
+        "rows": 650
+      },
+      "actual": {
+        "rows": 651,
+        "jsonNodes": 0,
+        "multisetSha256": "5a049759cfe07931879d5f9dda2c3203dd5d028bd93f77d3327a911240b561f2"
+      }
+    },
+    "infra_file_config": {
+      "expected": {
+        "jsonNodes": 0,
+        "multisetSha256": "d7ab9951f8539a8cc79baa73cbad1aa992943815e216c89356a095f7ebd4745d",
+        "rows": 11
+      },
+      "actual": {
+        "rows": 11,
+        "jsonNodes": 0,
+        "multisetSha256": "7eeb57b2a42d342bfb9b76638d014f824172323439943a17268cd7fc940e9924"
+      }
+    },
+    "qrtz_triggers": {
+      "expected": {
+        "jsonNodes": 0,
+        "multisetSha256": "52db4e7f86c412368d497444452cb2d7f78d6dd77c4c6f10e65bb4c7a127c098",
+        "rows": 36
+      },
+      "actual": {
+        "rows": 36,
+        "jsonNodes": 0,
+        "multisetSha256": "7b0b4eb8cc4e20cfd6d35e6d11e91a476889641e8fc851eba19fe0406f03028a"
+      }
+    },
+    "system_login_log": {
+      "expected": {
+        "jsonNodes": 0,
+        "multisetSha256": "aad8d7a467a4cff5558ec83218753f5906e0c4c93ffbfa204921ad8bf92cc6d8",
+        "rows": 4533
+      },
+      "actual": {
+        "rows": 4551,
+        "jsonNodes": 0,
+        "multisetSha256": "b89c73e6905f9c0e2c290e5b08838e1a85da244b6489e366738b509677d34eb0"
+      }
+    },
+    "system_oauth2_access_token": {
+      "expected": {
+        "jsonNodes": 0,
+        "multisetSha256": "847dd9a1b0f22eeb137fde2790bc1d5472661abea0d3524cbb77c8b5cb8fb7ea",
+        "rows": 7719
+      },
+      "actual": {
+        "rows": 7743,
+        "jsonNodes": 0,
+        "multisetSha256": "6035725e90f739f607dffb8909f3e0d23082724db5a04804e464d459adfae028"
+      }
+    },
+    "system_oauth2_refresh_token": {
+      "expected": {
+        "jsonNodes": 0,
+        "multisetSha256": "0139241fe0af4137ee4fdba09d33badd962242603c76b60486210ab622101c49",
+        "rows": 4249
+      },
+      "actual": {
+        "rows": 4267,
+        "jsonNodes": 0,
+        "multisetSha256": "a61481ded1202d590b5404c887d55055d165598eff5c81760e0a99d1d658fda6"
+      }
+    },
+    "system_users": {
+      "expected": {
+        "jsonNodes": 0,
+        "multisetSha256": "200bc1a2ddeaf09d66c6de9f377d7d4b0a298d1fff16374390e70d21a32fd5eb",
+        "rows": 2155
+      },
+      "actual": {
+        "rows": 2155,
+        "jsonNodes": 0,
+        "multisetSha256": "437e9af0717d77d21ef9e791edad7fd385e184e127e79854cb896a430e5f6ff8"
+      }
+    }
+  },
+  "appendOnlyHistoricalRows": {
+    "checked": 6,
+    "matching": 6,
+    "differences": {}
+  },
+  "largeTable": {
+    "rowsChecked": 4870,
+    "complete": true,
+    "equal": true
+  },
+  "physicalFiles": {
+    "expected": 9413,
+    "contentChecked": 9370,
+    "missing": 43,
+    "missingBusinessFiles": [],
+    "businessHashDifferences": [],
+    "internalHashDifferences": [
+      ".minio.sys/buckets/.bloomcycle.bin/xl.meta",
+      ".minio.sys/buckets/.usage-cache.bin.bkp/xl.meta",
+      ".minio.sys/buckets/.usage-cache.bin/xl.meta",
+      ".minio.sys/buckets/.usage.json/xl.meta",
+      ".minio.sys/buckets/edhr-protected-storage-20260601/.usage-cache.bin.bkp/xl.meta",
+      ".minio.sys/buckets/edhr-protected-storage-20260601/.usage-cache.bin/xl.meta",
+      ".minio.sys/buckets/edhr-protected-storage/.usage-cache.bin.bkp/xl.meta",
+      ".minio.sys/buckets/edhr-protected-storage/.usage-cache.bin/xl.meta",
+      ".minio.sys/buckets/yudao/.usage-cache.bin.bkp/xl.meta",
+      ".minio.sys/buckets/yudao/.usage-cache.bin/xl.meta"
+    ],
+    "businessFilesHashed": 9342,
+    "bytesHashed": 9656139956
+  },
+  "schema": {
+    "serverWrites": false,
+    "observedAt": "2026-11-17T05:43:50.524928+00:00",
+    "catalogEqual": true,
+    "catalogDifferences": {},
+    "objectCounts": {
+      "DATABASE": 1,
+      "EVENT": 0,
+      "FUNCTION": 0,
+      "PROCEDURE": 0,
+      "TABLE": 907,
+      "TRIGGER": 62,
+      "VIEW": 0
+    },
+    "canonicalDefinitionDifferences": {
+      "TABLE": [
+        "dcc_controlled_file_access_log",
+        "infra_api_access_log",
+        "infra_api_error_log",
+        "system_login_log",
+        "system_oauth2_access_token",
+        "system_oauth2_refresh_token"
+      ]
+    },
+    "autoIncrementOnlyDifferences": {
+      "dcc_controlled_file_access_log": true,
+      "infra_api_access_log": true,
+      "infra_api_error_log": true,
+      "system_login_log": true,
+      "system_oauth2_access_token": true,
+      "system_oauth2_refresh_token": true
+    },
+    "excludedHistoricalFields": [
+      "SHOW CREATE TRIGGER.Created"
+    ]
+  },
+  "backupBoundary": {
+    "serverWrites": false,
+    "observedAt": "2026-11-17T05:28:55.290397+00:00",
+    "schemaListAndTableCounts": [
+      "information_schema",
+      "mysql",
+      "performance_schema",
+      "ruoyi-vue-pro",
+      "sys",
+      "mysql\t38",
+      "performance_schema\t111",
+      "ruoyi-vue-pro\t909",
+      "sys\t1"
+    ],
+    "minioTopLevelDirectories": [
+      ".minio.sys",
+      "edhr-protected-storage",
+      "edhr-protected-storage-20260601",
+      "yudao"
+    ],
+    "configuredPhysicalScopes": [
+      ".minio.sys",
+      "yudao",
+      "edhr-protected-storage",
+      "edhr-protected-storage-20260601"
+    ],
+    "operations": [
+      {
+        "operation": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+        "payloadRefsChecked": 14359,
+        "expectedBytes": 26106043182,
+        "missingPayloads": [],
+        "sizeDifferences": [],
+        "statSeconds": 12.36
+      },
+      {
+        "operation": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+        "payloadRefsChecked": 91,
+        "expectedBytes": 2125525741,
+        "missingPayloads": [],
+        "sizeDifferences": [],
+        "statSeconds": 0.07
+      }
+    ],
+    "source-scope.json": {
+      "endpointHosts": [
+        "172.17.0.2",
+        "172.30.30.57",
+        "host.docker.internal"
+      ],
+      "schemaVersion": "RecoverySourceScope/v1",
+      "sourceIdentityPin": {
+        "bytes": 142,
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-identity.json",
+        "sha256": "c5bb2c51f9a8cb49caef56257345e97fb109bf8a9866e41c2ccacb7ad10e3884"
+      }
+    },
+    "derived-recipe.json": {
+      "classes": {
+        "queue": {
+          "classification": "NOT_PRESENT",
+          "configurationReferences": [
+            {
+              "bytes": 600,
+              "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/configuration/queue-policy.json",
+              "sha256": "f78e965ddb22043d4baaa4bd7703a59cda01d32d142b89fea3aa93b6cc9838c1"
+            }
+          ],
+          "executorKey": null,
+          "rebuildFrom": null,
+          "requiredForBusiness": false
+        },
+        "redis": {
+          "classification": "RESTORE",
+          "configurationReferences": [
+            {
+              "bytes": 455,
+              "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/configuration/redis-policy.json",
+              "sha256": "0639effa0cb9c51d33347e8cb751b855c3c7ca220dee612b3e68d08ebdb2ff13"
+            }
+          ],
+          "executorKey": "REDIS_DUMP_ABSOLUTE_EXPIRY",
+          "rebuildFrom": null,
+          "requiredForBusiness": true
+        }
+      },
+      "schemaVersion": "backup-capture-derived-recipe/v1",
+      "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690"
+    }
+  },
+  "scopeGaps": {
+    "serverWrites": false,
+    "observedAt": "2026-11-17T05:38:23.501853+00:00",
+    "sourceCurrentTablesNotInFrozenPoint": [
+      [
+        "mes_pro_loss_reason",
+        "BASE TABLE",
+        "2026-11-17 12:59:54"
+      ],
+      [
+        "mes_pro_loss_reason_sequence",
+        "BASE TABLE",
+        "2026-11-17 12:59:54"
+      ]
+    ],
+    "frozenTablesNotInCurrentSource": [],
+    "configurationReferences": [
+      {
+        "reference": {
+          "bytes": 6332,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/runtime.env",
+          "sha256": "c97b7f9a413fa77983e3218420f887c19918301a2835762cc80f96a973e6d9a4"
+        },
+        "role": "application-config"
+      },
+      {
+        "reference": {
+          "bytes": 10608,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/docker-compose.yml",
+          "sha256": "1d90d5be0307b7222e6cb1a52aa8ef1afefff56bc9cfe93bc6b342df51a5af9f"
+        },
+        "role": "runtime-compose"
+      },
+      {
+        "reference": {
+          "bytes": 2434,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/source-nginx.conf",
+          "sha256": "a4c66f514d695700484181e1ec74ed755a6b2055eacab2d0826d79c72df33b78"
+        },
+        "role": "frontend-config"
+      },
+      {
+        "reference": {
+          "bytes": 13872,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/application-dev.yaml",
+          "sha256": "9683b6965b5fa7fad130d7c9d87e94c7209308fdd6141178c9b0e8f6b5055c1b"
+        },
+        "role": "application-dev"
+      },
+      {
+        "reference": {
+          "bytes": 17739,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/application.yaml",
+          "sha256": "ad77f29d983c26de08899db66faa225405e97a486cf4fb14174932804d4b7110"
+        },
+        "role": "application-main"
+      },
+      {
+        "reference": {
+          "bytes": 12883,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/runtime-effective.json",
+          "sha256": "3eacbf0f281929f7052553a2716ab15b6400447667520aec30b6d9fff6139517"
+        },
+        "role": "effective-runtime"
+      }
+    ],
+    "capturedRedisDatabase": 1,
+    "currentRedisKeyspace": [
+      "# Keyspace",
+      "db1:keys=109,expires=109,avg_ttl=1952734,subexpiry=0"
+    ],
+    "currentBackendRedisDatabaseEnv": [],
+    "externalMountedData": [
+      {
+        "path": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/runtime",
+        "files": 2,
+        "bytes": 618
+      },
+      {
+        "path": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/uploads",
+        "files": 8600,
+        "bytes": 1038241906
+      },
+      {
+        "path": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/results",
+        "files": 18448,
+        "bytes": 1967855832
+      },
+      {
+        "path": "/var/lib/docker/fenbeitong-release/data",
+        "files": 4,
+        "bytes": 75788418
+      },
+      {
+        "path": "/opt/intruoyi/runtime/website/dist",
+        "files": 35,
+        "bytes": 7153171
+      }
+    ]
+  }
+}

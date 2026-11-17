@@ -1,0 +1,36 @@
+{
+  "serverWrites": false,
+  "observedAt": "2026-11-17T05:43:50.524928+00:00",
+  "catalogEqual": true,
+  "catalogDifferences": {},
+  "objectCounts": {
+    "DATABASE": 1,
+    "EVENT": 0,
+    "FUNCTION": 0,
+    "PROCEDURE": 0,
+    "TABLE": 907,
+    "TRIGGER": 62,
+    "VIEW": 0
+  },
+  "canonicalDefinitionDifferences": {
+    "TABLE": [
+      "dcc_controlled_file_access_log",
+      "infra_api_access_log",
+      "infra_api_error_log",
+      "system_login_log",
+      "system_oauth2_access_token",
+      "system_oauth2_refresh_token"
+    ]
+  },
+  "autoIncrementOnlyDifferences": {
+    "dcc_controlled_file_access_log": true,
+    "infra_api_access_log": true,
+    "infra_api_error_log": true,
+    "system_login_log": true,
+    "system_oauth2_access_token": true,
+    "system_oauth2_refresh_token": true
+  },
+  "excludedHistoricalFields": [
+    "SHOW CREATE TRIGGER.Created"
+  ]
+}

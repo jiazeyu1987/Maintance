@@ -1,0 +1,51 @@
+{
+  "serverWrites": false,
+  "observedAt": "2026-11-17T05:42:17.606396+00:00",
+  "batch": 3,
+  "seconds": 0.45,
+  "tablesChecked": 8,
+  "matchingTables": 8,
+  "differences": {},
+  "observations": {
+    "showroom_product_current_bu_backup_20260626": {
+      "rows": 109,
+      "jsonNodes": 0,
+      "multisetSha256": "6478620fe3ca02e7655ccdee89f3ad1b5ea391236b20dd0caec8f6f8254d19f8"
+    },
+    "showroom_product_revision": {
+      "rows": 2725,
+      "jsonNodes": 0,
+      "multisetSha256": "462b5ffe91f716ba7d63397644d32daed52417de6510d97a511eba01462c5a8a"
+    },
+    "showroom_product_revision_attachment": {
+      "rows": 342,
+      "jsonNodes": 0,
+      "multisetSha256": "12121d3a8d32e5f03c5c7b847b2f2d7c6d5efbac87e7a99bda3bcfb03f59777b"
+    },
+    "showroom_product_revision_relation": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "showroom_product_translate_publish_batch_task": {
+      "rows": 7,
+      "jsonNodes": 0,
+      "multisetSha256": "cf6abaf8585fb0636bfacbee6232f86ed60e8d3a7bfb6786192f47a6bdaa7942"
+    },
+    "showroom_product_translate_publish_batch_task_item": {
+      "rows": 1148,
+      "jsonNodes": 0,
+      "multisetSha256": "3ff89640b554142bac3a41ad09e26cd612bc68d2e41a2eaa12d44948b9131c72"
+    },
+    "showroom_public_site_binding": {
+      "rows": 2,
+      "jsonNodes": 0,
+      "multisetSha256": "a7db8900d01e961c8b7fb1acd71315135bd00e714c9a43871ff6e44babd18004"
+    },
+    "showroom_release": {
+      "rows": 68,
+      "jsonNodes": 0,
+      "multisetSha256": "6e118801772b5c1f2f0f2722d089b888abd2837c5e7441e03784b29ae9470937"
+    }
+  }
+}

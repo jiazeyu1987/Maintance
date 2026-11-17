@@ -1,0 +1,1351 @@
+{
+  "host": "172.30.30.57",
+  "serverWrites": false,
+  "operations": [
+    {
+      "operation": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+      "resultKeys": [
+        "action",
+        "actualExitCode",
+        "data",
+        "failureCode",
+        "finishedAt",
+        "message",
+        "operationId",
+        "originalResultPins",
+        "requestId",
+        "schemaVersion",
+        "startedAt",
+        "state"
+      ],
+      "resultState": "SUCCEEDED",
+      "actualExitCode": 0,
+      "resultDataKeys": [
+        "captureResultPin",
+        "logRefs",
+        "manifestPin",
+        "objectContentIndexPin",
+        "pointPin",
+        "readbackPin",
+        "recoveryMaterialPin",
+        "repositoryBindingPin",
+        "sourceScopePin",
+        "stagingCleanupPin"
+      ],
+      "captureKeys": [
+        "archiveFilePins",
+        "backupId",
+        "capturePointPin",
+        "configurationPins",
+        "database",
+        "fileInventoryPin",
+        "filePayloadPins",
+        "generationId",
+        "imagePins",
+        "materialIndexPin",
+        "objectContentIndexPin",
+        "parentRepositoryPointPin",
+        "pointType",
+        "recoveryPoint",
+        "schemaVersion",
+        "semanticSupplement",
+        "sourceDatabaseUuid",
+        "sourceIdentity"
+      ],
+      "database": {
+        "endPosition": {
+          "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+          "executedGtidSet": "",
+          "file": "binlog.000033",
+          "position": 117969259,
+          "serverVersion": "8.0.39"
+        },
+        "expectedDataPin": {
+          "bytes": 3720570,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/payload/011-source-data.json",
+          "sha256": "d61a15c6c8c64b101f2f974ce8bd1efec9caa28b4e7ad1c5f790f0926d18ecb0"
+        },
+        "method": "FORMAL_SQL_FULL",
+        "rawSqlPin": null,
+        "sqlPin": {
+          "bytes": 6128589152,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/payload/database.sql.gz",
+          "sha256": "2d6bf67b98ef1fea038a2156b7658044ad5fd6102ab8c8d054ed199b8491ccf3"
+        },
+        "startPosition": null
+      },
+      "attachmentsKeys": [],
+      "semanticSupplementKeys": [
+        "derivedInventoryPin",
+        "objectExportReceiptPin",
+        "objectInventoryPin",
+        "referenceInventoryPin",
+        "sourceFingerprint",
+        "sourceScopePin",
+        "versionPins"
+      ],
+      "metadataPins": [
+        {
+          "field": "result.data.captureResultPin",
+          "pin": {
+            "bytes": 3135,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/a38667e8f70c6b3f3ff7075d0e63e8fb1ac300363abf3eae2dcc1fdc196f42d4/capture-query-843-output.json",
+            "sha256": "7097d71477a4bec9e5c28e0a76afe3052cc2f5f9971733bca74a3b6600eccb0b"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "action",
+            "actualExitCode",
+            "data",
+            "failureCode",
+            "finishedAt",
+            "message",
+            "operationId",
+            "originalResultPins",
+            "requestId",
+            "schemaVersion",
+            "startedAt",
+            "state"
+          ],
+          "safeScalars": {
+            "action": "FULL",
+            "actualExitCode": 0,
+            "failureCode": null,
+            "finishedAt": "2026-11-16T14:58:11.018613+00:00",
+            "message": "Capture completed; source restored; worker exited zero.",
+            "operationId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "requestId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "schemaVersion": "backup-restore-operation-result/v1",
+            "startedAt": "2026-11-16T13:40:27.320750+00:00",
+            "state": "SUCCEEDED"
+          }
+        },
+        {
+          "field": "result.data.logRefs[0]",
+          "pin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/a38667e8f70c6b3f3ff7075d0e63e8fb1ac300363abf3eae2dcc1fdc196f42d4/capture-query-843.stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "exists": true,
+          "pinVerified": true
+        },
+        {
+          "field": "result.data.logRefs[1]",
+          "pin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/a38667e8f70c6b3f3ff7075d0e63e8fb1ac300363abf3eae2dcc1fdc196f42d4/capture-query-843.stderr.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "exists": true,
+          "pinVerified": true
+        },
+        {
+          "field": "result.data.logRefs[2]",
+          "pin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/worker-stderr.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "exists": true,
+          "pinVerified": true
+        },
+        {
+          "field": "result.data.manifestPin",
+          "pin": {
+            "bytes": 6263300,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-a38667e8f70c6b3f3ff7075d0e63e8fb1ac300363abf3eae2dcc1fdc196f42d4/.repository/manifest.json",
+            "sha256": "620e390dec3d60d6cf249af0b7186c86722198e770c2ecee5ad2d0095c2de414"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "backupId",
+            "commonRecoveryPoint",
+            "copyProtectionPin",
+            "createdAt",
+            "generationId",
+            "parentPointPins",
+            "payloadRefs",
+            "payloadTreePin",
+            "pointType",
+            "schemaVersion",
+            "sourceIdentityPin",
+            "toolPins",
+            "versionPins"
+          ],
+          "safeScalars": {
+            "backupId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "commonRecoveryPoint": "sha256:b0c39b0f61901445514c5a5d0618e6a1a8e1873ab44b2245bf3690964508c2bf",
+            "copyProtectionPin": null,
+            "createdAt": "2026-11-16T15:30:57.455653Z",
+            "generationId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "pointType": "FULL",
+            "schemaVersion": "RepositoryManifest/v1"
+          }
+        },
+        {
+          "field": "result.data.objectContentIndexPin",
+          "pin": {
+            "bytes": 2748655,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-a38667e8f70c6b3f3ff7075d0e63e8fb1ac300363abf3eae2dcc1fdc196f42d4/.repository/object-content-index.json",
+            "sha256": "a956d8fc24c39f74a5b7985fe99aa374bddc5b77dec7929f345989d7f34986bc"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "backupId",
+            "changedContentSha256",
+            "contentPins",
+            "exportReceiptPin",
+            "generationId",
+            "inventoryPin",
+            "manifestPin",
+            "parentExportIndexPin",
+            "pointType",
+            "recoveryPoint",
+            "repositoryBound",
+            "schemaVersion",
+            "sourceIdentity"
+          ],
+          "safeScalars": {
+            "backupId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "generationId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "parentExportIndexPin": null,
+            "pointType": "FULL",
+            "recoveryPoint": "sha256:b0c39b0f61901445514c5a5d0618e6a1a8e1873ab44b2245bf3690964508c2bf",
+            "repositoryBound": true,
+            "schemaVersion": "backup-capture-object-index/v1",
+            "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690"
+          }
+        },
+        {
+          "field": "result.data.pointPin",
+          "pin": {
+            "bytes": 6263481,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-a38667e8f70c6b3f3ff7075d0e63e8fb1ac300363abf3eae2dcc1fdc196f42d4/.repository/point.json",
+            "sha256": "9b4e97d77b6bffd8e6bc1959c5e58e764599c53fe39d76e6f6e887adfb55a622"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "backupId",
+            "blockedReason",
+            "commonRecoveryPoint",
+            "controlledRestoreEligible",
+            "generationId",
+            "integrityState",
+            "manifestPin",
+            "originalExitEvidencePin",
+            "ownerCloseEvidencePin",
+            "parentPointPins",
+            "payloadRefs",
+            "pointType",
+            "readbackEvidencePin",
+            "rehearsalEligible",
+            "schemaVersion"
+          ],
+          "safeScalars": {
+            "backupId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "blockedReason": "REPOSITORY_RECOVERY_NOT_RUN",
+            "commonRecoveryPoint": "sha256:b0c39b0f61901445514c5a5d0618e6a1a8e1873ab44b2245bf3690964508c2bf",
+            "controlledRestoreEligible": false,
+            "generationId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "integrityState": "COMPLETE",
+            "pointType": "FULL",
+            "rehearsalEligible": true,
+            "schemaVersion": "RepositoryPoint/v1"
+          }
+        },
+        {
+          "field": "result.data.readbackPin",
+          "pin": {
+            "bytes": 6263488,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-a38667e8f70c6b3f3ff7075d0e63e8fb1ac300363abf3eae2dcc1fdc196f42d4/.repository/readback-original.json",
+            "sha256": "0cede58ef20bc62cd349818ccb951f8f2a32effa8f68afe50bebac53e17e9a5c"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "independentConnectionId",
+            "manifestPin",
+            "objectContentIndexPin",
+            "operationId",
+            "originalRecordsPin",
+            "payloadRefs",
+            "recoveryMaterialPin",
+            "schemaVersion",
+            "serverDurabilityVerified",
+            "sourceScopePin"
+          ],
+          "safeScalars": {
+            "independentConnectionId": "39109d81-de8f-4ca2-b2da-e6af97ac9a5e:3526621681",
+            "operationId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "schemaVersion": "RepositoryMinimumReadback/v1",
+            "serverDurabilityVerified": false
+          }
+        },
+        {
+          "field": "result.data.recoveryMaterialPin",
+          "pin": {
+            "bytes": 11383711,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-a38667e8f70c6b3f3ff7075d0e63e8fb1ac300363abf3eae2dcc1fdc196f42d4/.repository/recovery-material.json",
+            "sha256": "4316da6281a939a482a91ebf41e758f9ee36f51281e5a3ef93612c9857bab400"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "database",
+            "derivedInventoryPin",
+            "manifestPin",
+            "objects",
+            "payloadPins",
+            "pointType",
+            "recoveryPoint",
+            "referenceInventoryPin",
+            "schemaVersion",
+            "sourceDatabaseUuid",
+            "sourceFingerprint",
+            "sourceScopePin",
+            "versionPins"
+          ],
+          "safeScalars": {
+            "pointType": "FULL",
+            "recoveryPoint": "sha256:b0c39b0f61901445514c5a5d0618e6a1a8e1873ab44b2245bf3690964508c2bf",
+            "schemaVersion": "RecoveryMaterial/v1",
+            "sourceDatabaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+            "sourceFingerprint": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690"
+          }
+        },
+        {
+          "field": "result.data.repositoryBindingPin",
+          "pin": {
+            "bytes": 1866,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-a38667e8f70c6b3f3ff7075d0e63e8fb1ac300363abf3eae2dcc1fdc196f42d4/.repository/recovery-repository-binding.json",
+            "sha256": "31ba752eeb82bfb74440b741d20d101a8429481f4b1e2991ae4c5ee32d5d35eb"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "backupId",
+            "generationId",
+            "manifestPin",
+            "objectContentIndexPin",
+            "recoveryMaterialPin",
+            "repositoryPointPin",
+            "schemaVersion",
+            "sourceScopePin"
+          ],
+          "safeScalars": {
+            "backupId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "generationId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "schemaVersion": "RecoveryRepositoryBinding/v1"
+          }
+        },
+        {
+          "field": "result.data.sourceScopePin",
+          "pin": {
+            "bytes": 329,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-scope.json",
+            "sha256": "cc84a9e48e97cdb35fe39c9ae1856a1370b4581cfd467c1d83af59ad83cfafe8"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "endpointHosts",
+            "schemaVersion",
+            "sourceIdentityPin"
+          ],
+          "safeScalars": {
+            "schemaVersion": "RecoverySourceScope/v1"
+          }
+        },
+        {
+          "field": "result.data.stagingCleanupPin",
+          "pin": {
+            "bytes": 3433440,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/staging-cleanup.json",
+            "sha256": "d94c7adf2ec6cd5d910d0085d59c7a7e3ed00b7a96758b169983d071a0a950fc"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "deletedBytes",
+            "deletedFiles",
+            "files",
+            "finishedAt",
+            "operationId",
+            "root",
+            "schemaVersion",
+            "selectedPaths",
+            "state"
+          ],
+          "safeScalars": {
+            "deletedBytes": 26156993500,
+            "deletedFiles": 15557,
+            "finishedAt": "2026-11-16T16:34:50.051234+00:00",
+            "operationId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "root": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "schemaVersion": "OperationStagingCleanup/v1",
+            "state": "SUCCEEDED"
+          }
+        },
+        {
+          "field": "result.originalResultPins[0]",
+          "pin": {
+            "bytes": 219,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-a38667e8f70c6b3f3ff7075d0e63e8fb1ac300363abf3eae2dcc1fdc196f42d4/.repository/original-exit.json",
+            "sha256": "5db96246066ffad6e55c6fe2b6de00b6f1e94acca044678b3ea5cc615807dfd4"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "actualExitCode",
+            "at",
+            "operationId",
+            "pid",
+            "processTerminated",
+            "schemaVersion",
+            "state"
+          ],
+          "safeScalars": {
+            "actualExitCode": 0,
+            "at": "2026-11-16T14:58:11.195430Z",
+            "operationId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "pid": 29090,
+            "processTerminated": true,
+            "schemaVersion": "RepositoryMinimumChildTerminal/v1",
+            "state": "EXITED"
+          }
+        },
+        {
+          "field": "result.originalResultPins[1]",
+          "pin": {
+            "bytes": 6263488,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-a38667e8f70c6b3f3ff7075d0e63e8fb1ac300363abf3eae2dcc1fdc196f42d4/.repository/readback-original.json",
+            "sha256": "0cede58ef20bc62cd349818ccb951f8f2a32effa8f68afe50bebac53e17e9a5c"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "independentConnectionId",
+            "manifestPin",
+            "objectContentIndexPin",
+            "operationId",
+            "originalRecordsPin",
+            "payloadRefs",
+            "recoveryMaterialPin",
+            "schemaVersion",
+            "serverDurabilityVerified",
+            "sourceScopePin"
+          ],
+          "safeScalars": {
+            "independentConnectionId": "39109d81-de8f-4ca2-b2da-e6af97ac9a5e:3526621681",
+            "operationId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "schemaVersion": "RepositoryMinimumReadback/v1",
+            "serverDurabilityVerified": false
+          }
+        },
+        {
+          "field": "result.originalResultPins[2]",
+          "pin": {
+            "bytes": 789,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/a38667e8f70c6b3f3ff7075d0e63e8fb1ac300363abf3eae2dcc1fdc196f42d4/root-identity-worker-baseline.json",
+            "sha256": "5fe5d2554f18538ce6f36868e871b60362e9674d4b05c35d1612c75279e4e967"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "pid",
+            "recordedAt",
+            "role",
+            "roots",
+            "schemaVersion"
+          ],
+          "safeScalars": {
+            "pid": 21677,
+            "recordedAt": "2026-11-16T13:40:26.656390Z",
+            "role": "worker",
+            "schemaVersion": "RepositoryRootIdentityBaseline/v1"
+          }
+        },
+        {
+          "field": "capture.capturePointPin",
+          "pin": {
+            "bytes": 5537216,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/payload/capture-content-point.json",
+            "sha256": "4e05fcac7de9ddf5baf1cbee738f57d3be0d97f9493daa87fa80d79a0584cf2d"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.configurationPins[0]",
+          "pin": {
+            "bytes": 3573,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/original-configs/application-config.bin",
+            "sha256": "574cbc3f511cc0d45e2c30494c1cc6d060c22fc5b3848e49b660ff1248bcb789"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.configurationPins[1]",
+          "pin": {
+            "bytes": 13872,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/original-configs/application-dev.bin",
+            "sha256": "9683b6965b5fa7fad130d7c9d87e94c7209308fdd6141178c9b0e8f6b5055c1b"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.configurationPins[2]",
+          "pin": {
+            "bytes": 17739,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/original-configs/application-main.bin",
+            "sha256": "ad77f29d983c26de08899db66faa225405e97a486cf4fb14174932804d4b7110"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.configurationPins[3]",
+          "pin": {
+            "bytes": 2411,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/original-configs/config-capture-stage.json",
+            "sha256": "242f8e0ca8cc789d2abc9af91444df7174f67ea8a05a070d7f5dfc6daa5c4fb8"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.configurationPins[4]",
+          "pin": {
+            "bytes": 10974,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/original-configs/effective-runtime.bin",
+            "sha256": "25cc1aa78c8b17378f62db132d87dd1f9b0b0978062c6fa39d933798a2048660"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.configurationPins[5]",
+          "pin": {
+            "bytes": 2434,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/original-configs/frontend-config.bin",
+            "sha256": "a4c66f514d695700484181e1ec74ed755a6b2055eacab2d0826d79c72df33b78"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.configurationPins[6]",
+          "pin": {
+            "bytes": 10608,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/original-configs/runtime-compose.bin",
+            "sha256": "1d90d5be0307b7222e6cb1a52aa8ef1afefff56bc9cfe93bc6b342df51a5af9f"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.fileInventoryPin",
+          "pin": {
+            "bytes": 3364521,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/payload/capture-file-inventory.json",
+            "sha256": "437c8339be2ba1b407b02e0f99bb71cdb8d345ad9473b9a2608e54f171f42ee8"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.materialIndexPin",
+          "pin": {
+            "bytes": 3308,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/recovery-materials/index.json",
+            "sha256": "f5525f3eff14af8081984acd54bfb8a1af1e24702b7b3dd3555df7fdf59e28d0"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.objectContentIndexPin",
+          "pin": {
+            "bytes": 2270880,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/semantic-capture/object-content-index.json",
+            "sha256": "9b8572a84497df0b6969e3b4c1da35b9bc3532781949ef97bd6dd86e0f4a87fe"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.semanticSupplement.derivedInventoryPin",
+          "pin": {
+            "bytes": 1097,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/semantic-capture/derived.json",
+            "sha256": "404f1250ff5efc441dcf9894c6b015b723824f78452cc13234dd6408ee3dcdbe"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.semanticSupplement.objectExportReceiptPin",
+          "pin": {
+            "bytes": 431,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/semantic-capture/export-receipt.json",
+            "sha256": "591f380f94504e543e292338b8b223ccdb2c3c62c3e8519682d1b6c581ff4011"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.semanticSupplement.objectInventoryPin",
+          "pin": {
+            "bytes": 3178549,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/semantic-capture/versions.jsonl",
+            "sha256": "11f2bf48f2f8c50eedbee234ebfbbf798267cbe6895b4c7c2ae7abb6e0c02e38"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.semanticSupplement.referenceInventoryPin",
+          "pin": {
+            "bytes": 3725890,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/semantic-capture/references.json",
+            "sha256": "635e5293ec89ed301eaac5b49346a46501e1437f7eb473ccbbad9c6e3cb6f471"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.semanticSupplement.sourceScopePin",
+          "pin": {
+            "bytes": 329,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-scope.json",
+            "sha256": "cc84a9e48e97cdb35fe39c9ae1856a1370b4581cfd467c1d83af59ad83cfafe8"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "endpointHosts",
+            "schemaVersion",
+            "sourceIdentityPin"
+          ],
+          "safeScalars": {
+            "schemaVersion": "RecoverySourceScope/v1"
+          }
+        },
+        {
+          "field": "capture.semanticSupplement.versionPins[0]",
+          "pin": {
+            "bytes": 517,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/release-2026-11-16-18-57-58-r2/images.json",
+            "sha256": "3a57d62e302fa734e81c9f98c3577ffbf772d5c0d54edeec23a6c7e37d0aa600"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "images",
+            "releaseTag"
+          ],
+          "safeScalars": {
+            "releaseTag": "2026-11-16-18-57-58"
+          }
+        },
+        {
+          "field": "capture.database.expectedDataPin",
+          "pin": {
+            "bytes": 3720570,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-8d9db80d8f1e4531ba9a0234335d0dcb/payload/011-source-data.json",
+            "sha256": "d61a15c6c8c64b101f2f974ce8bd1efec9caa28b4e7ad1c5f790f0926d18ecb0"
+          },
+          "exists": false
+        }
+      ]
+    },
+    {
+      "operation": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+      "resultKeys": [
+        "action",
+        "actualExitCode",
+        "data",
+        "failureCode",
+        "finishedAt",
+        "message",
+        "operationId",
+        "originalResultPins",
+        "requestId",
+        "schemaVersion",
+        "startedAt",
+        "state"
+      ],
+      "resultState": "SUCCEEDED",
+      "actualExitCode": 0,
+      "resultDataKeys": [
+        "captureResultPin",
+        "logRefs",
+        "manifestPin",
+        "objectContentIndexPin",
+        "pointPin",
+        "readbackPin",
+        "recoveryMaterialPin",
+        "repositoryBindingPin",
+        "sourceScopePin",
+        "stagingCleanupPin"
+      ],
+      "captureKeys": [
+        "archiveFilePins",
+        "backupId",
+        "capturePointPin",
+        "configurationPins",
+        "database",
+        "fileInventoryPin",
+        "filePayloadPins",
+        "generationId",
+        "imagePins",
+        "materialIndexPin",
+        "objectContentIndexPin",
+        "parentRepositoryPointPin",
+        "pointType",
+        "recoveryPoint",
+        "schemaVersion",
+        "semanticSupplement",
+        "sourceDatabaseUuid",
+        "sourceIdentity"
+      ],
+      "database": {
+        "endPosition": {
+          "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+          "executedGtidSet": "",
+          "file": "binlog.000033",
+          "position": 121470445,
+          "serverVersion": "8.0.39"
+        },
+        "expectedDataPin": {
+          "bytes": 3596493,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/payload/source-affected-data.json",
+          "sha256": "e9bf4360bef9eaeeb739b562d552623541244bccb1dbc864abe3931c7d39baf9"
+        },
+        "method": "BINLOG_SQL",
+        "rawSqlPin": {
+          "bytes": 8095875,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/payload/database.sql.incremental.raw",
+          "sha256": "b2532967003be7b62e5bfab0285a26d0d218d9f2e1aca40f8454f3a5d31db738"
+        },
+        "sqlPin": {
+          "bytes": 826063,
+          "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/payload/database.sql.gz",
+          "sha256": "c18841ae90dda4f98604b47d4646fe88482ea37fbb3658915a2e10cf2f1cba9c"
+        },
+        "startPosition": {
+          "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+          "executedGtidSet": "",
+          "file": "binlog.000033",
+          "position": 117969259,
+          "serverVersion": "8.0.39"
+        }
+      },
+      "attachmentsKeys": [],
+      "semanticSupplementKeys": [
+        "derivedInventoryPin",
+        "objectExportReceiptPin",
+        "objectInventoryPin",
+        "referenceInventoryPin",
+        "sourceFingerprint",
+        "sourceScopePin",
+        "versionPins"
+      ],
+      "metadataPins": [
+        {
+          "field": "result.data.captureResultPin",
+          "pin": {
+            "bytes": 3139,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3fd0e96678ea868fcafab07db508c32392c09945a614949973f3d6ed4b090380/capture-query-374-output.json",
+            "sha256": "38e221d9e24f78e21d2fbe4cd89623d55f9a6639c847a4069d206ffab93a90bd"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "action",
+            "actualExitCode",
+            "data",
+            "failureCode",
+            "finishedAt",
+            "message",
+            "operationId",
+            "originalResultPins",
+            "requestId",
+            "schemaVersion",
+            "startedAt",
+            "state"
+          ],
+          "safeScalars": {
+            "action": "INCREMENTAL",
+            "actualExitCode": 0,
+            "failureCode": null,
+            "finishedAt": "2026-11-16T18:16:03.297412+00:00",
+            "message": "Capture completed; source restored; worker exited zero.",
+            "operationId": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+            "requestId": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+            "schemaVersion": "backup-restore-operation-result/v1",
+            "startedAt": "2026-11-16T17:41:34.214884+00:00",
+            "state": "SUCCEEDED"
+          }
+        },
+        {
+          "field": "result.data.logRefs[0]",
+          "pin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3fd0e96678ea868fcafab07db508c32392c09945a614949973f3d6ed4b090380/capture-query-374.stdout.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "exists": true,
+          "pinVerified": true
+        },
+        {
+          "field": "result.data.logRefs[1]",
+          "pin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3fd0e96678ea868fcafab07db508c32392c09945a614949973f3d6ed4b090380/capture-query-374.stderr.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "exists": true,
+          "pinVerified": true
+        },
+        {
+          "field": "result.data.logRefs[2]",
+          "pin": {
+            "bytes": 0,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/worker-stderr.log",
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "exists": true,
+          "pinVerified": true
+        },
+        {
+          "field": "result.data.manifestPin",
+          "pin": {
+            "bytes": 37690,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-3fd0e96678ea868fcafab07db508c32392c09945a614949973f3d6ed4b090380/.repository/manifest.json",
+            "sha256": "64a32d9766cc76d9e2d729a4cf2dfb5d48be9b7a3c54b2ca0c1c679186bc9b5f"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "backupId",
+            "commonRecoveryPoint",
+            "copyProtectionPin",
+            "createdAt",
+            "generationId",
+            "parentPointPins",
+            "payloadRefs",
+            "payloadTreePin",
+            "pointType",
+            "schemaVersion",
+            "sourceIdentityPin",
+            "toolPins",
+            "versionPins"
+          ],
+          "safeScalars": {
+            "backupId": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+            "commonRecoveryPoint": "sha256:9d106914764c9e72cee2dd992c5a8c991a4ea2a36759f9d63aec438bdaa37c4e",
+            "copyProtectionPin": null,
+            "createdAt": "2026-11-16T18:19:56.721104Z",
+            "generationId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "pointType": "INCREMENTAL",
+            "schemaVersion": "RepositoryManifest/v1"
+          }
+        },
+        {
+          "field": "result.data.objectContentIndexPin",
+          "pin": {
+            "bytes": 2419376,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-3fd0e96678ea868fcafab07db508c32392c09945a614949973f3d6ed4b090380/.repository/object-content-index.json",
+            "sha256": "e11f42f05343c44bca7d7b0c8b925ae20e0b7d8773b4cde69151744588bee1f2"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "backupId",
+            "changedContentSha256",
+            "contentPins",
+            "exportReceiptPin",
+            "generationId",
+            "inventoryPin",
+            "manifestPin",
+            "parentExportIndexPin",
+            "pointType",
+            "recoveryPoint",
+            "repositoryBound",
+            "schemaVersion",
+            "sourceIdentity"
+          ],
+          "safeScalars": {
+            "backupId": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+            "generationId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "pointType": "INCREMENTAL",
+            "recoveryPoint": "sha256:9d106914764c9e72cee2dd992c5a8c991a4ea2a36759f9d63aec438bdaa37c4e",
+            "repositoryBound": true,
+            "schemaVersion": "backup-capture-object-index/v1",
+            "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690"
+          }
+        },
+        {
+          "field": "result.data.pointPin",
+          "pin": {
+            "bytes": 37867,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-3fd0e96678ea868fcafab07db508c32392c09945a614949973f3d6ed4b090380/.repository/point.json",
+            "sha256": "050af04c0b715a97b66ea23c3d4eeb5982c7a466cd2ef71ca4ef9468e413f7a8"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "backupId",
+            "blockedReason",
+            "commonRecoveryPoint",
+            "controlledRestoreEligible",
+            "generationId",
+            "integrityState",
+            "manifestPin",
+            "originalExitEvidencePin",
+            "ownerCloseEvidencePin",
+            "parentPointPins",
+            "payloadRefs",
+            "pointType",
+            "readbackEvidencePin",
+            "rehearsalEligible",
+            "schemaVersion"
+          ],
+          "safeScalars": {
+            "backupId": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+            "blockedReason": "REPOSITORY_RECOVERY_NOT_RUN",
+            "commonRecoveryPoint": "sha256:9d106914764c9e72cee2dd992c5a8c991a4ea2a36759f9d63aec438bdaa37c4e",
+            "controlledRestoreEligible": false,
+            "generationId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "integrityState": "COMPLETE",
+            "pointType": "INCREMENTAL",
+            "rehearsalEligible": true,
+            "schemaVersion": "RepositoryPoint/v1"
+          }
+        },
+        {
+          "field": "result.data.readbackPin",
+          "pin": {
+            "bytes": 37519,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-3fd0e96678ea868fcafab07db508c32392c09945a614949973f3d6ed4b090380/.repository/readback-original.json",
+            "sha256": "7cbf6d0a416783c14169a0f17903fcf522b08a310c6e123f69bde89ed4ebbc1d"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "independentConnectionId",
+            "manifestPin",
+            "objectContentIndexPin",
+            "operationId",
+            "originalRecordsPin",
+            "payloadRefs",
+            "recoveryMaterialPin",
+            "schemaVersion",
+            "serverDurabilityVerified",
+            "sourceScopePin"
+          ],
+          "safeScalars": {
+            "independentConnectionId": "d0c98323-9752-4866-a5d6-16c8c287a1e1:592234447",
+            "operationId": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+            "schemaVersion": "RepositoryMinimumReadback/v1",
+            "serverDurabilityVerified": false
+          }
+        },
+        {
+          "field": "result.data.recoveryMaterialPin",
+          "pin": {
+            "bytes": 65793,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-3fd0e96678ea868fcafab07db508c32392c09945a614949973f3d6ed4b090380/.repository/recovery-material.json",
+            "sha256": "bc6d2b47e11fe6adaa0cc324552cd4203fc7eea44037c207fb495c73a2f227f7"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "database",
+            "derivedInventoryPin",
+            "manifestPin",
+            "objects",
+            "payloadPins",
+            "pointType",
+            "recoveryPoint",
+            "referenceInventoryPin",
+            "schemaVersion",
+            "sourceDatabaseUuid",
+            "sourceFingerprint",
+            "sourceScopePin",
+            "versionPins"
+          ],
+          "safeScalars": {
+            "pointType": "INCREMENTAL",
+            "recoveryPoint": "sha256:9d106914764c9e72cee2dd992c5a8c991a4ea2a36759f9d63aec438bdaa37c4e",
+            "schemaVersion": "RecoveryMaterial/v1",
+            "sourceDatabaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+            "sourceFingerprint": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690"
+          }
+        },
+        {
+          "field": "result.data.repositoryBindingPin",
+          "pin": {
+            "bytes": 1859,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-3fd0e96678ea868fcafab07db508c32392c09945a614949973f3d6ed4b090380/.repository/recovery-repository-binding.json",
+            "sha256": "0f18f065f21542d8675645ecf5d93a551b4ffeb5da234d3afa2d43ba9eb96c17"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "backupId",
+            "generationId",
+            "manifestPin",
+            "objectContentIndexPin",
+            "recoveryMaterialPin",
+            "repositoryPointPin",
+            "schemaVersion",
+            "sourceScopePin"
+          ],
+          "safeScalars": {
+            "backupId": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+            "generationId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "schemaVersion": "RecoveryRepositoryBinding/v1"
+          }
+        },
+        {
+          "field": "result.data.sourceScopePin",
+          "pin": {
+            "bytes": 329,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-scope.json",
+            "sha256": "cc84a9e48e97cdb35fe39c9ae1856a1370b4581cfd467c1d83af59ad83cfafe8"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "endpointHosts",
+            "schemaVersion",
+            "sourceIdentityPin"
+          ],
+          "safeScalars": {
+            "schemaVersion": "RecoverySourceScope/v1"
+          }
+        },
+        {
+          "field": "result.data.stagingCleanupPin",
+          "pin": {
+            "bytes": 17978,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/staging-cleanup.json",
+            "sha256": "ff65a705f27eb4bcd50e353d92b9616afbc137d2514ada2f604f2e71983189b4"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "deletedBytes",
+            "deletedFiles",
+            "files",
+            "finishedAt",
+            "operationId",
+            "root",
+            "schemaVersion",
+            "selectedPaths",
+            "state"
+          ],
+          "safeScalars": {
+            "deletedBytes": 2136393306,
+            "deletedFiles": 105,
+            "finishedAt": "2026-11-16T18:50:37.902973+00:00",
+            "operationId": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+            "root": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+            "schemaVersion": "OperationStagingCleanup/v1",
+            "state": "SUCCEEDED"
+          }
+        },
+        {
+          "field": "result.originalResultPins[0]",
+          "pin": {
+            "bytes": 218,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-3fd0e96678ea868fcafab07db508c32392c09945a614949973f3d6ed4b090380/.repository/original-exit.json",
+            "sha256": "44ca147afd116aae6af392eb30777762e790ff79172c02efcd40e9546e880a1a"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "actualExitCode",
+            "at",
+            "operationId",
+            "pid",
+            "processTerminated",
+            "schemaVersion",
+            "state"
+          ],
+          "safeScalars": {
+            "actualExitCode": 0,
+            "at": "2026-11-16T18:16:03.552897Z",
+            "operationId": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+            "pid": 3914,
+            "processTerminated": true,
+            "schemaVersion": "RepositoryMinimumChildTerminal/v1",
+            "state": "EXITED"
+          }
+        },
+        {
+          "field": "result.originalResultPins[1]",
+          "pin": {
+            "bytes": 37519,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-3fd0e96678ea868fcafab07db508c32392c09945a614949973f3d6ed4b090380/.repository/readback-original.json",
+            "sha256": "7cbf6d0a416783c14169a0f17903fcf522b08a310c6e123f69bde89ed4ebbc1d"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "independentConnectionId",
+            "manifestPin",
+            "objectContentIndexPin",
+            "operationId",
+            "originalRecordsPin",
+            "payloadRefs",
+            "recoveryMaterialPin",
+            "schemaVersion",
+            "serverDurabilityVerified",
+            "sourceScopePin"
+          ],
+          "safeScalars": {
+            "independentConnectionId": "d0c98323-9752-4866-a5d6-16c8c287a1e1:592234447",
+            "operationId": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+            "schemaVersion": "RepositoryMinimumReadback/v1",
+            "serverDurabilityVerified": false
+          }
+        },
+        {
+          "field": "result.originalResultPins[2]",
+          "pin": {
+            "bytes": 788,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/repository-operations/3fd0e96678ea868fcafab07db508c32392c09945a614949973f3d6ed4b090380/root-identity-worker-baseline.json",
+            "sha256": "12b656a809688f32f2841c828ad9627868df90dc1afc1ca334882c6d863bddd9"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "pid",
+            "recordedAt",
+            "role",
+            "roots",
+            "schemaVersion"
+          ],
+          "safeScalars": {
+            "pid": 5067,
+            "recordedAt": "2026-11-16T17:10:28.479950Z",
+            "role": "worker",
+            "schemaVersion": "RepositoryRootIdentityBaseline/v1"
+          }
+        },
+        {
+          "field": "capture.capturePointPin",
+          "pin": {
+            "bytes": 3380097,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/payload/capture-content-point.json",
+            "sha256": "1eb127d183e74e0fcabf2fe8239e594d72e0f8784ae2339802fa59ff2c322f96"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.configurationPins[0]",
+          "pin": {
+            "bytes": 3573,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/original-configs/application-config.bin",
+            "sha256": "574cbc3f511cc0d45e2c30494c1cc6d060c22fc5b3848e49b660ff1248bcb789"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.configurationPins[1]",
+          "pin": {
+            "bytes": 13872,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/original-configs/application-dev.bin",
+            "sha256": "9683b6965b5fa7fad130d7c9d87e94c7209308fdd6141178c9b0e8f6b5055c1b"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.configurationPins[2]",
+          "pin": {
+            "bytes": 17739,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/original-configs/application-main.bin",
+            "sha256": "ad77f29d983c26de08899db66faa225405e97a486cf4fb14174932804d4b7110"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.configurationPins[3]",
+          "pin": {
+            "bytes": 2411,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/original-configs/config-capture-stage.json",
+            "sha256": "242f8e0ca8cc789d2abc9af91444df7174f67ea8a05a070d7f5dfc6daa5c4fb8"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.configurationPins[4]",
+          "pin": {
+            "bytes": 10974,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/original-configs/effective-runtime.bin",
+            "sha256": "25cc1aa78c8b17378f62db132d87dd1f9b0b0978062c6fa39d933798a2048660"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.configurationPins[5]",
+          "pin": {
+            "bytes": 2434,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/original-configs/frontend-config.bin",
+            "sha256": "a4c66f514d695700484181e1ec74ed755a6b2055eacab2d0826d79c72df33b78"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.configurationPins[6]",
+          "pin": {
+            "bytes": 10608,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/original-configs/runtime-compose.bin",
+            "sha256": "1d90d5be0307b7222e6cb1a52aa8ef1afefff56bc9cfe93bc6b342df51a5af9f"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.fileInventoryPin",
+          "pin": {
+            "bytes": 3367476,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/payload/capture-file-inventory.json",
+            "sha256": "9de7bb778cbd8db02561b1b2208e3ff4a89f9e5010fc3b2e3d45b62a0e2d16ef"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.materialIndexPin",
+          "pin": {
+            "bytes": 3308,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/recovery-materials/index.json",
+            "sha256": "122ff0569acded6fd5764d5cfbce71c0837c3d1d79e6e8ceafcc31d91fb284b5"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.objectContentIndexPin",
+          "pin": {
+            "bytes": 2418843,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/semantic-capture/object-content-index.json",
+            "sha256": "c9921123b9f3e3317115cce9cff99048b3d69f553570823107e5b8c703ce3b9b"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.parentRepositoryPointPin",
+          "pin": {
+            "bytes": 6263481,
+            "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-a38667e8f70c6b3f3ff7075d0e63e8fb1ac300363abf3eae2dcc1fdc196f42d4/.repository/point.json",
+            "sha256": "9b4e97d77b6bffd8e6bc1959c5e58e764599c53fe39d76e6f6e887adfb55a622"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "backupId",
+            "blockedReason",
+            "commonRecoveryPoint",
+            "controlledRestoreEligible",
+            "generationId",
+            "integrityState",
+            "manifestPin",
+            "originalExitEvidencePin",
+            "ownerCloseEvidencePin",
+            "parentPointPins",
+            "payloadRefs",
+            "pointType",
+            "readbackEvidencePin",
+            "rehearsalEligible",
+            "schemaVersion"
+          ],
+          "safeScalars": {
+            "backupId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "blockedReason": "REPOSITORY_RECOVERY_NOT_RUN",
+            "commonRecoveryPoint": "sha256:b0c39b0f61901445514c5a5d0618e6a1a8e1873ab44b2245bf3690964508c2bf",
+            "controlledRestoreEligible": false,
+            "generationId": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+            "integrityState": "COMPLETE",
+            "pointType": "FULL",
+            "rehearsalEligible": true,
+            "schemaVersion": "RepositoryPoint/v1"
+          }
+        },
+        {
+          "field": "capture.semanticSupplement.derivedInventoryPin",
+          "pin": {
+            "bytes": 1097,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/semantic-capture/derived.json",
+            "sha256": "59b9f7a334433450e1e9a077dfee1d04eb4e70321dc29bc389ba44878320ec82"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.semanticSupplement.objectExportReceiptPin",
+          "pin": {
+            "bytes": 431,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/semantic-capture/export-receipt.json",
+            "sha256": "591f380f94504e543e292338b8b223ccdb2c3c62c3e8519682d1b6c581ff4011"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.semanticSupplement.objectInventoryPin",
+          "pin": {
+            "bytes": 3178549,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/semantic-capture/versions.jsonl",
+            "sha256": "11f2bf48f2f8c50eedbee234ebfbbf798267cbe6895b4c7c2ae7abb6e0c02e38"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.semanticSupplement.referenceInventoryPin",
+          "pin": {
+            "bytes": 3725890,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/semantic-capture/references.json",
+            "sha256": "d0725d4f9cdbbad1fab9ed2ff6d1f033a8017da881186c2142c1b63e364ca5f1"
+          },
+          "exists": false
+        },
+        {
+          "field": "capture.semanticSupplement.sourceScopePin",
+          "pin": {
+            "bytes": 329,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-scope.json",
+            "sha256": "cc84a9e48e97cdb35fe39c9ae1856a1370b4581cfd467c1d83af59ad83cfafe8"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "endpointHosts",
+            "schemaVersion",
+            "sourceIdentityPin"
+          ],
+          "safeScalars": {
+            "schemaVersion": "RecoverySourceScope/v1"
+          }
+        },
+        {
+          "field": "capture.semanticSupplement.versionPins[0]",
+          "pin": {
+            "bytes": 517,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/release-2026-11-16-18-57-58-r2/images.json",
+            "sha256": "3a57d62e302fa734e81c9f98c3577ffbf772d5c0d54edeec23a6c7e37d0aa600"
+          },
+          "exists": true,
+          "pinVerified": true,
+          "keys": [
+            "images",
+            "releaseTag"
+          ],
+          "safeScalars": {
+            "releaseTag": "2026-11-16-18-57-58"
+          }
+        },
+        {
+          "field": "capture.database.expectedDataPin",
+          "pin": {
+            "bytes": 3596493,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/payload/source-affected-data.json",
+            "sha256": "e9bf4360bef9eaeeb739b562d552623541244bccb1dbc864abe3931c7d39baf9"
+          },
+          "exists": false
+        }
+      ]
+    }
+  ]
+}

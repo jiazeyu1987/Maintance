@@ -1,0 +1,100 @@
+{
+  "serverWrites": false,
+  "observedAt": "2026-11-17T05:38:23.501853+00:00",
+  "sourceCurrentTablesNotInFrozenPoint": [
+    [
+      "mes_pro_loss_reason",
+      "BASE TABLE",
+      "2026-11-17 12:59:54"
+    ],
+    [
+      "mes_pro_loss_reason_sequence",
+      "BASE TABLE",
+      "2026-11-17 12:59:54"
+    ]
+  ],
+  "frozenTablesNotInCurrentSource": [],
+  "configurationReferences": [
+    {
+      "reference": {
+        "bytes": 6332,
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/runtime.env",
+        "sha256": "c97b7f9a413fa77983e3218420f887c19918301a2835762cc80f96a973e6d9a4"
+      },
+      "role": "application-config"
+    },
+    {
+      "reference": {
+        "bytes": 10608,
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/docker-compose.yml",
+        "sha256": "1d90d5be0307b7222e6cb1a52aa8ef1afefff56bc9cfe93bc6b342df51a5af9f"
+      },
+      "role": "runtime-compose"
+    },
+    {
+      "reference": {
+        "bytes": 2434,
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/source-nginx.conf",
+        "sha256": "a4c66f514d695700484181e1ec74ed755a6b2055eacab2d0826d79c72df33b78"
+      },
+      "role": "frontend-config"
+    },
+    {
+      "reference": {
+        "bytes": 13872,
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/application-dev.yaml",
+        "sha256": "9683b6965b5fa7fad130d7c9d87e94c7209308fdd6141178c9b0e8f6b5055c1b"
+      },
+      "role": "application-dev"
+    },
+    {
+      "reference": {
+        "bytes": 17739,
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/application.yaml",
+        "sha256": "ad77f29d983c26de08899db66faa225405e97a486cf4fb14174932804d4b7110"
+      },
+      "role": "application-main"
+    },
+    {
+      "reference": {
+        "bytes": 12883,
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/private/backup-20261103-current/runtime-effective.json",
+        "sha256": "3eacbf0f281929f7052553a2716ab15b6400447667520aec30b6d9fff6139517"
+      },
+      "role": "effective-runtime"
+    }
+  ],
+  "capturedRedisDatabase": 1,
+  "currentRedisKeyspace": [
+    "# Keyspace",
+    "db1:keys=109,expires=109,avg_ttl=1952734,subexpiry=0"
+  ],
+  "currentBackendRedisDatabaseEnv": [],
+  "externalMountedData": [
+    {
+      "path": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/runtime",
+      "files": 2,
+      "bytes": 618
+    },
+    {
+      "path": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/uploads",
+      "files": 8600,
+      "bytes": 1038241906
+    },
+    {
+      "path": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/results",
+      "files": 18448,
+      "bytes": 1967855832
+    },
+    {
+      "path": "/var/lib/docker/fenbeitong-release/data",
+      "files": 4,
+      "bytes": 75788418
+    },
+    {
+      "path": "/opt/intruoyi/runtime/website/dist",
+      "files": 35,
+      "bytes": 7153171
+    }
+  ]
+}

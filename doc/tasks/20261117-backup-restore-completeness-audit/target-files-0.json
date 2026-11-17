@@ -1,0 +1,112 @@
+{
+  "serverWrites": false,
+  "observedAt": "2026-11-17T05:26:07.817078+00:00",
+  "batch": 0,
+  "seconds": 14.15,
+  "expectedTotalFiles": 9413,
+  "selectedFiles": 2000,
+  "contentChecked": 1957,
+  "bytesHashed": 1209784963,
+  "bucketCheckedCounts": {
+    ".minio.sys": 28,
+    "edhr-protected-storage-20260601": 897,
+    "yudao": 1032
+  },
+  "completeBatch": true,
+  "missingFiles": [
+    ".minio.sys/buckets/.heal/mrf/list.bin",
+    ".minio.sys/tmp/.trash/06e9578b-ac3b-4f61-a765-f2f56c372a4f/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/1a4f16ad-8f92-4e24-bcf0-cd3290fdb98a/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/1af4399c-9a9b-491f-81e7-2d5d190cc3b9/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/1bc81679-a901-4f01-946e-4193baf686c6/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/1e60ef40-efbb-4fba-a5f4-d36071d51517/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/2473acef-f3b1-4ced-ac6b-3c182cfdd5d3/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/28fe068e-0323-48ef-b6c2-c39969eaef57/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/2c974052-45a4-4608-be75-63417a0c08f0/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/2f0c3c56-b819-4916-a5ec-6fa9b1ce4c07/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/3bab7fe3-cc40-42c7-a5b1-3d2419bd6dc4/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/3da233ac-d9f6-4f73-9066-9302f71f7df5/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/41b6c1aa-cf33-4fad-a779-35b6b896fff4/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/55422bd2-1fa9-44b4-984e-40c8ef81656f/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/63ab410f-3f13-4e71-8ee4-fe4a1a1156ce/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/64409b17-74d5-4f7c-9ecf-c3ad00aeb578/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/6552d28c-49b8-45df-a261-d258dcf66bc2/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/7135d6c8-68f0-4e35-8e8f-4310fdc1ac76/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/8f2490ac-854b-4091-86f1-ab19d0161b71/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/91230505-b173-463c-b0d1-9567d307dc1c/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/92074ce8-c335-478a-a773-4e3af6572cea/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/999bc005-60e0-4d88-a184-61eeee070f12/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/a01d0a83-3c8e-4102-b39f-9156badcc347/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/a36250a1-d5ec-4366-acfa-5cdcb213e642/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/a5fd5af0-14b2-4503-91e9-aca8dc9fa7bf/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/a887bb28-2500-4ae4-8ae6-6a6ac6b145ab/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/ac9a43f7-6c62-45d5-b937-27920bea54cb/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/b7b906b9-6a31-42e5-985f-cd1b02810975/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/b8331156-6076-4864-905a-cabd6c0a20ea/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/bf760c4a-10ba-493d-acb4-0581035cc2f5/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/bfb28d3e-5f1f-4ae3-a310-d7e66621d419/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/c1bfda00-bc85-44fb-b844-15736bf62723/block-0.s2/xl.meta",
+    ".minio.sys/tmp/.trash/c1cad6a7-8138-43c9-aefe-4301c857afb2/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/c694692b-0cb9-4afe-b337-b6d90ad9914f/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/cd070ba6-2f77-479f-8b14-56f8967032fa/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/d2aa49a2-2137-4b34-acdb-12431dac2c62/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/d2d3c860-e2f6-4e2a-b89e-96da2fde8ba9/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/db5e025c-a61f-4f90-ad92-e6fbf7158727/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/ea87a9b2-7f56-4776-be50-927e422b87ba/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/eb3dd43b-0683-4745-8275-bbcf3758ea52/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/f666d5b8-c7a8-40d1-be51-41b7b74bcda5/xl.meta.bkp",
+    ".minio.sys/tmp/.trash/f9aff13f-1690-4809-8741-c636bc9738ce/xl.meta.bkp",
+    ".minio.sys/tmp/3f79eb27-fe39-4acf-ab34-2aba2417a6a9"
+  ],
+  "sizeDifferences": [
+    {
+      "name": ".minio.sys/buckets/.usage-cache.bin.bkp/xl.meta",
+      "expected": 736,
+      "actual": 739,
+      "regularFile": true
+    },
+    {
+      "name": ".minio.sys/buckets/.usage-cache.bin/xl.meta",
+      "expected": 736,
+      "actual": 739,
+      "regularFile": true
+    },
+    {
+      "name": ".minio.sys/buckets/edhr-protected-storage-20260601/.usage-cache.bin.bkp/xl.meta",
+      "expected": 712,
+      "actual": 716,
+      "regularFile": true
+    },
+    {
+      "name": ".minio.sys/buckets/edhr-protected-storage-20260601/.usage-cache.bin/xl.meta",
+      "expected": 712,
+      "actual": 716,
+      "regularFile": true
+    },
+    {
+      "name": ".minio.sys/buckets/yudao/.usage-cache.bin.bkp/xl.meta",
+      "expected": 1908,
+      "actual": 1931,
+      "regularFile": true
+    },
+    {
+      "name": ".minio.sys/buckets/yudao/.usage-cache.bin/xl.meta",
+      "expected": 1908,
+      "actual": 1931,
+      "regularFile": true
+    }
+  ],
+  "hashDifferences": [
+    ".minio.sys/buckets/.bloomcycle.bin/xl.meta",
+    ".minio.sys/buckets/.usage-cache.bin.bkp/xl.meta",
+    ".minio.sys/buckets/.usage-cache.bin/xl.meta",
+    ".minio.sys/buckets/.usage.json/xl.meta",
+    ".minio.sys/buckets/edhr-protected-storage-20260601/.usage-cache.bin.bkp/xl.meta",
+    ".minio.sys/buckets/edhr-protected-storage-20260601/.usage-cache.bin/xl.meta",
+    ".minio.sys/buckets/edhr-protected-storage/.usage-cache.bin.bkp/xl.meta",
+    ".minio.sys/buckets/edhr-protected-storage/.usage-cache.bin/xl.meta",
+    ".minio.sys/buckets/yudao/.usage-cache.bin.bkp/xl.meta",
+    ".minio.sys/buckets/yudao/.usage-cache.bin/xl.meta"
+  ],
+  "chainPayloadCoverageVerified": true
+}

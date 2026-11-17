@@ -1,0 +1,91 @@
+{
+  "serverWrites": false,
+  "observedAt": "2026-11-17T05:42:24.846689+00:00",
+  "batch": 3,
+  "seconds": 5.94,
+  "tablesChecked": 16,
+  "matchingTables": 16,
+  "differences": {},
+  "observations": {
+    "showroom_release_asset_ref": {
+      "rows": 37912,
+      "jsonNodes": 0,
+      "multisetSha256": "9ea9b18a6d7c6b166e8d830872834fd4e3f4a3fa0fa8c6ce57ad848c567db54c"
+    },
+    "showroom_release_document": {
+      "rows": 12160,
+      "jsonNodes": 0,
+      "multisetSha256": "8da74fa08684a8935853827c2fd785fcda75697794804d2193bed367ec01d4dc"
+    },
+    "showroom_release_legacy_projection": {
+      "rows": 68,
+      "jsonNodes": 0,
+      "multisetSha256": "763ae56017f570eb72b085dba3d821ca7d5b1949d4a206bef941c45743472e33"
+    },
+    "showroom_release_pointer": {
+      "rows": 4,
+      "jsonNodes": 0,
+      "multisetSha256": "b50703fffc543a25a51599b677c215e833ca9f4e3d10a4d6f8f357d5a534dbdc"
+    },
+    "showroom_release_source_snapshot": {
+      "rows": 68,
+      "jsonNodes": 0,
+      "multisetSha256": "15c242712f6451f399ffbb92075a0f9eb565f0071054f878ca223385eab4a84c"
+    },
+    "showroom_release_tombstone": {
+      "rows": 12588,
+      "jsonNodes": 0,
+      "multisetSha256": "582a1d390a3e442aeac7bd4d94ad6a1ea3897dd3bed44152fc1fc84c236fed37"
+    },
+    "showroom_version_audit": {
+      "rows": 32271,
+      "jsonNodes": 64542,
+      "multisetSha256": "8ec11b84c4a789b5d49eef07f495efd4203fa224afd7e543ff3ca3684132e0f8"
+    },
+    "showroom_version_bundle": {
+      "rows": 2370,
+      "jsonNodes": 0,
+      "multisetSha256": "55105e337c504e677b28a4e716b9758709a01e16c6396ce4a32a4699afcd7bc4"
+    },
+    "srm_code_rule": {
+      "rows": 42,
+      "jsonNodes": 0,
+      "multisetSha256": "b06d29f779c73a88243ea0c1a29ff4eba31f57565402245df0b42331b52d76db"
+    },
+    "srm_code_rule_counter": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_framework_agreement": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_framework_agreement_line": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_framework_plan": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_framework_plan_line": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_nas_locator_entry": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    },
+    "srm_nas_locator_refresh_task": {
+      "rows": 0,
+      "jsonNodes": 0,
+      "multisetSha256": "75b8071df383632a675b2b9b8c8b14f6677630b2bd9b7e126a883849a9f2e446"
+    }
+  }
+}

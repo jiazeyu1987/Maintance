@@ -1,0 +1,399 @@
+{
+  "serverWrites": false,
+  "minioDataMount": "/data",
+  "materials": [
+    {
+      "inventoryExample": [
+        [
+          ".minio.sys",
+          {
+            "kind": "directory"
+          }
+        ],
+        [
+          ".minio.sys/buckets",
+          {
+            "kind": "directory"
+          }
+        ],
+        [
+          ".minio.sys/buckets/.bloomcycle.bin",
+          {
+            "kind": "directory"
+          }
+        ],
+        [
+          ".minio.sys/buckets/.bloomcycle.bin/xl.meta",
+          {
+            "bytes": 745,
+            "kind": "file",
+            "sha256": "96959498c01ba0e6dfdebf737fd125081ce097238e94f92f2c6f8eb7ef5bbe48"
+          }
+        ]
+      ],
+      "pointInventoryExample": [
+        [
+          ".minio.sys",
+          {
+            "kind": "directory"
+          }
+        ],
+        [
+          ".minio.sys/buckets",
+          {
+            "kind": "directory"
+          }
+        ],
+        [
+          ".minio.sys/buckets/.bloomcycle.bin",
+          {
+            "kind": "directory"
+          }
+        ],
+        [
+          ".minio.sys/buckets/.bloomcycle.bin/xl.meta",
+          {
+            "bytes": 745,
+            "kind": "file",
+            "sha256": "96959498c01ba0e6dfdebf737fd125081ce097238e94f92f2c6f8eb7ef5bbe48"
+          }
+        ]
+      ],
+      "physicalFileCount": 9402,
+      "physicalBytes": 9656177973,
+      "derived": null,
+      "configurationBindings": []
+    },
+    {
+      "inventoryExample": [
+        [
+          ".minio.sys",
+          {
+            "kind": "directory"
+          }
+        ],
+        [
+          ".minio.sys/buckets",
+          {
+            "kind": "directory"
+          }
+        ],
+        [
+          ".minio.sys/buckets/.bloomcycle.bin",
+          {
+            "kind": "directory"
+          }
+        ],
+        [
+          ".minio.sys/buckets/.bloomcycle.bin/xl.meta",
+          {
+            "bytes": 745,
+            "kind": "file",
+            "sha256": "90045e4bd1de52c5ef8d4744cc9341f0a432a7c4830128e0999e4c31b43dc80d"
+          }
+        ]
+      ],
+      "pointInventoryExample": [
+        [
+          ".minio.sys",
+          {
+            "kind": "directory"
+          }
+        ],
+        [
+          ".minio.sys/buckets",
+          {
+            "kind": "directory"
+          }
+        ],
+        [
+          ".minio.sys/buckets/.bloomcycle.bin",
+          {
+            "kind": "directory"
+          }
+        ],
+        [
+          ".minio.sys/buckets/.bloomcycle.bin/xl.meta",
+          {
+            "bytes": 745,
+            "kind": "file",
+            "sha256": "90045e4bd1de52c5ef8d4744cc9341f0a432a7c4830128e0999e4c31b43dc80d"
+          }
+        ]
+      ],
+      "physicalFileCount": 52,
+      "physicalBytes": 544407,
+      "derived": null,
+      "configurationBindings": []
+    }
+  ],
+  "physical-comparison.json": {
+    "exactVersionIdentityVerified": false,
+    "payloadContentVerified": false,
+    "productionEvidence": false,
+    "state": "NOT_PERFORMED"
+  },
+  "physical-step-000-readback.json": {
+    "changedFileCount": 9402,
+    "completeTreeReadback": false,
+    "deletedPathCount": 0
+  },
+  "physical-step-001-readback.json": {
+    "changedFileCount": 52,
+    "completeTreeReadback": false,
+    "deletedPathCount": 61
+  },
+  "bucket-permissions.json": {
+    "applicationWriteProtectionVerified": false,
+    "buckets": [
+      "yudao",
+      "edhr-protected-storage",
+      "edhr-protected-storage-20260601"
+    ],
+    "observations": [
+      {
+        "acl": {
+          "httpStatus": 200,
+          "rawBytes": 309,
+          "rawSha256": "2cda5cee90ac1b796a1214c6f7857a160ddfb48faf5018adc8f96cf0feabf383"
+        },
+        "bucket": "yudao",
+        "dependencies": [
+          {
+            "bucket": "yudao",
+            "configuration": "lifecycle",
+            "errorCode": "NoSuchLifecycleConfiguration",
+            "httpStatus": 404,
+            "rawBytes": 333,
+            "rawSha256": "b9e125f8abf02a422a519e05883a70d0c1d73a1dcb07a8f43f8a20e063199b7e"
+          },
+          {
+            "bucket": "yudao",
+            "configuration": "replication",
+            "errorCode": "ReplicationConfigurationNotFoundError",
+            "httpStatus": 404,
+            "rawBytes": 343,
+            "rawSha256": "a4593d19a4e89640af43d3b76bea45974188b9e2cfe0790f1e7e3ba42b528fd7"
+          },
+          {
+            "bucket": "yudao",
+            "configuration": "encryption",
+            "errorCode": "ServerSideEncryptionConfigurationNotFoundError",
+            "httpStatus": 404,
+            "rawBytes": 363,
+            "rawSha256": "93b817112bc08ec277f6eb3bc2c4c5ba6c51d67353480cf7da51d2749044e07c"
+          }
+        ],
+        "multipart": {
+          "bucket": "yudao",
+          "httpStatus": 200,
+          "isTruncated": false,
+          "maxUploads": 1,
+          "rawBytes": 369,
+          "rawSha256": "a87ced6e105f1c60613121b70e6dcd5cb2080ba4d986ae45a8405d85900b6f7f",
+          "scope": "WHOLE_BUCKET_FROM_START",
+          "state": "NO_MULTIPART_UPLOAD_OBSERVED",
+          "uploadCount": 0
+        },
+        "notification": {
+          "bucket": "yudao",
+          "configuration": "notification",
+          "externalNotificationEntries": 0,
+          "httpStatus": 200,
+          "rawBytes": 103,
+          "rawSha256": "6fdb259ffbe137b6fcb0d2ed1cfa819d95db3ee125ea60cb22a13719ee9560b3"
+        },
+        "objectLock": {
+          "bucket": "yudao",
+          "configuration": "object-lock",
+          "enabled": false,
+          "errorCode": "ObjectLockConfigurationNotFoundError",
+          "httpStatus": 404,
+          "rawBytes": 355,
+          "rawSha256": "5f64bda6d4a9e650711fcfb4737b8048b669d83231b24c6ccc92a385b5911987"
+        },
+        "policy": {
+          "approvedRawSha256": "dbdd6bb689be186f5681e6198f935d19f2e2c17e44bb37470a167b34e1361a08",
+          "comparison": "APPROVED_DOCUMENT_ACTION_ORDER_INSENSITIVE",
+          "httpStatus": 200,
+          "rawBytes": 274,
+          "rawSha256": "dbdd6bb689be186f5681e6198f935d19f2e2c17e44bb37470a167b34e1361a08"
+        },
+        "versioning": {
+          "bucket": "yudao",
+          "configuration": "versioning",
+          "httpStatus": 200,
+          "rawBytes": 99,
+          "rawSha256": "801f0f2fa4e4e8f9d26b62eb0dba032694f388be8d7d40b7058d89ab28553c6c",
+          "status": "UNVERSIONED"
+        }
+      },
+      {
+        "acl": {
+          "httpStatus": 200,
+          "rawBytes": 309,
+          "rawSha256": "2cda5cee90ac1b796a1214c6f7857a160ddfb48faf5018adc8f96cf0feabf383"
+        },
+        "bucket": "edhr-protected-storage",
+        "dependencies": [
+          {
+            "bucket": "edhr-protected-storage",
+            "configuration": "lifecycle",
+            "errorCode": "NoSuchLifecycleConfiguration",
+            "httpStatus": 404,
+            "rawBytes": 367,
+            "rawSha256": "d21a158e5f41448f16c9c12074306672685befb04a3d0ba717d005c47a24be0d"
+          },
+          {
+            "bucket": "edhr-protected-storage",
+            "configuration": "replication",
+            "errorCode": "ReplicationConfigurationNotFoundError",
+            "httpStatus": 404,
+            "rawBytes": 377,
+            "rawSha256": "83088566e3e1e92223f6994cf3230e11ffeae52d8d59291df3d77b43e3d80ccc"
+          },
+          {
+            "bucket": "edhr-protected-storage",
+            "configuration": "encryption",
+            "errorCode": "ServerSideEncryptionConfigurationNotFoundError",
+            "httpStatus": 404,
+            "rawBytes": 397,
+            "rawSha256": "273f9500531d9891f3397b5f673276c88807beb322ffc526e429ea9094143c44"
+          }
+        ],
+        "multipart": {
+          "bucket": "edhr-protected-storage",
+          "httpStatus": 200,
+          "isTruncated": false,
+          "maxUploads": 1,
+          "rawBytes": 386,
+          "rawSha256": "f6594bd7dee8c1f3a939d10b88f0208c63d659f9c7ce0ab4bd0a19e37869714f",
+          "scope": "WHOLE_BUCKET_FROM_START",
+          "state": "NO_MULTIPART_UPLOAD_OBSERVED",
+          "uploadCount": 0
+        },
+        "notification": {
+          "bucket": "edhr-protected-storage",
+          "configuration": "notification",
+          "externalNotificationEntries": 0,
+          "httpStatus": 200,
+          "rawBytes": 103,
+          "rawSha256": "6fdb259ffbe137b6fcb0d2ed1cfa819d95db3ee125ea60cb22a13719ee9560b3"
+        },
+        "objectLock": {
+          "bucket": "edhr-protected-storage",
+          "configuration": "object-lock",
+          "enabled": true,
+          "httpStatus": 200,
+          "rawBytes": 145,
+          "rawSha256": "df6ac0549ea2798014d483cff942654be46743dad3474af3b679ca143807ac99"
+        },
+        "policy": {
+          "errorCode": "NoSuchBucketPolicy",
+          "httpStatus": 404,
+          "rawBytes": 347,
+          "rawSha256": "2c213915f98fca3b658f6f450d10cf922a76deae958eeb8eb44ed974c902a25e"
+        },
+        "versioning": {
+          "bucket": "edhr-protected-storage",
+          "configuration": "versioning",
+          "httpStatus": 200,
+          "rawBytes": 123,
+          "rawSha256": "482d4e510b5cdcf0bbf3a044e82832dc711f4f28757a6c06eb21758282a73ef7",
+          "status": "Enabled"
+        }
+      },
+      {
+        "acl": {
+          "httpStatus": 200,
+          "rawBytes": 309,
+          "rawSha256": "2cda5cee90ac1b796a1214c6f7857a160ddfb48faf5018adc8f96cf0feabf383"
+        },
+        "bucket": "edhr-protected-storage-20260601",
+        "dependencies": [
+          {
+            "bucket": "edhr-protected-storage-20260601",
+            "configuration": "lifecycle",
+            "errorCode": "NoSuchLifecycleConfiguration",
+            "httpStatus": 404,
+            "rawBytes": 385,
+            "rawSha256": "c693ddc2fa4a26dc192a8b55c0985f6ad3512394e631764606dbaba892b30128"
+          },
+          {
+            "bucket": "edhr-protected-storage-20260601",
+            "configuration": "replication",
+            "errorCode": "ReplicationConfigurationNotFoundError",
+            "httpStatus": 404,
+            "rawBytes": 395,
+            "rawSha256": "6f135bfa53e62170e280006e7bc67388500151348cbad08cc165824e34b938e6"
+          },
+          {
+            "bucket": "edhr-protected-storage-20260601",
+            "configuration": "encryption",
+            "errorCode": "ServerSideEncryptionConfigurationNotFoundError",
+            "httpStatus": 404,
+            "rawBytes": 415,
+            "rawSha256": "b7b08f4dd16c6c36e5ee40c46c0a9e10280d912dcce90a90f649771fde6c19e5"
+          }
+        ],
+        "multipart": {
+          "bucket": "edhr-protected-storage-20260601",
+          "httpStatus": 200,
+          "isTruncated": false,
+          "maxUploads": 1,
+          "rawBytes": 395,
+          "rawSha256": "de048705cc4fc798fde237f5b6fa0aa15449226050a806b5e6bf1ea3b6f30793",
+          "scope": "WHOLE_BUCKET_FROM_START",
+          "state": "NO_MULTIPART_UPLOAD_OBSERVED",
+          "uploadCount": 0
+        },
+        "notification": {
+          "bucket": "edhr-protected-storage-20260601",
+          "configuration": "notification",
+          "externalNotificationEntries": 0,
+          "httpStatus": 200,
+          "rawBytes": 103,
+          "rawSha256": "6fdb259ffbe137b6fcb0d2ed1cfa819d95db3ee125ea60cb22a13719ee9560b3"
+        },
+        "objectLock": {
+          "bucket": "edhr-protected-storage-20260601",
+          "configuration": "object-lock",
+          "enabled": true,
+          "httpStatus": 200,
+          "rawBytes": 184,
+          "rawSha256": "ed85d5af342f8674d15a62413eb3a44fb5d1b9691c25707e2d1a188eb29fb44e"
+        },
+        "policy": {
+          "errorCode": "NoSuchBucketPolicy",
+          "httpStatus": 404,
+          "rawBytes": 365,
+          "rawSha256": "0216848a936dc05e74ef7376439fd81da761517ade1968c2575a38b39456649c"
+        },
+        "versioning": {
+          "bucket": "edhr-protected-storage-20260601",
+          "configuration": "versioning",
+          "httpStatus": 200,
+          "rawBytes": 123,
+          "rawSha256": "482d4e510b5cdcf0bbf3a044e82832dc711f4f28757a6c06eb21758282a73ef7",
+          "status": "Enabled"
+        }
+      }
+    ],
+    "schemaVersion": "RecoveryBucketProtectionObservation/v1",
+    "state": "CONFIGURATION_MATCHED"
+  },
+  "redisReadback": {
+    "absoluteExpiryVerified": true,
+    "database": 1,
+    "expiredBeforeRestoreCount": 0,
+    "independentlyVerifiedKeyCount": 0,
+    "restoredKeyCount": 0,
+    "schemaVersion": "RedisDumpRestoreReadback/v1",
+    "snapshotPin": {
+      "bytes": 211,
+      "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/nas/Backup/BackupPackage/spug-intruoyi57-remediation-20261024/safe/57/archives/prod-standard-3fd0e96678ea868fcafab07db508c32392c09945a614949973f3d6ed4b090380/semantic-capture/redis-dump-snapshot.json",
+      "sha256": "b32b1d7a0dae34932bad287721155cdfe1fc1a4b039ab5ce57edb6cb70b0ccc1"
+    },
+    "valuesVerified": true
+  }
+}

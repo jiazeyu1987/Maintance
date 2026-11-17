@@ -1,0 +1,615 @@
+{
+  "serverWrites": false,
+  "operations": [
+    {
+      "operation": "smallapp-8d9db80d8f1e4531ba9a0234335d0dcb",
+      "pointSelected": {
+        "databaseDelta": {
+          "kind": "SQL_FULL",
+          "segments": []
+        },
+        "fileDelta": {
+          "changedPaths": {
+            "count": 18898
+          },
+          "copiedFileCount": 9402,
+          "deletedPaths": []
+        },
+        "sourceRestored": false
+      },
+      "schemaObjectCounts": {
+        "DATABASE": 1,
+        "EVENT": 0,
+        "FUNCTION": 0,
+        "PROCEDURE": 0,
+        "TABLE": 907,
+        "TRIGGER": 62,
+        "VIEW": 0
+      },
+      "schemaCatalogCounts": {
+        "COLUMNS": 15957,
+        "EVENTS": 0,
+        "ROUTINES": 0,
+        "TABLES": 907,
+        "TRIGGERS": 62
+      },
+      "schemaHistoricalExclusions": [
+        "SHOW CREATE TRIGGER.Created"
+      ],
+      "inventoryBucketsByPhysicalPath": {
+        ".minio.sys": 138,
+        "edhr-protected-storage": 1,
+        "edhr-protected-storage-20260601": 1803,
+        "yudao": 16956
+      },
+      "versionsCount": 5916,
+      "versionsShape": {
+        "keys": [
+          "bucket",
+          "etag",
+          "headers",
+          "isLatest",
+          "key",
+          "kind",
+          "lastModified",
+          "repositoryPath",
+          "sha256",
+          "size",
+          "versionId"
+        ],
+        "count": 11
+      },
+      "versionBucketCounts": {
+        "yudao": 5022,
+        "edhr-protected-storage-20260601": 894
+      },
+      "originalRecordsScalars": {},
+      "originalRecordCount": 0,
+      "folderFiles": [
+        "request.json"
+      ]
+    },
+    {
+      "operation": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+      "pointSelected": {
+        "databaseDelta": {
+          "dataObservation": "AFFECTED_TABLES_V1",
+          "kind": "BINLOG_SQL",
+          "logMode": "FILE_POSITION",
+          "lowerCaseTableNames": 1,
+          "parentPosition": {
+            "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+            "executedGtidSet": "",
+            "file": "binlog.000033",
+            "position": 117969259,
+            "serverVersion": "8.0.39"
+          },
+          "rawPin": {
+            "bytes": 8095875,
+            "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/capture-staging/smallapp-bf67a867d3ec4e369ca31657c45e62c6/payload/database.sql.incremental.raw",
+            "sha256": "b2532967003be7b62e5bfab0285a26d0d218d9f2e1aca40f8454f3a5d31db738"
+          },
+          "segments": [
+            {
+              "file": "binlog.000033",
+              "startPosition": 117969259,
+              "stopPosition": 121470445
+            }
+          ]
+        },
+        "fileDelta": {
+          "changedPaths": {
+            "count": 94
+          },
+          "copiedFileCount": 52,
+          "deletedPaths": [
+            ".minio.sys/tmp/.trash/08aadf38-44ef-4495-ad1b-bdb9d669b769/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/27f00ec9-741b-4880-95f8-d353a3c4fe38/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/2b271537-3c98-47ab-8f5f-a22df9e4fc4f/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/2e5250c4-1179-45ae-abee-9f303871d0db/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/33b82ac3-1765-4612-9d09-ddd4d67abb21/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/3c1f396b-435d-4f69-a59d-aee323ff0dae/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/470f364c-7b38-4585-a1c5-bf2c85b95326/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/4d1c1902-3a3c-4ba4-818a-dc7820bd6e9e/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/4dd42f5d-e091-412e-991b-8a7add803d33/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/5103485f-465c-4e68-b4dd-5a39168be89e/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/5bd6e079-dd45-4df9-b23b-a4aa8d7ec517/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/5e558949-6003-41c3-bb13-dc20d151eebb/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/655c8bbf-9476-425e-ba93-4c0d6844e389/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/6788ae2a-19f6-47d1-a9d6-8c5a1cec0f1c/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/72e03065-85f9-42e5-94bd-9ac6aa87f288/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/7b9d3b54-2b72-4435-aa36-ecd413ed52f5/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/80a3d7c8-f7c9-4b97-bff1-17278c27e1c2/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/892f4c7f-b220-4f9f-88f3-53aecbd39ed0/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/97a9f15a-b46e-434e-9213-dbf6a7794722/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/a9ad9751-7d7f-42a9-9604-b83de10ff19f/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/b905f619-c190-4d8e-bb70-b68d349c44f8/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/bd3c7e9d-9f16-424d-8d0d-ff3443b082d8/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/c0556eb9-9bc3-4a9b-9842-2e525481f161/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/c24d9707-86c7-48c7-b051-ccef6acb712d/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/c9850e8b-9e60-44b1-aa66-434fcad4e3f5/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/cfb0ac41-4369-4918-97eb-4308080823fc/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/d52e55fe-d6b1-4692-afb5-c6b4784783ec/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/e003fcca-18f3-4654-b98f-95f12a3eee7f/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/e0600ae5-9075-4b9c-b37e-65f2d919e47d/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/ee204727-69b4-43a3-b94e-faef9cabd2ec/xl.meta.bkp",
+            ".minio.sys/tmp/.trash/08aadf38-44ef-4495-ad1b-bdb9d669b769",
+            ".minio.sys/tmp/.trash/27f00ec9-741b-4880-95f8-d353a3c4fe38",
+            ".minio.sys/tmp/.trash/2b271537-3c98-47ab-8f5f-a22df9e4fc4f",
+            ".minio.sys/tmp/.trash/2e5250c4-1179-45ae-abee-9f303871d0db",
+            ".minio.sys/tmp/.trash/33b82ac3-1765-4612-9d09-ddd4d67abb21",
+            ".minio.sys/tmp/.trash/3c1f396b-435d-4f69-a59d-aee323ff0dae",
+            ".minio.sys/tmp/.trash/470f364c-7b38-4585-a1c5-bf2c85b95326",
+            ".minio.sys/tmp/.trash/4d1c1902-3a3c-4ba4-818a-dc7820bd6e9e",
+            ".minio.sys/tmp/.trash/4dd42f5d-e091-412e-991b-8a7add803d33",
+            ".minio.sys/tmp/.trash/5103485f-465c-4e68-b4dd-5a39168be89e",
+            ".minio.sys/tmp/.trash/5bd6e079-dd45-4df9-b23b-a4aa8d7ec517",
+            ".minio.sys/tmp/.trash/5e558949-6003-41c3-bb13-dc20d151eebb",
+            ".minio.sys/tmp/.trash/655c8bbf-9476-425e-ba93-4c0d6844e389",
+            ".minio.sys/tmp/.trash/6788ae2a-19f6-47d1-a9d6-8c5a1cec0f1c",
+            ".minio.sys/tmp/.trash/72e03065-85f9-42e5-94bd-9ac6aa87f288",
+            ".minio.sys/tmp/.trash/7b9d3b54-2b72-4435-aa36-ecd413ed52f5",
+            ".minio.sys/tmp/.trash/80a3d7c8-f7c9-4b97-bff1-17278c27e1c2",
+            ".minio.sys/tmp/.trash/892f4c7f-b220-4f9f-88f3-53aecbd39ed0",
+            ".minio.sys/tmp/.trash/97a9f15a-b46e-434e-9213-dbf6a7794722",
+            ".minio.sys/tmp/.trash/a9ad9751-7d7f-42a9-9604-b83de10ff19f",
+            ".minio.sys/tmp/.trash/b905f619-c190-4d8e-bb70-b68d349c44f8",
+            ".minio.sys/tmp/.trash/bd3c7e9d-9f16-424d-8d0d-ff3443b082d8",
+            ".minio.sys/tmp/.trash/c0556eb9-9bc3-4a9b-9842-2e525481f161",
+            ".minio.sys/tmp/.trash/c24d9707-86c7-48c7-b051-ccef6acb712d",
+            ".minio.sys/tmp/.trash/c9850e8b-9e60-44b1-aa66-434fcad4e3f5",
+            ".minio.sys/tmp/.trash/cfb0ac41-4369-4918-97eb-4308080823fc",
+            ".minio.sys/tmp/.trash/d52e55fe-d6b1-4692-afb5-c6b4784783ec",
+            ".minio.sys/tmp/.trash/e003fcca-18f3-4654-b98f-95f12a3eee7f",
+            ".minio.sys/tmp/.trash/e0600ae5-9075-4b9c-b37e-65f2d919e47d",
+            ".minio.sys/tmp/.trash/ee204727-69b4-43a3-b94e-faef9cabd2ec",
+            ".minio.sys/tmp/efa34d68-f8f8-4b50-a4ca-6ad7a6d4ba90"
+          ]
+        },
+        "sourceRestored": false
+      },
+      "schemaObjectCounts": {
+        "DATABASE": 1,
+        "EVENT": 0,
+        "FUNCTION": 0,
+        "PROCEDURE": 0,
+        "TABLE": 907,
+        "TRIGGER": 62,
+        "VIEW": 0
+      },
+      "schemaCatalogCounts": {
+        "COLUMNS": 15957,
+        "EVENTS": 0,
+        "ROUTINES": 0,
+        "TABLES": 907,
+        "TRIGGERS": 62
+      },
+      "schemaHistoricalExclusions": [
+        "SHOW CREATE TRIGGER.Created"
+      ],
+      "inventoryBucketsByPhysicalPath": {
+        ".minio.sys": 161,
+        "edhr-protected-storage": 1,
+        "edhr-protected-storage-20260601": 1803,
+        "yudao": 16956
+      },
+      "versionsCount": 5916,
+      "versionsShape": {
+        "keys": [
+          "bucket",
+          "etag",
+          "headers",
+          "isLatest",
+          "key",
+          "kind",
+          "lastModified",
+          "repositoryPath",
+          "sha256",
+          "size",
+          "versionId"
+        ],
+        "count": 11
+      },
+      "versionBucketCounts": {
+        "yudao": 5022,
+        "edhr-protected-storage-20260601": 894
+      },
+      "originalRecordsScalars": {},
+      "originalRecordCount": 0,
+      "folderFiles": [
+        "request.json"
+      ]
+    }
+  ],
+  "containers": [
+    {
+      "name": "/intruoyi-backend",
+      "id": "0fce59191c9587e85666079ac8a571059567225aa635b65c5ac5850ff34ebd75",
+      "image": "sha256:38b553011ea540830fc9302167b2bf9eb76d3f18e4d6e2ddd38eab749172626d",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/ops",
+          "Destination": "/opt/intruoyi/ops",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/mnt/nas/Backup/BackupPackage",
+          "Destination": "/mnt/nas/Backup/BackupPackage",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/backup",
+          "Destination": "/backup",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/data/backend-logs",
+          "Destination": "/root/logs",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/var/run/docker.sock",
+          "Destination": "/var/run/docker.sock",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime",
+          "Destination": "/opt/intruoyi/runtime",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/tools/codex",
+          "Destination": "/opt/intruoyi/runtime/tools/codex",
+          "RW": false
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/backend-codex-home",
+          "Destination": "/opt/intruoyi/runtime/backend-codex-home",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/smoke/bin/npm",
+          "Destination": "/usr/local/bin/npm",
+          "RW": false
+        }
+      ]
+    },
+    {
+      "name": "/intruoyi-frontend",
+      "id": "4fcafbeda77c55175f8eb0b0e6bc2043ec33d60069bb8ea2144334f16197f3b1",
+      "image": "sha256:e0648d3c40d5984ca484ca1c518d8d982321429b275c88978b802d6df65356bc",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/var/lib/docker/intruoyi-data/current-32ff79d-20261020/nginx.conf",
+          "Destination": "/etc/nginx/conf.d/default.conf",
+          "RW": false
+        }
+      ]
+    },
+    {
+      "name": "/spug-intruoyi57-binlog-tmpfs-20261107-v3",
+      "id": "69e7bec0183a7d510942c06a4c85fd2f1663815b982f26226779b03ef776246c",
+      "image": "sha256:628989b79c6cd389187eea347b19a344bc154937117818645989f5f272564cf6",
+      "running": true,
+      "mounts": []
+    },
+    {
+      "name": "/erp-invoice-voucher-print-assistant",
+      "id": "1ceaee8d844fd913d31ac2e500a5401f3fb0405618cbb038d582071bd5d75719",
+      "image": "erp-invoice-voucher-print-assistant:2026-11-03-09-27-31",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/runtime",
+          "Destination": "/opt/invoice-voucher-print-assistant/runtime",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/uploads",
+          "Destination": "/opt/invoice-voucher-print-assistant/服务器上传发票",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/erp-invoice-voucher-print-assistant/results",
+          "Destination": "/opt/invoice-voucher-print-assistant/浏览器运行结果",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "name": "/fenbeitong-assistant",
+      "id": "7dbf8a3197a28a216a0da19f731cf20a40aa35117d73f348e3d5f50fcf027251",
+      "image": "sha256:c02c393bc03896f08b975c4fd4853de7916e693b960d2473fb3e1387cf148768",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/var/lib/docker/fenbeitong-release/data",
+          "Destination": "/data",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "name": "/intruoyi-57-acceptance-binlog-20261027",
+      "id": "70c0487396f6954ec794230644cc5d01669c7c0ed217df7b6c4a35a722a5832a",
+      "image": "sha256:628989b79c6cd389187eea347b19a344bc154937117818645989f5f272564cf6",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/f1cea75fd64e832343b69f1c15ef67ae1bea830a70049ca83cc84734ae813253/_data",
+          "Destination": "/var/lib/mysql",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "name": "/rehearsal-smallapp-20261022-frontend",
+      "id": "5f151cbb407e09b42c20a7643104d4c658a384acaeee6a4a36e8fcf97e238b15",
+      "image": "rehearsal-smallapp-frontend:2026-10-22-22-00-44",
+      "running": true,
+      "mounts": []
+    },
+    {
+      "name": "/rehearsal-smallapp-20261022-backend",
+      "id": "2ec14b9e0148d1ca0f67652ae606efc10dff3fee2656af11e819fb316623d4ff",
+      "image": "rehearsal-smallapp-backend:2026-10-22-22-00-44",
+      "running": true,
+      "mounts": []
+    },
+    {
+      "name": "/rehearsal-smallapp-20261022-minio",
+      "id": "9af094862946e614cffc395531c8a7af65618ac2bc8ed3f92d1c9ded2ec8c62b",
+      "image": "quay.io/minio/minio:RELEASE.2025-06-13T11-33-47Z",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/var/lib/docker/intruoyi-data/rehearsal-smallapp-20261022/instance/data/minio",
+          "Destination": "/data",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "name": "/rehearsal-smallapp-20261022-redis",
+      "id": "417ba2924a955c308d647528c721938c9b7b272887f412847caf6d1f3b7b70d7",
+      "image": "redis:7-alpine",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/var/lib/docker/intruoyi-data/rehearsal-smallapp-20261022/instance/data/redis",
+          "Destination": "/data",
+          "RW": true
+        },
+        {
+          "Type": "bind",
+          "Source": "/var/lib/docker/intruoyi-data/rehearsal-smallapp-20261022/instance/redis.conf",
+          "Destination": "/etc/redis/redis.conf",
+          "RW": false
+        }
+      ]
+    },
+    {
+      "name": "/rehearsal-smallapp-20261022-mysql",
+      "id": "09a7210373b351d2c1e5c044c5f8d73efdca9a20715c6fbc30f409877f7a2456",
+      "image": "mysql:8.0.39",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/var/lib/docker/intruoyi-data/rehearsal-smallapp-20261022/instance/data/mysql",
+          "Destination": "/var/lib/mysql",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "name": "/intruoyi-website",
+      "id": "9d6b45bad9b18f575b0f8ee7cf729f1167b9fc9a2ebeb8a7a2c74ebbdcd24830",
+      "image": "nginx:1.27-alpine",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/website/dist",
+          "Destination": "/usr/share/nginx/html",
+          "RW": false
+        },
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/website/nginx.conf",
+          "Destination": "/etc/nginx/conf.d/default.conf",
+          "RW": false
+        }
+      ]
+    },
+    {
+      "name": "/intruoyi-onlyoffice",
+      "id": "ab9f967c26b4e1672a1229395658dde2706e5d01c3e29086dd9e3ad2b0fac3de",
+      "image": "onlyoffice/documentserver:latest",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/275ed7ede69b9ec2876af51b92bf1e974a90c0d11d547136ebb00d5d0dae0367/_data",
+          "Destination": "/var/lib/postgresql",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/471139f2a4012e32f993e8660e0c1ca7df9a3e6196bb41250563e849351f459f/_data",
+          "Destination": "/var/lib/rabbitmq",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/e8f12461ce576d65afdab49af4c175b244c487c709fb612c48d51d711da24dc5/_data",
+          "Destination": "/var/lib/redis",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/4ec6c9f14d57056a6b8c8a5fe8947dd47510c8b83521985b9fb5c365e060a0fc/_data",
+          "Destination": "/var/log/onlyoffice",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/cf29fc399475c24fed6d9e5c7b21299eecf61bc43a87fe2317f50928aec41861/_data",
+          "Destination": "/var/www/onlyoffice/Data",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/468e75d6cd1bb297daa187222372e94c7cbfe27e5470eaefca99c8b37703e64e/_data",
+          "Destination": "/usr/share/fonts/truetype/custom",
+          "RW": true
+        },
+        {
+          "Type": "volume",
+          "Source": "/var/lib/docker/volumes/37865cbf92fcb721afdcce50f2c83d3f283c50591ecc1555b206aed6aaee8e25/_data",
+          "Destination": "/var/lib/onlyoffice",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "name": "/intruoyi-mysql",
+      "id": "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+      "image": "mysql:8.0.39",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/data/mysql",
+          "Destination": "/var/lib/mysql",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "name": "/intruoyi-redis",
+      "id": "5099e7bd566ec6a683e8842b84d8db9e41245708fce29e89309607d6a7e72653",
+      "image": "redis:7-alpine",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/data/redis",
+          "Destination": "/data",
+          "RW": true
+        }
+      ]
+    },
+    {
+      "name": "/ragflow_compose-minio-1",
+      "id": "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+      "image": "quay.io/minio/minio:RELEASE.2025-06-13T11-33-47Z",
+      "running": true,
+      "mounts": [
+        {
+          "Type": "bind",
+          "Source": "/opt/intruoyi/runtime/data/minio",
+          "Destination": "/data",
+          "RW": true
+        }
+      ]
+    }
+  ],
+  "source-identity.json": {
+    "databaseUuid": "0fa6c22b-5a90-11f1-ade1-0242ac150002",
+    "sourceFingerprint": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690"
+  },
+  "object-source.json": {
+    "buckets": [
+      "yudao",
+      "edhr-protected-storage",
+      "edhr-protected-storage-20260601"
+    ],
+    "containerPort": 9000,
+    "derivedRecipePin": {
+      "bytes": 821,
+      "path": "/var/lib/docker/intruoyi-data/prod57-spug-rehearsal-20261021/configuration/derived-recipe.json",
+      "sha256": "1ae0aade4168b176f9d3d1031cdaba3e77f3221f0829cfc7558ef6529abe74d1"
+    },
+    "endpoint": "http://172.17.0.2:9000",
+    "minioContainerId": "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+    "parentExportIndexPin": null,
+    "referenceRecipePin": {
+      "bytes": 727,
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/reference-recipe.json",
+      "sha256": "265b94435b1939756814be38a0d2aa7dd1d0eb3211adab34ebea29461f9495fe"
+    },
+    "schemaVersion": "backup-capture-object-source/v1",
+    "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690",
+    "sourceScopePin": {
+      "bytes": 329,
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-scope.json",
+      "sha256": "cc84a9e48e97cdb35fe39c9ae1856a1370b4581cfd467c1d83af59ad83cfafe8"
+    },
+    "versionPins": [
+      {
+        "bytes": 568,
+        "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/images.json",
+        "sha256": "47b48f99a82f4df6296d9b53c51d70244dff21e55e79b4e375482fe5e118d06c"
+      }
+    ]
+  },
+  "reference-recipe.json": {
+    "complete": true,
+    "coverageScopePin": {
+      "bytes": 329,
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/source-scope.json",
+      "sha256": "cc84a9e48e97cdb35fe39c9ae1856a1370b4581cfd467c1d83af59ad83cfafe8"
+    },
+    "maxRows": 500000,
+    "missingReferencePolicy": "PRESERVE_SOURCE_BASELINE",
+    "objectBindings": [
+      {
+        "bucket": {
+          "literal": "yudao"
+        },
+        "keyColumn": "path",
+        "keyEncoding": "RAW_KEY",
+        "nullable": false,
+        "rowFilter": {
+          "config_id": "28"
+        },
+        "table": "infra_file",
+        "urlPrefix": null,
+        "versionColumn": null
+      }
+    ],
+    "referenceQueries": [
+      {
+        "columns": [
+          "id",
+          "config_id",
+          "path",
+          "deleted"
+        ],
+        "table": "infra_file"
+      }
+    ],
+    "schemaVersion": "backup-capture-reference-recipe/v1",
+    "sourceIdentity": "a36d337b14a907d64a542ea66a8f46bc07fd75a84d6bea9ca1bfff6f4fe44690"
+  }
+}

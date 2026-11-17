@@ -1,0 +1,70 @@
+{
+  "serverWrites": false,
+  "preparedFileStorage": {
+    "configurations": [
+      {
+        "afterSha256": "74ba83a020d82b7075db3e79dd8356172784b8b465ca7e7e72ceb9b0f3b9f8c7",
+        "beforeSha256": "71e8d41b5babc3772288f7e78b9967086b283dd630c86d8f33b59fefa8dafa66",
+        "bucket": "yudao",
+        "changedFields": [
+          "endpoint",
+          "accessKey",
+          "accessSecret"
+        ],
+        "endpoint": "http://172.29.238.33:9000",
+        "id": 28
+      }
+    ],
+    "state": "SUCCEEDED"
+  },
+  "sourceBinding": [
+    {
+      "bucket": "yudao",
+      "id": 28,
+      "sourceEndpoints": [
+        "http://host.docker.internal:9000"
+      ]
+    }
+  ],
+  "userSchemaColumnNames": [
+    "id",
+    "username",
+    "password",
+    "password_update_time",
+    "nickname",
+    "remark",
+    "dept_id",
+    "post_ids",
+    "email",
+    "mobile",
+    "sex",
+    "avatar",
+    "status",
+    "login_ip",
+    "login_date",
+    "creator",
+    "create_time",
+    "updater",
+    "update_time",
+    "deleted",
+    "tenant_id",
+    "canonical_username",
+    "password_credential_status",
+    "signature_credential_generation",
+    "signature_credential_version",
+    "login_failure_count",
+    "login_failure_window_start_time",
+    "login_locked",
+    "login_locked_time",
+    "lifecycle_document_type",
+    "lifecycle_document_no",
+    "lifecycle_document_time",
+    "lifecycle_effective_time",
+    "lifecycle_deactivated_time",
+    "direct_supervisor_user_id",
+    "direct_supervisor_revision",
+    "signature_pin_hash",
+    "signature_credential_type"
+  ],
+  "usersWithLoginAfterRestore": 1
+}
