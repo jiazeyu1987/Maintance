@@ -21,6 +21,7 @@ class IntegrationCleanupTest(BuildWorktreeCleanupTest):
         self.assertEqual(result.returncode,0,result.stderr.decode())
         self.assertFalse(self.worktree.exists())
         self.assertEqual(json.loads(result.stdout)['mergedInto'],'HEAD')
+        self.assertNotIn('producedNewCommits',json.loads(result.stdout))
         self.assertTrue(self.sentinel.exists())
         self.assertEqual(self.invoke().returncode,0)
         proof=json.loads((self.root/'cleanup-proof.json').read_text())

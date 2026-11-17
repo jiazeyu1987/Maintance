@@ -192,7 +192,10 @@ def cleanup_build_worktree(repo, worktree, build_root, commit, *, prior_proof=No
                 raise error
         shutil.rmtree(_long(target), onexc=onerror)
     require(not os.path.lexists(_long(target)), 'Build worktree physical removal incomplete')
-    return dict(status='passed', path=str(target), commit=commit, verifiedTrackedFiles=verified,
+    result = dict(status='passed', path=str(target), commit=commit, verifiedTrackedFiles=verified,
                 gitRemovalExitCode=exit_code, residualRemoved=residual, ownershipVerified=True,
                 generatedLinksDetached=len(links),
-                registeredAfter=False, physicalPathExists=False, producedNewCommits=False)
+                registeredAfter=False, physicalPathExists=False)
+    if integration_branch is None:
+        result['producedNewCommits'] = False
+    return result
