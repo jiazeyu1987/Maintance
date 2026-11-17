@@ -476,7 +476,11 @@ class Runtime:
         resource_cleanup = (self.sources / 'runtime_resource_cleanup.py').read_text('utf-8')
         frontend_patch = (self.sources / 'frontend_patch_agent.py').read_text('utf-8')
         database_versions = (self.sources / 'database_versions.py').read_text('utf-8')
+        backup_source = (self.sources / 'release_backup_source.py').read_text('utf-8')
         source = ('import types,sys\n'
+                  '_backup_source=types.ModuleType("release_backup_source")\n'
+                  'sys.modules["release_backup_source"]=_backup_source\n'
+                  'exec(compile(' + repr(backup_source) + ',"release_backup_source.py","exec"),_backup_source.__dict__)\n'
                   '_database=types.ModuleType("database_versions")\n'
                   'sys.modules["database_versions"]=_database\n'
                   'exec(compile(' + repr(database_versions) + ',"database_versions.py","exec"),_database.__dict__)\n'

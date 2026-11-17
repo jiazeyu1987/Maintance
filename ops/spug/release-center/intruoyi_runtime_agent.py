@@ -1057,7 +1057,6 @@ def reopen(profile):
     check_fence(profile)
     backend = remote.inspect(profile['backend'])
     environment = dict(v.split('=', 1) for v in backend['Config']['Env'])
-    require(environment.get('INTRUOYI_RELEASE_MAINTENANCE') == 'true', 'Candidate is not in maintenance; reconcile instead of blindly reopening')
     # Find exactly one pending immutable candidate for the current image.
     candidates = []
     for record in Path(profile['stagingRoot']).glob('*/deployment-pending.json'):
@@ -1066,6 +1065,17 @@ def reopen(profile):
             candidates.append((record.parent, value))
     require(len(candidates) == 1, 'Pending candidate cannot be identified uniquely')
     root, candidate = candidates[0]
+    if environment.get('INTRUOYI_RELEASE_MAINTENANCE') != 'true':
+        pending = root / 'backup-source-binding-pending.private.json'
+        require(profile.get('backupSourceBinding') and pending.is_file(),
+                'Candidate is not in maintenance; reconcile instead of blindly reopening')
+        saved = json.loads(pending.read_text())
+        require(saved == dict(releaseTag=candidate['releaseTag'], backendId=backend['Id'],
+                              images=candidate['images']), 'Source binding retry target changed')
+        require(all(remote.inspect(profile[role])['Image'] == candidate['images'][role]['id']
+                    for role in ('backend', 'frontend')), 'Source binding retry images changed')
+        health(profile, candidate['releaseTag'], False, expected_gxp_mode=gxp_release_mode(candidate))
+        return finish_reopen(profile, candidate)
     require(not remote.inspect(profile['frontend'])['State']['Running'], 'Public frontend unexpectedly open during candidate acceptance')
     health(profile, candidate['releaseTag'], True, expected_gxp_mode=gxp_release_mode(candidate))
     remote.run(['docker', 'stop', '--time', '90', profile['backend']], timeout=120)
@@ -1097,10 +1107,25 @@ def finish_reopen(profile, candidate):
     except Exception:
         remote.run(['docker', 'stop', '--time', '30', profile['frontend']])
         raise
+    from release_backup_source import synchronize as synchronize_backup_source
+    if profile.get('backupSourceBinding'):
+        binding_pending = root / 'backup-source-binding-pending.private.json'
+        identity = dict(releaseTag=candidate['releaseTag'],
+                        backendId=remote.inspect(profile['backend'])['Id'], images=candidate['images'])
+        if binding_pending.exists():
+            require(json.loads(binding_pending.read_text()) == identity, 'Source binding retry identity changed')
+        else:
+            private_json(binding_pending, identity)
+    binding = synchronize_backup_source(profile, candidate, run=remote.run, inspect=remote.inspect)
     require(remote.inspect(profile['acceptanceFrontend'])['Config'].get('Labels', {}).get('intruoyi.release.acceptance') == 'true', 'Acceptance resource ownership cannot be proved')
     remote.run(['docker', 'rm', profile['acceptanceFrontend']])
+    # The acceptance tail is consumed; subsequent reopen must reconcile.
+    binding_pending = root / 'backup-source-binding-pending.private.json'
+    if binding_pending.exists():
+        binding_pending.unlink()
     result = observe(profile)
     result['verifiedHealth'] = verified_health
+    result['backupSourceBinding'] = binding
     return result
 
 

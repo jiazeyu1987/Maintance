@@ -41,6 +41,7 @@ def _registration(repo, target):
             current = {'path':Path(row[9:]).resolve()}
         elif row.startswith('HEAD '): current['commit'] = row[5:]
         elif row == 'detached': current['detached'] = True
+        elif row.startswith('branch '): current['branch'] = row[7:]
         elif row.startswith('locked'): current['locked'] = True
     if current: records.append(current)
     return next((r for r in records if r['path'] == target), None)
@@ -118,7 +119,8 @@ def _inspect(target, tree, allow_metadata):
     return count, links
 
 
-def cleanup_build_worktree(repo, worktree, build_root, commit, *, prior_proof=None, before_remove=None):
+def cleanup_build_worktree(repo, worktree, build_root, commit, *, prior_proof=None, before_remove=None,
+                           integration_branch=None, merged_into=None):
     original = Path(worktree).absolute()
     root = Path(build_root).resolve(strict=True)
     exists = os.path.lexists(_long(original))
@@ -128,8 +130,16 @@ def cleanup_build_worktree(repo, worktree, build_root, commit, *, prior_proof=No
     require(target != Path(repo).resolve() and not Path(repo).resolve().is_relative_to(target),
             'Source repository cannot be removed')
     registered = _registration(repo, target)
+    if integration_branch is not None:
+        owned_branch = registered.get('branch') if registered else (prior_proof or {}).get('branch')
+        require(merged_into and owned_branch == 'refs/heads/'+integration_branch,
+                'Integration worktree branch ownership differs; preserved')
+        if not registered:
+            require((prior_proof or {}).get('mergedInto') == merged_into,
+                    'Integration merge proof differs; preserved')
+        _git(repo, 'merge-base', '--is-ancestor', commit, merged_into)
     if registered:
-        require(registered.get('detached') and not registered.get('locked')
+        require((registered.get('detached') or integration_branch is not None) and not registered.get('locked')
                 and registered.get('commit') == commit, 'Build worktree registration or commit differs; preserved')
         require(exists, 'Registered build worktree is missing; inspect it before removal')
         require(_git(target, 'rev-parse', 'HEAD').decode().strip() == commit, 'Build worktree commit changed')
@@ -149,7 +159,10 @@ def cleanup_build_worktree(repo, worktree, build_root, commit, *, prior_proof=No
     _consumers(target)
     verified, links = _inspect(target, tree, registered is not None) if exists else (0, [])
     if before_remove:
-        before_remove(dict(status='verified', path=str(target), commit=commit, ownershipVerified=True))
+        proof=dict(status='verified', path=str(target), commit=commit, ownershipVerified=True)
+        if integration_branch is not None:
+            proof.update(branch='refs/heads/'+integration_branch,mergedInto=merged_into)
+        before_remove(proof)
     # All source/unknown-file/consumer checks have passed. Remove only link
     # entries, never their targets, before allowing Git to remove dependencies.
     for link, directory_link in links:

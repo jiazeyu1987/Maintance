@@ -634,7 +634,8 @@ def restore_admission_metadata(payload, root):
     changes = (
         ("            for ref in step[2]['payloadPins'] + step[2]['versionPins'] + [step[0], step[3]]:\n",
          "            # Payloads are consumed by the actual restore, not leased en masse.\n"
-         "            for ref in step[2]['versionPins'] + [step[0], step[3]]:\n"),
+         "            from recovery_version_copies import archived_version_pins\n"
+         "            for ref in archived_version_pins(step[2]) + [step[0], step[3]]:\n"),
         ("        with step_timing(native.root, 'archive-verification'):\n"
          "            for step in chain:\n"
          "                for ref in step[2]['payloadPins']:\n"
@@ -1239,6 +1240,7 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
         "                    '-e', statement], mutation=mutation).decode('utf-8')")
     payload['common/recovery_main_target.py'] = (root/'ops/recovery/recovery_main_target.py').read_bytes()
     payload['common/recovery_archive_versions.py'] = (root/'ops/recovery/recovery_archive_versions.py').read_bytes()
+    payload['common/recovery_version_copies.py'] = (root/'ops/recovery/recovery_version_copies.py').read_bytes()
     payload['common/recovery_program_archive.py'] = (root/'ops/recovery/recovery_program_archive.py').read_bytes()
     payload['common/recovery_program_containers.py'] = (root/'ops/recovery/recovery_program_containers.py').read_bytes()
     payload['common/recovery_program_generation.py'] = (root/'ops/recovery/recovery_program_generation.py').read_bytes()
@@ -1365,4 +1367,16 @@ def execute_empty(configuration, request, root, input_pins, *, reservation_confi
     prepared_service_health(payload, root)
     application_database_phase(payload)
     prepared_file_storage(payload, root)
+    # Plan from authenticated metadata only. The loop still performs the full
+    # validation of every point (including the selected point) exactly once.
+    # No result survives this call: post-cleanup chain validation remains full.
+    name = 'common/repository_minimal.py'
+    source = payload[name].decode('utf-8').replace('\r\n', '\n')
+    before = '        point, _ = self.load(reference, candidate=candidate)\n'
+    if source.count(before) != 1:
+        raise ValueError('STANDARD_CHAIN_PLANNING_CONTEXT_CHANGED')
+    source = source.replace(before,
+        '        self.deadline.check()\n'
+        '        point = document(read_pin(reference, deadline=self.deadline)) if candidate is None else candidate\n')
+    payload[name] = source.encode('utf-8')
     return payload

@@ -1,0 +1,20 @@
+{
+  "backupSourceBinding": {
+    "sourceRef": "REPLACE_WITH_REGISTERED_SOURCE_REF",
+    "engineRoot": "/REPLACE/recovery-engine",
+    "generationRoot": "/REPLACE/private/source-generations",
+    "environmentFile": "/REPLACE/runtime/.env",
+    "composeFile": "/REPLACE/runtime/docker-compose.yml",
+    "containers": {
+      "mysql": "REPLACE-mysql",
+      "redis": "REPLACE-redis",
+      "backend": "REPLACE-backend",
+      "frontend": "REPLACE-frontend",
+      "minio": "REPLACE-minio"
+    },
+    "serviceName": "REPLACE-recovery-control.service",
+    "pythonPath": "/usr/bin/python3",
+    "controlEntryPath": "/REPLACE/recovery-engine/control_entry.py",
+    "dropInDirectory": "/etc/systemd/system/REPLACE-recovery-control.service.d"
+  }
+}

@@ -1,0 +1,8 @@
+# Integration cleanup
+BDD: Given registered clean task branch with long generated paths merged into main, When explicit cleanup CLI runs with exact path/root/commit/branch/main, Then unregister and remove physical checkout while preserving siblings. Unmerged commit must fail and preserve checkout.
+RED: primary Python lacked psutil; switched to existing installed release Python312 (no dependency installation). Actual CLI test failed missing integration_worktree_cleanup.py. RED test cleanup also encountered expected long-path TemporaryDirectory cleanup failure; disposable temp tmpxrvp5dzy retained, not user checkout.
+Implementation: explicit formal integration_worktree_cleanup.py CLI reuses existing guarded build cleanup and adds exact branch plus merge-base ancestry checks. Existing dirty/unknown-file/link/process/boundary protection unchanged. No server operation and no historical denied directory deletion attempted.
+
+GREEN/REGRESSION: installed release Python unittest explicit2 CLI tests plus existing9 build cleanup tests ->11 PASS in24.248s, actual Windows temporary Git repositories/long paths. No skipped tests. RED temporary fixture cleanup separately bounded to exact owned temp path.
+
+Follow-up: owned RED fixture tmpxrvp5dzy removed with exact bounded long path and read-only onexc handling; absence asserted. CLI now requires external --proof, atomically saves verified ownership before removal; retry without registration validates exact prior branch/commit/path/mergedInto and rechecks merge ancestry. Real CLI rerun after completed physical deletion PASS; tampered branch proof rejected. Full11 tests re-run PASS23.487s. No user data or historical denied path touched.

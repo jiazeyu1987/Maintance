@@ -28,7 +28,7 @@ class SourceProgramTests(unittest.TestCase):
         self.metadata.mkdir(parents=True)
         self.names = {role: 'original-59-'+role for role in ROLES}
         self.images = {role: 'sha256:'+str(number+1)*64 for number, role in enumerate(ROLES)}
-        self.version = self.document(self.root/'images.json',
+        self.version = self.document(self.archive_root/'images.json',
             dict(images={self.names[role]: self.images[role] for role in ROLES}))
         image_path = self.archive_root/'payload'/'original-application-images.tar'
         image_path.parent.mkdir()
@@ -54,6 +54,7 @@ class SourceProgramTests(unittest.TestCase):
                 binding_extra=None, manifest_extra=None):
         payloads = [self.archive] if payloads is None else payloads
         versions = [self.version] if version_pins is None else version_pins
+        payloads = payloads + versions
         common = dict(backupId='original-full-point',generationId='original-generation',pointType='FULL',
             parentPointPins=[],commonRecoveryPoint='sha256:'+'d'*64,payloadRefs=payloads)
         manifest = dict(common,schemaVersion='RepositoryManifest/v1',versionPins=versions)
@@ -90,6 +91,30 @@ class SourceProgramTests(unittest.TestCase):
         self.assertEqual(self.policy,value)
         value['roleVersionBindings'][0]['versionPath'].append('mutation')
         self.assertEqual(before,self.owner)
+
+    def test_captured_metadata_resolves_without_original_source_file(self):
+        source = deepcopy(self.version)
+        copied = self.archive_root/'semantic-capture'/('provided-'+hashlib.sha256(source['path'].encode('utf-8')).hexdigest()+'.bin')
+        copied.parent.mkdir()
+        copied.write_bytes(Path(source['path']).read_bytes())
+        self.refresh(payloads=[self.archive,pin(copied)])
+        # Model formal capture: original identity remains in versionPins only.
+        for value,key in ((self.manifest,'payloadRefs'),(self.point,'payloadRefs'),(self.material,'payloadPins')):
+            value[key] = [self.archive,pin(copied)]
+        self.manifest_pin=self.document(self.metadata/'manifest.json',self.manifest)
+        self.point['manifestPin']=self.manifest_pin
+        self.point_pin=self.document(self.metadata/'point.json',self.point)
+        self.material['manifestPin']=self.manifest_pin
+        self.material_pin=self.document(self.metadata/'material.json',self.material)
+        self.binding.update(manifestPin=self.manifest_pin,repositoryPointPin=self.point_pin,recoveryMaterialPin=self.material_pin)
+        self.binding_pin=self.document(self.metadata/'binding.json',self.binding)
+        self.owner['sources'][SOURCE]['recoveryPoints'][self.request['recoveryPointRef']]=self.point_pin
+        self.owner['sources'][SOURCE]['repositoryBindingPinsByManifestSha256']={self.manifest_pin['sha256']:self.binding_pin}
+        self.chain=[(self.point_pin,self.point,self.material,self.material_pin)]
+        Path(source['path']).unlink()
+        self.assertEqual(self.images,self.resolve()['roleImages'])
+        copied.write_bytes(b'changed')
+        with self.assertRaises(RecoveryError): self.resolve()
 
     def test_selected_point_binds_five_roles_original_pins_and_explicit_budgets(self):
         result = self.resolve()

@@ -1,0 +1,7 @@
+# 读取收敛
+BDD: Given 完整链含当前点，When chain检查，Then 当前点完整load仅一次，链规划只读受SHA保护元数据，后续load仍核载荷；跨阶段重新读取保留。
+经验门禁：不弱化独立SMB核验；无跨调用缓存，无本地stat代替SHA；未知元数据/变更拒绝。
+
+RED actual standard generated AST: current point full-load call sites2, test failed. GREEN transform metadata-only planning + existing per-point full-validation:1 test PASS. Cross-phase final-verification and chain-readback intentionally retained: no continuous full archive lease across cleanup, unsafe to reuse content proof merely by stat. Scope reduces one selected-point full load per chain call; does not claim stages merged or timing measured. Regression discovery test_standard*.py found0 tests (not accepted); actual scripts/tests/test_backup_variants.py blocked by missing pytest in explicit local runtime. Parent notified to use existing Linux offline test environment. No servers modified, no commit.
+
+Behavior extension: execute actual generated standard chain method with disk-backed SHA pin reader/load boundary; 3 tests PASS: all3 points load exactly once, next independent call revalidates all3, same-length point or parent/current payload corruption rejected. Scope is chain scheduling with simplified load boundary, not entire catalog schema integration. Full package regression using convergence-test-deps:33 passed,2 skipped,2 failed because both delivered constructors require Linux (NATIVE_LINUX_REQUIRED); parent must run Linux integration, not mark full regression green on Windows.

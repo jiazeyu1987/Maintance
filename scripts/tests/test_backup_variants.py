@@ -37,6 +37,7 @@ def test_standard_keeps_original_code_except_reviewed_fixes_and_archive_names(pa
         'control/recovery_control_point_quarantine.py', 'formal/formal_binlog_scope.py',
         'common/recovery_replace.py', 'common/recovery_data.py', 'common/recovery_data_files.py', 'formal/formal_data_evidence.py', 'formal/formal_schema_evidence.py',
         'common/recovery_main_target.py', 'common/recovery_archive_versions.py', 'common/recovery_program_archive.py',
+        'common/recovery_version_copies.py',
         'common/recovery_program_containers.py',
         'common/recovery_program_generation.py',
         'common/recovery_program_activation.py', 'common/recovery_program_targets.py',
@@ -441,7 +442,7 @@ target={'dockerPin':docker,'iptablesPin':{'path':str(root/'missing-rehearsal-ipt
 main=sys.argv[3]=='True'
 if main:target['mainApplication']={'contract':'registered MAIN path selected before initialization'}
 payloads=[dict(payload,path=str(root/('unopened-payload-%d'%i))) for i in range(15000)] if main else [payload]
-chain=[(material,None,{'payloadPins':payloads,'versionPins':[version]},material)]
+chain=[(material,None,{'payloadPins':payloads+[version],'versionPins':[version]},material)]
 soft,hard=resource.getrlimit(resource.RLIMIT_NOFILE)
 resource.setrlimit(resource.RLIMIT_NOFILE,(min(1024,hard),hard))
 self=SimpleNamespace(input_pins=[control])

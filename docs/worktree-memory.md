@@ -1,5 +1,7 @@
 # Worktree Memory
 
+- 已融合的任务分支使用 `ops/spug/release-center/integration_worktree_cleanup.py` 收尾，显式传 repo/worktree/root/commit/branch/merged-into 和工作区外的 proof。该入口复用长路径删除和生成物链接隔离，删除前持久记录归属；Git 登记已删除时只能凭同一回执重试，未知残留保持。详见 `docs/release-agent-checklist.md#发布来源同步与独立恢复收尾`。
+
 > 路径约定：`docs/...` 相对本维护仓根目录；`IntRuoyiBackend/...`、`IntRuoyiFronted/...` 及其源码命令相对当次已验证配置确定的主程序根目录。不依赖盘符，不猜测源码目录。此文件沿用交接资料中的规则；当前用户授权和 AGENTS.md 优先。
 
 ## 归档前保存任务记录与跨会话归属

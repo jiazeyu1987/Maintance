@@ -1,5 +1,19 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## 发布来源同步与独立恢复收尾
+
+- Trigger: 发布后备份仍引用旧容器或 IMAGE_TAG；恢复缺源机 images.json、增量点缺附件策略；Windows 融合 worktree 长路径残留；链规划重复读取载荷。
+- Preflight check: 按 `ops/spug/release-center/BACKUP_SOURCE_BINDING.md` 配置实际服务器的 backupSourceBinding；恢复使用 payloadPins 内版本副本和 owner.recoveryPoints 中固定父链；清理指定本任务路径、分支、提交、融合目标和外置 proof。
+- Blocker: 来源身份漂移、缺归档版本副本或摘要不符、父链跨来源、未融合提交、未知文件或活动消费者。只阻止相关动作，不重新执行已完成恢复。
+- Verification: 发布 reopen 回执含来源激活结果，普通 NOT_CONFIGURED 不算同步成功；恢复源版本文件删除后仍从归档读取，修改副本仍拒绝；长路径清理及同一 proof 重试通过；每次 chain 调用每点完整 load 一次。
+- Forbidden action: 不手改历史备份 pin，不凭列表首项继承附件策略，不以原路径存在替代归档，不跨阶段缓存未持续保护的校验，不因 Git 登记消失就盲删残留。
+- Evidence: `doc/tasks/20261117-three-point-convergence/`；本机测试不等于线上部署验收。
+
+阶段必查项与推荐命令：
+1. 发布：使用正常发布的 reopen 入口，记录 releaseTag、实际容器与来源 config pin；失败按同一候选身份重试，身份变化立即停止。
+2. 恢复：准备阶段解析父策略，实际恢复读取归档版本；运行 `python -m pytest scripts/tests/test_backup_variants.py`（Linux）及恢复相关测试，记录缺失/漂移拒绝证据；不增加第二轮全载荷扫描。
+3. 收尾：运行 `python ops/spug/release-center/integration_worktree_cleanup.py --repo REPO --worktree PATH --root ROOT --commit SHA --branch BRANCH --merged-into int_main --proof OUTSIDE_JSON`；记录融合验证、清理结果和 proof。未知归属立即停止，保留原件。
+
 ## NAS 元数据打开后单链接校验门禁
 
 - Trigger：恢复准入在元数据读取时报 BACKUP_EPOCH_REGULAR_SINGLE_LINK_REQUIRED，独立重新打开后属性不同。

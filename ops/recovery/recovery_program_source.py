@@ -179,8 +179,10 @@ def resolve_source_program(owner, request, chain, *, guard, reader=None):
             material.get('payloadPins') == point['payloadRefs'],
             'SOURCE_PROGRAM_MATERIAL_MISMATCH')
     archive_pin = _selected_archive(point_pin, point, policy)
+    from recovery_version_copies import archived_version_pin
     version_bindings = resolve_archive_images(material['versionPins'], policy['roleVersionBindings'],
-        reader=document, mismatch_code='SOURCE_PROGRAM_IMAGE_BINDING_MISMATCH')
+        reader=lambda reference: document(archived_version_pin(reference, material['payloadPins'])),
+        mismatch_code='SOURCE_PROGRAM_IMAGE_BINDING_MISMATCH')
     guard()
     return deepcopy(dict(schemaVersion='MainProgramSourceArchive/v1', sourceConfigRef=source_ref,
         recoveryPointRef=request['recoveryPointRef'], recoveryPoint=point['commonRecoveryPoint'],

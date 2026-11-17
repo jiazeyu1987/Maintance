@@ -1,5 +1,7 @@
 # 项目经验索引
 
+- 发布后旧容器 / backupSourceBinding / 源机 images.json / 归档版本副本 / 增量附件策略 / integration_worktree_cleanup / 长路径清理重试 / chain重复load：`docs/release-agent-checklist.md#发布来源同步与独立恢复收尾`。正式 reopen 同步来源；恢复用归档版本和固定父策略；已融合工作区使用外置归属回执清理；只去除单次链规划的重复载荷读取。
+
 - NAS 单链接属性 / BACKUP_EPOCH_REGULAR_SINGLE_LINK_REQUIRED / 开前 nlink2 打开后1：`docs/release-agent-checklist.md#nas-元数据打开后单链接校验门禁`。只读记录同一文件完整路径/FD时序；开后FD、读后FD及最终路径仍强制单链接，开前后全部原身份/时间与内容pin保持。禁止重试预热、改历史元数据、放宽真实硬链接或修改挂载缓存。
 
 - 历史归档保护 / REPLACEMENT_PROTECTED_ROOT_REQUIRED / REPLACEMENT_STORAGE_MOUNT_AMBIGUOUS / autofs / CIFS叠层 / 隐藏子挂载：`docs/release-agent-checklist.md#历史来源归档与叠层挂载保护门禁`。原 target 保持，按已绑定 source 扩大保护；同路径叠层用实际 O_PATH/fdinfo 身份核唯一 mountinfo 记录及设备，不猜列表顺序/最大ID。真实叠层、隐藏子挂载、未知身份和数据别名均须验证。

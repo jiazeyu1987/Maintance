@@ -220,6 +220,44 @@ def fresh_target(template, observed, changes):
     return target
 
 
+def resolve_point_policy(points, point_ref, owner=None):
+    points = deepcopy(points)
+    if owner is not None:
+        selected = points[point_ref]
+        registered = owner['sources'][selected['sourceConfigRef']]['recoveryPoints']
+        reference = registered[point_ref]
+        seen_paths = set()
+        child_ref = point_ref
+        while reference:
+            require(reference['path'] not in seen_paths, 'PREPARE_POINT_PARENT_INVALID')
+            seen_paths.add(reference['path'])
+            require(pin(reference['path']) == reference, 'PREPARE_POINT_CHANGED')
+            document = read(reference['path'])
+            parents = document['parentPointPins']
+            if not parents: break
+            reference = parents[-1]
+            matches = [key for key, value in registered.items() if value == reference and key in points]
+            require(len(matches) == 1, 'PREPARE_POINT_PARENT_INVALID')
+            parent_ref = matches[0]
+            require(points[child_ref].get('parentBackupId', parent_ref) == parent_ref, 'PREPARE_POINT_PARENT_INVALID')
+            points[child_ref]['parentBackupId'] = parent_ref
+            child_ref = parent_ref
+    point = deepcopy(points[point_ref])
+    current = point
+    seen = {point_ref}
+    while current.get('parentBackupId'):
+        parent_ref = current['parentBackupId']
+        require(parent_ref not in seen and parent_ref in points, 'PREPARE_POINT_PARENT_INVALID')
+        seen.add(parent_ref)
+        parent = points[parent_ref]
+        require(all(parent.get(k) == point.get(k) for k in ('applicationId', 'sourceConfigRef')),
+                'PREPARE_POINT_PARENT_SOURCE_MISMATCH')
+        if not point.get('fileStorage') and parent.get('fileStorage'):
+            point['fileStorage'] = deepcopy(parent['fileStorage'])
+        current = parent
+    return point
+
+
 def bind_file_storage_policy(target, point):
     target.pop('preparedFileStorage', None)
     if point.get('fileStorage'):
@@ -368,7 +406,7 @@ class NativePreparation:
         c = self.config
         changes,templates = retained_dependencies(c['dependencies'],c['toolRoot'],dict(
             owner=c['ownerTemplatePath'],control=c['control']['templatePath'],registration=c['control']['registrationPath']))
-        point = c['points'][request['recoveryPointRef']]
+        point = resolve_point_policy(c['points'], request['recoveryPointRef'], templates['owner'])
         # Docker load checks the image contents; do not scan the same tar twice.
         require(Path(point['imageArchivePin']['path']).stat().st_size == point['imageArchivePin']['bytes'], 'PREPARE_IMAGE_ARCHIVE_CHANGED')
         self.docker('image', 'load', '--input', point['imageArchivePin']['path'], timeout=600)
