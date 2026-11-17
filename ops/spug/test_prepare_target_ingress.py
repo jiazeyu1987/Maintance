@@ -13,6 +13,8 @@ class PublicIngressTest(unittest.TestCase):
         self.assertIn('ListenStream=172.30.30.59:8081', result['socket'])
         self.assertIn('systemd-socket-proxyd 172.29.238.36:80', result['service'])
         self.assertIn('WantedBy=sockets.target', result['socket'])
+        self.assertIn('FreeBind=true', result['socket'])
+        self.assertNotIn('network-online.target', result['socket'])
         self.assertIn('destination address="172.30.30.59/32"', result['firewallRule'])
         self.assertIn('port="8081"', result['firewallRule'])
         self.assertNotIn('48081', result['service'])

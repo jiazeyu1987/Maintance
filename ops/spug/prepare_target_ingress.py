@@ -26,8 +26,7 @@ def render(config, port):
         raise ValueError('Frontend is outside the preparation subnet')
     socket = MARKER + (
         '[Unit]\nDescription=Restored application public HTTP socket\n'
-        'After=network-online.target\nWants=network-online.target\n'
-        '[Socket]\nListenStream=' + host + ':' + str(port) + '\nNoDelay=true\n'
+        '[Socket]\nListenStream=' + host + ':' + str(port) + '\nNoDelay=true\nFreeBind=true\n'
         '[Install]\nWantedBy=sockets.target\n')
     service = MARKER + (
         '[Unit]\nDescription=Restored application frontend proxy\n'
