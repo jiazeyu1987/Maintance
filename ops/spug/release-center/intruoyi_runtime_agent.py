@@ -1160,7 +1160,8 @@ def finish_reopen(profile, candidate):
                 docker('POST', '/containers/' + quote(writer) + '/start')
             require(remote.inspect(writer)['State']['Running'], 'Registered writer did not resume: ' + writer)
     # Only normal-mode healthy backend may expose public frontend again.
-    docker('POST', '/containers/' + quote(profile['frontend']) + '/start')
+    if not remote.inspect(profile['frontend'])['State']['Running']:
+        docker('POST', '/containers/' + quote(profile['frontend']) + '/start')
     remote.run(['docker', 'stop', '--time', '30', profile['acceptanceFrontend']])
     try:
         verified_health = health(profile, candidate['releaseTag'], False, expected_gxp_mode=gxp_release_mode(candidate))
