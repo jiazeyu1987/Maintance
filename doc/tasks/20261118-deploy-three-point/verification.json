@@ -1,0 +1,135 @@
+{
+  "final-health.json": {
+    "test": {
+      "frontendHttp": 200,
+      "backendHealth": "UP",
+      "containers": [
+        {
+          "name": "/brlab-prod57-nas-test58-20261020-r3-backend",
+          "image": "sha256:c925ae937aee176c72a07797711bf8bd652b6868be71852254d0242513740282",
+          "running": true
+        },
+        {
+          "name": "/intruoyi-july-unified-58-frontend",
+          "image": "sha256:871e43b2e2fed4014bbc9f1e3cffec0916678aa26bf54d5ac148abf308c3bb3e",
+          "running": true
+        }
+      ]
+    },
+    "prod": {
+      "frontendHttp": 200,
+      "backendHealth": "UP",
+      "containers": [
+        {
+          "name": "/intruoyi-backend",
+          "image": "sha256:c925ae937aee176c72a07797711bf8bd652b6868be71852254d0242513740282",
+          "running": true
+        },
+        {
+          "name": "/intruoyi-frontend",
+          "image": "sha256:871e43b2e2fed4014bbc9f1e3cffec0916678aa26bf54d5ac148abf308c3bb3e",
+          "running": true
+        }
+      ]
+    },
+    "backup": {
+      "frontendHttp": 200,
+      "backendHealth": "UP",
+      "containers": [
+        {
+          "name": "/spug-empty59-8eb768e9953a-backend",
+          "image": "sha256:38b553011ea540830fc9302167b2bf9eb76d3f18e4d6e2ddd38eab749172626d",
+          "running": true
+        },
+        {
+          "name": "/spug-empty59-8eb768e9953a-frontend",
+          "image": "sha256:e0648d3c40d5984ca484ca1c518d8d982321429b275c88978b802d6df65356bc",
+          "running": true
+        }
+      ]
+    },
+    "spugHttp": 200
+  },
+  "binding-local-verification.json": {
+    "status": "PASS",
+    "sourceBindingInstalled": true,
+    "otherConfigurationUnchanged": true,
+    "historyUnchanged": true
+  },
+  "backup-policy-verification.json": [
+    {
+      "point": "smallapp-bf67a867d3ec4e369ca31657c45e62c6",
+      "fileStorage": true
+    },
+    {
+      "point": "smallapp-8978e87efa3c47bebd6b0e0bc825f7b7",
+      "fileStorage": true
+    }
+  ],
+  "backup-install-receipt.json": {
+    "status": "INSTALLED",
+    "engineCommit": "2e2bbc19142873184f7c7617a4978220cbf5bac2",
+    "nativeCommit": "baee418",
+    "nativeProgramPin": {
+      "path": "/mnt/intruoyi-data/recovery-tools/prepare_target_native.py",
+      "bytes": 46089,
+      "sha256": "dae396013365210752e9c1ae670208e86148c548c3ba39aa9140199467f16482"
+    },
+    "controlPin": {
+      "bytes": 3147,
+      "path": "/mnt/intruoyi-data/recovery-preparation/8eb768e9953a04f7f2143fe333d93e865368379456f927b668ae741e2df6c207/control.json",
+      "sha256": "3ca2c2ef7f03dac47a10d6c384f76226dc6ccd9c4dbe0fa2f2e08056858745d9"
+    },
+    "pid": 25447,
+    "modules": {
+      "common/repository_minimal.py": "908f1dd6d4c68327f9b205b993141b41dda5be352f78c71b5b2122c88c724281",
+      "common/recovery_program_source.py": "6e41a5e2641259837a7f7f2192d01f0de90445efabf8d6ccaf051f917ccbe8fa",
+      "common/recovery_minimal_runtime.py": "3e548fe4c176450b631b3d699148673d705f4095fc0c65024a0df97c0ff8ea68",
+      "common/recovery_version_copies.py": "de37994f51df9228847a0e83bccd4ff47296414b9dd5ce9e0ca7c63ac3027280",
+      "../prepare_target_native.py": "dae396013365210752e9c1ae670208e86148c548c3ba39aa9140199467f16482"
+    },
+    "imports": "PASS",
+    "restored": false
+  },
+  "source-binding-receipt.json": {
+    "status": "SYNCHRONIZED",
+    "releaseTag": "2026-11-17-23-51-44",
+    "controlPin": {
+      "bytes": 5717,
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/release-source-binding/2026-11-17-23-51-44/attempt-cx_4p6ox/control-source.json",
+      "sha256": "9c8d81ba41e18c40151e76fb12134801a8b645dc2a5dd8abf2160256c4c9b259"
+    },
+    "capturePin": {
+      "bytes": 5073,
+      "path": "/var/lib/docker/intruoyi-data/spug-intruoyi-57-safe-20261024-v1/configuration/release-source-binding/2026-11-17-23-51-44/attempt-cx_4p6ox/capture.json",
+      "sha256": "63804ed77948c5765a8b811dc12e2707e1d3648888b5192cf7f5d6f4a47145d1"
+    },
+    "actualServices": [
+      {
+        "id": "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+        "imageId": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+        "role": "mysql"
+      },
+      {
+        "id": "b9f1d48ecf88104080eaba1628d251e793f42ec37be792f8d8c1a10c476fcabf",
+        "imageId": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+        "role": "minio"
+      },
+      {
+        "id": "5099e7bd566ec6a683e8842b84d8db9e41245708fce29e89309607d6a7e72653",
+        "imageId": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+        "role": "redis"
+      },
+      {
+        "id": "c6ec557ef8ef484f4cfdccaa1dacaa3a64021d98937b4d3ff13c287f209e809c",
+        "imageId": "sha256:c925ae937aee176c72a07797711bf8bd652b6868be71852254d0242513740282",
+        "role": "backend"
+      },
+      {
+        "id": "acd0e407e2409e746f5d9e99af46602fb91fd8b9f924294ee77d4c4cdf8b9418",
+        "imageId": "sha256:871e43b2e2fed4014bbc9f1e3cffec0916678aa26bf54d5ac148abf308c3bb3e",
+        "role": "frontend"
+      }
+    ]
+  }
+}
