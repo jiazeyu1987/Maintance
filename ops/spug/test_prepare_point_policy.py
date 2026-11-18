@@ -4,6 +4,22 @@ from pathlib import Path
 import prepare_target_native as native
 
 class PolicyTests(unittest.TestCase):
+    def test_dynamic_catalogue_owner_inherits_pinned_parent_policy(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder)
+            (root/'full/.repository').mkdir(parents=True)
+            (root/'incremental/.repository').mkdir(parents=True)
+            parent=native.write(root/'full/.repository/point.json',dict(backupId='p',parentPointPins=[]))
+            native.write(root/'incremental/.repository/point.json',dict(backupId='i',parentPointPins=[parent]))
+            points={'p':dict(applicationId='a',sourceConfigRef='s',fileStorage=[{'id':28}]),
+                    'i':dict(applicationId='a',sourceConfigRef='s')}
+            owner=dict(sources={'s':dict(recoveryPoints={},archiveRoots=[folder],
+                archiveCatalogue=dict(maximumPointFiles=10))})
+            self.assertEqual(native.resolve_point_policy(points,'i',owner)['fileStorage'],[{'id':28}])
+            self.assertNotIn('parentBackupId',points['i'])
+            native.write(root/'full/.repository/point.json',dict(backupId='other',parentPointPins=[]))
+            with self.assertRaisesRegex(native.PreparationError,'PREPARE_POINT_CHANGED'):
+                native.resolve_point_policy(points,'i',owner)
     def test_real_pinned_parent_is_used_without_manual_parent_field(self):
         with tempfile.TemporaryDirectory() as folder:
             parent=native.write(Path(folder)/'parent.json',dict(parentPointPins=[]))

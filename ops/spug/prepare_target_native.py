@@ -224,7 +224,24 @@ def resolve_point_policy(points, point_ref, owner=None):
     points = deepcopy(points)
     if owner is not None:
         selected = points[point_ref]
-        registered = owner['sources'][selected['sourceConfigRef']]['recoveryPoints']
+        source = owner['sources'][selected['sourceConfigRef']]
+        registered = source['recoveryPoints']
+        if 'archiveCatalogue' in source:
+            # Dynamic owners deliberately leave recoveryPoints empty. Read only
+            # point metadata here; restore performs the payload/eligibility checks.
+            registered = {}
+            count = 0
+            for root in source['archiveRoots']:
+                for path in Path(root).glob('*/.repository/point.json'):
+                    count += 1
+                    require(count <= source['archiveCatalogue']['maximumPointFiles'],
+                        'PREPARE_POINT_LIMIT_EXCEEDED')
+                    reference = pin(path)
+                    document = read(path)
+                    identity = document['backupId']
+                    require(identity not in registered, 'PREPARE_POINT_AMBIGUOUS')
+                    registered[identity] = reference
+        require(point_ref in registered, 'PREPARE_POINT_NOT_FOUND')
         reference = registered[point_ref]
         seen_paths = set()
         child_ref = point_ref
@@ -236,6 +253,7 @@ def resolve_point_policy(points, point_ref, owner=None):
             parents = document['parentPointPins']
             if not parents: break
             reference = parents[-1]
+            require(pin(reference['path']) == reference, 'PREPARE_POINT_CHANGED')
             matches = [key for key, value in registered.items() if value == reference and key in points]
             require(len(matches) == 1, 'PREPARE_POINT_PARENT_INVALID')
             parent_ref = matches[0]
