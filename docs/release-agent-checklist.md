@@ -1,5 +1,16 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## 来源同步运行时与失败续办门禁
+
+- Trigger: 正常开放后来源同步 SyntaxError、缺少引擎依赖、前端重复 start HTTP 304，或业务已开放但来源配置仍旧。
+- Preflight check: 比较发布 profile.python 与来源 pythonPath；来源生成必须使用当前固定控制配置的 pythonPin 和 environment。核原 pending 标记、同 releaseTag/镜像/backend ID、原任务与子进程终态；真实页面正常不代表来源同步已完成。
+- Blocker: 来源运行时身份不符、来源 stage 失败、pending 未消费、控制器实际 pin 与激活回执不一致均阻止备份；不能只凭 maintenance=false 接受开放。
+- Verification: 定向子进程与续办测试先 RED 后 GREEN；通过 Spug 原任务“核对并完成原验收开放”，核 SYNCHRONIZED、控制器实际 pin、五服务身份、IMAGE_TAG、原失败被关联处理。已运行前端不再 start，已完成无 pending 的开放不重复执行。
+- Forbidden action: 不安装另一套依赖绕过已登记运行时，不重派部署/迁移，不清除旧失败或手改历史 pin，不把 NOT_CONFIGURED 当同步成功。
+- Evidence: `doc/tasks/20261118-sixstep-timed/execution-log.md`；实现 4ffa12e、9e01076、c634954，106 项回归；正式续办 JOB-8d4756210e。
+
+阶段必查：部署前核运行时合同；开放失败按原编号检查；续办后核实际来源配置再创建备份。推荐命令为 `python -B -m unittest test_source_runtime test_source_binding_entry test_interruption test_intruoyi_runtime test_technical_verification test_direct_release`。Fail Fast 保留原回执和 stage 失败证据。必须记录失败/成功任务编号、运行时版本、提交、安装摘要和实际来源 pin。Windows 普通执行器从稳定目录以 CREATE_NO_WINDOW 启动，避免自身持久控制台子进程被任务跟踪器登记为仍运行的任务；已登记进程必须核 PID/创建时间/归属，不删除记录绕过。
+
 ## 发布探针与真实页面验收前置门禁
 
 - Trigger: 发布状态长时间不更新、远端目录找不到、浏览器console报错，或只读admin验收触发POST。

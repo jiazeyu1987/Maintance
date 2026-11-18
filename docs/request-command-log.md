@@ -6122,3 +6122,6 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 
 ### 20261118 三项部署收尾完成
 - 用户确认删除pytest缓存，复核后精确清理4个Python缓存并运行正式worktree清理入口：5190文件核验、Git退出0、登记和目录均不存在。稳定执行器绑定/历史复核PASS，未重复业务操作；任务completed，证据见20261118-deploy-three-point/cleanup-result.json。
+
+### 20261118 修复后六步完整重跑与计时
+- 用户要求修复后重跑六步并精确计时；代理恢复后按冻结提交5ad3fd941构建同一releaseTag2026-11-18-15-49-02并发布测试/正式。修复来源运行时和开放续办，106项回归通过并提交推送。新FULL+INCREMENTAL真实备份及.59空目标恢复SUCCEEDED，8表、附件和真实登录版本按约定验收通过。原生增量5777.608673秒、空目标准备108.252486秒、恢复1914.383369秒；两专用worktree已删除，详见doc/tasks/20261118-sixstep-timed/timing-report.md。保留失败与历史PDF页面限制。

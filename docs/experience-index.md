@@ -1,5 +1,7 @@
 # 项目经验索引
 
+- 来源同步 SyntaxError / Python3.6与3.12 / jsonschema依赖环境 / 开放后pending / Docker304 / conhost任务未结束：`docs/release-agent-checklist.md#来源同步运行时与失败续办门禁`。来源stage使用固定来源运行时，正常业务与来源同步分别验收；pending续办只消费原身份尾部，普通执行器无控制台启动。
+
 - 新SQL未登记 / release-sources.json / 旧分类ID990230 / 删除租户历史角色：`docs/release-build-preflight-lessons.md#新sql归宿与旧数据身份预检门禁`。构建前显式运行全量登记测试，目标前核完整菜单身份与有效租户范围，禁止改历史迁移凑通过。
 - no-checkout / sparse-checkout误删除 / 稀疏索引为空 / 意外大量D：`docs/worktree-memory.md#no-checkout稀疏索引与提交集合门禁`。先核初始索引与HEAD，再比预期暂存集合；未融合错误不能带到主线。
 - runtimeStagingRoots / 原job目录 / 长阶段无更新 / workbench/context / Iconify / ORB / 菜单面包屑同名：`docs/release-agent-checklist.md#发布探针与真实页面验收前置门禁`。按原编号与绑定目录查证，先核副作用，所有资源失败保留来源和验收范围，不把临时探针当正式能力。
