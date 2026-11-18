@@ -4,6 +4,8 @@
 
 字段来源：sourceRef 必须已登记在运行控制器的 sourceConfigurations、sourceProgramPolicies、sourceEpochPolicies 中；engineRoot 指已安装的恢复引擎，controlEntryPath 为其 control_entry.py；serviceName 为实际运行控制器服务；dropInDirectory 为该服务的 systemd drop-in 目录；pythonPath 为现有控制器使用的 Python。environmentFile、composeFile 是实际运行配置。generationRoot 是保留不可变来源配置和失败证据的私密目录；containers 是已登记 baselineTarget 的五种服务容器。
 
+来源生成阶段独立使用当前固定控制配置中的 pythonPin 与 environment（含依赖 PYTHONPATH），pythonPin.path 必须与 pythonPath 一致。不得使用发布代理的系统 Python 加载恢复引擎。调用代码和私密配置经标准输入传入，子进程执行期间父进程继续持来源锁；子进程失败保持同步失败，不切换控制器。
+
 正式入口为 reopen/finish_reopen。发布先退出维护模式，正常 backend 和公共 frontend 健康后，再生成新来源配置：同步 IMAGE_TAG、实际镜像和容器 ID、配置材料、writer 证据及 baselineTarget，执行 capture preflight，随后持来源锁切换控制器。成功回执必须证明运行控制器使用新 config pin。不能在维护态 deploy 时绑定即将被替换的 backend。
 
 无 backupSourceBinding 的普通发布返回 NOT_CONFIGURED，不推断来源；需要备份来源同步的服务器必须显式填写完整配置，缺项或同步失败会使发布失败，不报告来源同步完成。失败时业务可能已开放，入口保留绑定重试标记；同一 releaseTag、镜像和实际 backend ID 不变时可重试 reopen，发生漂移必须先调查。阶段失败保留 attempt 证据，已完成阶段按回执复用，不重复重启已激活的新控制器。

@@ -523,6 +523,7 @@ class Runtime:
                   '_recovery=types.ModuleType("intruoyi_recovery_agent")\n'
                   'sys.modules["intruoyi_recovery_agent"]=_recovery\n'
                   'exec(compile(' + repr(recovery) + ',"intruoyi_recovery_agent.py","exec"),_recovery.__dict__)\n'
+                  'BACKUP_SOURCE_PROGRAM=' + repr(backup_source) + '\n'
                   'PAYLOAD=' + repr(payload) + '\n' + agent)
         try:
             proc = subprocess.run(['ssh', *self.ssh_options(), 'root@' + profile['host'],

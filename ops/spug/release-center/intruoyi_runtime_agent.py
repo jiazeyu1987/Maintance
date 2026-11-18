@@ -1174,7 +1174,8 @@ def finish_reopen(profile, candidate):
             require(json.loads(binding_pending.read_text()) == identity, 'Source binding retry identity changed')
         else:
             private_json(binding_pending, identity)
-    binding = synchronize_backup_source(profile, candidate, run=remote.run, inspect=remote.inspect)
+    binding = synchronize_backup_source(profile, candidate, run=remote.run, inspect=remote.inspect,
+                                       stage_program=BACKUP_SOURCE_PROGRAM)
     require(remote.inspect(profile['acceptanceFrontend'])['Config'].get('Labels', {}).get('intruoyi.release.acceptance') == 'true', 'Acceptance resource ownership cannot be proved')
     remote.run(['docker', 'rm', profile['acceptanceFrontend']])
     # The acceptance tail is consumed; subsequent reopen must reconcile.

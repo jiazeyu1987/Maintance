@@ -163,7 +163,26 @@ def controller(binding, run):
     return pid,pin
 
 
-def synchronize(profile, candidate, *, run, inspect):
+def stage_in_runtime(binding, candidate, current_pin, program):
+    """Use the source controller's runtime, not the deployment agent's Python."""
+    control = checked_pin(current_pin)
+    require(control['pythonPin']['path'] == binding['pythonPath'], 'SOURCE_PYTHON_MISMATCH')
+    require(isinstance(program, str) and program, 'SOURCE_STAGE_PROGRAM_REQUIRED')
+    bootstrap = ('import json,sys\n'
+                 'request=json.load(sys.stdin)\n'
+                 'namespace={"__name__":"release_source_stage"}\n'
+                 'exec(compile(request["program"],"release_backup_source.py","exec"),namespace)\n'
+                 'result=namespace["stage"](request["binding"],request["candidate"],request["pin"])\n'
+                 'print(json.dumps(result))\n')
+    request = dict(program=program, binding=binding, candidate=candidate, pin=current_pin)
+    result = subprocess.run([binding['pythonPath'], '-B', '-c', bootstrap],
+        input=json.dumps(request).encode('utf-8'), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        env=dict(os.environ, **control['environment']), timeout=1800)
+    require(result.returncode == 0, 'SOURCE_STAGE_PROCESS_FAILED')
+    return json.loads(result.stdout)
+
+
+def synchronize(profile, candidate, *, run, inspect, stage_program=None):
     """Hold the source lock across generation and controller activation."""
     binding=profile.get('backupSourceBinding')
     if binding is None:return {'status':'NOT_CONFIGURED'}
@@ -200,7 +219,7 @@ def synchronize(profile, candidate, *, run, inspect):
                 if observed['Id']!=item['id'] or observed['Image']!=item['imageId'] or not observed['State']['Running']:
                     raise ValueError('SOURCE_GENERATION_CONTAINER_CHANGED')
         else:
-            receipt=stage(binding,candidate,current_pin)
+            receipt=stage_in_runtime(binding,candidate,current_pin,stage_program)
         target_pin=receipt['controlPin']
         if current_pin!=target_pin:
             active_pid,active_pin=controller(binding,run)

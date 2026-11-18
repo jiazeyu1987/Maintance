@@ -41,7 +41,8 @@ class EntryContract(unittest.TestCase):
             ns={'directory':lambda *a:root,'json':json,'require':require,'datetime':datetime,'timezone':timezone,
                 'private_json':lambda p,v:p.write_text(json.dumps(v),encoding='utf-8'),
                 'remote':SimpleNamespace(inspect=lambda n:{'Id':'backend-new'},run=run),
-                'docker':Mock(),'quote':lambda x:x,'health':Mock(),'gxp_release_mode':Mock(),'observe':observe}
+                'docker':Mock(),'quote':lambda x:x,'health':Mock(),'gxp_release_mode':Mock(),'observe':observe,
+                'BACKUP_SOURCE_PROGRAM':'registered-stage-program'}
             exec(compile(ast.Module(body=[node],type_ignores=[]),'<finish_reopen>','exec'),ns)
             profile={'backend':'backend','frontend':'frontend','acceptanceFrontend':'acceptance','writers':[],
                      'backupSourceBinding':{'configured':True}}
@@ -50,6 +51,7 @@ class EntryContract(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError,'binding failed'):ns['finish_reopen'](profile,candidate)
             self.assertEqual(json.loads((root/'backup-source-binding-pending.private.json').read_text())['backendId'],'backend-new')
             observe.assert_not_called()
+            self.assertEqual(binding.call_args.kwargs['stage_program'], 'registered-stage-program')
             self.assertFalse(any(c.args[0][:2]==['docker','rm'] for c in run.call_args_list))
 
     def test_normal_backend_retry_requires_exact_persisted_identity(self):
