@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "localImageId": "sha256:af6b7a2e576c3cb717cc72f6d1e7bb194e614cc57ee74b02982cd7d54ac16819",
+  "runtimeImageId": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+  "jarSha256": "e22557f020366a6a9317a2583689554a99cfea01b19cfd31f1e61f7a195ff721",
+  "network": "none",
+  "databaseCredentials": false
+}

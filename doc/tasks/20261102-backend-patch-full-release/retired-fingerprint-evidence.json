@@ -1,0 +1,9 @@
+{
+  "samples": 8,
+  "rawIdentities": 4,
+  "canonicalIdentities": 1,
+  "differingFields": [
+    "Mounts"
+  ],
+  "allStopped": true
+}

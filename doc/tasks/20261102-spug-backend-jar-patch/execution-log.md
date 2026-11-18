@@ -1,0 +1,34 @@
+# 执行记录
+
+- 用户明确要求新增后端补丁包流程，且发布不能修改数据库；沿用单 JAR 方案。
+- 本任务仅本机实现、测试及符合条件的本机安装；不会自动发布到三服。
+- 前序任务的目录/扩展事项保留，后续先核新独立副本与实际代码，避免并发覆盖。
+- 独立工作副本：C:/Users/D01021/.codex/worktrees/spug-backend-jar-patch/Maintance；分支 codex/spug-backend-jar-patch-20261102；起点 6fac28ef4f87d120adb573a51274a0c97040cf5a；本任务尚未产生实现提交。
+- BDD: 数据库禁止修改 -> Given 当前数据库及完整写者清单，When 部署单 JAR，Then 不运行迁移/修复/配置 SQL、停止并排空写者、临时 super_read_only 保护新旧程序启动；仅本任务拥有的保护可解除，异常保留保护与原程序恢复依据。临时 GLOBAL 保护开关不是业务/结构修改，不持久化数据库配置。
+- BDD: 不可变程序及后续完整发布 -> Given A+补丁 P，When 发布包含 P 提交的 B，Then 实际改用 B 的内置 JAR、保留 A+P 的恢复引用；遗漏 P 或未知挂载拒绝。
+- BDD: 三服同包 -> Given 同一已校验 JAR，When 测试实际验收后晋级，Then 逐服绑定实际 JAR SHA、主版本、前端、schema/ledger 和 GxP 关闭，失败不伪造成功、不自动回放。
+- RED: bundled python -X utf8 -m unittest test_backend_patch -> FAIL, ModuleNotFoundError: backend_patch_contract（预期尚无实现）。
+- 历史 E:/IntRuoyi 文档通过 C:/Users/D01021/Documents/ChatGPT/IntRuoyi/docs 对照；历史 D:/ProjectPackage 共享风格入口不存在，本任务沿用现有 Spug 页面组件/样式，不重设计业务前端。
+
+- GREEN: experience-preflight -> PASS（仅本机临时隔离 MySQL 集成；已有 mysql:8.0.39、本任务随机容器名、无网络/端口、tmpfs 数据、只删除标签与 ID 一致的本任务测试容器；不访问三服）。
+- GREEN: 原补丁/台账/恢复等 74 项单元测试 -> PASS；初次使用 bundled Python 缺 psutil，明确失败，改用稳定执行器现用且已有依赖的 Python 3.12，未伪造或跳过。
+- GREEN: 后端补丁 14 项合同/故障/门禁检查 -> PASS。新增恢复时复制线程检查先 RED（未拒绝复制实例），再将检查放入共用 acquire_fence，GREEN；避免恢复通道遗漏保护前提。
+- GREEN: 本机真实 mysql:8.0.39 集成 -> PASS；root 更新、建表均被拒绝，原表与行保持，外部保护不接管，本任务保护验证后可解除。首次误连初始化临时 Unix socket 导致失败，改用容器内 TCP 等待正式 MySQL 后通过；两个随机任务容器均按精确 ID/标签删除。
+- REGRESSION: Python unittest discovery -> 600 PASS，4 个既有平台/显式集成 skip；排除唯一未改动的 Windows 服务管理测试模块（依赖 win32api 不存在，且本任务不安装服务）。本机显式 MySQL 集成单独实跑，不以 skip 代替。
+- GREEN: Node 后端/前端补丁页面合同及 Fetch HTTP 错误检查 -> PASS。
+- 本机运行代码比 Git 少独立“三服版本/数据库只读对比”功能，不能直接覆盖或假装已安装；19 文件代码候选保留该现状，只合入后端补丁及前端组合身份所需的现场基线支持。prepare-runtime-update.py 记录三方合并与冲突决策；原包、私密配置、SQLite 历史不进入候选。
+- 候选初次测试目录缺 ops 根路径，明确失败；追加稳定 source 的模块搜索根后，93 项相关测试 PASS；没有修改生产导入逻辑掩盖环境错误。
+- GREEN: experience-preflight -> PASS（仅本机执行器安装/普通脚本重启及 Spug Playwright 登录；端口18112唯一监听 PID8872、可执行文件/源码/配置身份已核；0运行任务，271历史任务、28完整包、1前端补丁；逐文件原/目标SHA绑定，私密备份仅本地private；无三服SSH/发布/数据库操作；不装服务）。
+- GREEN: 安装候选更新后94项相关检查 -> PASS；执行器精确身份/空闲检查后停止PID8872，只安装19文件，普通脚本启动稳定路径；安装前后私密配置及发布SQLite内容摘要完全一致。
+- 初次安装预检查因 Windows 路径分隔符的比较错误停止，未改进程；修正路径规范化后检查通过。真实登录首次因既有来源IP提示未确认而未完成；按现有文档在页面点击“知道了”继续，未改安全设置。
+- 初次主页面检查发现 nginx 使用独立的已登记静态 alias，源码更新未自动更新实际页面；先保留原页面并按实际 include/alias定位，仅同步5个相关静态文件，逐文件摘要核验，无 nginx 配置变化或容器重启。
+- GREEN: Playwright Chrome 实际登录 -> 主发布中心任务页 -> 点击“后端补丁” -> 新页成功；数据库不迁移说明可见，未选基线/包时构建与三服发布按钮禁用，0页面错误，0操作请求，0远端目标访问。首次静态页不同步的超时已明确修复并重跑通过，不伪造首次成功。
+- GREEN: 严格复制前提更新后的真实本机 MySQL 再跑 -> PASS；17项后端补丁专项（补充数据库换实例不能解锁、未知父挂载拒绝、完整包必须含补丁源码的回归）-> PASS。
+- GREEN: 安装后再次核凭据/历史摘要与271/28/1条目数量 -> PASS；30份变更/新文件UTF-8读取与真实私密凭据字面量检测 -> PASS，0泄露；git diff --check -> PASS。
+- 实现/必要验证完成，状态 ready_for_closeout；未执行三服发布、基线登记、功能验收登记、数据库业务操作、Git远端推送或int_main合并。开发副本保留审阅，本次没有发布构建临时副本需要删除。
+- REGRESSION: 最终 discovery -> 604项，600通过/4项既有条件跳过；跳过为2项Linux端口语义、1项显式Docker资源回收、1项Linux flock。未改动且缺win32api的服务管理模块不在普通脚本安装范围。
+- GREEN: experience-preflight -> PASS（补充验证本次改动涉及的旧资源引用保护：仅本机随机前缀/精确ID专用Docker资源，现有python:3.12-bookworm，不访问网络或三服；只读挂载本任务代码运行Linux端口/锁测试；不安装服务、不动现有容器/卷、不prune）。
+- GREEN: 显式 SPUG_REAL_CLEANUP_TEST=1 的真实 Docker 镜像/旧容器/文件回收 -> 1项PASS；当前恢复点和清单保留，重复清理零删除，本任务临时资源精确清理。Linux只读代码容器的真实进程锁/端口语义 -> 3项PASS；Windows discovery条件跳过的4项均另行实跑通过。
+- 验证汇总已写 verification.json，只含安全结果及条目摘要；主工作区2个本任务bootstrap草稿先逐字节保存到本机private，再只删除精确的自有未跟踪草稿和空目录，其他主区改动不动。
+- 实现提交5c0133a，24个精确任务文件，无其他改动暂存；分支codex/spug-backend-jar-patch-20261102，不自动合并/推送。
+- Closeout：本轮不产生发布构建worktree；交付开发worktree保留审阅。执行器源码与cwd为稳定C:/SpugHandoff/release/source/ops/spug/release-center，测试专用容器与镜像均按ID清理，原包和历史/凭据保持。最终任务记录单独提交，任务completed。

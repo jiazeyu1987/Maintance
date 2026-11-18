@@ -1,0 +1,8 @@
+{
+  "id": "JOB-524046bf31",
+  "action": "backend-patch-accept",
+  "status": "succeeded",
+  "target": "test",
+  "releaseTag": "2026-11-03-10-33-18",
+  "currentStep": "backend-patch-accept"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "JOB-8ec956406e",
+  "action": "backend-patch-restore",
+  "status": "succeeded",
+  "target": "test",
+  "releaseTag": "2026-11-03-08-23-17",
+  "currentStep": "restore-original-backend-only",
+  "resultKeys": [
+    "databaseRestored",
+    "mode",
+    "observation",
+    "originalJobId",
+    "otherStdinWorkers",
+    "status"
+  ]
+}

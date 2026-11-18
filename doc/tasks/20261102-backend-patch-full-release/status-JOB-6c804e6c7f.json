@@ -1,0 +1,10 @@
+{
+  "id": "JOB-6c804e6c7f",
+  "action": "backend-patch-build",
+  "status": "failed",
+  "target": null,
+  "releaseTag": "2026-11-02-21-39-33",
+  "currentStep": "verify-jar-with-pinned-runtime-offline",
+  "error": "docker image failed (1): \nError response from daemon: No such image: sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3\n",
+  "buildWorktree": "C:\\SpugHandoff\\release\\build\\2026-11-02-21-39-33"
+}

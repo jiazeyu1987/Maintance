@@ -1,0 +1,9 @@
+{
+  "repository": "maintenance",
+  "branch": "codex/spug-backend-jar-patch-20261102",
+  "head": "66b5af94a858c4cc2dfe31558393f82bb31f7960",
+  "remoteHeadMatches": true,
+  "intMainHead": "4325121b5c5126a356cb5b378c267096183a60e4",
+  "intMainUnchanged": true,
+  "status": "PASS"
+}

@@ -1,0 +1,14 @@
+{
+  "test": {
+    "terminalClaims": "0",
+    "runningTasks": "0"
+  },
+  "prod": {
+    "terminalClaims": "0",
+    "runningTasks": "0"
+  },
+  "backup": {
+    "terminalClaims": "0",
+    "runningTasks": "0"
+  }
+}

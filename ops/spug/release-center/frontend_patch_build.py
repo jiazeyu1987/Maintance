@@ -81,6 +81,11 @@ def build(executor, job):
                   baseGitCommit=base['gitCommit'],gitCommit=commit,backendImageId=base_context['backendImageId'],
                   images={'frontend':image},metadata=metadata,changedFiles=changes,files=files)
     if baseline:manifest['observedBaseline']=baseline
+    if baseline and baseline['origins']['prod'].get('backendProgram'):
+        manifest['backendProgram']=baseline['origins']['prod']['backendProgram']
+    if not baseline:
+        require(not any(e.get('backendPatchTag') for e in executor.state.get('backendPatchEnvironments',{}).values()),
+                '当前有后端 JAR 补丁，请使用实际现场基线构建前端补丁')
     (folder/'manifest.json').write_text(json.dumps(manifest,ensure_ascii=False,indent=2),'utf-8')
     with tarfile.open(folder/'release.tar','w') as archive:
         for n in ['manifest.json']+[f['name'] for f in files]:archive.add(folder/n,arcname=n)

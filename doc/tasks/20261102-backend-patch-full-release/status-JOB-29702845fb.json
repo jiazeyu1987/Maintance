@@ -1,0 +1,20 @@
+{
+  "id": "JOB-29702845fb",
+  "action": "backend-patch-deploy",
+  "status": "succeeded",
+  "target": "backup",
+  "releaseTag": "2026-11-03-10-33-18",
+  "currentStep": "switch-backend-with-readonly-startup",
+  "resultKeys": [
+    "databaseSchemaChanged",
+    "effectsStarted",
+    "jobId",
+    "migrationsExecuted",
+    "normalRuntimeWritesAllowed",
+    "observation",
+    "origin",
+    "packageSha256",
+    "readonlyProbeVerified",
+    "status"
+  ]
+}

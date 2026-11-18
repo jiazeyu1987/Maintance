@@ -1,0 +1,167 @@
+{
+  "collectedAt": "2026-11-02T20:56:46",
+  "targets": {
+    "test": {
+      "status": "passed",
+      "observation": {
+        "releaseTag": "2026-11-01-13-08-35",
+        "frontendPatchTag": "2026-11-02-10-09-19",
+        "frontendMetadata": {
+          "releaseTag": "2026-11-02-10-09-19",
+          "baseReleaseTag": "2026-11-01-13-08-35",
+          "frontendPatchTag": "2026-11-02-10-09-19",
+          "sourceCommit": "91683fd0349af7e2feb6a8d86c44ef9449a0bab3",
+          "builtAt": "2026-11-02T02:18:46.364968+00:00"
+        },
+        "backendPatchTag": null,
+        "backendJarSha256": "86be5d491eda8de2e21bbf45d1e57c096b525b07136334161fc95e07a6f65961",
+        "backendMetadata": {
+          "releaseTag": "2026-11-01-13-08-35",
+          "sourceCommit": "fb88105af40e4ee6366a20dae2df721f1de2dcb0",
+          "builtAt": "2026-11-01T05:38:23.556211+00:00"
+        },
+        "components": {
+          "frontend": {
+            "name": "/intruoyi-july-unified-58-frontend",
+            "containerId": "140a84e396d12c128ad47a9255fe6eb63fab4760347d114e42dbe2b365c2d771",
+            "image": "sha256:031955582d62574a444d8fdbb43b5a20c3cbbdf6569cb03f5ef6d4b6e54dc35e",
+            "imageId": "sha256:031955582d62574a444d8fdbb43b5a20c3cbbdf6569cb03f5ef6d4b6e54dc35e",
+            "running": true,
+            "startedAt": "2026-11-02T02:21:00.055741676Z"
+          },
+          "backend": {
+            "name": "/brlab-prod57-nas-test58-20261020-r3-backend",
+            "containerId": "64c7807c886f435d324eb46374754c7e8ec1df09dfc3ed266273cc7ac616f914",
+            "image": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+            "imageId": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+            "running": true,
+            "startedAt": "2026-11-02T01:37:12.769680544Z"
+          },
+          "database": {
+            "name": "/brlab-prod57-nas-test58-20261020-r3-mysql",
+            "containerId": "b4592b704b979f1b94ba03836985491a8f7c699d3094297bfbe3696939eedd79",
+            "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+            "imageId": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+            "running": true,
+            "startedAt": "2026-10-20T02:51:19.576144365Z"
+          }
+        },
+        "schemaSha256": "dc1b23dec9664a58329f5b0ae8bdc5ec09822cfc78b3beee335d45ae248930d1",
+        "ledgerSha256": "b0247053497556d57ca0674529fdefef306c660d785960cc90953228f6fa5ca7",
+        "databaseIdentity": "ruoyi-vue-pro\t20ca4c6c-cc31-11f1-9b95-0242ac1deb16\t8.0.39\t1",
+        "backendConfigSha256": "3b8b888cad2b6e40fa665c0306e810b07feecaaba7f451e21af60850f701726e",
+        "backendHealth": "UP",
+        "frontendHttpStatus": 200,
+        "gxpAuditMode": "DEVELOPMENT_DISABLED"
+      }
+    },
+    "prod": {
+      "status": "passed",
+      "observation": {
+        "releaseTag": "2026-11-01-13-08-35",
+        "frontendPatchTag": "2026-11-02-10-09-19",
+        "frontendMetadata": {
+          "releaseTag": "2026-11-02-10-09-19",
+          "baseReleaseTag": "2026-11-01-13-08-35",
+          "frontendPatchTag": "2026-11-02-10-09-19",
+          "sourceCommit": "91683fd0349af7e2feb6a8d86c44ef9449a0bab3",
+          "builtAt": "2026-11-02T02:18:46.364968+00:00"
+        },
+        "backendPatchTag": null,
+        "backendJarSha256": "86be5d491eda8de2e21bbf45d1e57c096b525b07136334161fc95e07a6f65961",
+        "backendMetadata": {
+          "releaseTag": "2026-11-01-13-08-35",
+          "sourceCommit": "fb88105af40e4ee6366a20dae2df721f1de2dcb0",
+          "builtAt": "2026-11-01T05:38:23.556211+00:00"
+        },
+        "components": {
+          "frontend": {
+            "name": "/intruoyi-frontend",
+            "containerId": "39390fe94fff21a66eb39b08f735bba372af6b85454c23623d69c556e658ca39",
+            "image": "sha256:031955582d62574a444d8fdbb43b5a20c3cbbdf6569cb03f5ef6d4b6e54dc35e",
+            "imageId": "sha256:031955582d62574a444d8fdbb43b5a20c3cbbdf6569cb03f5ef6d4b6e54dc35e",
+            "running": true,
+            "startedAt": "2026-11-02T02:25:38.331772793Z"
+          },
+          "backend": {
+            "name": "/intruoyi-backend",
+            "containerId": "7a361162965c17714bb0342a44eb76e709a841ff2fbfc7f36d0750350fbf6fe8",
+            "image": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+            "imageId": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+            "running": true,
+            "startedAt": "2026-11-02T01:45:39.947190088Z"
+          },
+          "database": {
+            "name": "/intruoyi-mysql",
+            "containerId": "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+            "image": "mysql:8.0.39",
+            "imageId": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+            "running": true,
+            "startedAt": "2026-09-29T07:53:27.461777659Z"
+          }
+        },
+        "schemaSha256": "dc1b23dec9664a58329f5b0ae8bdc5ec09822cfc78b3beee335d45ae248930d1",
+        "ledgerSha256": "9663fecc81c4315a373b78d476bbd68237881de05331f90e3b8921501bc50ef2",
+        "databaseIdentity": "ruoyi-vue-pro\t0fa6c22b-5a90-11f1-ade1-0242ac150002\t8.0.39\t1",
+        "backendConfigSha256": "e591088836cfe814b5d87e35d166d19a3929b2d7a0b5c1cbefe0f8c96d4ce8e2",
+        "backendHealth": "UP",
+        "frontendHttpStatus": 200,
+        "gxpAuditMode": "DEVELOPMENT_DISABLED"
+      }
+    },
+    "backup": {
+      "status": "passed",
+      "observation": {
+        "releaseTag": "2026-11-01-13-08-35",
+        "frontendPatchTag": "2026-11-02-10-09-19",
+        "frontendMetadata": {
+          "releaseTag": "2026-11-02-10-09-19",
+          "baseReleaseTag": "2026-11-01-13-08-35",
+          "frontendPatchTag": "2026-11-02-10-09-19",
+          "sourceCommit": "91683fd0349af7e2feb6a8d86c44ef9449a0bab3",
+          "builtAt": "2026-11-02T02:18:46.364968+00:00"
+        },
+        "backendPatchTag": null,
+        "backendJarSha256": "86be5d491eda8de2e21bbf45d1e57c096b525b07136334161fc95e07a6f65961",
+        "backendMetadata": {
+          "releaseTag": "2026-11-01-13-08-35",
+          "sourceCommit": "fb88105af40e4ee6366a20dae2df721f1de2dcb0",
+          "builtAt": "2026-11-01T05:38:23.556211+00:00"
+        },
+        "components": {
+          "frontend": {
+            "name": "/intruoyi-july-unified-59-frontend-r2",
+            "containerId": "468f5ad9e7b99ba1d9f822799c18845fb863b17dc7c485f1f1067752bddd935a",
+            "image": "sha256:031955582d62574a444d8fdbb43b5a20c3cbbdf6569cb03f5ef6d4b6e54dc35e",
+            "imageId": "sha256:031955582d62574a444d8fdbb43b5a20c3cbbdf6569cb03f5ef6d4b6e54dc35e",
+            "running": true,
+            "startedAt": "2026-11-02T02:28:00.417700603Z"
+          },
+          "backend": {
+            "name": "/intruoyi-prod-nas-restore59-20261020-backend",
+            "containerId": "8b2b55a91dd73382f25cecedf4e3cae81c7e4e35e4eaadc3473dcff13a0e6e42",
+            "image": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+            "imageId": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+            "running": true,
+            "startedAt": "2026-11-02T01:55:45.610989278Z"
+          },
+          "database": {
+            "name": "/intruoyi-prod-nas-restore59-20261020-native-mysql",
+            "containerId": "4376cb8d12c95ec485589b2fc8edabed3d9c631fcd52f715c4b2800f1b4cde8e",
+            "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+            "imageId": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+            "running": true,
+            "startedAt": "2026-10-25T07:24:58.86398075Z"
+          }
+        },
+        "schemaSha256": "dc1b23dec9664a58329f5b0ae8bdc5ec09822cfc78b3beee335d45ae248930d1",
+        "ledgerSha256": "054a691bdbe41967d87ae137547359801530b5b7ed476a6f1aebc531833c23da",
+        "databaseIdentity": "ruoyi-vue-pro\ta4f03708-cc74-11f1-9cce-0242ac1def16\t8.0.39\t1",
+        "backendConfigSha256": "c9298e97e231873dc2ca7f677108978d11f49d726952d1ef0bd6dc953b91fa11",
+        "backendHealth": "UP",
+        "frontendHttpStatus": 200,
+        "gxpAuditMode": "DEVELOPMENT_DISABLED"
+      }
+    }
+  }
+}

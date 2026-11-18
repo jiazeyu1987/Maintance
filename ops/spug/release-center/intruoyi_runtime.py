@@ -410,6 +410,13 @@ def validate_quiescence_recovery(record, payload, observation):
         'Original application/database containers differ')
 
 
+def ssh_source_bytes(source):
+    """Keep Windows OpenSSH stdin ASCII; decode UTF-8 inside remote Python."""
+    import base64
+    encoded=base64.b64encode(source.encode('utf-8'))
+    return b"import base64\nexec(compile(base64.b64decode('"+encoded+b"'),'<release-agent>','exec'))\n"
+
+
 class Runtime:
     def __init__(self, config):
         import threading
@@ -459,7 +466,7 @@ class Runtime:
             job.setdefault('remoteOperations', []).append(operation)
             persist()
             arguments.update(operationId=operation['operationId'], workflowJobId=job['id'])
-        uncertain_on_disconnect = action in ('artifact-auto-clean','frontend-patch-deploy','frontend-patch-restore','deploy', 'maintenance', 'recover-release', 'accept-recovery', 'resume-test-deployment-tail', 'rehearsal-capture', 'rehearsal-restore', 'rehearsal-resume-tail', 'rehearsal-reset')
+        uncertain_on_disconnect = action in ('backend-patch-deploy','backend-patch-restore','artifact-auto-clean','frontend-patch-deploy','frontend-patch-restore','deploy', 'maintenance', 'recover-release', 'accept-recovery', 'resume-test-deployment-tail', 'rehearsal-capture', 'rehearsal-restore', 'rehearsal-resume-tail', 'rehearsal-reset')
         profile = self.profile(env)
         if action == 'artifact-auto-clean':
             profile['stagingRoot'] = self.targets[env]['stagingRoot']
@@ -477,7 +484,15 @@ class Runtime:
         frontend_patch = (self.sources / 'frontend_patch_agent.py').read_text('utf-8')
         database_versions = (self.sources / 'database_versions.py').read_text('utf-8')
         backup_source = (self.sources / 'release_backup_source.py').read_text('utf-8')
+        backend_contract = (self.sources / 'backend_patch_contract.py').read_text('utf-8')
+        backend_patch = (self.sources / 'backend_patch_agent.py').read_text('utf-8')
         source = ('import types,sys\n'
+                  '_bc=types.ModuleType("backend_patch_contract")\n'
+                  'sys.modules["backend_patch_contract"]=_bc\n'
+                  'exec(compile(' + repr(backend_contract) + ',"backend_patch_contract.py","exec"),_bc.__dict__)\n'
+                  '_bp=types.ModuleType("backend_patch_agent")\n'
+                  'sys.modules["backend_patch_agent"]=_bp\n'
+                  'exec(compile(' + repr(backend_patch) + ',"backend_patch_agent.py","exec"),_bp.__dict__)\n'
                   '_backup_source=types.ModuleType("release_backup_source")\n'
                   'sys.modules["release_backup_source"]=_backup_source\n'
                   'exec(compile(' + repr(backup_source) + ',"release_backup_source.py","exec"),_backup_source.__dict__)\n'
@@ -511,7 +526,7 @@ class Runtime:
                   'PAYLOAD=' + repr(payload) + '\n' + agent)
         try:
             proc = subprocess.run(['ssh', *self.ssh_options(), 'root@' + profile['host'],
-                               shlex.quote(profile['python']) + ' -'], input=source.encode('utf-8'),
+                               shlex.quote(profile['python']) + ' -'], input=ssh_source_bytes(source),
                               stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                               timeout=self.config.get('rehearsalOperationTimeout', 21600)
                               if action in ('rehearsal-capture', 'rehearsal-restore')

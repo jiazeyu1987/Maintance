@@ -1,0 +1,77 @@
+{
+  "prod": {
+    "status": "PASS",
+    "phase": "patch",
+    "tag": "2026-11-03-10-33-18",
+    "observation": {
+      "releaseTag": "2026-11-01-13-08-35",
+      "frontendPatchTag": "2026-11-02-10-09-19",
+      "frontendMetadata": {
+        "releaseTag": "2026-11-02-10-09-19",
+        "baseReleaseTag": "2026-11-01-13-08-35",
+        "frontendPatchTag": "2026-11-02-10-09-19",
+        "sourceCommit": "91683fd0349af7e2feb6a8d86c44ef9449a0bab3",
+        "builtAt": "2026-11-02T02:18:46.364968+00:00"
+      },
+      "backendPatchTag": "2026-11-03-10-33-18",
+      "backendJarSha256": "8c3c670d57c77c84d76fe335e3918e1a9f4cd5b47ba097fe10908ab07c7d9135",
+      "backendMetadata": {
+        "releaseTag": "2026-11-01-13-08-35",
+        "baseReleaseTag": "2026-11-01-13-08-35",
+        "backendPatchTag": "2026-11-03-10-33-18",
+        "sourceCommit": "ee2d7c79356e79e1180ab03e03873cd3f924a6f5",
+        "backendJarSha256": "8c3c670d57c77c84d76fe335e3918e1a9f4cd5b47ba097fe10908ab07c7d9135"
+      },
+      "components": {
+        "frontend": {
+          "name": "/intruoyi-frontend",
+          "containerId": "39390fe94fff21a66eb39b08f735bba372af6b85454c23623d69c556e658ca39",
+          "image": "sha256:031955582d62574a444d8fdbb43b5a20c3cbbdf6569cb03f5ef6d4b6e54dc35e",
+          "imageId": "sha256:031955582d62574a444d8fdbb43b5a20c3cbbdf6569cb03f5ef6d4b6e54dc35e",
+          "running": true,
+          "startedAt": "2026-11-03T03:18:34.855382961Z"
+        },
+        "backend": {
+          "name": "/intruoyi-backend",
+          "containerId": "8cb79cd7512261871492b01823ab401cdcfb26ac618c2355802b8c388d8591e0",
+          "image": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+          "imageId": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+          "running": true,
+          "startedAt": "2026-11-03T03:15:55.067486951Z"
+        },
+        "database": {
+          "name": "/intruoyi-mysql",
+          "containerId": "9a288d20d254366e99b265b1870466e974edf23e7aab60de2391e3a38e62fff6",
+          "image": "mysql:8.0.39",
+          "imageId": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+          "running": true,
+          "startedAt": "2026-09-29T07:53:27.461777659Z"
+        }
+      },
+      "schemaSha256": "dc1b23dec9664a58329f5b0ae8bdc5ec09822cfc78b3beee335d45ae248930d1",
+      "ledgerSha256": "9663fecc81c4315a373b78d476bbd68237881de05331f90e3b8921501bc50ef2",
+      "databaseIdentity": "ruoyi-vue-pro\t0fa6c22b-5a90-11f1-ade1-0242ac150002\t8.0.39\t1",
+      "backendConfigSha256": "a6512cb78553c96baf2adfbdbadda96cc29f24ef41b0ea530b01e70459856083",
+      "backendHealth": "UP",
+      "frontendHttpStatus": 200,
+      "gxpAuditMode": "DEVELOPMENT_DISABLED"
+    },
+    "startupLogCount": 1,
+    "programMounts": [
+      {
+        "source": "/var/lib/docker/intruoyi-release-workflow/prod/packages/backend-patches/2026-11-03-10-33-18/JOB-ea0c08da2d/release-info.json",
+        "destination": "/yudao-server/release-info.json",
+        "rw": false
+      },
+      {
+        "source": "/var/lib/docker/intruoyi-release-workflow/prod/packages/backend-patches/2026-11-03-10-33-18/JOB-ea0c08da2d/app.jar",
+        "destination": "/yudao-server/app.jar",
+        "rw": false
+      }
+    ],
+    "backendImageReference": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+    "frontendImageReference": "sha256:031955582d62574a444d8fdbb43b5a20c3cbbdf6569cb03f5ef6d4b6e54dc35e",
+    "readOnly": "0\t0",
+    "applicationPropertiesSha256": {}
+  }
+}

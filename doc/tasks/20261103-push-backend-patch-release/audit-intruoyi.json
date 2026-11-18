@@ -1,0 +1,21 @@
+{
+  "repository": "intruoyi",
+  "branch": "codex/backend-patch-full-validation-20261102",
+  "head": "915ffa2df04667d67e814246dd32e6629c0b40e5",
+  "unpublishedCommitCount": 6,
+  "unpublishedCommits": [
+    "915ffa2df04667d67e814246dd32e6629c0b40e5 任务: 记录启动修复与补丁全量验收",
+    "ee2d7c79356e79e1180ab03e03873cd3f924a6f5 任务: Quartz定义一致时避免启动重复写入",
+    "dc557a26db9135469ee9d0300e5d0cf23cface83 任务: 展厅启动无恢复工作时仅查询",
+    "3bf63eee8ebefefa9ee48441c434bea481a5ac71 修复: DCC NAS启动仅恢复实际运行任务",
+    "da3851751451ea75ce82f4ecb9e0364000505909 修复: DCC启动无待恢复任务时避免空写入",
+    "e5934b12e46064b01c8b5ad0b4c016229286c223 日志: 记录后端启动完成与发布元数据入口"
+  ],
+  "outgoingObjectCount": 150,
+  "outgoingBlobCount": 17,
+  "maximumBlobBytes": 222759,
+  "totalBlobBytes": 743502,
+  "largeObjectFindings": [],
+  "credentialFindings": [],
+  "status": "PASS"
+}

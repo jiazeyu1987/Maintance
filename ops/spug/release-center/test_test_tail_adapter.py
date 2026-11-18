@@ -48,6 +48,28 @@ class TestTailAdapterTests(unittest.TestCase):
     def run_retry(self):
         self.executor.resolve_task(self.job)
 
+    def prepare_unswitched_checkpoint(self):
+        records=[dict(self.migration,status='APPLIED')]
+        origin=dict(self.observation,releaseTag='old',fingerprint='original-fingerprint',
+                    ledgerRecords=records,images=dict(backend='old-backend',frontend='old-frontend'))
+        self.original['originState']=origin
+        self.original['migrationPlan']=target_input_plan([self.migration],records,'test')
+        self.observation.update(origin,releaseTag=None,backendHealth={'status':'DOWN'},frontendHttpStatus=None)
+
+    def test_sealed_unswitched_zero_apply_checkpoint_can_continue_to_candidate(self):
+        self.prepare_unswitched_checkpoint()
+        self.run_retry()
+        self.assertEqual(self.package['stage'],'tested')
+        self.executor.runtime.resume_test_deployment_tail.assert_called_once()
+        self.executor.runtime.deploy.assert_not_called()
+
+    def test_zero_apply_cannot_resume_an_unknown_origin(self):
+        self.prepare_unswitched_checkpoint()
+        self.observation['fingerprint']='unknown'
+        with self.assertRaisesRegex(ValueError,'original candidate|sealed origin'):
+            self.run_retry()
+        self.executor.runtime.resume_test_deployment_tail.assert_not_called()
+
     def test_success_retains_failed_original_and_runs_technical_verification(self):
         self.run_retry()
         self.assertEqual(self.package['stage'], 'tested')

@@ -1,0 +1,9 @@
+{
+  "id": "JOB-5bcd73ebab",
+  "action": "backend-patch-deploy",
+  "status": "interrupted",
+  "target": "test",
+  "releaseTag": "2026-11-03-08-23-17",
+  "currentStep": "switch-backend-with-readonly-startup",
+  "error": "SSH disconnected; remote backend-patch-deploy outcome is unconfirmed. Do not replay the task"
+}

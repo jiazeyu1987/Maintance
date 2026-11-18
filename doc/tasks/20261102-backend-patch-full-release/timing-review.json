@@ -1,0 +1,409 @@
+{
+  "jobs": [
+    {
+      "id": "JOB-763953cdce",
+      "action": "retry-release-cleanup",
+      "status": "succeeded",
+      "target": "backup",
+      "releaseTag": "2026-11-03-12-15-42",
+      "times": {
+        "createdAt": "2026-11-03-16-16-59",
+        "finishedAt": "2026-11-03-16-17-25"
+      },
+      "cleanup": {
+        "status": "succeeded",
+        "startedAt": null,
+        "finishedAt": "2026-11-03-16-22-02"
+      }
+    },
+    {
+      "id": "JOB-a7a180c9c4",
+      "action": "retry-release-cleanup",
+      "status": "succeeded",
+      "target": "backup",
+      "releaseTag": "2026-11-03-12-15-42",
+      "times": {
+        "createdAt": "2026-11-03-16-05-39",
+        "finishedAt": "2026-11-03-16-06-03"
+      },
+      "cleanup": {
+        "status": "failed",
+        "startedAt": null,
+        "finishedAt": "2026-11-03-16-08-43"
+      }
+    },
+    {
+      "id": "JOB-7f32aa47ab",
+      "action": "accept-backup",
+      "status": "succeeded",
+      "target": "backup",
+      "releaseTag": "2026-11-03-12-15-42",
+      "times": {
+        "createdAt": "2026-11-03-15-37-26",
+        "finishedAt": "2026-11-03-15-45-15"
+      },
+      "cleanup": {
+        "status": "failed",
+        "startedAt": null,
+        "finishedAt": "2026-11-03-15-50-06"
+      }
+    },
+    {
+      "id": "JOB-2714f1ba96",
+      "action": "promote-backup",
+      "status": "succeeded",
+      "target": "backup",
+      "releaseTag": "2026-11-03-12-15-42",
+      "times": {
+        "createdAt": "2026-11-03-14-54-09",
+        "finishedAt": "2026-11-03-15-36-09"
+      }
+    },
+    {
+      "id": "JOB-1807d7a63b",
+      "action": "accept-prod",
+      "status": "succeeded",
+      "target": "prod",
+      "releaseTag": "2026-11-03-12-15-42",
+      "times": {
+        "createdAt": "2026-11-03-14-45-56",
+        "finishedAt": "2026-11-03-14-52-53"
+      }
+    },
+    {
+      "id": "JOB-31001c8bcb",
+      "action": "promote-prod",
+      "status": "succeeded",
+      "target": "prod",
+      "releaseTag": "2026-11-03-12-15-42",
+      "times": {
+        "createdAt": "2026-11-03-14-35-44",
+        "finishedAt": "2026-11-03-14-44-55"
+      }
+    },
+    {
+      "id": "JOB-f4cd60ec96",
+      "action": "mark-tested",
+      "status": "succeeded",
+      "target": "test",
+      "releaseTag": "2026-11-03-12-15-42",
+      "times": {
+        "createdAt": "2026-11-03-14-31-18",
+        "finishedAt": "2026-11-03-14-34-39"
+      }
+    },
+    {
+      "id": "JOB-b68b4b0044",
+      "action": "resolve-task",
+      "status": "succeeded",
+      "target": "test",
+      "releaseTag": "2026-11-03-12-15-42",
+      "times": {
+        "createdAt": "2026-11-03-14-06-31",
+        "finishedAt": "2026-11-03-14-30-14"
+      }
+    },
+    {
+      "id": "JOB-0a72553fa4",
+      "action": "publish-test",
+      "status": "failed",
+      "target": "test",
+      "releaseTag": "2026-11-03-12-15-42",
+      "times": {
+        "createdAt": "2026-11-03-13-11-24",
+        "finishedAt": "2026-11-03-13-35-27"
+      }
+    },
+    {
+      "id": "JOB-eeaf3711eb",
+      "action": "resolve-task",
+      "status": "succeeded",
+      "target": null,
+      "releaseTag": "2026-11-03-12-15-42",
+      "times": {
+        "createdAt": "2026-11-03-13-07-05",
+        "finishedAt": "2026-11-03-13-09-13"
+      }
+    },
+    {
+      "id": "JOB-bd1f8db63f",
+      "action": "build-release",
+      "status": "failed",
+      "target": null,
+      "releaseTag": "2026-11-03-12-15-42",
+      "times": {
+        "createdAt": "2026-11-03-12-13-55",
+        "finishedAt": "2026-11-03-13-00-43"
+      }
+    },
+    {
+      "id": "JOB-9aa24823ce",
+      "action": "backend-patch-accept",
+      "status": "succeeded",
+      "target": "backup",
+      "releaseTag": "2026-11-03-10-33-18",
+      "times": {
+        "createdAt": "2026-11-03-11-50-40",
+        "finishedAt": "2026-11-03-11-51-27"
+      },
+      "cleanup": {
+        "status": "failed",
+        "startedAt": null,
+        "finishedAt": "2026-11-03-11-54-18"
+      }
+    },
+    {
+      "id": "JOB-29702845fb",
+      "action": "backend-patch-deploy",
+      "status": "succeeded",
+      "target": "backup",
+      "releaseTag": "2026-11-03-10-33-18",
+      "times": {
+        "createdAt": "2026-11-03-11-38-19",
+        "finishedAt": "2026-11-03-11-47-38"
+      }
+    },
+    {
+      "id": "JOB-a070d137e7",
+      "action": "backend-patch-accept",
+      "status": "succeeded",
+      "target": "prod",
+      "releaseTag": "2026-11-03-10-33-18",
+      "times": {
+        "createdAt": "2026-11-03-11-34-40",
+        "finishedAt": "2026-11-03-11-35-37"
+      }
+    },
+    {
+      "id": "JOB-ea0c08da2d",
+      "action": "backend-patch-deploy",
+      "status": "succeeded",
+      "target": "prod",
+      "releaseTag": "2026-11-03-10-33-18",
+      "times": {
+        "createdAt": "2026-11-03-11-11-11",
+        "finishedAt": "2026-11-03-11-19-02"
+      }
+    },
+    {
+      "id": "JOB-524046bf31",
+      "action": "backend-patch-accept",
+      "status": "succeeded",
+      "target": "test",
+      "releaseTag": "2026-11-03-10-33-18",
+      "times": {
+        "createdAt": "2026-11-03-11-09-22",
+        "finishedAt": "2026-11-03-11-10-11"
+      }
+    },
+    {
+      "id": "JOB-b103fa74ee",
+      "action": "backend-patch-deploy",
+      "status": "succeeded",
+      "target": "test",
+      "releaseTag": "2026-11-03-10-33-18",
+      "times": {
+        "createdAt": "2026-11-03-10-55-14",
+        "finishedAt": "2026-11-03-11-04-51"
+      }
+    },
+    {
+      "id": "JOB-76231932d6",
+      "action": "backend-patch-build",
+      "status": "succeeded",
+      "target": null,
+      "releaseTag": "2026-11-03-10-33-18",
+      "times": {
+        "createdAt": "2026-11-03-10-31-23",
+        "finishedAt": "2026-11-03-10-51-26"
+      }
+    },
+    {
+      "id": "JOB-1af1eefb74",
+      "action": "backend-patch-register-baseline",
+      "status": "succeeded",
+      "target": null,
+      "releaseTag": null,
+      "times": {
+        "createdAt": "2026-11-03-10-13-53",
+        "finishedAt": "2026-11-03-10-15-55"
+      }
+    },
+    {
+      "id": "JOB-1746423a99",
+      "action": "backend-patch-restore",
+      "status": "succeeded",
+      "target": "test",
+      "releaseTag": "2026-11-03-08-23-17",
+      "times": {
+        "createdAt": "2026-11-03-09-29-39",
+        "finishedAt": "2026-11-03-09-34-20"
+      }
+    },
+    {
+      "id": "JOB-6aa7b1fac9",
+      "action": "backend-patch-deploy",
+      "status": "failed",
+      "target": "test",
+      "releaseTag": "2026-11-03-08-23-17",
+      "times": {
+        "createdAt": "2026-11-03-09-21-18",
+        "finishedAt": "2026-11-03-09-26-38"
+      }
+    },
+    {
+      "id": "JOB-8ec956406e",
+      "action": "backend-patch-restore",
+      "status": "succeeded",
+      "target": "test",
+      "releaseTag": "2026-11-03-08-23-17",
+      "times": {
+        "createdAt": "2026-11-03-09-17-46",
+        "finishedAt": "2026-11-03-09-18-47"
+      }
+    },
+    {
+      "id": "JOB-5bcd73ebab",
+      "action": "backend-patch-deploy",
+      "status": "interrupted",
+      "target": "test",
+      "releaseTag": "2026-11-03-08-23-17",
+      "times": {
+        "createdAt": "2026-11-03-08-40-52",
+        "finishedAt": "2026-11-03-08-42-41"
+      }
+    },
+    {
+      "id": "JOB-5d8015fc27",
+      "action": "backend-patch-build",
+      "status": "succeeded",
+      "target": null,
+      "releaseTag": "2026-11-03-08-23-17",
+      "times": {
+        "createdAt": "2026-11-03-08-21-54",
+        "finishedAt": "2026-11-03-08-37-43"
+      }
+    },
+    {
+      "id": "JOB-3a9eb5e4a2",
+      "action": "backend-patch-register-baseline",
+      "status": "succeeded",
+      "target": null,
+      "releaseTag": null,
+      "times": {
+        "createdAt": "2026-11-03-08-13-25",
+        "finishedAt": "2026-11-03-08-15-48"
+      }
+    },
+    {
+      "id": "JOB-ba2887f9dd",
+      "action": "backend-patch-restore",
+      "status": "succeeded",
+      "target": "test",
+      "releaseTag": "2026-11-02-23-56-34",
+      "times": {
+        "createdAt": "2026-11-03-00-39-06",
+        "finishedAt": "2026-11-03-00-43-34"
+      }
+    },
+    {
+      "id": "JOB-740d813a0b",
+      "action": "backend-patch-deploy",
+      "status": "failed",
+      "target": "test",
+      "releaseTag": "2026-11-02-23-56-34",
+      "times": {
+        "createdAt": "2026-11-03-00-25-22",
+        "finishedAt": "2026-11-03-00-37-33"
+      }
+    },
+    {
+      "id": "JOB-3fac1466b1",
+      "action": "backend-patch-build",
+      "status": "succeeded",
+      "target": null,
+      "releaseTag": "2026-11-02-23-56-34",
+      "times": {
+        "createdAt": "2026-11-02-23-54-52",
+        "finishedAt": "2026-11-03-00-15-55"
+      }
+    },
+    {
+      "id": "JOB-f7982dcd3c",
+      "action": "backend-patch-register-baseline",
+      "status": "succeeded",
+      "target": null,
+      "releaseTag": null,
+      "times": {
+        "createdAt": "2026-11-02-23-49-55",
+        "finishedAt": "2026-11-02-23-52-48"
+      }
+    },
+    {
+      "id": "JOB-a03c92262b",
+      "action": "backend-patch-restore",
+      "status": "succeeded",
+      "target": "test",
+      "releaseTag": "2026-11-02-22-15-59",
+      "times": {
+        "createdAt": "2026-11-02-23-21-01",
+        "finishedAt": "2026-11-02-23-25-29"
+      }
+    },
+    {
+      "id": "JOB-fdd84f0df3",
+      "action": "backend-patch-restore",
+      "status": "interrupted",
+      "target": "test",
+      "releaseTag": "2026-11-02-22-15-59",
+      "times": {
+        "createdAt": "2026-11-02-23-12-33",
+        "finishedAt": "2026-11-02-23-13-14"
+      }
+    },
+    {
+      "id": "JOB-7e8f98af8a",
+      "action": "backend-patch-deploy",
+      "status": "failed",
+      "target": "test",
+      "releaseTag": "2026-11-02-22-15-59",
+      "times": {
+        "createdAt": "2026-11-02-22-57-22",
+        "finishedAt": "2026-11-02-23-09-32"
+      }
+    },
+    {
+      "id": "JOB-ec11be9524",
+      "action": "backend-patch-build",
+      "status": "succeeded",
+      "target": null,
+      "releaseTag": "2026-11-02-22-15-59",
+      "times": {
+        "createdAt": "2026-11-02-22-14-42",
+        "finishedAt": "2026-11-02-22-35-53"
+      }
+    },
+    {
+      "id": "JOB-6c804e6c7f",
+      "action": "backend-patch-build",
+      "status": "failed",
+      "target": null,
+      "releaseTag": "2026-11-02-21-39-33",
+      "times": {
+        "createdAt": "2026-11-02-21-37-25",
+        "finishedAt": "2026-11-02-22-00-40"
+      }
+    },
+    {
+      "id": "JOB-a37066997a",
+      "action": "backend-patch-register-baseline",
+      "status": "succeeded",
+      "target": null,
+      "releaseTag": null,
+      "times": {
+        "createdAt": "2026-11-02-21-17-39",
+        "finishedAt": "2026-11-02-21-20-13"
+      }
+    }
+  ]
+}

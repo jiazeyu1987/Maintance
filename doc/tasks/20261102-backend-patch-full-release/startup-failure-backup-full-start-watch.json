@@ -1,0 +1,11 @@
+{
+  "exceptionTypes": [],
+  "applicationFrames": [],
+  "signals": {
+    "readOnly": false,
+    "writeAttempt": false,
+    "missingConfig": false,
+    "permission": false,
+    "startupFailed": false
+  }
+}

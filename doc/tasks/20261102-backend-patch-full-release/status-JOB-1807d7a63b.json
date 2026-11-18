@@ -1,0 +1,8 @@
+{
+  "id": "JOB-1807d7a63b",
+  "action": "accept-prod",
+  "status": "succeeded",
+  "target": "prod",
+  "releaseTag": "2026-11-03-12-15-42",
+  "currentStep": "open-business"
+}

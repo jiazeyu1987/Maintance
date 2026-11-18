@@ -1,0 +1,13 @@
+{
+  "id": "JOB-eeaf3711eb",
+  "action": "resolve-task",
+  "status": "succeeded",
+  "releaseTag": "2026-11-03-12-15-42",
+  "currentStep": "republish-original-package-to-nas",
+  "resultKeys": [
+    "nasDirectory",
+    "originalBuildJobId",
+    "packageSha256",
+    "stage"
+  ]
+}

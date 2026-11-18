@@ -1,0 +1,18 @@
+{
+  "status": "PASS",
+  "tag": "2026-11-03-12-15-42",
+  "gitCommit": "ee2d7c79356e79e1180ab03e03873cd3f924a6f5",
+  "packageBytes": 726190080,
+  "manifestMembers": 1095,
+  "packageSha256": "5d2b01e87e9b07db6249208cc0b911507e380f8109d5aa750423b8c39b242e39",
+  "manifestSha256": "90d108cafa7e325febf53fdbe397c29e52406ff86ea9f4bcb74f2b8f1d037167",
+  "jarSha256": "c2b08ecb22f19c65d36e9ffcf4b3464a3d214e434b467f6f44be9fd5aa1fb696",
+  "gxpAuditMode": "DEVELOPMENT_DISABLED",
+  "sameSourceAsPatch": true,
+  "frontendBackendMetadataEqual": true,
+  "startupLogNoteVisibleInMetadata": true,
+  "buildWorktreeRemoved": true,
+  "nasOriginalVerified": true,
+  "originalBuildStatus": "failed",
+  "verifiedOriginalPackageRetryJobId": "JOB-eeaf3711eb"
+}

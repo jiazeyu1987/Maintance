@@ -34,7 +34,15 @@ def observation(profile,a):
     a['require'](isinstance(metadata.get('releaseTag'),str),'前端缺少版本信息')
     with urlopen(profile['entryUrl']+'/',timeout=10) as response:
         a['require'](response.status==200,'前端未返回 HTTP 200')
+    backend=remote.inspect(profile['backend'])
+    labels=backend.get('Config',{}).get('Labels') or {}
+    program=None
+    if labels.get('intruoyi.backend-patch.tag'):
+        jar=remote.run(['docker','exec',profile['backend'],'sha256sum','/yudao-server/app.jar']).decode().split()[0]
+        a['require'](jar==labels.get('intruoyi.backend-patch.sha256'),'实际后端 JAR 与补丁标签不一致')
+        program=dict(backendPatchTag=labels['intruoyi.backend-patch.tag'],backendJarSha256=jar)
     return dict(releaseTag=metadata.get('baseReleaseTag',metadata['releaseTag']),
+                **({'backendProgram':program} if program else {}),
                 frontendPatchTag=metadata.get('frontendPatchTag'),metadata=metadata,components=components,frontendHttpStatus=200,backendHealth='UP')
 
 
@@ -42,6 +50,7 @@ def validate_origin(actual,expected,manifest,a):
     a['require'](actual==expected,'目标前端或后端起点已改变，请重新核对')
     a['require'](actual['releaseTag']==manifest['baseReleaseTag'],'目标主版本不适用本补丁')
     a['require'](actual['components']['backend']['imageId']==manifest['backendImageId'],'后端镜像不在补丁适用范围')
+    a['require'](actual.get('backendProgram')==manifest.get('backendProgram'),'后端 JAR 补丁已变化，请重新登记前端补丁基线')
     baseline=manifest.get('observedBaseline')
     if baseline:
         env=a.get('environment')
@@ -88,6 +97,7 @@ def execute(profile,payload,a):
             require(actual['metadata']==manifest['metadata'] and actual['components']['frontend']['imageId']==manifest['images']['frontend']['id'],
                     '实际前端不是本补丁，不能验收')
             require(actual['components']['backend']['imageId']==manifest['backendImageId'],'实际后端不符合补丁基础版本')
+            require(actual.get('backendProgram')==manifest.get('backendProgram'),'实际后端 JAR 补丁不符合前端包基线')
             return actual
         if action=='restore':
             original=payload['originalJobId']

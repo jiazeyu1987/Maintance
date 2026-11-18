@@ -37,6 +37,10 @@
 
 - Spug dataLimits / FORMAL_DATA_LIMITS_REQUIRED / maxExpandedBytes / SAFE/FAST 注入接口 / inventory content / apply_tree verify_content / RESTORE_TYPEERROR / FAILED_RETAINED / recovery-clearance / PROVEN_NO_MUTATION / ARCHIVE_LEASE_FD_BUDGET_EXCEEDED / LimitNOFILE：`docs/release-agent-checklist.md#spug-恢复包接口合同与保留失败续恢复门禁`。实际封包合同及破坏性SQL审计必验；归档句柄预算须按完整路径集实测继承；写入前和写入后失败分别按明确合同准许同点同目标，不删锁或改历史。
 
+- 停止态补丁 JAR / Actual patched JAR differs from label / sealed-origin-program-switch / 完整检查点后零迁移续接：`docs/release-agent-checklist.md#spug-直接三服策略与普通脚本安装门禁`。真实挂载字节、原容器和数据库内容一致才复用检查点，不重备份或重放 SQL。
+
+- Spug 后端补丁 / backend-patch / 单 JAR / super_read_only / 不修改数据库 / Quartz心跳 / 维护只读探针 / 正常运行边界v2 / 补丁挂载遮盖完整镜像：`docs/release-agent-checklist.md#后端单-jar-补丁门禁`。
+
 - 发布完成自动删除旧包 / 旧恢复资料 / postReleaseCleanup / artifact-auto-clean / 重试目录公共锁：`docs/release-agent-checklist.md#发布验收后旧载荷回收门禁`。
 
 - 三服表数不同 / 环境限定建表 / 治理表仅test / 同包升级后结构一致 / expectedSchemaSha256：`docs/release-agent-checklist.md#三服同版本同结构发布门禁`；修复用不可变前向迁移，不改已执行SQL，不删表凑数量；升级后核表、列、索引与约束，保留各自业务数据和迁移历史。
@@ -345,3 +349,5 @@
 - Keywords: 发布后自动清理, 旧容器旧镜像, 最近恢复点保护, 已核销失败现场, openingJobId, retry-release-cleanup, 镜像共享层空间 -> `docs/release-agent-checklist.md#发布验收后旧载荷回收门禁`（阶段顺序、归属与锁复核、独立重试及真实 Docker 验证）。
 - MAIN_HEALTH_ENDPOINT_INVALID / frontend 127.0.0.1 / host nginx listen / 无写失败继承停写：`docs/release-agent-checklist.md#原main前端网络与继承停写门禁`。健康入口必须绑定真实原网络/监听，不猜80；写前失败若消费了停写clearance，精确继承原observation和scheduler custody，不启动writer凑准入。
 - target-installation.json / previousReceiptPin / 活动回执轮转 / 原历史清单 / 安装代次保全：`docs/release-agent-checklist.md#授权控制升级的活动回执历史保全`。原清单不改；唯一授权活动回执须逐字节证明原归档到当前完整链，其余原路径逐SHA保持，业务操作后重新验证。
+
+- Keywords: 发布后自动清理, 旧容器旧镜像, 最近恢复点保护, 已核销失败现场, openingJobId, retry-release-cleanup, 镜像共享层空间, Mounts顺序指纹, blockedReleaseTags, 旧恢复日志摘要不一致整组保留, 旧目录缺manifest整组保留 -> `docs/release-agent-checklist.md#发布验收后旧载荷回收门禁`（阶段顺序、归属与锁复核、独立重试及真实 Docker 验证）。

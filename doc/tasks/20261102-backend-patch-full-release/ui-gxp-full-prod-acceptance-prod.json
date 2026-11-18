@@ -1,0 +1,49 @@
+{
+  "time": "2026-11-03T06:44:56.262Z",
+  "scope": "read-only-gxp-verification",
+  "environment": "prod",
+  "expectedTag": "2026-11-03-12-15-42",
+  "publicationPerformed": false,
+  "remoteAccessPerformed": true,
+  "sourceUrl": "http://172.30.30.57:38084/",
+  "realPlaywrightLogin": true,
+  "savedMode": "DEVELOPMENT_DISABLED",
+  "runtimeMode": "DEVELOPMENT_DISABLED",
+  "auditEnabled": false,
+  "pendingRestart": false,
+  "savedClosedVisible": true,
+  "runtimeClosedVisible": true,
+  "privateScreenshotPath": "C:\\SpugHandoff\\release\\private\\acceptance\\backend-full-20261102\\prod-gxp\\gxp-mode-1793688306325.png",
+  "unexpectedWriteRequests": [
+    {
+      "method": "POST",
+      "path": "/admin-api/system/captcha/get"
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/system/captcha/get"
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/system/auth/login"
+    }
+  ],
+  "releaseTag": "2026-11-03-12-15-42",
+  "frontendPatchTag": null,
+  "visibleFrontendTag": "2026-11-03-12-15-42",
+  "versionChangeItems": [
+    "ee2d7c793 任务: Quartz定义一致时避免启动重复写入",
+    "dc557a26d 任务: 展厅启动无恢复工作时仅查询",
+    "3bf63eee8 修复: DCC NAS启动仅恢复实际运行任务",
+    "da3851751 修复: DCC启动无待恢复任务时避免空写入",
+    "e5934b12e 日志: 记录后端启动完成与发布元数据入口",
+    "91683fd03 fix(invoice): configure same-server print assistant entry",
+    "2fd99f51d fix(navigation): retain authorized invoice voucher print entry",
+    "024027bd2 fix(fenbeitong): restore per-server assistant configuration and authorized navigation",
+    "fb88105af 修复: 补齐三服DCC治理表前向迁移",
+    "56b96ea20 任务: 补齐发布快照CLI配套代码"
+  ],
+  "versionNotesAvailable": true,
+  "realVersionDialog": true,
+  "status": "PASS"
+}

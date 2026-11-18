@@ -1,0 +1,79 @@
+{
+  "backup": {
+    "status": "PASS",
+    "phase": "patch",
+    "tag": "2026-11-03-10-33-18",
+    "observation": {
+      "releaseTag": "2026-11-01-13-08-35",
+      "frontendPatchTag": "2026-11-02-10-09-19",
+      "frontendMetadata": {
+        "releaseTag": "2026-11-02-10-09-19",
+        "baseReleaseTag": "2026-11-01-13-08-35",
+        "frontendPatchTag": "2026-11-02-10-09-19",
+        "sourceCommit": "91683fd0349af7e2feb6a8d86c44ef9449a0bab3",
+        "builtAt": "2026-11-02T02:18:46.364968+00:00"
+      },
+      "backendPatchTag": "2026-11-03-10-33-18",
+      "backendJarSha256": "8c3c670d57c77c84d76fe335e3918e1a9f4cd5b47ba097fe10908ab07c7d9135",
+      "backendMetadata": {
+        "releaseTag": "2026-11-01-13-08-35",
+        "baseReleaseTag": "2026-11-01-13-08-35",
+        "backendPatchTag": "2026-11-03-10-33-18",
+        "sourceCommit": "ee2d7c79356e79e1180ab03e03873cd3f924a6f5",
+        "backendJarSha256": "8c3c670d57c77c84d76fe335e3918e1a9f4cd5b47ba097fe10908ab07c7d9135"
+      },
+      "components": {
+        "frontend": {
+          "name": "/intruoyi-july-unified-59-frontend-r2",
+          "containerId": "468f5ad9e7b99ba1d9f822799c18845fb863b17dc7c485f1f1067752bddd935a",
+          "image": "sha256:031955582d62574a444d8fdbb43b5a20c3cbbdf6569cb03f5ef6d4b6e54dc35e",
+          "imageId": "sha256:031955582d62574a444d8fdbb43b5a20c3cbbdf6569cb03f5ef6d4b6e54dc35e",
+          "running": true,
+          "startedAt": "2026-11-03T03:47:16.526672337Z"
+        },
+        "backend": {
+          "name": "/intruoyi-prod-nas-restore59-20261020-backend",
+          "containerId": "866c386764ddf0007359c9a106b1f3497a975383ab13e280ca26d9825fdaf912",
+          "image": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+          "imageId": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+          "running": true,
+          "startedAt": "2026-11-03T03:43:56.250885137Z"
+        },
+        "database": {
+          "name": "/intruoyi-prod-nas-restore59-20261020-native-mysql",
+          "containerId": "4376cb8d12c95ec485589b2fc8edabed3d9c631fcd52f715c4b2800f1b4cde8e",
+          "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+          "imageId": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+          "running": true,
+          "startedAt": "2026-10-25T07:24:58.86398075Z"
+        }
+      },
+      "schemaSha256": "dc1b23dec9664a58329f5b0ae8bdc5ec09822cfc78b3beee335d45ae248930d1",
+      "ledgerSha256": "054a691bdbe41967d87ae137547359801530b5b7ed476a6f1aebc531833c23da",
+      "databaseIdentity": "ruoyi-vue-pro\ta4f03708-cc74-11f1-9cce-0242ac1def16\t8.0.39\t1",
+      "backendConfigSha256": "6e772391bc50c53255e1c980a5c58f690b8d667482bfd572330285944a9bba41",
+      "backendHealth": "UP",
+      "frontendHttpStatus": 200,
+      "gxpAuditMode": "DEVELOPMENT_DISABLED"
+    },
+    "startupLogCount": 1,
+    "programMounts": [
+      {
+        "source": "/mnt/intruoyi-data/intruoyi-release-workflow/backup/packages/backend-patches/2026-11-03-10-33-18/JOB-29702845fb/app.jar",
+        "destination": "/yudao-server/app.jar",
+        "rw": false
+      },
+      {
+        "source": "/mnt/intruoyi-data/intruoyi-release-workflow/backup/packages/backend-patches/2026-11-03-10-33-18/JOB-29702845fb/release-info.json",
+        "destination": "/yudao-server/release-info.json",
+        "rw": false
+      }
+    ],
+    "backendImageReference": "sha256:2b2160b4fba263ac7617f404fed767273ae6d21e9dbe59bfc2e2aaeb5d26c1f3",
+    "frontendImageReference": "sha256:031955582d62574a444d8fdbb43b5a20c3cbbdf6569cb03f5ef6d4b6e54dc35e",
+    "readOnly": "0\t0",
+    "applicationPropertiesSha256": {
+      "/run/recovery/application-target.properties": "95eafc427f74fc03a628240aad8d4b60553baaf8f950104eae806bd4401e1526"
+    }
+  }
+}

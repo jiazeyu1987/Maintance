@@ -1,0 +1,34 @@
+{
+  "status": "PASS",
+  "readOnly": true,
+  "verification": "static-only",
+  "commit": "e5934b12e46064b01c8b5ad0b4c016229286c223",
+  "targets": {
+    "test": {
+      "actions": {
+        "SKIP_ALREADY_APPLIED": 761,
+        "SKIP_IMMUTABLE": 36,
+        "SKIP_SCOPE_EXCLUDED": 21
+      },
+      "apply": []
+    },
+    "prod": {
+      "actions": {
+        "SKIP_ALREADY_APPLIED": 757,
+        "SKIP_IMMUTABLE": 36,
+        "SKIP_SCOPE_EXCLUDED": 15,
+        "SKIP_ENV_NOT_ALLOWED": 10
+      },
+      "apply": []
+    },
+    "backup": {
+      "actions": {
+        "SKIP_ALREADY_APPLIED": 757,
+        "SKIP_IMMUTABLE": 36,
+        "SKIP_SCOPE_EXCLUDED": 15,
+        "SKIP_ENV_NOT_ALLOWED": 10
+      },
+      "apply": []
+    }
+  }
+}

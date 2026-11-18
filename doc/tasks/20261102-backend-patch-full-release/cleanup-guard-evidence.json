@@ -1,0 +1,52 @@
+{
+  "test": {
+    "status": "failed",
+    "removedItems": 0,
+    "fileBytes": 0,
+    "retainedItems": 0,
+    "pendingKind": null,
+    "missingHistoricalJournals": [
+      {
+        "releaseTag": "2026-10-31-19-13-08",
+        "recoveryJobId": "JOB-9774dd2e24",
+        "role": "redis",
+        "retainedDirectoryExists": true,
+        "journalExists": true,
+        "journalPhase": "complete"
+      },
+      {
+        "releaseTag": "2026-10-31-19-13-08",
+        "recoveryJobId": "JOB-9774dd2e24",
+        "role": "minio",
+        "retainedDirectoryExists": true,
+        "journalExists": true,
+        "journalPhase": "complete"
+      }
+    ]
+  },
+  "prod": {
+    "status": "failed",
+    "removedItems": 3,
+    "fileBytes": 0,
+    "retainedItems": 223,
+    "pendingKind": "container",
+    "candidate": {
+      "id": "071d2f104de8b98251402915e7f869c0d3be03f900e2e1cbcd25e6361cff950d",
+      "name": "intruoyi-backend-before-2026-10-27-18-40-39-maintenance",
+      "releaseTag": "2026-10-27-18-40-39",
+      "exists": true,
+      "alreadyInRemovedList": false,
+      "stopped": true,
+      "nameMatches": true,
+      "imageMatches": true,
+      "fingerprintMatches": false
+    }
+  },
+  "backup": {
+    "status": "succeeded",
+    "removedItems": 13,
+    "fileBytes": 18068578841,
+    "retainedItems": 219,
+    "pendingKind": null
+  }
+}

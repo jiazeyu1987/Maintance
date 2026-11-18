@@ -1,0 +1,68 @@
+{
+  "status": "PASS",
+  "releaseTag": "2026-11-03-12-15-42",
+  "commit": "ee2d7c79356e79e1180ab03e03873cd3f924a6f5",
+  "stages": [
+    {
+      "stage": "program-full-test",
+      "status": "PASS"
+    },
+    {
+      "stage": "spug-mark-tested",
+      "status": "PASS",
+      "jobId": "JOB-f4cd60ec96"
+    },
+    {
+      "stage": "spug-promote-prod",
+      "status": "PASS",
+      "jobId": "JOB-31001c8bcb"
+    },
+    {
+      "stage": "ui-full-prod-acceptance",
+      "status": "PASS"
+    },
+    {
+      "stage": "spug-accept-prod",
+      "status": "PASS",
+      "jobId": "JOB-1807d7a63b"
+    },
+    {
+      "stage": "program-full-prod",
+      "status": "PASS"
+    },
+    {
+      "stage": "ui-full-prod-open",
+      "status": "PASS"
+    },
+    {
+      "stage": "quartz-heartbeat-full",
+      "status": "PASS"
+    },
+    {
+      "stage": "spug-promote-backup",
+      "status": "PASS",
+      "jobId": "JOB-2714f1ba96"
+    },
+    {
+      "stage": "ui-full-backup-acceptance",
+      "status": "PASS"
+    },
+    {
+      "stage": "spug-accept-backup",
+      "status": "PASS",
+      "jobId": "JOB-7f32aa47ab"
+    },
+    {
+      "stage": "program-full-backup",
+      "status": "PASS"
+    },
+    {
+      "stage": "ui-full-backup-open",
+      "status": "PASS"
+    },
+    {
+      "stage": "database-full",
+      "status": "PASS"
+    }
+  ]
+}

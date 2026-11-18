@@ -1,0 +1,23 @@
+[
+  {
+    "relative": "2026-10-22-20-45-19",
+    "releaseTag": "2026-10-22-20-45-19",
+    "markerExists": false,
+    "actual": null,
+    "expected": "06ecd931d082e70d3cad8c7e3cc48b82555e3c57419e8d6079994ccd455fd718"
+  },
+  {
+    "relative": "2026-10-22-10-45-28",
+    "releaseTag": "2026-10-22-10-45-28",
+    "markerExists": false,
+    "actual": null,
+    "expected": "0838bbea80fb4dac72618bd70d8d78b18d55647d4e33c117d58dabeff5cac864"
+  },
+  {
+    "relative": "2026-10-22-01-09-56",
+    "releaseTag": "2026-10-22-01-09-56",
+    "markerExists": false,
+    "actual": null,
+    "expected": "bcabf083bc399f6d70135d35152d8432cffc4fe4579748c38e353b870b87d0c0"
+  }
+]

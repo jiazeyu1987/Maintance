@@ -1,0 +1,7 @@
+{
+  "submittedAt": "2026-11-03T08:05:48.340Z",
+  "action": "retry-release-cleanup",
+  "jobId": "JOB-a7a180c9c4",
+  "cleanupOf": "JOB-7f32aa47ab",
+  "realPlaywrightLogin": true
+}

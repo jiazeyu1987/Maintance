@@ -1,0 +1,27 @@
+{
+  "time": "2026-11-02T13:07:07.720Z",
+  "scope": "read-only-gxp-verification",
+  "environment": "local",
+  "publicationPerformed": false,
+  "remoteAccessPerformed": false,
+  "sourceUrl": "http://127.0.0.1:8081/",
+  "realPlaywrightLogin": true,
+  "savedMode": "DEVELOPMENT_DISABLED",
+  "runtimeMode": "DEVELOPMENT_DISABLED",
+  "auditEnabled": false,
+  "pendingRestart": false,
+  "savedClosedVisible": true,
+  "runtimeClosedVisible": true,
+  "privateScreenshotPath": "C:\\SpugHandoff\\release\\private\\acceptance\\backend-full-20261102\\local-gxp\\gxp-mode-1793624898955.png",
+  "unexpectedWriteRequests": [
+    {
+      "method": "POST",
+      "path": "/admin-api/system/auth/login"
+    },
+    {
+      "method": "POST",
+      "path": "/admin-api/workbench/context"
+    }
+  ],
+  "status": "PASS"
+}

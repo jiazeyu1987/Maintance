@@ -1,0 +1,17 @@
+{
+  "id": "JOB-70fc461b3f",
+  "action": "reconcile-interruption",
+  "status": "succeeded",
+  "releaseTag": "2026-11-02-22-15-59",
+  "currentStep": "inspect-original-execution",
+  "resultKeys": [
+    "backendRestoration",
+    "detail",
+    "disposition",
+    "localProcesses",
+    "observedAt",
+    "operations",
+    "originalJobId",
+    "restorationOnly"
+  ]
+}

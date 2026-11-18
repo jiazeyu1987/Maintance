@@ -1,0 +1,47 @@
+{
+  "test": {
+    "runningCounts": {
+      "dcc_controlled_file_nas_transfer_task": "0",
+      "dcc_controlled_file_nas_transfer_task_item": "0",
+      "dcc_nas_control_audit_task": "0",
+      "showroom_product_cover_batch_task": "0",
+      "showroom_product_cover_batch_task_item": "0"
+    },
+    "explicitBooleanOverrides": {
+      "dcc-nas-transfer-enabled": [],
+      "dcc-nas-control-audit-enabled": [],
+      "showroom-product-cover-batch-resume-enabled": [],
+      "startup-sync-enabled": []
+    }
+  },
+  "prod": {
+    "runningCounts": {
+      "dcc_controlled_file_nas_transfer_task": "0",
+      "dcc_controlled_file_nas_transfer_task_item": "0",
+      "dcc_nas_control_audit_task": "0",
+      "showroom_product_cover_batch_task": "0",
+      "showroom_product_cover_batch_task_item": "0"
+    },
+    "explicitBooleanOverrides": {
+      "dcc-nas-transfer-enabled": [],
+      "dcc-nas-control-audit-enabled": [],
+      "showroom-product-cover-batch-resume-enabled": [],
+      "startup-sync-enabled": []
+    }
+  },
+  "backup": {
+    "runningCounts": {
+      "dcc_controlled_file_nas_transfer_task": "0",
+      "dcc_controlled_file_nas_transfer_task_item": "0",
+      "dcc_nas_control_audit_task": "0",
+      "showroom_product_cover_batch_task": "0",
+      "showroom_product_cover_batch_task_item": "0"
+    },
+    "explicitBooleanOverrides": {
+      "dcc-nas-transfer-enabled": [],
+      "dcc-nas-control-audit-enabled": [],
+      "showroom-product-cover-batch-resume-enabled": [],
+      "startup-sync-enabled": []
+    }
+  }
+}

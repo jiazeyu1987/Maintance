@@ -12,6 +12,7 @@ from intruoyi_runtime import Runtime, audit_ledger, package_identity, rehearsal_
 from intruoyi_rehearsal import active_remote_progress
 from rehearsal_retention import registered_rehearsal_profile, retention_matches, retention_record
 from intruoyi_metadata import restore as restore_metadata, reference as metadata_reference, remote as metadata_remote
+from target_registration import registration_targets, validate_registered_takeover
 
 
 def validate_origin(value):
@@ -366,6 +367,8 @@ class _IntRuoyiExecutor(Executor):
                 actual = {role: data['imageId'] for role, data in value['components'].items()}
                 value['matchesRecorded'] = (value['version']['releaseTag'] == old.get('releaseTag')
                     and value['version'].get('frontendPatchTag') == old.get('frontendPatchTag')
+                    and value['version'].get('backendPatchTag') == old.get('backendPatchTag')
+                    and (not value['version'].get('backendPatchTag') or value['version'].get('backendJarSha256')==old.get('backendJarSha256'))
                     and actual == expected) if value['status'] == 'ok' and expected else None
                 return env, value
             except Exception as error:
@@ -618,12 +621,12 @@ class _IntRuoyiExecutor(Executor):
                 return
             observations = {}
             errors = {}
-            for env in ('test','prod','backup'):
+            for env in registration_targets(job['payload']):
                 self.step(job, 'observe-'+env)
                 value = self.runtime.observe(env)
                 try:
                     validate_origin(value)
-                    value.update(baselineStatus='registered', observedAt=stamp())
+                    value.update(baselineStatus='registered', observedAt=stamp(), registrationJobId=job['id'])
                 except ValueError as error:
                     errors[env] = str(error)
                 observations[env] = value
@@ -636,7 +639,7 @@ class _IntRuoyiExecutor(Executor):
             self.state['environments'].update(observations)
             self.save()
             job['status'] = 'succeeded'
-            self.log(job, 'Three real target baselines registered read-only; no deployment or acceptance implied')
+            self.log(job, 'Selected target baselines registered read-only: '+','.join(observations)+'; no deployment or acceptance implied')
         except Exception as exc:
             job.update(status='failed', error=str(exc).replace(self.password, '[REDACTED]'))
             self.log(job, 'Registration stopped: '+job['error'])
@@ -976,7 +979,7 @@ class _IntRuoyiExecutor(Executor):
         planned = original_plan['items']
         require(len({m.get('migrationId') for m in planned}) == len(planned), 'Original migration plan contains duplicate identities')
         applied = [m for m in planned if m.get('action') == 'APPLY']
-        require(applied and all(m.get('migrationId') in sources and m.get('sha256') == sources[m['migrationId']]['sha256']
+        require(all(m.get('migrationId') in sources and m.get('sha256') == sources[m['migrationId']]['sha256']
                                 for m in applied), 'Original APPLY identities differ from the immutable package')
         origin_records = original.get('originState', {}).get('ledgerRecords')
         require(isinstance(origin_records, list) and
@@ -985,8 +988,12 @@ class _IntRuoyiExecutor(Executor):
         observation = self.runtime.observe('test')
         audit = audit_ledger(observation, manifest)
         require(all(m['migrationId'] in audit['applied'] for m in applied), 'Original test migrations are not all APPLIED')
-        require(observation.get('images') == {role: manifest['images'][role]['id'] for role in ('backend', 'frontend')},
-                'Both installed test images must be the original candidate')
+        candidate_images = {role: manifest['images'][role]['id'] for role in ('backend', 'frontend')}
+        origin = original.get('originState', {})
+        sealed_origin = not applied and all(origin.get(key) and origin[key] == observation.get(key)
+            for key in ('fingerprint','images','schemaSha256','ledgerSha256'))
+        require(observation.get('images') == candidate_images or sealed_origin,
+                'Both installed test images must be the original candidate or verified sealed origin')
         plan = target_input_plan(manifest['migrations'], observation['ledgerRecords'], 'test')
         require(plan['status'] == 'passed' and not any(m['action'] == 'APPLY' for m in plan['items']),
                 'Continuation requires zero pending migrations')
@@ -1012,7 +1019,7 @@ class _IntRuoyiExecutor(Executor):
                 and receipt.get('completedByJobId') in {j['id'] for j in attempts},
                 'Same-package completed test continuation receipt required')
         validate_origin(result)
-        require(result['releaseTag'] == package['releaseTag'] and result.get('images') == observation['images']
+        require(result['releaseTag'] == package['releaseTag'] and result.get('images') == candidate_images
                 and result.get('maintenance') is False
                 and result.get('readOnly') == dict(read_only=False, super_read_only=False),
                 'Test continuation did not confirm the candidate open for functional verification')
@@ -1172,6 +1179,15 @@ class _IntRuoyiExecutor(Executor):
             self.log(job, 'Explicit recovery evidence and actual original origin verified; failed deployment retained, no SQL replayed or acceptance granted')
             return
         require(job['payload']['decision'] == 'abandon', 'Only a confirmed pre-effect task may be abandoned here')
+        if job['payload'].get('acceptRegisteredOrigin') is True:
+            observation = validate_origin(self.runtime.observe('test'))
+            proof = validate_registered_takeover(original, self.state['environments']['test'], self.state['jobs'], observation)
+            _, manifest = self.manifest(original['releaseTag'])
+            audit_ledger(observation, manifest)
+            original['resolution'] = dict(decision='abandon', note=job['payload']['note'], actor=job['actor'],
+                                          time=stamp(), jobId=job['id'], registeredOriginTakeover=proof)
+            self.log(job, 'Failed pre-effect origin check abandoned against explicitly registered test origin; no deployment implied')
+            return
         if original.get('target') and original.get('originFingerprint'):
             require(self.fingerprint(original['target']) == original['originFingerprint'], 'Original remote origin changed')
         original['resolution'] = dict(decision='abandon', note=job['payload']['note'], actor=job['actor'], time=stamp(), jobId=job['id'])
@@ -1179,8 +1195,9 @@ class _IntRuoyiExecutor(Executor):
 
 
 from frontend_patch import FrontendPatchMixin
+from backend_patch import BackendPatchMixin
 
-class IntRuoyiExecutor(FrontendPatchMixin, RollbackMixin, _IntRuoyiExecutor):
+class IntRuoyiExecutor(BackendPatchMixin, FrontendPatchMixin, RollbackMixin, _IntRuoyiExecutor):
     """Run rollback hooks before the concrete release adapter."""
     pass
 

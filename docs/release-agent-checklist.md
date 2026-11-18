@@ -296,6 +296,7 @@ Fail Fast：任何未确认远端效果、原包冲突或真实验证失败必�
 - Preflight check: 记录用户范围；私密配置显式选择`direct-three-server-v1`，正式使用独立恢复必须有明确确认。仅空闲时同步已提交维护代码；先完整校验工作资源包、备份SQLite/私密配置，并确认唯一执行器身份。封存业务包及原资源包不改。每个正式目标使用自身登记起点和只读计划，同包测试成功后升级正式，正式验收开放后再升级审查。升级前结构可以不同；用户要求三服结构一致后，升级后必须对齐同包上游已验收结构，并在新程序启动前、回执、开放验收时强制核对。不能要求业务行或历史台账相同，也不能改旧SQL或补造历史来消除差异。
 - 阶段必查项与推荐命令: 代码层运行直接链路、失败恢复责任、目标漂移及UI门禁回归；普通启动器用真实`powershell.exe -File ... -SourceStopped`验证UTF-8无BOM配置，`Get-Content`必须显式`-Encoding utf8`。安装后分别核对执行器实际入口/PID/配置、SQLite payload保持和工作包全清单；读取Nginx唯一有效include/alias并比较实际HTTP `app.js`摘要，不能只核挂载source文件。逐服部署核`operation=SUCCESS`、manifest、真正生效配置、实际镜像、health、HTTP、真实页面登录及保存/运行GxP关闭。
 - SQL前停服复查: 停服前绑定真实网页版本、原镜像、配置fingerprint、schema/ledger和计划；停服后先核写入进程全停及fence，再核原镜像/完整fingerprint/schema/ledger。原前端已明确停止时允许网页版本不可读，但绑定版本必须存在；运行中缺版本或任何身份漂移仍失败，不为通过检查启动writer。
+- 停止态后端补丁必须从已证明归属的两个只读挂载核实际 JAR，拒绝未知父目录覆盖、可写挂载、链接、摘要或容器漂移。测试服在完整检查点后、零原始/待执行迁移且尚未切程序时，可经既有显式技术续接：原包/SQL及对象归档 SHA、原容器/配置、起点指纹、全表 CHECKSUM、GxP 已保存值和零活动写者全部匹配后，仅切程序及验收，不重新备份、执行 SQL 或恢复数据。原失败保持；部分切换、内容漂移或不完整检查点必须阻断。推荐回归 `test_stopped_patch_observation test_sealed_origin_resume test_test_tail_adapter test_resume_test_tail`，记录原任务、续接任务、检查点绑定及最终回执。
 - 尝试与失败核销: 每次`promote-prod`独占`attempts/JOB-*`目录，后续检查/验收/核销继承对应部署目录，不覆盖旧责任确认或回执。外部恢复模式仅在原worker终结、无本tag迁移和容器替换、原容器/身份完整一致且旧版健康开放后，才允许`external-pre-migration`原容器恢复核销；明确`snapshotComplete=false/databaseRestored=false`，真实Spug核销保留失败状态。
 - 验收来源必查: 执行器迁移到另一台电脑后，停服前运行现有`check-executor-acceptance-ingress`真实nonce探测，分别核验每台目标到当前来源IP的路由、验收端口监听和firewalld精确允许规则。旧电脑可访问不证明新电脑可访问；仅需来源规则时不得关闭防火墙、扩大到整个网段或重载影响现有连接。先保留失败原任务和零副作用证据，再按既有Spug核销/重试入口续办。
 - Blocker / Fail Fast: 未授权外部恢复、错包、起点或迁移计划漂移、未知策略、运行中热换、工作包原校验失败、秘密字段变化、UI仍旧版、无真实页面证据均必须停止相应阶段并记录原因。测试任务正在运行时页面禁用属于正确互斥，等待原任务终结，不重复提交。
@@ -808,3 +809,27 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 - Evidence: doc/tasks/20261106-spug-prod-incremental-to-two-targets/installation-history-custody-plan.md、history-receipt-custody-red.json、history-receipt-custody-green-58/59.json及protected-history-custody-preflight-58/59.json。
 
 阶段1安装前：必查原清单和完整授权代次；推荐读取每个回执的size/SHA及owner/control绑定；原始基线只读保存。阶段2安装后：只读逐代读取归档和当前原件，精确核首尾及相邻字节、定义和配置pins，任何Blocker立即停止验收。阶段3最终收尾：在全部业务操作结束后重跑完整历史和回执链验证。必须记录各阶段时间、真实命令、原始失败、原清单身份、具体变化路径及两类保全结论；此审计问题可前置并由严格pin链自动核验。
+
+
+- Trigger：Docker inspect重复读取仅Mounts顺序变化，或旧已核销恢复日志与归档绑定不一致。
+- Preflight check：只将Mounts作为完整条目的无序集合规范化；Config.Env及其他有序字段保持原顺序。逐项验证旧恢复journal与归档，异常组写入blockedReleaseTags，并贯穿容器/镜像/失败目录/归档全部保留。
+- Blocker：真实配置、运行态、挂载或身份变化仍拒绝删除；旧恢复绑定不明只阻止其整组删除，不猜历史、不改摘要。
+- Verification：先RED/GREEN的挂载重排、RW/Env漂移、删除前再核、整组恢复保留及其他组可清理测试，再真实Docker和公共锁回归；记录原清理失败及独立重试结果。
+- Forbidden action：按挂载顺序误删/误阻塞、只保留失败目录却删掉其归档和镜像依赖、修改恢复日志、强制prune、将清理失败伪造为成功。
+- Evidence：`doc/tasks/20261102-backend-patch-full-release/cleanup-followup.md`、真实重复inspect摘要、独立清理任务及逐服保留原因。
+- 旧目录缺少manifest且版本严格早于当前版本时整组保留并记录blockedReleaseTags，不补写清单；当前版本缺清单、现有清单摘要不符、路径越界仍阻止清理。以当前真实运行态及最近恢复点为硬门禁，不将无法核验的旧目录推断成可删除。
+## 后端单 JAR 补丁门禁
+
+- Trigger: Spug backend-patch 构建、部署、验收、原包重传、程序恢复及后续完整发布。
+- Preflight check: 读取三服真实基线/JAR/前端/schema/ledger/配置及目标身份；确认完整写者、注册 MySQL 与实际数据源、无复制线程/外部只读保护。选择兼容 Java 修复提交，评审前端/数据库/配置/依赖/恢复兼容，真实读取本地 GxP 关闭状态；在原固定运行镜像中断网验证 JAR CLI。
+- Blocker: SQL/数据/配置/依赖/启动合同变更、未知程序挂载、起点漂移、外部保护、复制线程、空间不足、JAR/SHA/运行状态/GxP 不符时停止。启动在保护下尝试写库失败则保留保护和任务，不直接开放或自动回放。
+- Verification: 同包测试→正式→审查逐服实际 JAR SHA/元数据、健康、GxP 保存与运行关闭、真实页面/修复场景验收；结构/迁移台账不变仅是复核，禁止以此替代启动数据库只读保护。恢复只切原程序，不回退业务行。
+- Forbidden action: 禁止迁移/DML/DDL/配置修复、备份恢复数据库、SET PERSIST、解除他人保护、覆盖运行 JAR、重复编译解决已封包上传失败、清理仍被任何容器或有效恢复点引用的 JAR、只换镜像仍运行旧补丁挂载。
+- Evidence: `doc/tasks/20261102-spug-backend-jar-patch/execution-log.md`、任务/远端操作回执、database-fence.json、固定清单与本机隔离 MySQL 检查。
+- 阶段 1 必查 / 推荐命令: 独立维护副本执行 `python -X utf8 -m unittest test_backend_patch test_frontend_patch test_frontend_patch_baseline test_current_versions test_post_release_cleanup test_runtime_resource_cleanup`、`node test_ui_backend_patch.cjs`、显式本机 `python -X utf8 check_backend_patch_mysql.py`。记录 RED/GREEN 和真实检查范围。
+- 阶段 2 必查: 页面登记真实基线、评审、固定提交；本任务首写入由公共操作锁与任务号绑定；准备阶段按实际包大小两倍加1GiB检查暂存文件系统，不引入旧64GiB门槛。失败保留原包，重传前核清单/成员/原包SHA。
+- 用户确认后的v2边界：新包清单写入`no-migrations-readonly-probe-normal-runtime-v2`；维护启动仍严格只读，完整启动日志、真实JAR、GxP及结构/台账通过且探针正常停止后，才解除本任务保护并正常启动。原有Quartz心跳和业务运行照常，不能声称正常运行全库零写入；发布脚本仍禁止迁移/配置/业务DML。正常启动失败须停止写者、核数据库身份及零事务，重新获取本任务保护；恢复失败单独暴露，不能开放。旧v1原包维持原严格合同，禁止篡改清单升级策略。推荐`test_backend_patch_runtime_boundary`，必须记录只读探针通过、保护释放、正常运行及结构/台账复核。
+- 阶段 3 必查: 三服同包逐服人工业务验收；正式/审查变更输入 PROD。最终清理逐文件SHA、挂载引用和原容器身份证据。后续完整发布包含补丁提交，仅移除确属程序的两个只读挂载，保留其他配置和原恢复 JAR。必须记录包/任务号、实际运行证据、保护获取/解除与剩余阻塞。
+- 基线核对补充：各服迁移历史必须分别健康且补丁前后不变，不要求不同环境历史SHA相同。固定运行镜像先核已校验主包清单的configID等于现场，再以清单镜像名定位本机不可变镜像；Docker Desktop导出config字节必须匹配，不能把indexID直接当classic configID。
+- 旧主版本部署失败仅在当前更晚完整包已completed、该服成功部署发生在旧失败之后、同包技术验收成功、登记manifest绑定且业务开放/无恢复待办时视为被替代；保留失败原记录，不补resolution或成功历史。当前版本失败、补丁/恢复等其他副作用、证据缺失仍阻塞；部署前必须再次核实际现场与固定补丁基线一致。
+- 显式原程序恢复先在停止状态逐项核原容器ID、运行配置SHA、JAR/元数据、数据库身份/结构/台账及前端容器；仅在这些证据全部相符后解除本任务保护，启动原程序。原程序可能执行其既有启动恢复，不能以候选的只读启动条件阻止恢复原服务，也不能将此作为补丁成功。原程序启动失败须停止写者并重新登记本任务只读保护；不修改/重放业务SQL，不回退业务数据。候选继续保持严格只读启动门禁。

@@ -1,0 +1,155 @@
+{
+  "test": {
+    "schedulerCheckinBefore": [
+      "schedulerName\t1\t1282243016\t15000"
+    ],
+    "installedJarKeys": [
+      {
+        "file": "application-dev.yaml",
+        "key": "spring.autoconfigure.exclude",
+        "value": "other-exclusions"
+      },
+      {
+        "file": "application-dev.yaml",
+        "key": "spring.quartz.auto-startup",
+        "value": "true"
+      },
+      {
+        "file": "application-dev.yaml",
+        "key": "spring.quartz.job-store-type",
+        "value": "jdbc"
+      },
+      {
+        "file": "application-dev.yaml",
+        "key": "spring.quartz.properties.org.quartz.jobStore.isClustered",
+        "value": "true"
+      },
+      {
+        "file": "application-local.yaml",
+        "key": "spring.autoconfigure.exclude",
+        "value": "other-exclusions"
+      },
+      {
+        "file": "application-local.yaml",
+        "key": "spring.quartz.auto-startup",
+        "value": "true"
+      },
+      {
+        "file": "application-local.yaml",
+        "key": "spring.quartz.job-store-type",
+        "value": "jdbc"
+      },
+      {
+        "file": "application-local.yaml",
+        "key": "spring.quartz.properties.org.quartz.jobStore.isClustered",
+        "value": "true"
+      }
+    ],
+    "definitionMismatchCounts": "36\t0\t0\t0\t0\t0",
+    "schedulerCheckinAfter": [
+      "schedulerName\t1\t1282252016\t15000"
+    ]
+  },
+  "prod": {
+    "schedulerCheckinBefore": [
+      "schedulerName\t1\t5832\t15000"
+    ],
+    "installedJarKeys": [
+      {
+        "file": "application-dev.yaml",
+        "key": "spring.autoconfigure.exclude",
+        "value": "other-exclusions"
+      },
+      {
+        "file": "application-dev.yaml",
+        "key": "spring.quartz.auto-startup",
+        "value": "true"
+      },
+      {
+        "file": "application-dev.yaml",
+        "key": "spring.quartz.job-store-type",
+        "value": "jdbc"
+      },
+      {
+        "file": "application-dev.yaml",
+        "key": "spring.quartz.properties.org.quartz.jobStore.isClustered",
+        "value": "true"
+      },
+      {
+        "file": "application-local.yaml",
+        "key": "spring.autoconfigure.exclude",
+        "value": "other-exclusions"
+      },
+      {
+        "file": "application-local.yaml",
+        "key": "spring.quartz.auto-startup",
+        "value": "true"
+      },
+      {
+        "file": "application-local.yaml",
+        "key": "spring.quartz.job-store-type",
+        "value": "jdbc"
+      },
+      {
+        "file": "application-local.yaml",
+        "key": "spring.quartz.properties.org.quartz.jobStore.isClustered",
+        "value": "true"
+      }
+    ],
+    "definitionMismatchCounts": "36\t0\t0\t0\t0\t0",
+    "schedulerCheckinAfter": [
+      "schedulerName\t1\t14832\t15000"
+    ]
+  },
+  "backup": {
+    "schedulerCheckinBefore": [
+      "schedulerName\t1\t1282243016\t15000"
+    ],
+    "installedJarKeys": [
+      {
+        "file": "application-dev.yaml",
+        "key": "spring.autoconfigure.exclude",
+        "value": "other-exclusions"
+      },
+      {
+        "file": "application-dev.yaml",
+        "key": "spring.quartz.auto-startup",
+        "value": "true"
+      },
+      {
+        "file": "application-dev.yaml",
+        "key": "spring.quartz.job-store-type",
+        "value": "jdbc"
+      },
+      {
+        "file": "application-dev.yaml",
+        "key": "spring.quartz.properties.org.quartz.jobStore.isClustered",
+        "value": "true"
+      },
+      {
+        "file": "application-local.yaml",
+        "key": "spring.autoconfigure.exclude",
+        "value": "other-exclusions"
+      },
+      {
+        "file": "application-local.yaml",
+        "key": "spring.quartz.auto-startup",
+        "value": "true"
+      },
+      {
+        "file": "application-local.yaml",
+        "key": "spring.quartz.job-store-type",
+        "value": "jdbc"
+      },
+      {
+        "file": "application-local.yaml",
+        "key": "spring.quartz.properties.org.quartz.jobStore.isClustered",
+        "value": "true"
+      }
+    ],
+    "definitionMismatchCounts": "36\t0\t0\t0\t0\t0",
+    "schedulerCheckinAfter": [
+      "schedulerName\t1\t1282251016\t15000"
+    ]
+  }
+}

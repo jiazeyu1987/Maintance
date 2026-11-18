@@ -1,0 +1,8 @@
+{
+  "id": "JOB-f4cd60ec96",
+  "action": "mark-tested",
+  "status": "succeeded",
+  "target": "test",
+  "releaseTag": "2026-11-03-12-15-42",
+  "currentStep": "technical-login"
+}

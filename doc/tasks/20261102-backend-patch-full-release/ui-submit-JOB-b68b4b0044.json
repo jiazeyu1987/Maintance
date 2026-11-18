@@ -1,0 +1,8 @@
+{
+  "submittedAt": "2026-11-03T06:06:38.351Z",
+  "action": "resolve-task",
+  "decision": "retry",
+  "jobId": "JOB-b68b4b0044",
+  "originalDeploymentJobId": "JOB-0a72553fa4",
+  "realPlaywrightLogin": true
+}
