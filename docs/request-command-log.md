@@ -6105,3 +6105,6 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 执行器6模块、正式来源同步与链去重、审查服恢复4模块/准备入口已安装。来源SYNCHRONIZED当前2026-11-17-23-51-44；三服后端UP、前端200，Spug200，历史与无关私密配置保持。
 - 融合后58项通过；本轮未执行清空或完整恢复，不宣称整链恢复E2E通过。自动审批拒绝删除本次.pytest_cache（blocked by policy），任务仅清理blocked，临时worktree保留。
 - 证据：doc/tasks/20261118-deploy-three-point/task.md、execution-log.md、verification.json；私密原件不提交。
+
+### 20261118 三项部署收尾完成
+- 用户确认删除pytest缓存，复核后精确清理4个Python缓存并运行正式worktree清理入口：5190文件核验、Git退出0、登记和目录均不存在。稳定执行器绑定/历史复核PASS，未重复业务操作；任务completed，证据见20261118-deploy-three-point/cleanup-result.json。

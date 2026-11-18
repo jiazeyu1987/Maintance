@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "path": "C:\\SpugHandoff\\release\\convergence-deploy-20261118",
+  "commit": "8905a3a47475004c99936d5d9b854e418c141e94",
+  "verifiedTrackedFiles": 5190,
+  "gitRemovalExitCode": 0,
+  "residualRemoved": false,
+  "ownershipVerified": true,
+  "generatedLinksDetached": 0,
+  "registeredAfter": false,
+  "physicalPathExists": false
+}

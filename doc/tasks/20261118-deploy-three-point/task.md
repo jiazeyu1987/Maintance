@@ -5,7 +5,7 @@
 - [x] 核对已部署能力并融合源码，提交推送后部署。
 - [x] 本机发布执行器、正式来源控制器、审查服恢复工具更新及运行验证。
 - [x] 所有实现合回int_main，融合后相关58项测试通过。
-- [ ] 删除本任务临时worktree、独立提交最终记录。
+- [x] 删除本任务临时worktree、独立提交最终记录。
 ## Expected Verification
 固定已提交来源；私密配置仅新增来源绑定；历史保持；源版本与实际容器一致；审查服模块/入口pin一致；三服健康和HTTP正常。
 ## 设计约束检查
@@ -24,5 +24,5 @@
 - 初始提交4831ef2；组件实现2e2bbc1；准备入口最终baee418；融合主线8905a3a。
 - 产生新提交：是；已合回int_main：是。构建/测试命令与证据见execution-log.md。
 ## Current Status
-blocked（仅worktree清理）
-组件部署验证通过，部署记录已准备提交。自动审批拒绝删除本任务.pytest_cache，原因blocked by policy；因此保留整个临时worktree，未绕过拒绝、未宣称completed。需要用户删除C:/SpugHandoff/release/convergence-deploy-20261118/.pytest_cache后继续正式清理入口。完整恢复不在本轮重跑范围。
+completed
+用户删除.pytest_cache后复核不存在；剩余4个已确认Python缓存精确清理，正式清理入口验证5190个tracked文件后git remove退出0，Git登记与物理路径均不存在。源码已融合，部署验证保持，稳定执行器来源绑定/历史与其它配置复核PASS。最终收尾记录独立提交推送；未重复发布、备份或恢复。
