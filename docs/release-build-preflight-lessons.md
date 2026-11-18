@@ -1,5 +1,16 @@
 # 构建发布耗时问题预防清单
 
+## 新SQL归宿与旧数据身份预检门禁
+
+- Trigger: 新业务提交新增SQL、报SQL未登记、旧菜单ID冲突或已删除租户角色导致目标预检失败。
+- Preflight check: 在本次固定已提交目标的专用worktree运行`python -X utf8 scripts/preflight/test_release_source_registration.py`，核全量SQL与release-sources.json各归宿集合唯一且完整；再走当前发布实现的迁移解析与本次目标真实只读预检。菜单兼容判断须同时核path/component/permission及唯一性；授权对象区分有效租户、平台角色和删除历史，真实字段以当次DESCRIBE为准。
+- Blocker: SQL缺失或重复归宿、目标字段不符、同ID异义/多节点、有效租户缺套餐或授权基线、未知历史SQL摘要均停止对应构建/目标发布。
+- Verification: 登记测试通过，实际解析明确迁移/引用/排除归宿，目标只读预检通过，错组件/重复节点/错权限反例均被拒绝；部署后逐迁移核APPLIED及原包checksum。不把静态测试、只读反例当真实E2E。
+- Forbidden action: 不修改已执行SQL字节、不删历史角色或补造台账、不只按ID放行、不为过预检忽略有效租户、不将测试文件存在当CI/钩子已自动执行。
+- Evidence: `doc/tasks/20261117-update-and-release-prod/execution-log.md`，应用5ad3fd941；复核`doc/tasks/20261118-release-review-preflight/review.md`。
+
+阶段必查项：代码融合前核固定目标与新增SQL列表；耗时构建前执行上述登记测试及真实迁移解析；每个目标写入前使用Spug“检查发布前条件”核本目标计划；部署后核台账摘要。Fail Fast按Blocker，记录源码提交、实际测试命令/退出、只读目标/结构、失败分类与反例结果。登记测试目前须显式调用，不能假定已加入CI。
+
 ## Windows 发布日志 UTF-8 合同
 
 - Trigger: 发布按钮列表报 RELEASE_WORKFLOW_STAGE_LOG_INVALID / MalformedInputException，或 Windows PowerShell 子进程输出中文。

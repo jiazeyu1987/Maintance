@@ -1,5 +1,16 @@
 # Worktree Memory
 
+## no-checkout稀疏索引与提交集合门禁
+
+- Trigger: 新worktree使用`--no-checkout`/sparse-checkout，或首次提交出现大量意外删除。
+- Preflight check: 优先普通完整checkout；确需稀疏时先确认目标SHA和自身分支，按本仓支持的稀疏初始化流程建立HEAD索引，再显式checkout并核`git status --porcelain --untracked-files=all`。实现前不得有未知删除；暂存后比较`git diff --cached --name-status`与任务预期文件集合，不能只核工作树可见文件。
+- Blocker: HEAD/分支不符、初始索引为空或删除大量tracked文件、暂存集合含范围外文件、来源归属不明时停止提交、融合与发布。
+- Verification: 实现前工作树干净；提交前`git diff --cached --check`及预期路径集合相符；提交后`git diff-tree --no-commit-id --name-status -r HEAD`与预期相符，再融合和验证。仅空白新建自有worktree可用`git read-tree HEAD`初始化索引，不能对已有改动或共享索引盲用。
+- Forbidden action: 不用`git add -A`掩盖初始索引缺口，不融合/推送意外删除提交，不用`--no-verify`绕过守卫，不重置其他任务索引或工作树。
+- Evidence: `doc/tasks/20261117-update-and-release-prod/execution-log.md`，误提交在融合/推送/执行前纠正，最终67ffd43仅3个新增文件。
+
+阶段命令：先`git rev-parse HEAD`、`git branch --show-current`和`git status --porcelain`，稀疏初始化后再次核；提交前运行cached清单/diff检查，提交后核与父提交差异。Fail Fast按Blocker保留现场；记录worktree绝对路径、目标SHA、稀疏初始化命令、预期/实际提交文件和是否已融合。此为执行门禁，尚非自动提交守卫。
+
 - 已融合的任务分支使用 `ops/spug/release-center/integration_worktree_cleanup.py` 收尾，显式传 repo/worktree/root/commit/branch/merged-into 和工作区外的 proof。该入口复用长路径删除和生成物链接隔离，删除前持久记录归属；Git 登记已删除时只能凭同一回执重试，未知残留保持。详见 `docs/release-agent-checklist.md#发布来源同步与独立恢复收尾`。
 
 > 路径约定：`docs/...` 相对本维护仓根目录；`IntRuoyiBackend/...`、`IntRuoyiFronted/...` 及其源码命令相对当次已验证配置确定的主程序根目录。不依赖盘符，不猜测源码目录。此文件沿用交接资料中的规则；当前用户授权和 AGENTS.md 优先。
