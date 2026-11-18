@@ -203,6 +203,8 @@ def observe(profile):
                 backendHealth=backend_health, frontendHttpStatus=status, gxpAudit=gxp,
                 metadataHTTPstatus=metadata_status, frontendObservationError=metadata_error,
                 maintenance=maintenance,
+                backupSourceBindingPending=bool(profile.get('backupSourceBinding') and release_tag
+                    and (directory(profile, release_tag) / 'backup-source-binding-pending.private.json').is_file()),
                 observedAt=datetime.now(timezone.utc).isoformat(),
                 runtimeConfigSha256=sha(configs), databaseIdentity=raw['databaseIdentity'],
                 readOnly=dict(zip(('read_only', 'super_read_only'), [v == '1' for v in readonly])),

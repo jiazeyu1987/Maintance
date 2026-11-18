@@ -211,6 +211,20 @@ class BackupRetryTests(unittest.TestCase):
 
 
 class ReconciliationWorkflowTests(unittest.TestCase):
+    def test_opened_business_with_pending_binding_resumes_tail_before_acceptance(self):
+        f=self.f;f.seed_rehearsal();f.run_action('promote-prod')
+        original=f.run_action('accept-prod',note='Business accepted')
+        self.lost_reply(original,'maintenance')
+        f.executor.state['environments']['prod']['backupSourceBindingPending']=True
+        calls=f.executor.maintenance.call_count
+        def complete(env, enabled):
+            self.assertFalse(enabled)
+            f.executor.state['environments'][env]['backupSourceBindingPending']=False
+        f.executor.maintenance.side_effect=complete
+        result=f.run_action('reconcile-interruption',jobId=original['id'],note='Resume pending source binding')
+        self.assertEqual(result['status'],'succeeded',result.get('error'))
+        self.assertEqual(f.executor.maintenance.call_count,calls+1)
+
     def setUp(self):
         from test_technical_verification import TechnicalVerificationTest
         self.fixture=TechnicalVerificationTest()
