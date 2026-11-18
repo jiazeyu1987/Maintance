@@ -1,5 +1,9 @@
 # 项目经验索引
 
+- 新SQL未登记 / release-sources.json / 旧分类ID990230 / 删除租户历史角色：`docs/release-build-preflight-lessons.md#新sql归宿与旧数据身份预检门禁`。构建前显式运行全量登记测试，目标前核完整菜单身份与有效租户范围，禁止改历史迁移凑通过。
+- no-checkout / sparse-checkout误删除 / 稀疏索引为空 / 意外大量D：`docs/worktree-memory.md#no-checkout稀疏索引与提交集合门禁`。先核初始索引与HEAD，再比预期暂存集合；未融合错误不能带到主线。
+- runtimeStagingRoots / 原job目录 / 长阶段无更新 / workbench/context / Iconify / ORB / 菜单面包屑同名：`docs/release-agent-checklist.md#发布探针与真实页面验收前置门禁`。按原编号与绑定目录查证，先核副作用，所有资源失败保留来源和验收范围，不把临时探针当正式能力。
+
 - Spug digest 部署后 `.env IMAGE_TAG` 落后 / runtime_env_metadata.py / 运行版本元数据对齐：`docs/release-agent-checklist.md#发布后-image_tag-元数据一致性门禁`。先核同包技术验收、真实双镜像及原标签；使用同一远端锁原子对齐单行，不重启或重派部署。
 
 - 发布后旧容器 / backupSourceBinding / 源机 images.json / 归档版本副本 / 增量附件策略 / integration_worktree_cleanup / 长路径清理重试 / chain重复load：`docs/release-agent-checklist.md#发布来源同步与独立恢复收尾`。正式 reopen 同步来源；恢复用归档版本和固定父策略；已融合工作区使用外置归属回执清理；只去除单次链规划的重复载荷读取。

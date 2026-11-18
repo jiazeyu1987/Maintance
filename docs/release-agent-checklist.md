@@ -1,5 +1,16 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## 发布探针与真实页面验收前置门禁
+
+- Trigger: 发布状态长时间不更新、远端目录找不到、浏览器console报错，或只读admin验收触发POST。
+- Preflight check: 使用原job/operation读取持久状态；远端探针按该job的`runtimeStagingRoots[env]`（存在时）确定本次路径，普通配置stagingRoot只用于未绑定场景和现行公共锁契约。浏览器验收前核目标页面真实调用及副作用；admin只读验证不得放行个人状态初始化写入，菜单定位限定真实菜单容器。先记录外部资源可达性和已知历史资源错误，不能把HTTP方法直接等同读写语义。
+- Blocker: 原任务终态未知、探针路径身份不明、真实应用接口/页面错误、未经授权副作用、必要业务入口不可用均停止后续动作。外部资源问题须按实际页面影响明确记录，不能静默过滤或宣称全部资源通过。
+- Verification: 同一job/operation终态与远端原回执一致；运行中结合原进程/阶段、只读数据库计数和归档大小/时间验证是否推进。真实登录、业务行、页面版本、HTTP/console/pageerror及每条失败请求来源分别留证；PASS_WITH_OBSERVATIONS必须列未修项和验收范围。
+- Forbidden action: 不因UI慢重复POST/清锁，不猜job目录，不按POST一律放行或按错误文本一律忽略，不mock外部资源或修改产品凑验收，不跳过恢复依据或增加超时掩盖未知停滞。
+- Evidence: `doc/tasks/20261117-update-and-release-prod/execution-log.md`，正式运行根绑定JOB-e5c2a3e732；`doc/tasks/20261118-release-review-preflight/review.md`。
+
+阶段必查项与推荐命令：执行前核真实Python的`-X utf8 -c "import sys; print(sys.executable)"`及退出码，进程内PATH供原生Git hook使用，stdout/stderr分开采集。部署中沿原编号只读读取job.runtimeStagingRoots、operation和恢复依据增长，记录阶段起止，真实大工作量不当失败。UI阶段用Playwright真实页面并限定菜单容器，逐请求记录origin/path/error，不含凭据或query；发现错误先定位。正式业务验收后正常开放，双正常容器运行再按下节对齐标签。Fail Fast按Blocker；必须记录实际命令/退出、目标/路径绑定、原失败、验收范围和未解决观察。一次性私密探针不视为已提交正式工具。
+
 ## 发布后 IMAGE_TAG 元数据一致性门禁
 
 - Trigger：Spug 已按不可变 digest 替换容器，但旧 compose `.env IMAGE_TAG` 仍落后，或发布收口核版本不一致。
