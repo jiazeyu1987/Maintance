@@ -9,7 +9,8 @@ class PolicyTests(unittest.TestCase):
             root=Path(folder)
             (root/'full/.repository').mkdir(parents=True)
             (root/'incremental/.repository').mkdir(parents=True)
-            parent=native.write(root/'full/.repository/point.json',dict(backupId='p',parentPointPins=[]))
+            ancestor=native.write(root/'ancestor.json',dict(backupId='unconfigured',parentPointPins=[]))
+            parent=native.write(root/'full/.repository/point.json',dict(backupId='p',parentPointPins=[ancestor]))
             native.write(root/'incremental/.repository/point.json',dict(backupId='i',parentPointPins=[parent]))
             points={'p':dict(applicationId='a',sourceConfigRef='s',fileStorage=[{'id':28}]),
                     'i':dict(applicationId='a',sourceConfigRef='s')}

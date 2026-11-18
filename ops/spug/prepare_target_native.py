@@ -250,6 +250,8 @@ def resolve_point_policy(points, point_ref, owner=None):
             seen_paths.add(reference['path'])
             require(pin(reference['path']) == reference, 'PREPARE_POINT_CHANGED')
             document = read(reference['path'])
+            if points[child_ref].get('fileStorage'):
+                break
             parents = document['parentPointPins']
             if not parents: break
             reference = parents[-1]
