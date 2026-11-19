@@ -358,4 +358,4 @@
 
 - Keywords: 发布后自动清理, 旧容器旧镜像, 最近恢复点保护, 已核销失败现场, openingJobId, retry-release-cleanup, 镜像共享层空间, Mounts顺序指纹, blockedReleaseTags, 旧恢复日志摘要不一致整组保留, 旧目录缺manifest整组保留 -> `docs/release-agent-checklist.md#发布验收后旧载荷回收门禁`（阶段顺序、归属与锁复核、独立重试及真实 Docker 验证）。
 
-- 冻结路线快照 / 跨租户导入错键 / 74个排程索引 / APPLIED后晚导入 / 停止态前向发布：`ops/spug/release-center/ROUTE_IMPORT_CORRECTION.md`；已执行迁移仍须在停服前PRECHECK现有快照，不能重放BACKFILL。专项纠正必须明确授权、固定原SHA/引用、封存原文及事务审计，新测试包零待执行SQL才可前向切程序。
+- 冻结路线快照 / 跨租户导入错键 / 74个排程索引 / APPLIED后晚导入 / 停止态前向发布 / 停服来源GxP配置 / read-stopped-gxp：`ops/spug/release-center/ROUTE_IMPORT_CORRECTION.md`；已执行迁移仍须在停服前PRECHECK现有快照，不能重放BACKFILL。专项纠正固定原SHA/引用、封存原文及事务审计；停止态构建只读配置须核原事故身份，明确不是认证或运行模式验证，不切换来源。

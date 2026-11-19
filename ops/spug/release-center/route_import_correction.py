@@ -10,6 +10,42 @@ from intruoyi_build import target_input_plan
 from intruoyi_runtime import Runtime, file_sha, release_workflow, require
 
 
+def capture_source_mode(executor,job,commit,healthy_reader):
+    """Read the configured source explicitly: normal UI or a verified stopped incident."""
+    config=executor.c
+    require(config.get('gxpConfigurationSourceUrl'),'Configure the saved GxP source URL')
+    source=config['gxpConfigurationSourceUrl']
+    stopped=(source.rstrip('/')==config['targets']['prod']['entryUrl'].rstrip('/')
+             and executor.state['environments']['prod'].get('maintenanceUnknown') is True)
+    if not stopped:
+        return healthy_reader(config,source,executor.root/'technical-evidence'/job['id']/'source-configuration',
+                              dict(jobId=job['id'],gitCommit=commit),read_gxp_mode=True)
+    failures=[item for item in executor.state['jobs'] if item.get('action')=='promote-prod'
+        and item.get('target')=='prod' and item.get('status')=='failed' and item.get('effectsStarted')
+        and not item.get('resolution') and item.get('error','').startswith('Route snapshot READINESS blocked:')]
+    require(len(failures)==1,'Exactly one reviewed failed production origin required for stopped source settings')
+    original=failures[0]
+    old,manifest=executor.manifest(original['releaseTag'])
+    require(original.get('workflowPolicy',{}).get('productionRecovery')=='external','Original external recovery binding required')
+    operations=[item for item in original.get('remoteOperations',[]) if item.get('env')=='prod' and item.get('action')=='deploy']
+    require(len(operations)==1,'Original stopped deployment operation required')
+    incident=dict(version='stopped-origin-forward/v1',originalJobId=original['id'],
+        originalOperationId=operations[0]['operationId'],failedReleaseTag=original['releaseTag'],
+        stagingRoot=original['runtimeStagingRoots']['prod'],manifestSha256=old['manifestSha256'],
+        origin=original['originState'],appliedMigrations=[{key:item[key] for key in ('migrationId','sha256')}
+            for item in original['migrationPlan']['items'] if item['action']=='APPLY'])
+    from executor import stamp
+    observation=executor.runtime.observe('prod')
+    plan=target_input_plan(manifest['migrations'],observation['ledgerRecords'],'prod')
+    candidate=dict(executor.runtime_manifest('prod',manifest),releaseTag=stamp(),executionPlans={'prod':plan})
+    evidence=executor.runtime.call('prod','read-stopped-gxp',manifest=candidate,incident=incident)
+    require(evidence.get('gxpAuditMode')==manifest['releaseSettings']['gxpAuditMode']
+            and evidence.get('source')=='verified-stopped-origin-database'
+            and evidence.get('authenticated') is False and evidence.get('runtimeModeVerified') is False,
+            'Stopped saved GxP setting differs from the original failed package or source contract')
+    return dict(evidence,jobId=job['id'],gitCommit=commit,originalJobId=original['id'])
+
+
 def prepare(state, tag, original_id, load_manifest):
     require(not any(job['status'] in ('running','interrupted') and not job.get('resolution')
                     for job in state['jobs']), 'Active or interrupted workflow prevents correction')

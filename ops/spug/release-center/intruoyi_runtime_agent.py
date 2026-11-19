@@ -1746,6 +1746,17 @@ def verify_deployment_stopped(profile, payload):
 
 def dispatch(payload):
     profile, action = payload['profile'], payload['action']
+    if action == 'read-stopped-gxp':
+        origin=inspect_stopped_origin(profile,payload['manifest'],payload['incident'],require_repair=False)
+        require('infra_config' in remote.sql(profile,'SHOW TABLES;').splitlines(),'Saved GxP configuration table missing')
+        columns={line.split('\t')[0] for line in remote.sql(profile,'DESCRIBE infra_config;').splitlines()}
+        require({'config_key','value','type','visible','deleted'}<=columns,'Saved GxP configuration schema differs')
+        rows=remote.sql(profile,"SELECT value,type,visible+0 FROM infra_config WHERE config_key='system.gxp.audit-mode' AND deleted=b'0';").splitlines()
+        require(len(rows)==1 and rows[0] in ('FORMAL\t1\t1','DEVELOPMENT_DISABLED\t1\t1'),
+                'Unique visible saved GxP mode required')
+        return dict(source='verified-stopped-origin-database',authenticated=False,runtimeModeVerified=False,
+                    gxpAuditMode=rows[0].split('\t')[0],originFingerprint=origin['fingerprint'],
+                    originalJobId=payload['incident']['originalJobId'])
     if action == 'inspect-correction-origin':
         return inspect_stopped_origin(profile,payload['manifest'],payload['incident'],require_repair=False)
     if action == 'correct-imported-snapshots':

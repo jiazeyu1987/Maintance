@@ -86,7 +86,7 @@ class BuildRegistrationTests(unittest.TestCase):
                        'buildWorktreeRoot': str(self.repo), 'localBuildSpaceBytes': dict(worktree=1, package=1, state=1),
                        'targets': {'rehearsal': {'host':'isolated', 'stagingRoot':'/rehearsal'},
                                    'test': {'host':'test', 'stagingRoot':'/release'},
-                                   'prod': {'host':'prod', 'stagingRoot':'/release'},
+                                   'prod': {'host':'prod', 'stagingRoot':'/release', 'entryUrl':'http://prod.invalid'},
                                    'backup': {'host':'backup', 'stagingRoot':'/release'}}}
         self.environments = {env: {'baselineStatus':'registered'} for env in ('test', 'prod', 'backup')}
 

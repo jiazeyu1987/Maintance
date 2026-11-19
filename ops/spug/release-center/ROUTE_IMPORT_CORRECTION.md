@@ -17,3 +17,5 @@
 4. 正常Spug新包promote-prod重新核纠正原件/审计及全部身份，以docker cp读取停止容器的真实版本，不启动旧应用。新包技术部署成功后仅追加原失败的前向替代关联；业务开放仍必须单独验收。
 
 必须记录：新提交/tag/manifest和包摘要、原JOB/OP/起点、工作区路径、精确5条范围与计划SHA、原件路径、只读与写入结果、全量快照报告、正式部署/技术/页面/开放证据和最终收尾。Fail Fast保留原件；本合同不提供自动回退、数据恢复或未知结果重试。
+
+构建保存设置门禁：当gxpConfigurationSourceUrl仍指向正式服且maintenanceUnknown=true时，只接受上述唯一原失败和真实停止态身份。构建以SHOW TABLES/DESCRIBE核真实结构，只读infra_config中唯一可见的system.gxp.audit-mode，并与原失败包保存设置一致；证据必须标明未认证、未验证运行模式。正常来源继续真实UI登录。缺原起点、配置漂移或多条配置立即阻断，不改用其他环境、不启动旧应用。运行态技术验收仍须真实登录并核实际模式。推荐先运行test_stopped_source_mode与test_stopped_origin_recovery，再执行新构建；记录来源身份、保存值与原任务，不将保存值读回当作页面验收。

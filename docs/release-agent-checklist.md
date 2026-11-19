@@ -858,4 +858,6 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 
 ## 已执行迁移后的路线快照与停止态专项纠正
 
+构建来源固定正式服而已停止时，先按专项合同核唯一原READINESS失败、原worker终态、物理身份与零SQL计划，才可只读保存GxP值；必须标注authenticated=false、runtimeModeVerified=false并与原失败包一致。推荐执行test_stopped_source_mode及关联回归。未知维护起点或保存值漂移立即Fail Fast，不切换其他来源、不启动旧应用。记录原任务和当前保存设置；新包运行态技术/页面验收仍须真实登录。
+
 执行本checklist时同步遵守`ops/spug/release-center/ROUTE_IMPORT_CORRECTION.md`的Trigger、Preflight check、Blocker、Verification、Forbidden action、Evidence及四阶段命令。每次停服前均用候选Canonicalizer PRECHECK真实现有快照，包括已APPLIED的身份迁移；仅未执行迁移才可BACKFILL。已停服且迁移已执行的正式事故禁止套用pre-migration恢复；专项修复需固定原身份、无签名/执行引用、封存原件和审计。新同包测试成功且零待执行SQL后，使用既有正式按钮的受约束停止态起点校验；原失败保留，不跳过READINESS。必须记录原失败、新包、纠正计划及最终真实运行态，任一证据不全立即停止对应动作。

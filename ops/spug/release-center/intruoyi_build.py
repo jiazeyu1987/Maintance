@@ -292,10 +292,8 @@ def build(executor, job):
     executor.step(job, 'check-committed-release-contract')
     job['sourceContract'] = validate_source_contract(executor, commit)
     executor.step(job, 'capture-saved-gxp-mode')
-    require(c.get('gxpConfigurationSourceUrl'), 'Configure the source application URL for the saved GxP setting')
-    gxp_evidence = verify_login(c, c['gxpConfigurationSourceUrl'],
-                               executor.root/'technical-evidence'/job['id']/'source-configuration',
-                               dict(jobId=job['id'], gitCommit=commit), read_gxp_mode=True)
+    from route_import_correction import capture_source_mode
+    gxp_evidence = capture_source_mode(executor,job,commit,verify_login)
     release_settings = dict(gxpAuditMode=gxp_evidence['gxpAuditMode'])
     validate_required_gxp_mode(c, release_settings['gxpAuditMode'])
     job['releaseSettings'] = release_settings
