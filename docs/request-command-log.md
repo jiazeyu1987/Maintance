@@ -6131,3 +6131,9 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 用户需求：理解聊天01a1e9fe-abad-7bc1-b19f-51a7a9e32a90做的事情和遇到的问题。
 - 命令意图：read_thread完整分页读取用户要求与最新进度，核对本地匹配任务及经验门禁；只读分析，不操作服务器、不接管或发消息。
 - 验证结果：测试服当轮通过；正式13项迁移后被tenant163的5条冻结快照74个错键/148项检查阻断。后续已授权专项修复，入口/纠正21项和维护检查15项测试通过，真实快照只读预演通过且更新数0；未证实正式纠正、重新发布或业务开放完成。详见doc/tasks/20261119-understand-release-thread/analysis.md。
+
+
+### 20261119 分析正式发布根因
+- 用户需求：继续分析这次正式发布的数据问题是什么原因导致的。
+- 命令意图：只读核对应用导入基线、快照canonicalizer、发布预检/迁移/READINESS调用顺序及原任务证据；不构建、不测试、不连服务器、不修改目标聊天或业务数据。
+- 验证结果：确认旧导入逻辑未同步替换工序配置对象键，且摘要计算不等于业务语义校验；旧发布预检仅对APPLY迁移检查，历史迁移已执行时漏检当前快照，终端READINESS才暴露问题。具体导入操作人和源文件仍未知。分析记录见doc/tasks/20261119-release-root-cause/analysis.md。
