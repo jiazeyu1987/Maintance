@@ -562,6 +562,14 @@ class _IntRuoyiExecutor(Executor):
             if context is not None:
                 context.binding = (job, self.save)
             result = self.execute_bound(job)
+            if job.get('status') == 'succeeded' and job.get('stoppedOriginRecovery'):
+                original = next(item for item in self.state['jobs']
+                    if item['id'] == job['stoppedOriginRecovery']['originalJobId'])
+                require(not original.get('resolution'), 'Original failed incident was resolved concurrently')
+                original['resolution'] = dict(decision='forward-deployed',jobId=job['id'],
+                    releaseTag=job['releaseTag'],time=stamp(),
+                    note='Verified repaired stopped origin; new tested package deployed without SQL replay; original failure retained')
+                self.save()
             from post_release_cleanup import run as cleanup_after_acceptance
             cleanup_after_acceptance(self, job)
             return result
@@ -674,6 +682,31 @@ class _IntRuoyiExecutor(Executor):
     def deploy(self, env, p, manifest, job):
         self.step(job, 'check-migration-plan')
         observation = self.runtime.observe(env)
+        stopped_incident = None
+        if env == 'prod' and not observation.get('releaseTag'):
+            failures = [item for item in self.state['jobs'] if item.get('action') == 'promote-prod'
+                        and item.get('target') == 'prod' and item.get('status') == 'failed'
+                        and item.get('effectsStarted') and not item.get('resolution')
+                        and item.get('error', '').startswith('Route snapshot READINESS blocked:')]
+            require(len(failures) == 1, 'Exactly one reviewed failed production origin required')
+            original = failures[0]
+            old_package, _ = self.manifest(original['releaseTag'])
+            operations = [item for item in original.get('remoteOperations', [])
+                          if item.get('env') == 'prod' and item.get('action') == 'deploy']
+            require(len(operations) == 1 and original.get('workflowPolicy', {}).get('productionRecovery') == 'external',
+                    'Original external deployment operation binding required')
+            stopped_incident = dict(version='stopped-origin-forward/v1', originalJobId=original['id'],
+                originalOperationId=operations[0]['operationId'], failedReleaseTag=original['releaseTag'],
+                stagingRoot=original.get('runtimeStagingRoots', {}).get('prod'),
+                manifestSha256=old_package['manifestSha256'], origin=original['originState'],
+                appliedMigrations=[{key:item[key] for key in ('migrationId','sha256')}
+                    for item in original['migrationPlan']['items'] if item['action'] == 'APPLY'])
+            preliminary = target_input_plan(manifest['migrations'],observation['ledgerRecords'],'prod')
+            probe_manifest = dict(self.runtime_manifest(env,manifest), executionPlans={'prod':preliminary})
+            observation = self.runtime.call('prod','inspect-stopped-origin',manifest=probe_manifest,incident=stopped_incident)
+            job.update(stoppedOriginRecovery=stopped_incident, originState=observation,
+                       originFingerprint=observation['fingerprint'])
+            self.save()
         observed_environments = dict(self.state['environments'], **{env: observation})
         if env == 'backup':
             observed_environments['prod'] = self.runtime.observe('prod')
@@ -687,6 +720,9 @@ class _IntRuoyiExecutor(Executor):
         job['migrationPlan'] = plan
         self.save()
         runtime_manifest = dict(self.runtime_manifest(env, manifest), executionPlans={env:plan})
+        if stopped_incident:
+            runtime_manifest['baselines'] = {env:observation}
+            runtime_manifest['workflowPolicy']['stoppedOriginRecovery'] = stopped_incident
         if not self.rehearsal_required():
             job['workflowPolicy'] = runtime_manifest['workflowPolicy']
         if env in ('prod', 'backup') and not self.rehearsal_required():

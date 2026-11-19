@@ -232,6 +232,9 @@ class AcceptanceRepairTest(unittest.TestCase):
 
 class ResumeTailTest(unittest.TestCase):
     def setUp(self):
+        # Runtime.call supplies this bootstrap before executing the remote agent.
+        source_program=patch.object(agent,'BACKUP_SOURCE_PROGRAM',Path(__file__).with_name('release_backup_source.py').read_text(encoding='utf-8'),create=True)
+        source_program.start();self.addCleanup(source_program.stop)
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
