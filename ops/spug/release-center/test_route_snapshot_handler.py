@@ -104,9 +104,11 @@ class SnapshotHandlerTests(unittest.TestCase):
                     agent.run_snapshot_cli({}, Path('.'), self.manifest, self.item, mode)
                 process.assert_not_called()
 
-    def test_applied_enforcement_does_not_repeat_hook(self):
-        with patch.object(agent, 'run_snapshot_cli') as cli:
-            self.assertEqual(agent.snapshot_precheck({}, self.manifest, [dict(migrationId=ROUTE_SNAPSHOT_MIGRATION, action='SKIP_ALREADY_APPLIED')]), [])
+    def test_applied_enforcement_rechecks_live_data_without_repeating_mutation(self):
+        with patch.object(agent, 'directory', return_value=Path('.')), patch.object(agent, 'run_snapshot_cli', return_value={'status':'READY'}) as cli:
+            self.assertEqual(agent.snapshot_precheck({}, self.manifest, [dict(migrationId=ROUTE_SNAPSHOT_MIGRATION, action='SKIP_ALREADY_APPLIED')]), [{'status':'READY'}])
+            cli.assert_called_once_with({}, Path('.'), self.manifest, self.item, 'PRECHECK')
+            cli.reset_mock()
             agent.apply_migration_plan({}, Path('.'), self.manifest, [dict(migrationId=ROUTE_SNAPSHOT_MIGRATION, action='SKIP_ALREADY_APPLIED')])
             cli.assert_not_called()
 

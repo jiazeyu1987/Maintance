@@ -855,3 +855,9 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 - 基线核对补充：各服迁移历史必须分别健康且补丁前后不变，不要求不同环境历史SHA相同。固定运行镜像先核已校验主包清单的configID等于现场，再以清单镜像名定位本机不可变镜像；Docker Desktop导出config字节必须匹配，不能把indexID直接当classic configID。
 - 旧主版本部署失败仅在当前更晚完整包已completed、该服成功部署发生在旧失败之后、同包技术验收成功、登记manifest绑定且业务开放/无恢复待办时视为被替代；保留失败原记录，不补resolution或成功历史。当前版本失败、补丁/恢复等其他副作用、证据缺失仍阻塞；部署前必须再次核实际现场与固定补丁基线一致。
 - 显式原程序恢复先在停止状态逐项核原容器ID、运行配置SHA、JAR/元数据、数据库身份/结构/台账及前端容器；仅在这些证据全部相符后解除本任务保护，启动原程序。原程序可能执行其既有启动恢复，不能以候选的只读启动条件阻止恢复原服务，也不能将此作为补丁成功。原程序启动失败须停止写者并重新登记本任务只读保护；不修改/重放业务SQL，不回退业务数据。候选继续保持严格只读启动门禁。
+
+## 已执行迁移后的路线快照与停止态专项纠正
+
+构建来源固定正式服而已停止时，先按专项合同核唯一原READINESS失败、原worker终态、物理身份与零SQL计划，才可只读保存GxP值；必须标注authenticated=false、runtimeModeVerified=false并与原失败包一致。推荐执行test_stopped_source_mode及关联回归。未知维护起点或保存值漂移立即Fail Fast，不切换其他来源、不启动旧应用。记录原任务和当前保存设置；新包运行态技术/页面验收仍须真实登录。
+
+执行本checklist时同步遵守`ops/spug/release-center/ROUTE_IMPORT_CORRECTION.md`的Trigger、Preflight check、Blocker、Verification、Forbidden action、Evidence及四阶段命令。每次停服前均用候选Canonicalizer PRECHECK真实现有快照，包括已APPLIED的身份迁移；仅未执行迁移才可BACKFILL。已停服且迁移已执行的正式事故禁止套用pre-migration恢复；专项修复需固定原身份、无签名/执行引用、封存原件和审计。新同包测试成功且零待执行SQL后，使用既有正式按钮的受约束停止态起点校验；原失败保留，不跳过READINESS。必须记录原失败、新包、纠正计划及最终真实运行态，任一证据不全立即停止对应动作。

@@ -80,13 +80,13 @@ class DependencyStoreTests(unittest.TestCase):
 class BuildRegistrationTests(unittest.TestCase):
     """Exercise the actual build preamble; stop before any storage/build effects."""
     def setUp(self):
-        self.repo = Path(__file__).resolve().parents[3]
+        self.repo = Path(os.environ['INTRUOYI_BUILD_TEST_REPO']).resolve() if 'INTRUOYI_BUILD_TEST_REPO' in os.environ else Path(__file__).resolve().parents[3]
         self.commit = subprocess.check_output(['git', '-C', str(self.repo), 'rev-parse', 'HEAD']).decode().strip()
         self.config = {'repo': str(self.repo), 'gxpConfigurationSourceUrl': 'http://source.invalid', 'rehearsalStagingRoots': {'prod':'/rehearsal/prod'},
                        'buildWorktreeRoot': str(self.repo), 'localBuildSpaceBytes': dict(worktree=1, package=1, state=1),
                        'targets': {'rehearsal': {'host':'isolated', 'stagingRoot':'/rehearsal'},
                                    'test': {'host':'test', 'stagingRoot':'/release'},
-                                   'prod': {'host':'prod', 'stagingRoot':'/release'},
+                                   'prod': {'host':'prod', 'stagingRoot':'/release', 'entryUrl':'http://prod.invalid'},
                                    'backup': {'host':'backup', 'stagingRoot':'/release'}}}
         self.environments = {env: {'baselineStatus':'registered'} for env in ('test', 'prod', 'backup')}
 

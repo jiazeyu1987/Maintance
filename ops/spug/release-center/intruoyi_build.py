@@ -19,6 +19,7 @@ from intruoyi_login import verify_login
 from build_artifact_guard import (validate_source_contract, validate_required_gxp_mode,
                                   verify_backend_jar, validate_offline_cli_report, verify_backend_image)
 from build_worktree_cleanup import cleanup_build_worktree
+from candidate_history import requires_candidate_history
 
 MAINTENANCE_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(MAINTENANCE_ROOT))
@@ -291,10 +292,8 @@ def build(executor, job):
     executor.step(job, 'check-committed-release-contract')
     job['sourceContract'] = validate_source_contract(executor, commit)
     executor.step(job, 'capture-saved-gxp-mode')
-    require(c.get('gxpConfigurationSourceUrl'), 'Configure the source application URL for the saved GxP setting')
-    gxp_evidence = verify_login(c, c['gxpConfigurationSourceUrl'],
-                               executor.root/'technical-evidence'/job['id']/'source-configuration',
-                               dict(jobId=job['id'], gitCommit=commit), read_gxp_mode=True)
+    from route_import_correction import capture_source_mode
+    gxp_evidence = capture_source_mode(executor,job,commit,verify_login)
     release_settings = dict(gxpAuditMode=gxp_evidence['gxpAuditMode'])
     validate_required_gxp_mode(c, release_settings['gxpAuditMode'])
     job['releaseSettings'] = release_settings
@@ -335,7 +334,8 @@ def build(executor, job):
         readiness['targets'][env] = target_input_plan(migrations, records, env)
     for prior in executor.state['packages']:
         _, previous = executor.manifest(prior['releaseTag'])
-        historical_package_integrity(migrations, references, previous)
+        if requires_candidate_history(prior, executor.state):
+            historical_package_integrity(migrations, references, previous)
     (folder/'migration-readiness.json').write_text(json.dumps(readiness, ensure_ascii=False, indent=2), 'utf-8')
     menu_gate = worktree/'scripts/preflight/check-menu-migrations.py'
     require(menu_gate.is_file(), 'Pinned menu migration gate missing')

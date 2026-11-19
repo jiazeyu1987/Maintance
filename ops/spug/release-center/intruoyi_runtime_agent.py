@@ -390,7 +390,7 @@ def migration_plan(profile, manifest, obs):
     return plan
 
 
-def acceptance_spec(profile):
+def acceptance_spec(profile, stopped_origin=False):
     network = profile.get('acceptanceNetwork')
     require(isinstance(network, str) and re.fullmatch('[A-Za-z0-9_.-]+', network), 'Explicit acceptanceNetwork required before any application is stopped')
     net = json.loads(remote.run(['docker', 'network', 'inspect', network]))[0]
@@ -398,6 +398,15 @@ def acceptance_spec(profile):
     backend = remote.inspect(profile['backend'])
     frontend = remote.inspect(profile['frontend'])
     addresses = [entry['IPAddress'] for entry in backend['NetworkSettings']['Networks'].values() if entry.get('IPAddress')]
+    if stopped_origin:
+        require(not backend['State']['Running'] and not frontend['State']['Running'] and not addresses,
+                'Stopped acceptance origin changed')
+        endpoints = backend['NetworkSettings']['Networks']
+        require(set(endpoints) == {network}, 'Stopped backend network is ambiguous')
+        address = endpoints[network].get('IPAMConfig', {}).get('IPv4Address')
+        require(isinstance(address,str) and re.fullmatch(r'[0-9]+(?:\.[0-9]+){3}',address),
+                'Stopped backend requires an explicitly configured static address')
+        addresses = [address]
     require(len(addresses) == 1 and network in backend['NetworkSettings']['Networks'], 'Acceptance network must reach the uniquely addressed backend')
     archive = remote.run(['docker', 'cp', profile['frontend'] + ':/etc/nginx/conf.d/default.conf', '-'])
     with tarfile.open(fileobj=io.BytesIO(archive)) as contents:
@@ -527,6 +536,141 @@ def check_acceptance_port(address, port):
                                  + str(error.errno) + '); no container changed') from None
 
 
+def inspect_stopped_origin(profile, manifest, incident, require_repair=True):
+    """Re-read the failed worker, immutable repair and actual stopped containers."""
+    from intruoyi_runtime import validate_stopped_forward_origin
+    from operation_journal import inspect as inspect_operation
+    import io
+    import tarfile
+    require(profile['environment'] == 'prod' and runtime_recovery_policy('prod', manifest) == 'external',
+            'Reviewed stopped-origin recovery is restricted to external production recovery')
+    observation = observe(profile)
+    plan = migration_plan(profile, manifest, observation)
+    tag = validate_stopped_forward_origin(incident, observation, plan, manifest['releaseTag'])
+    require(profile.get('writerInventoryConfirmed') is True and profile.get('writers') == [profile['backend']],
+            'Reviewed incident requires the confirmed sole backend writer')
+    common = Path(profile.get('operationLockRoot', profile['stagingRoot']))
+    old_staging = common/'attempts'/incident['originalJobId']
+    root = old_staging/incident['failedReleaseTag']
+    require(str(old_staging) == incident.get('stagingRoot') and root.resolve() == root and not root.is_symlink(),
+            'Original failed staging root differs')
+    receipt = inspect_operation(dict(profile, stagingRoot=str(old_staging)),
+                                incident['originalOperationId'], incident['originalJobId'])
+    require(receipt.get('action') == 'deploy' and receipt.get('status') == 'failed' and receipt.get('worker') == 'stopped',
+            'Original failed deployment worker is not confirmed stopped')
+    require(not (root/'deployment-pending.json').exists() and not any(root.glob('*-before-*.private.json')),
+            'Original deployment switched programs; zero-SQL forward recovery refused')
+    old_manifest = root/'manifest.json'
+    require(old_manifest.is_file() and file_sha(old_manifest) == incident['manifestSha256'],
+            'Original failed package manifest differs')
+    repair = {}
+    if require_repair:
+        repair_root = root/'route-import-index-correction-v1'
+        repair = json.loads((repair_root/'report.private.json').read_text('utf-8'))
+        plan_path = repair_root/'plan.private.json'
+        require(repair.get('status') == 'CORRECTED' and repair.get('rowCount') == 5
+                and repair.get('indexCount') == 74 and repair.get('updatedCount') == 5
+                and repair.get('planSha256') == file_sha(plan_path), 'Bound snapshot correction evidence missing')
+        correction = json.loads(plan_path.read_text('utf-8'))
+        require(correction.get('contract') == 'mes-route-import-index-correction/v1'
+                and len(correction.get('corrections', [])) == 5, 'Reviewed correction scope required')
+        for row in correction['corrections']:
+            require(re.fullmatch('[0-9]+', str(row['id'])) and re.fullmatch('[a-f0-9]{64}', row['correctedSha256'])
+                    and re.fullmatch('[a-f0-9]{64}', row['originalSha256']), 'Correction identity malformed')
+            sql = "SELECT COUNT(*) FROM mes_pro_route_version v JOIN controlled_content_version_ref r ON r.native_version_id=v.id AND r.content_type='MES_ROUTE' JOIN controlled_content_transition_audit a ON a.version_ref_id=r.id WHERE v.id="+str(row['id'])+" AND v.tenant_id=163 AND v.route_snapshot_sha256='"+row['correctedSha256']+"' AND a.action='CORRECT_IMPORTED_SNAPSHOT_INDEX' AND a.event_key='route-import-index-correction:v1:"+str(row['id'])+":"+row['originalSha256']+"' AND LOCATE('planSha256="+repair['planSha256']+"',a.reason)>0;"
+            require(remote.sql(profile, sql) == '1', 'Correction audit or frozen identity changed')
+    check_fence(profile)
+    require(remote.sql(profile, 'SELECT COUNT(*) FROM information_schema.INNODB_TRX;') == '0',
+            'Active transactions block stopped-origin recovery')
+    # docker cp reads the retained stopped container, without starting an old application.
+    archive = remote.run(['docker','cp',profile['frontend']+':/usr/share/nginx/html/release-info.json','-'], timeout=20)
+    require(len(archive) <= 1024*1024, 'Stopped frontend metadata exceeds limit')
+    with tarfile.open(fileobj=io.BytesIO(archive)) as stream:
+        members = stream.getmembers()
+        require(len(members) == 1 and members[0].isfile() and members[0].size <= 65536,
+                'Stopped frontend metadata archive invalid')
+        metadata = json.load(stream.extractfile(members[0]))
+    require(metadata.get('baseReleaseTag',metadata.get('releaseTag')) == tag, 'Stopped frontend release identity differs')
+    after = observe(profile)
+    validate_stopped_forward_origin(incident, after, migration_plan(profile,manifest,after), manifest['releaseTag'])
+    require(after['fingerprint'] == observation['fingerprint'], 'Stopped origin changed during inspection')
+    observation.update(releaseTag=tag, releaseMetadataSource='verified-stopped-container',
+                       stoppedOriginRecovery=dict(originalJobId=incident['originalJobId'],
+                           planSha256=repair.get('planSha256'), metadataSha256=sha(metadata)))
+    return observation
+
+
+def correct_imported_snapshots(profile, payload):
+    """Explicit maintenance command; same host lock, pinned image and transaction audit."""
+    manifest, incident = payload['manifest'], payload['incident']
+    require(re.fullmatch('OP-[a-f0-9]{20}',payload.get('operationId','')) and payload.get('workflowJobId'),
+            'Journalled maintenance operation and common lock required')
+    inspect_stopped_origin(profile,manifest,incident,require_repair=False)
+    root = directory(profile,manifest['releaseTag'])
+    stage = json.loads((root/'stage-verified.json').read_text('utf-8'))
+    require(stage.get('manifestSha256') == package_identity(manifest), 'Correction requires the staged new package')
+    image = manifest['images']['backend']['id']
+    require(re.fullmatch('sha256:[a-f0-9]{64}',image)
+            and remote.run(['docker','image','inspect','--format','{{.Id}}',image]).decode().strip()==image,
+            'Pinned correction backend image required')
+    repair_root = Path(incident['stagingRoot'])/incident['failedReleaseTag']/'route-import-index-correction-v1'
+    require(not repair_root.exists(), 'Correction artifacts already exist; inspect original outcome, do not replay')
+    plan_bytes = payload['planJson'].encode('utf-8')
+    require(len(plan_bytes) <= 4*1024*1024 and hashlib.sha256(plan_bytes).hexdigest() == payload['planSha256'],
+            'Original correction plan bytes changed')
+    repair_root.mkdir(mode=0o700)
+    plan_path = repair_root/'plan.private.json'
+    with plan_path.open('xb') as stream:
+        stream.write(plan_bytes);stream.flush();os.fsync(stream.fileno())
+    plan_path.chmod(0o400)
+    require(file_sha(plan_path)==payload['planSha256'], 'Sealed original correction plan readback failed')
+    database = remote.inspect(profile['database'])
+    environment = dict(value.split('=',1) for value in database['Config']['Env'])
+    name,password = environment.get('MYSQL_DATABASE'),environment.get('MYSQL_ROOT_PASSWORD')
+    require(isinstance(name,str) and re.fullmatch('[A-Za-z0-9_-]+',name)
+            and isinstance(password,str) and password and not any(c in password for c in '\r\n\0'),
+            'Explicit supported private JDBC configuration required')
+    credentials = repair_root/'jdbc.private.env'
+    descriptor = os.open(str(credentials),os.O_WRONLY|os.O_CREAT|os.O_EXCL,0o600)
+    with os.fdopen(descriptor,'w',encoding='utf-8') as stream:
+        stream.write('MES_SNAPSHOT_JDBC_URL=jdbc:mysql://127.0.0.1:3306/'+name+'?useSSL=false&allowPublicKeyRetrieval=true\n'
+            +'MES_SNAPSHOT_JDBC_USER=root\nMES_SNAPSHOT_JDBC_PASSWORD='+password+'\n'
+            +'MES_SNAPSHOT_ARTIFACT_PATH='+str(plan_path)+'\n')
+    try:
+        for mode,filename in (('--dry-run','dry-run.private.json'),('--apply','report.private.json')):
+            container='intruoyi-route-correction-'+secrets.token_hex(8)
+            command=['docker','run','--rm','--pull=never','--name',container,
+                '--network','container:'+database['Id'],'--read-only','--cap-drop','ALL',
+                '--security-opt','no-new-privileges','--tmpfs','/tmp:rw,nosuid,size=64m',
+                '--env-file',str(credentials),'--mount','type=bind,src='+str(repair_root)+',dst=/runtime-reports',
+                '--entrypoint','java',image,
+                '-Dloader.main=cn.iocoder.yudao.module.mes.service.pro.route.MesRouteImportedSnapshotCorrectionCommand',
+                '-cp','/yudao-server/app.jar','org.springframework.boot.loader.launch.PropertiesLauncher',
+                '--plan=/runtime-reports/plan.private.json','--report=/runtime-reports/'+filename,mode]
+            try:
+                process=subprocess.run(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE,timeout=180)
+            except subprocess.TimeoutExpired:
+                remote.run(['docker','rm','-f',container])
+                raise RuntimeBlocked('Correction outcome uncertain; inspect sealed plan and database audit before any further action') from None
+            report=json.loads((repair_root/filename).read_text('utf-8'))
+            require(process.returncode==0 and report.get('status')==('READY' if mode=='--dry-run' else 'CORRECTED')
+                    and report.get('planSha256')==payload['planSha256'] and report.get('rowCount')==5
+                    and report.get('indexCount')==74 and report.get('updatedCount')==(0 if mode=='--dry-run' else 5),
+                    'Correction command blocked; inspect private report and preserve original artifacts')
+            (repair_root/filename).chmod(0o400)
+    finally:
+        credentials.unlink()
+    verified = inspect_stopped_origin(profile,manifest,incident)
+    snapshot_precheck(profile,manifest,migration_plan(profile,manifest,verified))
+    return dict(status='CORRECTED',rowCount=5,indexCount=74,planSha256=payload['planSha256'],
+                artifactPath=str(plan_path),reportSha256=file_sha(repair_root/'report.private.json'))
+
+
+def upgrade_origin(profile, manifest):
+    incident = manifest.get('workflowPolicy', {}).get('stoppedOriginRecovery')
+    return inspect_stopped_origin(profile, manifest, incident) if incident else observe(profile)
+
+
 def preflight(profile, manifest):
     runtime_recovery_policy(profile['environment'], manifest)
     from intruoyi_recovery_agent import inventory, validate_database_identity
@@ -543,9 +687,12 @@ def preflight(profile, manifest):
     writers = profile.get('writers')
     require(profile.get('writerInventoryConfirmed') is True and isinstance(writers, list) and profile['backend'] in writers,
             'All database/background writer containers must be explicitly registered and confirmed')
+    stopped_recovery = manifest.get('workflowPolicy', {}).get('stoppedOriginRecovery')
+    stopped_observation = inspect_stopped_origin(profile,manifest,stopped_recovery) if stopped_recovery else None
     for name in writers + [profile['frontend']]:
         require(re.fullmatch('[A-Za-z0-9_.-]+', name), 'Invalid registered writer')
-        require(remote.inspect(name)['State']['Running'], 'Registered writer is not running; investigate current state')
+        require(remote.inspect(name)['State']['Running'] is (stopped_recovery is None),
+                'Registered writer state differs from the verified deployment origin')
     url = urlsplit(profile.get('acceptanceUrl', ''))
     require(url.scheme == 'http' and url.hostname == profile['host'] and url.port and url.port != urlsplit(profile['entryUrl']).port,
             'Explicit separate registered acceptanceUrl required')
@@ -559,8 +706,11 @@ def preflight(profile, manifest):
     else:
         check_acceptance_port(profile['acceptanceBindAddress'], url.port)
     require(profile['acceptanceFrontend'] not in remote.run(['docker', 'ps', '-a', '--format', '{{.Names}}']).decode().splitlines(), 'Acceptance container name already exists; reconcile before deployment')
-    acceptance_spec(profile)
-    obs = observe(profile)
+    if stopped_recovery:
+        acceptance_spec(profile,stopped_origin=True)
+    else:
+        acceptance_spec(profile)
+    obs = stopped_observation if stopped_observation else observe(profile)
     plan = migration_plan(profile, manifest, obs)
     snapshot_checks = snapshot_precheck(profile, manifest, plan)
     return {'migrationAudit': audit_ledger(obs, manifest), 'plan': plan, 'acceptanceUrl': profile['acceptanceUrl'],
@@ -593,8 +743,9 @@ def snapshot_precheck(profile, manifest, plan):
     applied = {entry['migrationId'] for entry in plan if entry['action'] == 'APPLY'}
     if any(item['migrationId'] == ROUTE_LEGACY_MIGRATION for item in selected):
         require(ROUTE_SNAPSHOT_MIGRATION not in applied, 'Superseded route enforcement cannot execute')
+    # Recheck snapshots imported after the schema migration; never repeat BACKFILL.
     return [run_snapshot_cli(profile, directory(profile, manifest['releaseTag']), manifest, item, 'PRECHECK')
-            for item in selected if item['migrationId'] in applied]
+            for item in selected]
 
 
 def run_snapshot_cli(profile, root, manifest, migration, mode, recovery=None):
@@ -932,7 +1083,7 @@ def deploy(profile, manifest):
         require(remote.run(['docker', 'image', 'inspect', '--format', '{{.Id}}', image]).decode().strip() == image, 'Candidate image not loaded')
     expected_schema = manifest.get('expectedSchemaSha256')
     validate_expected_schema(profile['environment'], expected_schema, manifest.get('workflowPolicy'))
-    obs = observe(profile)
+    obs = upgrade_origin(profile, manifest)
     plan = migration_plan(profile, manifest, obs)
     validate_direct_target_origin(profile, manifest, obs, plan)
     check_fence(profile)
@@ -1595,6 +1746,23 @@ def verify_deployment_stopped(profile, payload):
 
 def dispatch(payload):
     profile, action = payload['profile'], payload['action']
+    if action == 'read-stopped-gxp':
+        origin=inspect_stopped_origin(profile,payload['manifest'],payload['incident'],require_repair=False)
+        require('infra_config' in remote.sql(profile,'SHOW TABLES;').splitlines(),'Saved GxP configuration table missing')
+        columns={line.split('\t')[0] for line in remote.sql(profile,'DESCRIBE infra_config;').splitlines()}
+        require({'config_key','value','type','visible','deleted'}<=columns,'Saved GxP configuration schema differs')
+        rows=remote.sql(profile,"SELECT value,type,visible+0 FROM infra_config WHERE config_key='system.gxp.audit-mode' AND deleted=b'0';").splitlines()
+        require(len(rows)==1 and rows[0] in ('FORMAL\t1\t1','DEVELOPMENT_DISABLED\t1\t1'),
+                'Unique visible saved GxP mode required')
+        return dict(source='verified-stopped-origin-database',authenticated=False,runtimeModeVerified=False,
+                    gxpAuditMode=rows[0].split('\t')[0],originFingerprint=origin['fingerprint'],
+                    originalJobId=payload['incident']['originalJobId'])
+    if action == 'inspect-correction-origin':
+        return inspect_stopped_origin(profile,payload['manifest'],payload['incident'],require_repair=False)
+    if action == 'correct-imported-snapshots':
+        return correct_imported_snapshots(profile,payload)
+    if action == 'inspect-stopped-origin':
+        return inspect_stopped_origin(profile,payload['manifest'],payload['incident'])
     if action == 'read-versions':
         return read_versions(profile)
     if action == 'read-database':

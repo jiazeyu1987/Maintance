@@ -113,6 +113,38 @@ def bind_reviewed_session_profile(migration):
         validate_migration_handler(migration)
 
 
+def validate_stopped_forward_origin(incident, observation, plan, candidate_tag):
+    """A repaired failed production upgrade may switch programs without replaying SQL."""
+    from datetime import datetime
+    def release_order(value):
+        require(isinstance(value, str) and re.fullmatch(r'\d{4}(?:-\d{2}){5}', value), 'Release order identity required')
+        return datetime.strptime(value, '%Y-%m-%d-%H-%M-%S')
+    require(incident.get('version') == 'stopped-origin-forward/v1'
+            and re.fullmatch('JOB-[a-f0-9]{10}', incident.get('originalJobId', ''))
+            and re.fullmatch('OP-[a-f0-9]{20}', incident.get('originalOperationId', '')),
+            'Explicit reviewed stopped-origin incident required')
+    require(release_order(candidate_tag) > release_order(incident['failedReleaseTag']),
+            'Forward recovery requires a new release')
+    origin = incident.get('origin', {})
+    for key in ('images', 'runtimeConfigSha256', 'databaseIdentity'):
+        require(origin.get(key) and observation.get(key) == origin[key], 'Stopped origin changed: '+key)
+    for role in ('backend', 'frontend', 'database'):
+        before, current = origin.get('components', {}).get(role, {}), observation.get('components', {}).get(role, {})
+        require(before.get('containerId') and current.get('containerId') == before['containerId']
+                and current.get('imageId') == before.get('imageId')
+                and current.get('running') is (role == 'database'), 'Stopped origin container changed: '+role)
+    allowed = {'SKIP_ALREADY_APPLIED', 'SKIP_IMMUTABLE', 'SKIP_SCOPE_EXCLUDED', 'SKIP_ENV_NOT_ALLOWED'}
+    require(plan and all(item.get('action') in allowed for item in plan),
+            'Stopped-origin forward recovery requires zero pending SQL')
+    applied = {(row.get('migrationId'),row.get('sha256')) for row in observation.get('ledgerRecords', [])
+               if row.get('status') == 'APPLIED'}
+    previous = incident.get('appliedMigrations', [])
+    require(previous and all((row.get('migrationId'),row.get('sha256')) in applied for row in previous),
+            'Original upgrade migrations are not all applied')
+    require(origin.get('releaseTag'), 'Original release identity missing')
+    return origin['releaseTag']
+
+
 def validate_migration_handler(migration):
     """Only reviewed S3/S4 identities may set their specific maintenance variable."""
     mid = migration.get('migrationId')
@@ -466,7 +498,7 @@ class Runtime:
             job.setdefault('remoteOperations', []).append(operation)
             persist()
             arguments.update(operationId=operation['operationId'], workflowJobId=job['id'])
-        uncertain_on_disconnect = action in ('backend-patch-deploy','backend-patch-restore','artifact-auto-clean','frontend-patch-deploy','frontend-patch-restore','deploy', 'maintenance', 'recover-release', 'accept-recovery', 'resume-test-deployment-tail', 'rehearsal-capture', 'rehearsal-restore', 'rehearsal-resume-tail', 'rehearsal-reset')
+        uncertain_on_disconnect = action in ('correct-imported-snapshots','backend-patch-deploy','backend-patch-restore','artifact-auto-clean','frontend-patch-deploy','frontend-patch-restore','deploy', 'maintenance', 'recover-release', 'accept-recovery', 'resume-test-deployment-tail', 'rehearsal-capture', 'rehearsal-restore', 'rehearsal-resume-tail', 'rehearsal-reset')
         profile = self.profile(env)
         if action == 'artifact-auto-clean':
             profile['stagingRoot'] = self.targets[env]['stagingRoot']
