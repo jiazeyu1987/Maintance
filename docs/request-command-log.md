@@ -6125,3 +6125,9 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 
 ### 20261118 修复后六步完整重跑与计时
 - 用户要求修复后重跑六步并精确计时；代理恢复后按冻结提交5ad3fd941构建同一releaseTag2026-11-18-15-49-02并发布测试/正式。修复来源运行时和开放续办，106项回归通过并提交推送。新FULL+INCREMENTAL真实备份及.59空目标恢复SUCCEEDED，8表、附件和真实登录版本按约定验收通过。原生增量5777.608673秒、空目标准备108.252486秒、恢复1914.383369秒；两专用worktree已删除，详见doc/tasks/20261118-sixstep-timed/timing-report.md。保留失败与历史PDF页面限制。
+
+
+### 20261119 理解“发布”聊天
+- 用户需求：理解聊天01a1e9fe-abad-7bc1-b19f-51a7a9e32a90做的事情和遇到的问题。
+- 命令意图：read_thread完整分页读取用户要求与最新进度，核对本地匹配任务及经验门禁；只读分析，不操作服务器、不接管或发消息。
+- 验证结果：测试服当轮通过；正式13项迁移后被tenant163的5条冻结快照74个错键/148项检查阻断。后续已授权专项修复，入口/纠正21项和维护检查15项测试通过，真实快照只读预演通过且更新数0；未证实正式纠正、重新发布或业务开放完成。详见doc/tasks/20261119-understand-release-thread/analysis.md。
