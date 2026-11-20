@@ -1,7 +1,7 @@
 # 测试发布元数据尾部续办
 
 ## Current Status
-ready_for_closeout
+completed
 
 ## 目标与里程碑
 在既有原失败作业、发布包、迁移台账、备份及原容器校验之后，仅对绑定当前正常运行容器的 runtime-opening-pending 尾部续办。先 RED、再实现、再定向回归。主线程负责统一记录、提交和收尾。

@@ -1,7 +1,7 @@
 # 版本一致性与验收规则统一
 
 ## Current Status
-ready_for_closeout
+completed
 
 ## 目标与范围
 用户要求先处理发布版本一致性及验收规则统一。沿用20261119发布任务，仅修改本机维护仓正式代码、测试、文档并融合，不重新发布IntRuoyi应用。页面规则统一不自动追认旧验收；Excel业务实现归IntRuoyi。
@@ -31,7 +31,7 @@ ready_for_closeout
 - [x] 规则与入口核实，BDD和失败证据。
 - [x] 三环境共同对齐及页面统一文档。
 - [x] 续办实际入口、回归及独立审查。
-- [ ] 实现提交、融合后复验、本轮工作区删除、最终记录。
+- [x] 实现提交、融合后复验、本轮工作区删除、最终记录。
 
 ## 实施结果与验证
 - 自动对齐独立于备份来源，正常双容器健康后对齐；元数据失败保留同包、前后端容器ID绑定尾部。测试服原任务续办新增严格正常开放分支，复用原包/恢复点/完整台账/原容器验证，不重放SQL或部署。同镜像替换容器、活跃worker、配置/台账漂移均拒绝。
@@ -43,5 +43,11 @@ python -X utf8 -B scripts/tests/test_runtime_env_metadata.py -q
 ```
 - 第二条命令从隔离工作区根目录执行，原独立工具5项PASS。实际Python为C:/Users/D01021/Documents/spug-handoff-work-20261030/runtime/Python312-3.12.14/python.exe。
 - 未构建应用、未安装运行中执行器、未操作服务器、未做新的真实页面或Excel导入验收；这些测试是本机单元/入口集成验证，Docker/SSH边界使用测试替身，不记真实E2E。
-- 合并目标int_main；提交、合并后复验和新worktree删除证据待收尾记录。原发布任务4个旧工作区不属于本轮清理范围。
-- 已产生新提交：实现363a6ca50baf484519939c559f4bceaeca2b4395，仅13个明确代码/测试/规则文件。提交前主区对应13路径干净且索引空，UTF8及规则相对链接/6项门禁字段检查PASS，git diff --check PASS。尚未融合，当前ready_for_closeout。
+- 已产生新提交：实现363a6ca50baf484519939c559f4bceaeca2b4395，仅13个明确代码/测试/规则文件；中间记录aa653fa15b461e8800a20800faa18564c9ead5f8。提交前主区对应13路径干净且索引空，UTF8及规则相对链接/6项门禁字段检查PASS，git diff --check PASS。
+
+## 最终收尾
+- 两提交已fast-forward合回维护int_main，合并后核隔离工作区HEAD等于int_main，在同提交重新执行上述254+5项测试PASS，零跳过。未在主工作区构建或测试。
+- 清理第一次因41个ignored Python字节码被正式工具拒绝；逐文件核路径在本轮worktree内、对应源码存在、Python magic及git ignored身份后记录摘要并仅删除这些生成物，未改清理门禁或删除未知内容。
+- GREEN: 官方integration_worktree_cleanup.py -> PASS；commit=aa653fa，verifiedTrackedFiles=5223，gitRemovalExitCode=0，registeredAfter=false，physicalPathExists=false。本轮工作区已删除。外部回执C:/SpugHandoff/release/version-acceptance-20261120-cleanup-result.json，缓存清单同目录version-acceptance-20261120-cache-cleanup.json。
+- 本轮未启动或改动运行控制台，无需恢复；现行执行器未安装本轮代码。下次安装前必须按checklist核各环境显式.env配置、新模块运输及实际入口，不能用本机回归宣称线上生效。
+- 本子项completed；原发布任务其他4个旧工作区及历史页面证据的最终收尾仍单独跟踪，不由本次规则变更自动追认或清理。

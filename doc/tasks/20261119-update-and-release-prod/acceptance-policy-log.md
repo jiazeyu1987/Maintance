@@ -1,7 +1,7 @@
 # 发布页面验收规则统一
 
 ## Current Status
-ready_for_closeout
+completed
 
 ## 目标与范围
 统一login-access与发布checklist对console错误的判定。仅修改登录规则和新增统一页面验收规则；主线程同步checklist和经验索引。不修改业务代码、认证自动化，不操作服务器。
@@ -35,3 +35,5 @@ ready_for_closeout
 - 规则场景审查：无异常且必需检查齐全PASS；console为0但缺必要证据BLOCKED；业务code/必要资源失败BLOCKED；证据完整的非关键外部失败或事前只读拦截观察通过；仅域名/历史说明或未知影响BLOCKED；基础冒烟通过不改变未运行业务E2E。对应上文BDD逐项覆盖。
 - GREEN: 显式UTF8无BOM读回、3份文件相对链接存在、6项门禁字段齐全、旧console数量硬判定已移除 -> PASS；git diff --check针对3份文件 -> exit0。
 - 本项仅文档规则治理，未新增生产代码或形式化测试文件，不将文档审查记作真实E2E通过。未提交、安装或远端执行；checklist/experience-index同步、合并和工作区收尾由主线程负责。
+
+最终收尾：主线程已同步checklist及索引，实现363a6ca和记录aa653fa已融合int_main；规则UTF8/相对链接/门禁字段及diff检查PASS，本轮worktree正式清理PASS。前段“未提交”为交接时事实；仍未安装或执行新真实页面验收。
