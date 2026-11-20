@@ -6153,3 +6153,5 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 用户需求：继续分析这次正式发布的数据问题是什么原因导致的。
 - 命令意图：只读核对应用导入基线、快照canonicalizer、发布预检/迁移/READINESS调用顺序及原任务证据；不构建、不测试、不连服务器、不修改目标聊天或业务数据。
 - 验证结果：确认旧导入逻辑未同步替换工序配置对象键，且摘要计算不等于业务语义校验；旧发布预检仅对APPLY迁移检查，历史迁移已执行时漏检当前快照，终端READINESS才暴露问题。具体导入操作人和源文件仍未知。分析记录见doc/tasks/20261119-release-root-cause/analysis.md。
+
+- 2026-11-20 test-release-menu-repair：用户要求发布到测试服务器，继承下一次发布修复菜单授权。专用worktree新增5580前向菜单迁移，补齐新通知迁移登记并保护历史SQL摘要；152a084c3已合回int_main，4项真实MySQL及2项Node测试通过。2026-11-20-14-42-40构建JOB-8e4a355562及测试发布JOB-363a294001均succeeded；菜单APPLIED、实际镜像/IMAGE_TAG/manifest一致、UP/200，真实菜单与版本页面PASS_WITH_OBSERVATIONS。两处自有worktree清理及slot9释放完成。只执行build-release/publish-test，不执行mark-tested或正式/审查晋级；正式菜单仍待发布。最终记录doc/tasks/20261120-test-release-menu-repair/。

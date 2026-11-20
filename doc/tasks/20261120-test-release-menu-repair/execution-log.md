@@ -1,0 +1,31 @@
+# 执行记录
+
+- 用户授权测试服发布；继承菜单修复授权，正式服不在本轮范围。
+- BDD: Given测试服5580仍为旧菜单且900120已为根目录；When新增前向迁移随当前已提交应用发布到测试服；Then5580符合当前定义、900120及无关权限不回退、迁移/镜像/页面证据一致。
+- 专用应用worktree：C:/SpugHandoff/release/test-menu-release-20261120，codex/test-menu-release-20261120，初始46c87dd2c29de07734d467df9ead10eed7b1c77b，完整checkout干净；本轮后端/前端实际同一Git根仓。
+- GREEN: experience-preflight -> PASS，适用本机专用MySQL迁移验证：已读真实测试服schema与菜单/账本，mysql:8.0.39为本机现有镜像，测试容器使用独立名称、network=none、不挂业务数据，不连接服务器写入。BDD范围修复5580受管字段，保留根目录与所有角色套餐关联，检测未知身份/重复路径拒绝。
+- 当前测试服2026-11-19-23-41-45、health UP/HTTP200、maintenance=false、openingPending=false；执行器无活动job。新建迁移与真实MySQL验证完成后才启动构建/部署。
+- 测试环境首次磁盘层MySQL初始化超过120秒，未执行测试，明确不是RED证据；诊断容器日志证明初始化仍进行且无OOM。自有测试数据改用tmpfs后18秒正常启动，RED为新增迁移/预检文件缺失，3测试7子场景报预期FileNotFound。补正式SQL后GREEN：3项真实MySQL测试PASS（22.8秒），含冲突/幂等/失败保持。诊断容器已精确删除。
+- 入包预检发现远端新代码2个未登记SQL：文件归属prepare依赖已在56a46097a正式排除的文件隔离功能，当前FileDO仍为原行为，须按既有发布范围明确排除该孤立脚本；新注册证通知前向迁移需要登记及预检。另旧20260901通知迁移被上游改写，须恢复已发布字节，保留新20261120前向SQL承载变化，不能改台账。
+- 真实测试服菜单/通知target-preflight各输出唯一PASS。migration_inputs实际解析903迁移/1218artifacts，登记测试PASS。通知静态回归旧用例要求改历史SQL，RED后改为验证历史保持和后继入包/依赖；另增加真实MySQL新装两阶段链验证，最终4项MySQL测试PASS、2项Node测试PASS。
+- 测试启动一次误连entrypoint临时MySQL导致回归中断，修正就绪条件为PID1=mysqld且SELECT1成功，明确等待正式实例，不重试业务SQL掩盖错误。
+- 首次worktree槽位误写维护仓registry，hook拒绝提交；已仅移除该自有误登记，应用仓正式slot9=8090/48090登记成功，无服务启动。重新执行原hook，不绕过。
+- GREEN: experience-preflight -> PASS，适用应用合回int_main：候选152a084c3ebc8eefcddf300f66384e1117b297b9仅7个任务文件，hook通过；主区46c87dd2c为其祖先，任务文件与既有脏文件不重叠。采用正常ff-only，合并结果仍在专用worktree运行同HEAD必要验证，不在主区构建/测试。
+- 合回成功：int_main与专用worktree均为152a084c3ebc8eefcddf300f66384e1117b297b9；合并结果真实MySQL4项PASS（16.624秒），前端通知迁移Node2项PASS。
+- 综合前置检查JOB-cdd7fbed3c失败：本机构建、测试服全部相关项通过，失败为备用服59旧配置。保留失败历史；本轮仅测试服，未授权备用服操作，按多机器/具体缺口门禁只阻塞对应备用服动作。正常build-release入口继续，publish-test前单独检查目标。
+- GREEN: experience-preflight -> PASS，适用正常build-release：固定152a084c3提交输入、无活动任务；执行器自动新建并清理专用构建worktree，主区脏内容不入包。菜单真实schema、两项target-preflight及迁移目录验证已通过；正式/备用晋级不在范围。
+- build-release JOB-8e4a355562，releaseTag=2026-11-20-14-42-40，自动构建worktree=C:/SpugHandoff/release/build/2026-11-20-14-42-40。实际命令由正常执行器运行：mvn -B -ntp -f <worktree>/IntRuoyiBackend/pom.xml -pl yudao-server -am -DskipTests clean package；前端pnpm安装后node node_modules/vite/bin/vite.js build --mode prod。
+- GREEN: experience-preflight -> PASS，适用Playwright只读登录及发布页面验证：目标172.30.30.58，芋道源码/admin沿用用户明确账号，凭据只读私密文件；禁止业务写请求，仅允许登录与验证码POST。脚本C:/SpugHandoff/release/private/test-menu-release-20261120/menu-page-check.cjs，执行前监听全部异常，检查登录、真实菜单导航和排产列表、页面版本/变更说明；未知异常阻断，证据留私密目录。先login-only确认账号基线，部署完成后同包完整菜单检查。不做Excel业务回归。
+- 发布前真实登录身份PASS；login-only窗口3项观察：百度统计脚本连接关闭及对应console、用户外部头像被ORB拒绝。源码plugins/tongji/index.ts证明前者为访问统计；UserInfo.vue证明后者为头像展示。登录身份及主菜单可用，未发生业务写入，登录基线PASS_WITH_OBSERVATIONS；完整菜单页面和版本尚未验证，部署后继续独立判定。
+- build-release JOB-8e4a355562 succeeded；packageSha256=ea6e6ec501193143eb391200fc7a7458541d066e144a7f5afd9dc4b64c8d874a，manifestSha256=07bfdfe4e896701d990f3c26bbd5b9202742cc2060acd55df0f98ddcdf546a23。NAS保存原包并回读摘要通过。自动构建worktree清理passed（25089 tracked files检查、无新提交、注册已移除、物理目录不存在）；应用修复worktree仍保留至最终验收。
+- 测试服专用check-prerequisites JOB-0a38fee0d2已提交，绑定同releaseTag。
+- JOB-0a38fee0d2 succeeded，测试服包、目标起点/迁移计划、存储、writer、恢复与验收配置相关检查通过。
+- GREEN: experience-preflight -> PASS，适用publish-test服务器写入与菜单迁移：用户已授权测试服和菜单修复；固定同包2026-11-20-14-42-40，正常执行器前置检查全通过，无其他活动任务。走已配置测试服自身恢复/停写/升级/正常模式验收；不操作正式或审查服，不改历史账本，不直接运行修复SQL，不扩大角色套餐权限。
+- publish-test JOB-363a294001 succeeded；远端deploy OP-6bbaad713cb6c3323708 succeeded、worker stopped，07:17:54Z至07:41:16Z。数据库恢复快照6429475925 bytes及完整recovery-record.private.json已生成；主要等待数据库与逐表校验/存储卷备份。恢复依据位于测试服本包staging目录，不删除。
+- 两项新增迁移APPLIED/test/本releaseTag；菜单前向SQL SHA256=48b977ec238a8c8c215ff65b52d664da36d64e0a1af09d83bcdc43daf0e4082b。1941菜单比较仅5580改变；900120不变、已查关联bindings/packages字节一致。实际数据库当前值及登录权限树均符合新结构。
+- 运行态final-runtime-verification.json PASS：job SUCCESS、manifest及package绑定、IMAGE_TAG=本版本、双镜像实际ID及tag与manifest一致、backend UP/frontend200、maintenance=false/openingPending=false、technical passed。
+- Playwright真实菜单点击/列表code0/最近成功排产code0/版本及10条变更说明PASS；列表真实返回0行，不伪造已有工单。初次截图仍在最后请求/弹窗过渡阶段，保留initial证据后补等待latest-success及禁动画截图，再次真实执行PASS。page-assessment.json逐项归因6观察：统计2、头像1、个人工作台POST被事前只读保护拦截及关联事件3；已验菜单/排产请求无错误。结论PASS_WITH_OBSERVATIONS，未验个人工作台/Excel业务写入。脚本SHA256=63512d4c941393c6047ec7d8966b489574bbd2b48a7e358b1298ef8895c2cb45。
+- GREEN: experience-preflight -> PASS，适用本任务应用worktree清理：152a084c3已合入int_main且合后验证通过；专用worktree git status为空，发布成功，非他人目录。使用正式integration_worktree_cleanup.py校验目标/祖先/干净状态后清理C:/SpugHandoff/release/test-menu-release-20261120，外部proof留私密目录；随后仅释放该路径branch对应slot9（8090/48090），不动其他worktree和进程。
+- 首次清理入口因父PowerShell命令参数包含目标路径触发consumer保护，未删除文件。确认没有实际目标进程后通过私密wrapper文件调用同一正式cleanup函数，所有原保护保留；25089 tracked files验证、Git remove退出0、注册不存在、物理目录不存在，PASS。
+- slot-closeout PASS：仅本任务slot9=8090/48090改inactive，mutex锁及回读确认其他条目不变。主区27 tracked dirty+3 untracked=原30项保留；int_main仍152a084c3。执行器PID43352起始12:41:29，运行稳定source路径未改，无本任务遗留控制台。
+- 最终状态completed；本轮仅测试服，未mark-tested/promote-prod/promote-backup。正式菜单修复待办保持test_completed_prod_pending，未将基础页面冒烟写成Excel业务回归成功。

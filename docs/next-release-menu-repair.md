@@ -2,9 +2,9 @@
 
 ## 状态与授权
 
-pending_next_release。用户2026-11-20明确要求“更新IntRuoyi的代码，然后在下次发布的时候帮我修复菜单问题”。菜单修复已纳入下次发布范围，无需重复询问同一范围授权；本记录不触发立即发布或服务器写入。
+test_completed_prod_pending。用户2026-11-20明确要求“更新IntRuoyi的代码，然后在下次发布的时候帮我修复菜单问题”，随后要求“发布到测试服务器”。测试服修复已完成，正式服仍待下一次授权发布，无需重复询问已授权的菜单修复范围。
 
-代码已更新至合并提交46c87dd2c29de07734d467df9ead10eed7b1c77b，包含远端9783f8fc2和原本地发布修复。此次远端更新未新增针对5580漂移的修复迁移。**菜单尚未修复，不得把Git更新或旧迁移SKIPPED当作修复成功。**
+代码已更新并新增前向修复，应用提交152a084c3ebc8eefcddf300f66384e1117b297b9。测试服版本2026-11-20-14-42-40、publish-test JOB-363a294001 succeeded；20261120_mes_schedule_order_menu_forward在test账本APPLIED（SHA256 48b977ec238a8c8c215ff65b52d664da36d64e0a1af09d83bcdc43daf0e4082b）。真实库1941条菜单仅5580改变，900120保持根级，已查角色关联/套餐不变；登录权限树和真实菜单点击通过。运行态、版本与变更说明验收见[测试发布记录](../doc/tasks/20261120-test-release-menu-repair/verification.md)。**本轮未发布正式服，不能宣称两服菜单均已修复。**
 
 ## 执行门禁
 
@@ -13,7 +13,7 @@ pending_next_release。用户2026-11-20明确要求“更新IntRuoyi的代码，
 - Blocker：只有旧迁移记录而无可执行修复；父菜单/权限身份冲突；无法确定目标结构；需要越权扩大全角色/全租户权限；缺恢复依据；测试后菜单仍漂移。必须在停正式服前暴露问题。
 - Verification：同releaseTag先测试再正式。无论相关历史迁移APPLY或SKIP，分别检查目标版本最终菜单结构、父子关系、路径、组件和权限；真实登录验证目标角色可见菜单及页面入口；核再启动/重复发布不会回退。正常发布运行态验收同样必须通过。保存修复前后差异、迁移执行证据及页面结果。
 - Forbidden action：不删除账本、不改已执行SQL/摘要、不全量重跑历史SQL、不复制整张本机菜单/角色表、不直接按prod环境标记断言测试服迁移执行史、不把静态入包检查冒充真实菜单验收。
-- Evidence：本次更新任务doc/tasks/20261120-update-intruoyi-menu-next-release；实际执行时补releaseTag、应用修复提交、迁移ID/SHA、测试/正式验收与恢复依据。当前没有这些执行证据，不得提前关闭本待办。
+- Evidence：更新任务doc/tasks/20261120-update-intruoyi-menu-next-release；测试执行证据doc/tasks/20261120-test-release-menu-repair。正式发布仍需固定候选版本、实际菜单预检/恢复依据及最终验收；不得仅据测试成功关闭整个待办。
 
 ## 阶段必查与实施顺序
 
