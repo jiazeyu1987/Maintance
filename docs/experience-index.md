@@ -1,5 +1,7 @@
 # 项目经验索引
 
+- Windows执行器安装 / Get-Acl模块加载失败 / File.Replace空备份路径 / 停机前权限探针：`docs/powershell-memory.md#停进程前验证文件原子替换与权限保全`，停止前先实测同运行时原子替换、ACL和原件读回；写后失败核实际成功前缀，不盲目续派。
+
 - 发布页面console非零 / PASS_WITH_OBSERVATIONS / 非关键外部资源 / 验证器主动拦截 / 基础冒烟与业务E2E边界：`docs/release-page-acceptance.md`为唯一判定入口，登录与发布checklist共同引用；未知影响、必要功能失败仍阻断，逐项证据齐全才允许观察通过。
 - 各环境IMAGE_TAG自动收口 / runtimeEnvironmentFile / runtime-opening-pending / 无备份配置环境：`docs/release-agent-checklist.md#发布后-image_tag-元数据一致性门禁`。停服前检查显式路径，正常双容器验证后持公共锁原子对齐；失败按绑定原身份续办，不能重派部署或先改标签伪装成功。
 

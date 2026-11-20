@@ -9,6 +9,17 @@
 
 ## Git 提交与推送门禁
 
+### 停进程前验证文件原子替换与权限保全
+
+- Trigger: Windows普通脚本执行器安装，需要停止旧进程并替换源码或私密配置。
+- Preflight check: 停止前使用同一Python/PowerShell、同一目标卷的自有临时文件，实测原子替换、字节读回及ACL SDDL前后相等；检查调用者继承的模块路径。不能假定powershell.exe可以自动加载Get-Acl。使用.NET File.Replace时给出明确备份路径，避免Windows PowerShell把空备份参数转换为非法空路径。
+- Blocker: 替换能力、ACL或备份读回未通过，禁止先停执行器。已停止后失败必须先核完整安装文件pins、配置及SQLite payload，确认实际成功前缀，不按异常推断完全未写入。
+- Verification: 推荐在独立工作区准备安装输入，使用System.IO.File.GetAccessControl的SDDL及File.Replace验证原权限、原字节备份、新字节；实际安装后逐文件读回、非本次文件SHA不变、原稳定路径新PID与payload保持。
+- Forbidden action: 不为通过检查去掉ACL验证，不忽略PowerShell错误退出码，不覆盖原备份或重派已经完成的替换；未核成功前缀不继续或盲目回滚。
+- Evidence: doc/tasks/20261120-install-release-version-acceptance/execution-log.md；本次Get-Acl模块加载失败发生在首次替换前，复核全量原件保持后，用原生文件替换与SDDL验证完成安装。
+
+阶段必查：停机前完成无副作用替换探针；停止后保全原件并逐项原子更新；启动后核源码、配置、任务历史及实际入口。Fail Fast按Blocker保留现场。必须记录探针退出码、替换集、成功前缀、ACL和SHA验证、原/新进程身份及恢复依据，私密原件不进Git。
+
 ### 合并前确认分支和远端版本
 
 - Trigger: 跨分支融合、用户询问分支是否最新、目录名称与实际分支可能不同。
