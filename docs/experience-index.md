@@ -1,5 +1,7 @@
 # 项目经验索引
 
+- 下次发布菜单修复 / 排产工单池 / 5580 / 旧SQL回写 / 菜单现值与账本不符：`docs/next-release-menu-repair.md`；用户已授权下次发布专项修复，构建前核新增前向迁移，保留根级智能排产900120，最终按目标版本菜单合同验收，不重放历史SQL或复制全表。
+
 - Windows执行器安装 / Get-Acl模块加载失败 / File.Replace空备份路径 / 停机前权限探针：`docs/powershell-memory.md#停进程前验证文件原子替换与权限保全`，停止前先实测同运行时原子替换、ACL和原件读回；写后失败核实际成功前缀，不盲目续派。
 
 - 发布页面console非零 / PASS_WITH_OBSERVATIONS / 非关键外部资源 / 验证器主动拦截 / 基础冒烟与业务E2E边界：`docs/release-page-acceptance.md`为唯一判定入口，登录与发布checklist共同引用；未知影响、必要功能失败仍阻断，逐项证据齐全才允许观察通过。

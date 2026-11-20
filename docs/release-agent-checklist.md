@@ -1,5 +1,9 @@
 # IntRuoyi Codex 发布执行检查清单
 
+## 下一次发布菜单修复待办
+
+构建前先执行[下一次发布菜单漂移修复](next-release-menu-repair.md)。用户已授权纳入下一次发布；当前状态为pending_next_release。必须先确认新增前向修复和最终菜单验收，不能把更新代码或SKIPPED_ALREADY_APPLIED当作修复完成。
+
 ## 来源同步运行时与失败续办门禁
 
 - Trigger: 正常开放后来源同步 SyntaxError、缺少引擎依赖、前端重复 start HTTP 304，或业务已开放但来源配置仍旧。
