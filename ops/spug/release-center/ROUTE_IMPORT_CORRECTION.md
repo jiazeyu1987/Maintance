@@ -18,6 +18,8 @@
 
 入口集成门禁：Trigger为已执行迁移后停止态恢复的普通Spug晋级；Preflight check必须用实际Executor.execute路径验证check-target-origin到deploy均执行相同事故绑定，运行态仍正常audit_target。Blocker为旧schema基线抢先阻断专用合同、事故/包/指纹漂移或任何专用核验失败。Verification须保留入口RED/GREEN及关联回归，正式实际schema与同包测试升级schema核对，并最终完整READINESS。Forbidden action为修改SQLite/注册baseline、绕过audit或吞异常后继续。Evidence记录首次零副作用失败JOB、新实现提交、两次事故绑定及新晋级原操作回执。推荐`python -X utf8 -m unittest test_stopped_origin_entry test_stopped_origin_recovery test_direct_release test_intruoyi_runtime test_technical_verification`，Fail Fast时不重复派发；必须先查原job副作用和worker。
 
+零副作用核销门禁：Trigger为check-target-origin明确Registered baseline mismatch且尚未进入副作用；Preflight check须由真实Spug原任务inspect/reconcile重新读取唯一原observe回执和现场，核原本地进程跟踪/终态、远端JOB/OP/action/env绑定及stopped/succeeded，原observe的实际fingerprint必须与当前一致。Blocker为缺回执、额外操作、正在运行、未知结果或指纹漂移。Verification执行`python -X utf8 -m unittest test_origin_audit_closure test_interruption`及正常入口回归，核result/resolution含origin-audit-observation/v1证明来源。Forbidden action为改原status、原originFingerprint、登记基线或直接解除failed guard；普通已验证起点保持原指纹比较。Evidence保留原失败、fresh核对与核销JOB、原只读OP、证明和后续新发布。阶段必查为先inspect、再有明确依据reconcile、最后新建晋级，Fail Fast不得重复部署或使用缓存UI证据。
+
 必须记录：新提交/tag/manifest和包摘要、原JOB/OP/起点、工作区路径、精确5条范围与计划SHA、原件路径、只读与写入结果、全量快照报告、正式部署/技术/页面/开放证据和最终收尾。Fail Fast保留原件；本合同不提供自动回退、数据恢复或未知结果重试。
 
 构建保存设置门禁：当gxpConfigurationSourceUrl仍指向正式服且maintenanceUnknown=true时，只接受上述唯一原失败和真实停止态身份。构建以SHOW TABLES/DESCRIBE核真实结构，只读infra_config中唯一可见的system.gxp.audit-mode，并与原失败包保存设置一致；证据必须标明未认证、未验证运行模式。正常来源继续真实UI登录。缺原起点、配置漂移或多条配置立即阻断，不改用其他环境、不启动旧应用。运行态技术验收仍须真实登录并核实际模式。推荐先运行test_stopped_source_mode与test_stopped_origin_recovery，再执行新构建；记录来源身份、保存值与原任务，不将保存值读回当作页面验收。

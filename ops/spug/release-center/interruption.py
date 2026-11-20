@@ -1,5 +1,6 @@
 """Explicit inspection/reconciliation. Never replay a migration after disconnect."""
 import json
+import re
 import secrets
 import threading
 
@@ -166,6 +167,53 @@ def inspect(executor, original):
     return evidence
 
 
+def pre_effect_origin_proof(original, evidence, env):
+    """Use the original audit's observation only when it never reached a mutation."""
+    require(not original.get('effectsStarted'), 'Original task already entered side effects')
+    observation = evidence.get('observation', {})
+    audit_failure = (original.get('currentStep') == 'check-target-origin'
+                     and original.get('error', '').startswith('Registered baseline mismatch:'))
+    if not audit_failure:
+        require(original.get('originFingerprint') and
+                observation.get('fingerprint') == original['originFingerprint'],
+                'Original target origin cannot be proven unchanged')
+        return dict(source='registered-origin-fingerprint', environment=env,
+                    fingerprint=original['originFingerprint'])
+    require(original.get('status') == 'failed'
+            and DEPLOYMENTS.get(original.get('action')) == original.get('target') == env
+            and original['error'] in {'Registered baseline mismatch: '+env+'/'+key
+                                      for key in ('schemaSha256', 'ledgerSha256', 'images')},
+            'Original failed baseline audit identity differs')
+    require(original.get('localProcessTracking') is True and original.get('finishedAt')
+            and isinstance(original.get('localProcesses'), list)
+            and not original.get('localProcessTrackingError'),
+            'Original audit process inventory and termination required')
+    require(isinstance(evidence.get('localProcesses'), list)
+            and all(item.get('running') is False for item in evidence['localProcesses']),
+            'Original audit process is not confirmed stopped')
+    bound = original.get('remoteOperations', [])
+    operations = evidence.get('operations', [])
+    require(evidence.get('originalJobId') == original['id'] and len(bound) == len(operations) == 1,
+            'Exactly one original read-only observation receipt required')
+    operation, inspected = bound[0], operations[0]
+    require(operation.get('action') == 'observe' and operation.get('env') == env
+            and re.fullmatch(r'OP-[a-f0-9]{20}', operation.get('operationId', ''))
+            and all(inspected.get(key) == operation.get(key) for key in ('operationId', 'env', 'action')),
+            'Original observation operation binding differs')
+    receipt = inspected.get('receipt', {})
+    require(receipt.get('operationId') == operation['operationId'] and receipt.get('jobId') == original['id']
+            and receipt.get('action') == 'observe' and receipt.get('status') == 'succeeded'
+            and receipt.get('worker') == 'stopped',
+            'Original observation receipt is not a confirmed stopped success')
+    fingerprint = receipt.get('result', {}).get('fingerprint')
+    require(isinstance(fingerprint, str) and re.fullmatch(r'[a-f0-9]{64}', fingerprint)
+            and observation.get('fingerprint') == fingerprint,
+            'Original observed target origin cannot be proven unchanged')
+    return dict(contract='origin-audit-observation/v1', source='original-successful-observe-receipt',
+                originalJobId=original['id'], operationId=operation['operationId'],
+                environment=env, fingerprint=fingerprint)
+
+
 def reconcile(executor, original, evidence, job):
     from intruoyi_runtime import audit_ledger
     from intruoyi_build import target_input_plan
@@ -186,9 +234,8 @@ def reconcile(executor, original, evidence, job):
             job['result'] = dict(releaseTag=package['releaseTag'], registered=True)
     elif decision == 'close-pre-effect':
         if env:
-            require(original.get('originFingerprint') and
-                    evidence['observation']['fingerprint'] == original['originFingerprint'],
-                    'Original target origin cannot be proven unchanged')
+            proof = pre_effect_origin_proof(original, evidence, env)
+            job['result'] = dict(evidence, preEffectOriginProof=proof)
     else:
         package, manifest = executor.package(original['releaseTag'])
         observation = validate_origin(evidence['observation'])
@@ -246,6 +293,8 @@ def reconcile(executor, original, evidence, job):
             executor.verify_technical(env, package, manifest, job)
     original['resolution'] = dict(decision='reconciled', jobId=job['id'], actor=job['actor'], time=stamp(),
                                   note=job['payload']['note'], disposition=decision)
+    if decision == 'close-pre-effect' and env:
+        original['resolution']['preEffectOriginProof'] = proof
     for attempt in executor.state['jobs']:
         if attempt.get('originalTaskId') == original['id'] and attempt['status'] in ('failed', 'interrupted'):
             attempt['resolution'] = dict(original['resolution'])
