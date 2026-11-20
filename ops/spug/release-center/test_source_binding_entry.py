@@ -47,7 +47,8 @@ class EntryContract(unittest.TestCase):
             profile={'backend':'backend','frontend':'frontend','acceptanceFrontend':'acceptance','writers':[],
                      'backupSourceBinding':{'configured':True}}
             candidate={'releaseTag':'r1','images':{}}
-            with patch.dict(sys.modules,{'release_backup_source':SimpleNamespace(synchronize=binding)}):
+            with patch.dict(sys.modules,{'release_backup_source':SimpleNamespace(synchronize=binding)}), \
+                    patch('release_runtime_metadata.align',return_value={'status':'ALIGNED'}):
                 with self.assertRaisesRegex(RuntimeError,'binding failed'):ns['finish_reopen'](profile,candidate)
             self.assertEqual(json.loads((root/'backup-source-binding-pending.private.json').read_text())['backendId'],'backend-new')
             observe.assert_not_called()

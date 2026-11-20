@@ -13,6 +13,8 @@
 
 ## 发布探针与真实页面验收前置门禁
 
+页面判定唯一依据为[发布页面验收规则](release-page-acceptance.md)。先列明基础冒烟和变更相关业务验收范围，再按实际影响归因全部异常；未知影响或必要功能失败阻断，符合全部证据条件的非关键观察才可PASS_WITH_OBSERVATIONS。不得按console条数、域名或历史错误自动放行，也不得把技术登录等同完整页面验收。
+
 - Trigger: 发布状态长时间不更新、远端目录找不到、浏览器console报错，或只读admin验收触发POST。
 - Preflight check: 使用原job/operation读取持久状态；远端探针按该job的`runtimeStagingRoots[env]`（存在时）确定本次路径，普通配置stagingRoot只用于未绑定场景和现行公共锁契约。浏览器验收前核目标页面真实调用及副作用；admin只读验证不得放行个人状态初始化写入，菜单定位限定真实菜单容器。先记录外部资源可达性和已知历史资源错误，不能把HTTP方法直接等同读写语义。
 - Blocker: 原任务终态未知、探针路径身份不明、真实应用接口/页面错误、未经授权副作用、必要业务入口不可用均停止后续动作。外部资源问题须按实际页面影响明确记录，不能静默过滤或宣称全部资源通过。
@@ -23,6 +25,10 @@
 阶段必查项与推荐命令：执行前核真实Python的`-X utf8 -c "import sys; print(sys.executable)"`及退出码，进程内PATH供原生Git hook使用，stdout/stderr分开采集。部署中沿原编号只读读取job.runtimeStagingRoots、operation和恢复依据增长，记录阶段起止，真实大工作量不当失败。UI阶段用Playwright真实页面并限定菜单容器，逐请求记录origin/path/error，不含凭据或query；发现错误先定位。正式业务验收后正常开放，双正常容器运行再按下节对齐标签。Fail Fast按Blocker；必须记录实际命令/退出、目标/路径绑定、原失败、验收范围和未解决观察。一次性私密探针不视为已提交正式工具。
 
 ## 发布后 IMAGE_TAG 元数据一致性门禁
+
+正式自动入口：`finish_reopen`在正常双容器健康验证通过后调用`release_runtime_metadata.align`，再完成备份来源同步及验收资源清理。测试、正式、备用目标显式配置`runtimeEnvironmentFile`；已有`backupSourceBinding.environmentFile`仍是有效的显式路径合同，同时配置必须相同。隔离演练没有宿主compose元数据，不适用。停服前preflight检查路径及唯一合法IMAGE_TAG，缺失即失败；不得猜路径。执行持公共runtime-operation锁，核双镜像ID/RepoTags/运行态，封存0600原件和容器身份，原值并发检查后原子替换、读回。失败保留`runtime-opening-pending.private.json`，沿原验收/测试尾部续办，不重新部署；新旧标记有冲突必须拒绝。自动阶段验证运行态，后续技术登录及页面验收仍独立执行。
+
+验证命令：在隔离维护worktree运行`python -X utf8 -B -m unittest test_release_runtime_metadata test_runtime_metadata_entry test_source_binding_entry test_resume_test_tail test_technical_verification`。必须记录候选tag、容器身份、前后文件摘要、运行态和原任务；原件及intent只私存，公开结果不含.env内容。安装前把新模块纳入远端执行资源，核各环境显式路径；本机测试不代表现行执行器已安装。下述独立工具继续用于已完成历史部署的显式核验/对齐，不能与活动发布并发运行。
 
 - Trigger：Spug 已按不可变 digest 替换容器，但旧 compose `.env IMAGE_TAG` 仍落后，或发布收口核版本不一致。
 - Preflight check：从本次私密配置确认环境、stagingRoot 和实际 `.env` 路径；同一 releaseTag 部署及 version/upgrade/login 技术验收通过，manifest 摘要和登记包一致，无活动或未解决中断任务。记录原 IMAGE_TAG，使用 `runtime_env_metadata.py` 默认只读检查；远端必须取得与 Spug 相同的 runtime-operation 锁并核双镜像 digest、RepoTags 和运行态。

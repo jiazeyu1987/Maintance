@@ -269,7 +269,8 @@ class _IntRuoyiExecutor(Executor):
                 technical['phase'] = 'opening'
                 technical['opening'] = {'status':'running'}
                 self.save()
-                if current.get('maintenance') is True or current.get('backupSourceBindingPending') is True:
+                if (current.get('maintenance') is True or current.get('backupSourceBindingPending') is True
+                        or current.get('runtimeOpeningPending') is True):
                     self.maintenance(env, False)
                 else:
                     require(current.get('maintenance') is False, 'Formal target maintenance state is unknown')
@@ -278,6 +279,7 @@ class _IntRuoyiExecutor(Executor):
                 opened = self.runtime.observe(env)
                 validate_origin(opened)
                 require(opened.get('backupSourceBindingPending') is not True, 'Backup source binding remains pending')
+                require(opened.get('runtimeOpeningPending') is not True, 'Runtime metadata opening remains pending')
                 require(opened.get('maintenance') is False and opened.get('readOnly') == dict(read_only=False,super_read_only=False)
                         and opened['releaseTag'] == package['releaseTag'] and opened['images'] == expected_images
                         and opened['schemaSha256'] == current['schemaSha256'] and opened['ledgerSha256'] == current['ledgerSha256'],

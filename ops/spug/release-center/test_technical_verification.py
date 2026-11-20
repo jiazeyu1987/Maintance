@@ -221,6 +221,32 @@ class TechnicalVerificationTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'business acceptance'):
             self.run_action('promote-backup')
 
+    def test_open_runtime_with_pending_metadata_still_finishes_tail(self):
+        self.seed_rehearsal()
+        self.run_action('promote-prod')
+        current=self.executor.state['environments']['prod']
+        current.update(maintenance=False,runtimeOpeningPending=True)
+        def finish(env,enabled):
+            self.assertFalse(enabled)
+            self.executor.state['environments'][env]['runtimeOpeningPending']=False
+        self.executor.maintenance.side_effect=finish
+        accepted=self.run_action('accept-prod',note='Actual business acceptance passed')
+        self.assertEqual(accepted['status'],'succeeded',accepted.get('error'))
+        self.executor.maintenance.assert_called_once_with('prod',False)
+        self.assertEqual(self.package['stage'],'prod-accepted')
+        self.executor.deploy.assert_called_once()
+
+    def test_remaining_metadata_marker_blocks_acceptance_even_if_runtime_is_open(self):
+        self.seed_rehearsal()
+        self.run_action('promote-prod')
+        self.executor.state['environments']['prod'].update(maintenance=False,runtimeOpeningPending=True)
+        accepted=self.run_action('accept-prod',note='Actual business acceptance passed')
+        self.assertEqual(accepted['status'],'failed')
+        self.assertIn('Runtime metadata opening remains pending',accepted['error'])
+        self.executor.maintenance.assert_called_once_with('prod',False)
+        self.assertEqual(self.package['stage'],'prod-deployed')
+        self.assertNotIn('acceptance',self.package['outcomes']['prod'])
+
     def test_production_rehearsal_auto_passes_and_records_its_technical_evidence(self):
         self.seed_technical('test')
         record=self.seed_rehearsal()

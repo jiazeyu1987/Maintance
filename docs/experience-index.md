@@ -1,5 +1,8 @@
 # 项目经验索引
 
+- 发布页面console非零 / PASS_WITH_OBSERVATIONS / 非关键外部资源 / 验证器主动拦截 / 基础冒烟与业务E2E边界：`docs/release-page-acceptance.md`为唯一判定入口，登录与发布checklist共同引用；未知影响、必要功能失败仍阻断，逐项证据齐全才允许观察通过。
+- 各环境IMAGE_TAG自动收口 / runtimeEnvironmentFile / runtime-opening-pending / 无备份配置环境：`docs/release-agent-checklist.md#发布后-image_tag-元数据一致性门禁`。停服前检查显式路径，正常双容器验证后持公共锁原子对齐；失败按绑定原身份续办，不能重派部署或先改标签伪装成功。
+
 - 来源同步 SyntaxError / Python3.6与3.12 / jsonschema依赖环境 / 开放后pending / Docker304 / conhost任务未结束：`docs/release-agent-checklist.md#来源同步运行时与失败续办门禁`。来源stage使用固定来源运行时，正常业务与来源同步分别验收；pending续办只消费原身份尾部，普通执行器无控制台启动。
 
 - 新SQL未登记 / release-sources.json / 旧分类ID990230 / 删除租户历史角色：`docs/release-build-preflight-lessons.md#新sql归宿与旧数据身份预检门禁`。构建前显式运行全量登记测试，目标前核完整菜单身份与有效租户范围，禁止改历史迁移凑通过。

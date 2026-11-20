@@ -203,6 +203,8 @@ def observe(profile):
                 backendHealth=backend_health, frontendHttpStatus=status, gxpAudit=gxp,
                 metadataHTTPstatus=metadata_status, frontendObservationError=metadata_error,
                 maintenance=maintenance,
+                runtimeOpeningPending=bool(release_tag and
+                    (directory(profile, release_tag) / 'runtime-opening-pending.private.json').is_file()),
                 backupSourceBindingPending=bool(profile.get('backupSourceBinding') and release_tag
                     and (directory(profile, release_tag) / 'backup-source-binding-pending.private.json').is_file()),
                 observedAt=datetime.now(timezone.utc).isoformat(),
@@ -672,6 +674,9 @@ def upgrade_origin(profile, manifest):
 
 
 def preflight(profile, manifest):
+    if profile.get('environment') in ('test', 'prod', 'backup'):
+        from release_runtime_metadata import read_environment
+        read_environment(profile)
     runtime_recovery_policy(profile['environment'], manifest)
     from intruoyi_recovery_agent import inventory, validate_database_identity
     inventory(profile, globals())
@@ -1277,12 +1282,16 @@ def reopen(profile):
     require(len(candidates) == 1, 'Pending candidate cannot be identified uniquely')
     root, candidate = candidates[0]
     if environment.get('INTRUOYI_RELEASE_MAINTENANCE') != 'true':
-        pending = root / 'backup-source-binding-pending.private.json'
-        require(profile.get('backupSourceBinding') and pending.is_file(),
+        pending = root / 'runtime-opening-pending.private.json'
+        legacy = root / 'backup-source-binding-pending.private.json'
+        markers = [p for p in (pending, legacy) if p.is_file()]
+        require(markers and (pending.is_file() or profile.get('backupSourceBinding')),
                 'Candidate is not in maintenance; reconcile instead of blindly reopening')
-        saved = json.loads(pending.read_text())
-        require(saved == dict(releaseTag=candidate['releaseTag'], backendId=backend['Id'],
-                              images=candidate['images']), 'Source binding retry target changed')
+        legacy_identity = dict(releaseTag=candidate['releaseTag'], backendId=backend['Id'], images=candidate['images'])
+        for marker in markers:
+            identity = (dict(legacy_identity, frontendId=remote.inspect(profile['frontend'])['Id'])
+                        if marker == pending else legacy_identity)
+            require(json.loads(marker.read_text()) == identity, 'Source binding retry target changed')
         require(all(remote.inspect(profile[role])['Image'] == candidate['images'][role]['id']
                     for role in ('backend', 'frontend')), 'Source binding retry images changed')
         health(profile, candidate['releaseTag'], False, expected_gxp_mode=gxp_release_mode(candidate))
@@ -1300,6 +1309,13 @@ def reopen(profile):
 def finish_reopen(profile, candidate):
     """Open only the entry and remaining writers after normal backend validation."""
     root = directory(profile, candidate['releaseTag'])
+    opening_pending = root / 'runtime-opening-pending.private.json'
+    opening_identity = dict(releaseTag=candidate['releaseTag'], backendId=remote.inspect(profile['backend'])['Id'],
+                            frontendId=remote.inspect(profile['frontend'])['Id'], images=candidate['images'])
+    if opening_pending.exists():
+        require(json.loads(opening_pending.read_text()) == opening_identity, 'Opening retry target changed')
+    else:
+        private_json(opening_pending, opening_identity)
     opened = root / 'business-opened.private.json'
     if opened.exists():
         require(json.loads(opened.read_text()).get('releaseTag') == candidate['releaseTag'], 'Business opening marker differs')
@@ -1319,6 +1335,10 @@ def finish_reopen(profile, candidate):
     except Exception:
         remote.run(['docker', 'stop', '--time', '30', profile['frontend']])
         raise
+    from release_runtime_metadata import align as align_runtime_metadata
+    metadata = ({'status':'NOT_APPLICABLE', 'reason':'isolated-rehearsal'}
+                if profile.get('environment') == 'rehearsal' else
+                align_runtime_metadata(profile, candidate, root/'runtime-env-metadata', inspect=remote.inspect, run=remote.run))
     from release_backup_source import synchronize as synchronize_backup_source
     if profile.get('backupSourceBinding'):
         binding_pending = root / 'backup-source-binding-pending.private.json'
@@ -1336,14 +1356,16 @@ def finish_reopen(profile, candidate):
     binding_pending = root / 'backup-source-binding-pending.private.json'
     if binding_pending.exists():
         binding_pending.unlink()
+    opening_pending.unlink()
     result = observe(profile)
     result['verifiedHealth'] = verified_health
     result['backupSourceBinding'] = binding
+    result['runtimeMetadata'] = metadata
     return result
 
 
-def validate_opening_tail(profile, root, manifest, opening, observation, recovery, original_plan):
-    """Admit only a completed normal-backend replacement with a still closed entry."""
+def validate_opening_tail(profile, root, manifest, opening, observation, recovery, original_plan, runtime_pending=False):
+    """Bind an opening continuation to the retained deployment and live identities."""
     tag = manifest['releaseTag']
     candidate = {'releaseTag':tag, 'images':manifest['images'], 'maintenanceProtocol':PROTOCOL, 'releaseSettings':manifest['releaseSettings']}
     require((root / 'deployment-pending.json').is_file() and (root / 'backend-before-reopen.private.json').is_file(),
@@ -1381,8 +1403,17 @@ def validate_opening_tail(profile, root, manifest, opening, observation, recover
                 and entry.get('IPAddress') == ipam['IPv4Address'], 'Normal backend static address differs')
     acceptance = remote.inspect(profile['acceptanceFrontend'])
     owned_configs = {str(path.parent / 'acceptance-nginx.conf') for path, _ in opening}
+    frontend_id = None
+    if runtime_pending:
+        frontend_id = validate_runtime_opening_tail(profile, root, manifest, backend, observation)
+        require(all(record.get('writerControls', {}).get('frontendId') == frontend_id
+                    for _, record in opening if record.get('resumeMode') == 'runtime-opening-finalization'),
+                'Runtime opening frontend identity changed since previous continuation')
+        owned_configs.add(str(root / 'acceptance-nginx.conf'))
     mounts = acceptance['Mounts']
-    require(acceptance['Image'] == manifest['images']['frontend']['id'] and acceptance['State']['Running']
+    require(acceptance['Image'] == manifest['images']['frontend']['id']
+            and (not acceptance['State']['Running'] if runtime_pending else acceptance['State']['Running'])
+            and not acceptance['State'].get('Paused') and not acceptance['State'].get('Restarting')
             and acceptance['Config'].get('Labels', {}).get('intruoyi.release.acceptance') == 'true'
             and acceptance['HostConfig']['NetworkMode'] == 'host' and not acceptance['HostConfig']['PortBindings']
             and len(mounts) == 1 and mounts[0].get('Source') in owned_configs
@@ -1393,10 +1424,57 @@ def validate_opening_tail(profile, root, manifest, opening, observation, recover
     require(all(info['State'].get('Status') in ('running','exited','created')
                 and not info['State'].get('Paused') and not info['State'].get('Restarting') for info in writers.values()),
             'Registered writer state is not stable for opening finalization')
-    verified = health(profile, tag, False, through_acceptance=True, expected_gxp_mode=gxp_release_mode(manifest))
-    return dict(backendId=backend['Id'], maintenanceBackendId=before['Id'], acceptanceId=acceptance['Id'],
+    verified = health(profile, tag, False, through_acceptance=not runtime_pending, expected_gxp_mode=gxp_release_mode(manifest))
+    return dict(backendId=backend['Id'], frontendId=frontend_id, maintenanceBackendId=before['Id'], acceptanceId=acceptance['Id'],
                 writerStates={name:{'id':info['Id'],'running':info['State']['Running']} for name,info in writers.items()},
                 verifiedHealth=verified)
+
+
+def validate_runtime_opening_tail(profile, root, manifest, backend, observation):
+    """An open healthy application alone is never evidence of a resumable tail."""
+    frontend = remote.inspect(profile['frontend'])
+    marker = json.loads((root / 'runtime-opening-pending.private.json').read_text())
+    require(marker == dict(releaseTag=manifest['releaseTag'], backendId=backend['Id'],
+                           frontendId=frontend['Id'], images=manifest['images']),
+            'Runtime opening pending identity differs')
+    opened = root / 'business-opened.private.json'
+    require(opened.is_file() and json.loads(opened.read_text()).get('releaseTag') == manifest['releaseTag'],
+            'Runtime business opening evidence differs')
+    require(observation['maintenance'] is False and observation['frontendHttpStatus'] == 200,
+            'Runtime opening public entry is not healthy')
+    if manifest.get('expectedSchemaSha256'):
+        require(manifest['expectedSchemaSha256'] == observation['schemaSha256'], 'Runtime opening schema differs')
+    before = json.loads((root / 'frontend-before-initial.private.json').read_text())
+    expected = clone_config(before, manifest['images']['frontend']['id'])
+    expected_config = {key:value for key,value in expected.items() if key not in ('HostConfig','NetworkingConfig')}
+    require(frontend['Id'] != before['Id'] and frontend.get('Name') == '/' + profile['frontend']
+            and frontend['Image'] == manifest['images']['frontend']['id'] and frontend['State']['Running']
+            and frontend['State'].get('Status') == 'running'
+            and not frontend['State'].get('Paused') and not frontend['State'].get('Restarting')
+            and frontend['Config'] == expected_config
+            and frontend['HostConfig']['NetworkMode'] == before['HostConfig']['NetworkMode']
+            and frontend['HostConfig']['PortBindings'] == before['HostConfig']['PortBindings']
+            and set(frontend['NetworkSettings']['Networks']) == set(before['NetworkSettings']['Networks']),
+            'Normal frontend identity/configuration differs from the deployment snapshot')
+    previous_mounts = {json.dumps(m, sort_keys=True) for m in before['Mounts']}
+    current_mounts = {json.dumps(m, sort_keys=True) for m in frontend['Mounts']}
+    require(previous_mounts <= current_mounts, 'Normal frontend lost a retained runtime mount')
+    additional = [json.loads(value) for value in current_mounts - previous_mounts]
+    copied_nginx = not any(m['Destination'] == '/etc/nginx/conf.d/default.conf' for m in before['Mounts'])
+    require((not additional and not copied_nginx) or (copied_nginx and len(additional) == 1
+            and additional[0].get('Source') == str(root / 'nginx.conf')
+            and additional[0].get('Destination') == '/etc/nginx/conf.d/default.conf'
+            and additional[0].get('RW') is False and (root / 'nginx.conf').is_file()),
+            'Normal frontend added an unrecorded runtime mount')
+    metadata = root / 'runtime-env-metadata'
+    if metadata.exists():
+        intent = metadata / 'intent.json'
+        require(intent.is_file(), 'Runtime metadata intent is incomplete')
+        binding = json.loads(intent.read_text()).get('binding', {})
+        require(binding.get('releaseTag') == manifest['releaseTag'] and binding.get('images') == manifest['images']
+                and binding.get('containers') == {'backend':backend['Id'], 'frontend':frontend['Id']},
+                'Runtime metadata container identity differs')
+    return frontend['Id']
 
 
 def resume_receipt(path, value):
@@ -1516,9 +1594,12 @@ def resume_test_tail_locked(profile, payload, root):
             'Interrupted program switch requires explicit technical restoration')
     opening = [(path, record) for path, record in receipts if record.get('phase') == 'opening']
     require(profile.get('writerInventoryConfirmed') is True and profile['backend'] in profile['writers'], 'Confirmed writer inventory required')
-    require(not remote.inspect(profile['frontend'])['State']['Running'], 'Public frontend must remain stopped')
-    if opening:
-        controls = validate_opening_tail(profile, root, manifest, opening, observation, recovery, original_plan)
+    runtime_pending = (root / 'runtime-opening-pending.private.json').is_file()
+    if not runtime_pending:
+        require(not remote.inspect(profile['frontend'])['State']['Running'], 'Public frontend must remain stopped')
+    if opening or runtime_pending:
+        controls = validate_opening_tail(profile, root, manifest, opening, observation, recovery, original_plan,
+                                         runtime_pending=runtime_pending)
     else:
         require(not (root / 'deployment-pending.json').exists() and not (root / 'backend-before-reopen.private.json').exists(),
                 'Original deployment entered reopening without a tail receipt; explicit technical restoration required')
@@ -1535,12 +1616,13 @@ def resume_test_tail_locked(profile, payload, root):
                    manifestSha256=payload['manifestSha256'], originalPlanSha256=sha(original_plan),
                    recoverySha256=recovery['sha256'], schemaSha256=observation['schemaSha256'], ledgerSha256=observation['ledgerSha256'],
                    pid=os.getpid(), processStart=process_start_identity(os.getpid()), status='running',
-                   phase='opening' if opening else 'acceptance-repair', resumeMode='opening-finalization' if opening else 'acceptance-repair',
+                   phase='opening' if opening or runtime_pending else 'acceptance-repair',
+                   resumeMode='runtime-opening-finalization' if runtime_pending else 'opening-finalization' if opening else 'acceptance-repair',
                    writerControls=controls, observedAt=datetime.now(timezone.utc).isoformat())
     require(receipt['processStart'], 'Resume worker identity unavailable')
     resume_receipt(receipt_path, receipt)
     try:
-        if opening:
+        if opening or runtime_pending:
             result = finish_reopen(profile, manifest)
         else:
             repair_acceptance_frontend(profile, root, attempt, manifest, receipts)

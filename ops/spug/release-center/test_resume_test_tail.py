@@ -409,7 +409,8 @@ class ResumeTailTest(unittest.TestCase):
         def run(command):
             if command[1]=='stop': self.containers['acceptance']['State']['Running']=False
         with patch.object(agent,'docker',side_effect=docker) as calls,patch.object(agent.remote,'run',side_effect=run), \
-                patch.object(agent,'replace') as replace:
+                patch.object(agent,'replace') as replace, \
+                patch('release_runtime_metadata.align',return_value={'status':'ALIGNED'}):
             result=self.invoke()
         self.assertEqual(result['resumeReceipt']['resumeMode'],'opening-finalization')
         self.assertEqual(result['resumeReceipt']['status'],'completed')
@@ -457,6 +458,135 @@ class ResumeTailTest(unittest.TestCase):
         self.mock['health'].assert_called_with(self.profile,self.tag,False,expected_gxp_mode='DEVELOPMENT_DISABLED')
         self.mock['health'].side_effect=RuntimeBlocked('fresh health failed')
         with self.assertRaisesRegex(RuntimeBlocked,'fresh health failed'): self.invoke()
+
+    def prepare_runtime_opening(self):
+        self.prepare_opening()
+        previous = self.root / ('resume-' + self.retry)
+        (previous / 'receipt.private.json').unlink()
+        (previous / 'acceptance-nginx.conf').replace(self.root / 'acceptance-nginx.conf')
+        self.containers['acceptance']['Mounts'][0]['Source'] = str(self.root / 'acceptance-nginx.conf')
+        self.containers['acceptance']['State'] = {'Running':False,'Status':'exited'}
+        original = dict(Id='original-frontend', Image='original-frontend', Name='/frontend',
+                        State={'Running':False}, Config={'Image':'original-frontend','Env':[]},
+                        HostConfig={'NetworkMode':'host','PortBindings':{}},
+                        Mounts=[{'Source':'/runtime/nginx.conf','Destination':'/etc/nginx/conf.d/default.conf','RW':False}],
+                        NetworkSettings={'Networks':{'host':{}}})
+        self.write('frontend-before-initial.private.json', original)
+        self.containers['frontend-before-'+self.tag] = original
+        frontend = copy.deepcopy(original)
+        frontend.update(Id='normal-frontend',Image='candidate-frontend',State={'Running':True,'Status':'running'})
+        frontend['Config']['Image'] = 'candidate-frontend'
+        self.containers['frontend'] = frontend
+        self.write('runtime-opening-pending.private.json', dict(releaseTag=self.tag,
+                   backendId='normal-backend', frontendId='normal-frontend', images=self.manifest['images']))
+        self.write('business-opened.private.json', {'releaseTag':self.tag})
+        self.mock['observe'].side_effect = None
+        self.mock['observe'].return_value = self.result
+        self.mock['reopen'].reset_mock()
+        self.mock['repair'].reset_mock()
+
+    def test_runtime_metadata_tail_resumes_original_failure_without_replacing_or_sql_writes(self):
+        self.prepare_runtime_opening()
+        originals = {name:(self.root/name).read_bytes() for name in (
+            'deployment-progress.private.json','release.tar','manifest.json','recovery.sql',
+            'backend-before-initial.private.json','backend-before-reopen.private.json','frontend-before-initial.private.json')}
+        with patch.object(agent,'docker') as docker, patch.object(agent.remote,'run') as run, \
+                patch.object(agent,'replace') as replace, \
+                patch('release_runtime_metadata.align',return_value={'status':'ALIGNED'}) as align:
+            result = self.invoke()
+        self.assertEqual(result['resumeReceipt']['status'],'completed')
+        self.assertEqual(result['resumeReceipt']['resumeMode'],'runtime-opening-finalization')
+        self.assertFalse((self.root/'runtime-opening-pending.private.json').exists())
+        align.assert_called_once()
+        docker.assert_not_called()
+        replace.assert_not_called()
+        self.mock['reopen'].assert_not_called()
+        self.mock['repair'].assert_not_called()
+        self.mock['apply'].assert_not_called()
+        self.mock['backup'].assert_not_called()
+        self.assertTrue(all(call.args[1].startswith('SELECT ') for call in self.mock['sql'].call_args_list))
+        self.assertEqual({name:(self.root/name).read_bytes() for name in originals}, originals)
+
+    def test_runtime_metadata_tail_rejects_marker_pending_frontend_and_backend_drift(self):
+        self.prepare_runtime_opening()
+        cases = [
+            ('runtime-opening-pending.private.json', {'releaseTag':self.tag,'backendId':'other','images':self.manifest['images']}),
+            ('deployment-pending.json', {'releaseTag':'other'}),
+            ('business-opened.private.json', {'releaseTag':'other'}),
+        ]
+        with patch.object(agent,'finish_reopen') as finish:
+            for name, changed in cases:
+                with self.subTest(name=name):
+                    before = (self.root/name).read_bytes()
+                    self.write(name,changed)
+                    with self.assertRaises(RuntimeBlocked): self.invoke()
+                    (self.root/name).write_bytes(before)
+            self.containers['frontend']['Config']['Env'] = ['UNREVIEWED=true']
+            with self.assertRaises(RuntimeBlocked): self.invoke()
+            self.containers['frontend']['Config']['Env'] = []
+            self.containers['backend']['Config']['Env'].append('UNREVIEWED=true')
+            with self.assertRaises(RuntimeBlocked): self.invoke()
+            finish.assert_not_called()
+
+    def test_runtime_metadata_tail_rejects_same_image_frontend_replacement_before_intent(self):
+        self.prepare_runtime_opening()
+        self.containers['frontend']['Id'] = 'same-image-different-container'
+        with patch.object(agent,'finish_reopen') as finish:
+            with self.assertRaisesRegex(RuntimeBlocked,'pending identity differs'): self.invoke()
+            finish.assert_not_called()
+
+    def test_runtime_metadata_tail_failure_retries_with_unchanged_previous_receipt(self):
+        self.prepare_runtime_opening()
+        with patch.object(agent,'finish_reopen',side_effect=RuntimeBlocked('metadata failed')):
+            with self.assertRaisesRegex(RuntimeBlocked,'metadata failed'): self.invoke()
+        path = self.root/('resume-'+self.payload['retryJobId'])/'receipt.private.json'
+        receipt = json.loads(path.read_text())
+        self.assertEqual((receipt['phase'],receipt['resumeMode']),('opening','runtime-opening-finalization'))
+        self.payload['retryJobId'] = 'JOB-4444444444'
+        with patch.object(agent,'finish_reopen',return_value=self.result) as finish:
+            with self.assertRaisesRegex(RuntimeBlocked,'worker remains active'): self.invoke()
+            finish.assert_not_called()
+            receipt['pid'] = 999998
+            path.write_text(json.dumps(receipt))
+            previous = path.read_bytes()
+            self.containers['frontend']['Id'] = 'replacement-with-same-config'
+            with self.assertRaisesRegex(RuntimeBlocked,'pending identity differs'): self.invoke()
+            self.containers['frontend']['Id'] = 'normal-frontend'
+            self.assertEqual(self.invoke()['resumeReceipt']['status'],'completed')
+            self.assertEqual(path.read_bytes(),previous)
+
+    def test_runtime_metadata_tail_rejects_schema_ledger_and_metadata_identity_drift(self):
+        self.prepare_runtime_opening()
+        with patch.object(agent,'finish_reopen',side_effect=RuntimeBlocked('metadata failed')):
+            with self.assertRaises(RuntimeBlocked): self.invoke()
+        path = self.root/('resume-'+self.payload['retryJobId'])/'receipt.private.json'
+        receipt = json.loads(path.read_text())
+        receipt['pid'] = 999998
+        path.write_text(json.dumps(receipt))
+        self.payload['retryJobId'] = 'JOB-4444444444'
+        with patch.object(agent,'finish_reopen') as finish:
+            for field in ('schemaSha256','ledgerSha256'):
+                with self.subTest(field=field):
+                    self.mock['observe'].return_value = dict(self.result, **{field:'changed'})
+                    with self.assertRaises(RuntimeBlocked): self.invoke()
+            self.mock['observe'].return_value = self.result
+            (self.root/'runtime-env-metadata').mkdir()
+            self.write('runtime-env-metadata/intent.json', {'binding':{'containers':{'backend':'normal-backend','frontend':'other'}}})
+            with self.assertRaises(RuntimeBlocked): self.invoke()
+            finish.assert_not_called()
+
+    def test_runtime_metadata_tail_requires_owned_stopped_acceptance_and_fresh_health(self):
+        self.prepare_runtime_opening()
+        with patch.object(agent,'finish_reopen') as finish:
+            self.containers['acceptance']['State']['Running'] = True
+            with self.assertRaisesRegex(RuntimeBlocked,'not owned'): self.invoke()
+            self.containers['acceptance']['State']['Running'] = False
+            self.containers['acceptance']['Mounts'][0]['Source'] = str(self.root/'unknown.conf')
+            with self.assertRaisesRegex(RuntimeBlocked,'not owned'): self.invoke()
+            self.containers['acceptance']['Mounts'][0]['Source'] = str(self.root/'acceptance-nginx.conf')
+            self.mock['health'].side_effect = RuntimeBlocked('fresh health failed')
+            with self.assertRaisesRegex(RuntimeBlocked,'fresh health failed'): self.invoke()
+            finish.assert_not_called()
 
 
 if __name__=='__main__':

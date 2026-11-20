@@ -15,9 +15,9 @@
 
 ### 发布后页面登录基线门禁
 
-- Trigger: 测试服发布后需要用 Playwright 验证真实业务页面或版本浮层。
+- Trigger: 测试、正式或备用环境发布后，需要用 Playwright 验证真实登录、业务页面或版本浮层。
 - Preflight check: 发布前只读确认测试租户账号可登录、密码未过期、租户选择接口有目标租户；凭据只能由当前进程安全注入，不写入任务文档或截图。
-- Blocker: 登录返回密码过期/账号密码错误、租户选择无数据、目标前端入口不可达或页面 console errors 非零时，认证后页面门禁必须 BLOCKED；不能猜密码或改账号。
-- Verification: 记录脱敏的登录页 URL、租户/账号标签、HTTP 状态、页面 title、console errors 和失败提示；公共登录页/静态 release-info 与认证后业务页结论分开。
+- Blocker: 登录返回密码过期/账号密码错误、租户选择无目标、入口不可达、必要页面/资源/接口失败或异常影响未知时，认证后页面门禁必须 BLOCKED；不能猜密码或改账号。所有浏览器异常按[发布页面验收规则](release-page-acceptance.md)逐项归因，不能仅按console错误数量放行或阻断。
+- Verification: 统一采用[发布页面验收规则](release-page-acceptance.md)的PASS、PASS_WITH_OBSERVATIONS、BLOCKED判定和记录格式。保留全部console/pageerror/失败请求及业务code证据；非关键外部资源或验证器主动拦截仅在该规则全部条件满足时记观察通过。公共登录页、技术登录、认证后基础冒烟与完整业务回归分别注明范围。
 - Forbidden action: 禁止冒用本机 admin 密码登录远端测试租户、切换正式/审查环境、API-only 冒充页面、为验收修改租户/用户密码或把过期凭据写进脚本。
-- Evidence: 原交接登录文档的同名门禁，IntRuoyiMaintance task 20260823-fix-training-rules-sfc-test-release execution-log.md ISSUE-016；原文SHA见本任务portable-project-guides-provenance-r1.json。
+- Evidence: 原账号/登录边界源自IntRuoyiMaintance task 20260823-fix-training-rules-sfc-test-release ISSUE-016；异常影响判定以统一规则为准，变更依据见`doc/tasks/20261119-update-and-release-prod/acceptance-policy-log.md`。历史验收结果不因规则更新自动改写。

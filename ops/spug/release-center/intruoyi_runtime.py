@@ -516,9 +516,13 @@ class Runtime:
         frontend_patch = (self.sources / 'frontend_patch_agent.py').read_text('utf-8')
         database_versions = (self.sources / 'database_versions.py').read_text('utf-8')
         backup_source = (self.sources / 'release_backup_source.py').read_text('utf-8')
+        runtime_metadata = (self.sources / 'release_runtime_metadata.py').read_text('utf-8')
         backend_contract = (self.sources / 'backend_patch_contract.py').read_text('utf-8')
         backend_patch = (self.sources / 'backend_patch_agent.py').read_text('utf-8')
         source = ('import types,sys\n'
+                  '_metadata=types.ModuleType("release_runtime_metadata")\n'
+                  'sys.modules["release_runtime_metadata"]=_metadata\n'
+                  'exec(compile(' + repr(runtime_metadata) + ',"release_runtime_metadata.py","exec"),_metadata.__dict__)\n'
                   '_bc=types.ModuleType("backend_patch_contract")\n'
                   'sys.modules["backend_patch_contract"]=_bc\n'
                   'exec(compile(' + repr(backend_contract) + ',"backend_patch_contract.py","exec"),_bc.__dict__)\n'
