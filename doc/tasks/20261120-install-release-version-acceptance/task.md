@@ -1,7 +1,7 @@
 # 安装发布一致性修复并推送
 
 ## Current Status
-ready_for_closeout
+completed
 
 ## 目标与授权
 用户要求“安装，然后提交推送代码”。安装上一子项已经合入int_main的版本一致性与页面验收规则修改，核运行中发布执行器，提交本次记录并推送维护仓目标分支。不重新发布IntRuoyi应用或执行业务数据修复。
@@ -13,7 +13,7 @@ version-acceptance-fix.md子项已completed，实现363a6ca，收尾100ede9。�
 - [x] 核对已提交目标、安装合同、活动任务/锁、环境配置及远端分支。
 - [x] 创建本轮隔离worktree，核候选测试及安装输入。
 - [x] 保全现有安装/配置/状态，安装并恢复稳定路径，验证运行版本与入口。
-- [ ] 记录结果，清理本轮worktree，精确提交及推送并核远端SHA。
+- [x] 记录结果，清理本轮worktree，精确提交及推送并核远端SHA。
 
 ## 预期验证
 安装目标与已提交Git字节一致，新增远端模块闭包完整；各环境显式.env路径可核，私密配置其他内容保持；无活动操作被中断；执行器从稳定路径启动，健康/API与既有状态保持。回归在独立worktree执行。推送仅已核实维护仓分支，不带入既有未提交文件。
@@ -35,4 +35,7 @@ version-acceptance-fix.md子项已completed，实现363a6ca，收尾100ede9。�
 
 Spug登录入口可见、console无warn/error；实际HTTP app.js与nginx真实alias文件一致。未执行新会话登录后的业务验收或新发布。审查服旧容器和操作目录登记失效，保持阻断，不擅自映射现有spug-empty59实例。
 
-本轮worktree=C:/SpugHandoff/release/maintenance-install-20261120，初始detached100ede9，后建codex/install-release-version-20261120，仅新增文档门禁提交47f920f并已FF融合int_main，合并后文档门禁/UTF8/diff通过。无应用构建；验证命令及安装失败成功前缀见execution-log。待清理工作区和推送。
+本轮worktree=C:/SpugHandoff/release/maintenance-install-20261120，初始detached100ede9，后建codex/install-release-version-20261120，仅新增文档门禁提交47f920f并已FF融合int_main，合并后文档门禁/UTF8/diff通过。无应用构建；验证命令及安装失败成功前缀见execution-log。
+
+## 最终验证
+官方清理已PASS，5223个tracked文件核验、Git登记及物理路径均已删除，无新进程引用本轮worktree；执行器稳定路径已恢复。实现、门禁及安装记录47dc7c7已推送origin/int_main，ls-remote返回相同SHA；本次完成记录另提交并推送。主区其他未提交内容保持，未提交私密配置/备份，未更改审查服实际实例。

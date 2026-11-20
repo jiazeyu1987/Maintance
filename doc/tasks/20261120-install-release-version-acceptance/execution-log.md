@@ -18,3 +18,6 @@
 - UI资源核验首次以source下app.js作为预期不匹配，未覆盖运行UI；nginx -T确认真实唯一alias=/var/lib/intruoyi-spug/releases/dbabf7e/ui/，实际HTTP app.js与该容器文件逐字相同，sha=764022920321f928ea8b90ad39d5420483e5df1f3f2fb6c3392b94c0bbf68dac。页面资源未修改，不把旁置source文件当生效文件。
 - 文档实现47f920f516d78aa5e604db675c82220a078eae15已在本轮worktree提交，仅3份门禁文档，diff检查PASS。GREEN: experience-preflight -> PASS，适用FF融合维护int_main；目标3文件无其他修改、索引空，合并后核UTF8/门禁内容；不重新执行无变化生产代码测试。
 - GREEN: 47f920f已融合int_main，隔离区HEAD相等，3文档UTF8/门禁/引用及diff检查PASS；生产文件仍为已验证100ede9版本，无需重复运行同代码测试。GREEN: experience-preflight -> PASS，适用清理本轮worktree，明确root=C:/SpugHandoff/release、worktree=maintenance-install-20261120、branch=codex/install-release-version-20261120、commit=47f920f，干净且已融合；官方清理工具核消费者/注册/物理路径，外部回执保留，其他工作区不动。
+- GREEN: integration_worktree_cleanup.py -> PASS，verifiedTrackedFiles=5223、gitRemovalExitCode=0、registeredAfter=false、physicalPathExists=false；外部回执C:/SpugHandoff/release/private/install-version-acceptance-20261120/cleanup-result.json。新稳定执行器43352不依赖已删工作区。
+- GREEN: 精确提交安装记录47dc7c7，git push origin int_main成功（85b6b5f..47dc7c7），git ls-remote --heads origin int_main返回47dc7c7aeabbad47d2baab5316b214b163e31650。包含已核实15个前序任务链提交、本轮门禁和记录，无force；主区其他脏改动和共享日志原条目未混入。
+- 最终状态completed，完成记录单独提交推送；未做真实发布或历史验收追认。安装原件/载体/摘要及payload核对私存，不进入Git。
