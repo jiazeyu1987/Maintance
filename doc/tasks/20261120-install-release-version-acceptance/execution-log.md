@@ -1,0 +1,20 @@
+# 执行记录
+
+- 用户授权：安装上一轮发布流程修复，然后提交推送代码。
+- Bootstrap：UTF8读取AGENTS、前序子项、经验索引与PowerShell门禁；立即建立本任务记录。安装目标以再次核实的int_main提交为准。
+- BDD: 安装已提交发布流程 -> Given 已验证正式提交、已确认稳定执行器且无活动任务；When 保全原配置/状态并安装、重启；Then 新版本从稳定路径运行、配置和历史状态保持、入口与版本可核，随后精确提交推送并确认远端SHA。
+- 本轮尚未安装、重启或推送；先只读检查合同及状态。
+- 只读核对：稳定source/18112执行器PID31924，无running/queued任务，历史interrupted6条须保持；18081属于Docker端口转发PID24568。维护int_main=100ede972149e3cc1d04716a564e86a9d3c83157，fetch origin/int_main后落后0/领先15，均为本任务链既有维护提交；尚未推送。
+- GREEN: experience-preflight -> PASS，适用新建安装worktree：读过普通脚本安装、运行依赖闭包、来源同步、IMAGE_TAG及worktree门禁；新路径C:/SpugHandoff/release/maintenance-install-20261120，detached100ede9，只用已提交内容。主区脏改动保持，构建命令=无；验证命令在该worktree执行，Python子进程禁写bytecode。
+- GREEN: 固定100ede9隔离工作区254项发布流程回归PASS，零跳过；未新增功能，不把安装前检查错误当TDD RED。
+- 环境只读核对：test/prod真实双容器运行、公共操作锁空闲，/opt/intruoyi/runtime/.env唯一tag为2026-11-19-23-41-45。backup已登记双容器和stagingRoot锁不存在，机器现有spug-empty59系列容器；旧/opt路径tag为7月版本，不据此给新实例配路径。该既有登记漂移仅阻断审查服发布，不阻断本机执行器升级；不改审查服目标、不操作其容器/数据。
+- 安装集合：四个运行文件intruoyi_executor.py、intruoyi_runtime.py、intruoyi_runtime_agent.py、release_runtime_metadata.py，加四份规则文档；其余安装文件逐SHA保留。目标配置只增加已核实test/prod.runtimeEnvironmentFile，prod与既有backupSourceBinding路径相同；backup未核实的元数据路径保持缺失并Fail Fast。
+- GREEN: experience-preflight -> PASS，适用本机执行器安装/重启：用户明确授权，固定提交及回归通过，原唯一PID31924/创建时间/argv/cwd可核，无running/queued，仅合法conhost子进程；再次核空闲后备份SQLite原payload、私密配置、完整安装文件pin和被替换原件。精确停止旧进程，原子安装Git blob，从原稳定source路径隐藏启动，比较payload逐字及所有非本次文件SHA，失败保留原件不盲目回滚。
+- 安装首次停在第一文件替换前：子powershell.exe无法加载Microsoft.PowerShell.Security/Get-Acl；只读核全量469个原文件、私密配置及payload逐字保持。替换探针又揭示File.Replace空备份参数被转换为非法路径；改为原生File.GetAccessControl + File.Replace明确备份路径，SDDL与原件读回通过后，才继续剩余安装。没有改权限或忽略失败。原运行文件/配置/数据库/进程环境私存before-install目录。
+- GREEN: 安装完成，实际稳定source进程43352，四个运行文件与Git100ede9 blob逐字一致，另四份规则文档同步；466个非本次文件SHA保持；配置仅test/prod.runtimeEnvironmentFile两项新增，秘密字段保持；382条job及SQLite payload逐字保持，sha=4be8e1ec182da514a8196b31a35f68082ff74f4a3e1034732b48dd0ec19d1cc2。
+- GREEN: 安装态254项回归PASS/零skip，31个实际导入模块均来自稳定安装路径；独立认证identity接口200。已安装Runtime实际远端observe与新元数据模块只读载体在test/prod运行成功：UP/HTTP200、maintenance=false、pending=false、原IMAGE_TAG和文件SHA保持。不执行align写入、不重新发布应用。
+- 浏览器只读检查：真实IAB Playwright打开Spug登录入口，按钮可见、console warn/error为0；未登录新浏览器会话，不声明认证后页面或业务E2E通过。既有UI资源未改。
+- 可前置的安装器能力问题已写入powershell-memory/checklist/index，新增BDD场景：Given同运行时替换探针失败，When准备升级，Then不得先停旧进程；实际安装采用通过的原生替换路径。仅文档门禁变更，不新增生产代码。
+- UI资源核验首次以source下app.js作为预期不匹配，未覆盖运行UI；nginx -T确认真实唯一alias=/var/lib/intruoyi-spug/releases/dbabf7e/ui/，实际HTTP app.js与该容器文件逐字相同，sha=764022920321f928ea8b90ad39d5420483e5df1f3f2fb6c3392b94c0bbf68dac。页面资源未修改，不把旁置source文件当生效文件。
+- 文档实现47f920f516d78aa5e604db675c82220a078eae15已在本轮worktree提交，仅3份门禁文档，diff检查PASS。GREEN: experience-preflight -> PASS，适用FF融合维护int_main；目标3文件无其他修改、索引空，合并后核UTF8/门禁内容；不重新执行无变化生产代码测试。
+- GREEN: 47f920f已融合int_main，隔离区HEAD相等，3文档UTF8/门禁/引用及diff检查PASS；生产文件仍为已验证100ede9版本，无需重复运行同代码测试。GREEN: experience-preflight -> PASS，适用清理本轮worktree，明确root=C:/SpugHandoff/release、worktree=maintenance-install-20261120、branch=codex/install-release-version-20261120、commit=47f920f，干净且已融合；官方清理工具核消费者/注册/物理路径，外部回执保留，其他工作区不动。
