@@ -281,8 +281,7 @@ class Executor:
                         job['originState'] = dict(self.state['environments'][env])
                         job['originFingerprint'] = job['originState'].get('fingerprint')
                         self.save()
-                        self.audit_target(env, p, manifest)
-                        job['originFingerprint'] = self.fingerprint(env)
+                        self.audit_deployment_origin(env, p, manifest, job)
                     if env in ('prod', 'backup'):
                         if env == 'backup':
                             require(self.state['environments'].get('prod', {}).get('releaseTag') == p['releaseTag'], 'Production has moved to another package; this older release cannot update backup')
@@ -651,6 +650,10 @@ class Executor:
         self.check_contract(env, manifest, len(existing))
         if registered.get('fingerprint'):
             require(self.fingerprint(env) == registered['fingerprint'], 'Actual schema/program/ledger drifted from registered state')
+
+    def audit_deployment_origin(self, env, p, manifest, job):
+        self.audit_target(env, p, manifest)
+        job['originFingerprint'] = self.fingerprint(env)
 
     def audit_baseline(self, p, manifest, job):
         env = job['payload'].get('target')

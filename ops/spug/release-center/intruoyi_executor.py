@@ -1,4 +1,5 @@
 """IntRuoyi's remote adapter for the existing persistent release workflow."""
+from copy import deepcopy
 import json
 from pathlib import Path
 import re
@@ -663,6 +664,16 @@ class _IntRuoyiExecutor(Executor):
         require(env in self.state['environments'], 'Target origin has not been registered')
         return self.runtime.audit(env, self.runtime_manifest(env, manifest))
 
+    def audit_deployment_origin(self, env, p, manifest, job):
+        observation = self.runtime.observe(env)
+        if env == 'prod' and not observation.get('releaseTag'):
+            # The original failed upgrade has already changed schema/ledger.
+            # Authorize that precise stopped incident before the ordinary audit
+            # would compare it with the pre-migration registered baseline.
+            observation = self.stopped_forward_origin(env, manifest, job, observation)
+            return audit_ledger(observation, manifest)
+        return super().audit_deployment_origin(env, p, manifest, job)
+
     def runtime_manifest(self, env, manifest):
         # Baselines follow confirmed deployments, not the first registration forever.
         require(env in self.state['environments'], 'Current registered target origin required')
@@ -679,34 +690,50 @@ class _IntRuoyiExecutor(Executor):
     def health(self, env, tag):
         return self.runtime.health(env, tag)
 
+    def stopped_forward_origin(self, env, manifest, job, observation):
+        require(env == 'prod' and job.get('action') == 'promote-prod',
+                'Explicit production forward deployment required')
+        failures = [item for item in self.state['jobs'] if item.get('action') == 'promote-prod'
+                        and item.get('target') == 'prod' and item.get('status') == 'failed'
+                        and item.get('effectsStarted') and not item.get('resolution')
+                        and item.get('error', '').startswith('Route snapshot READINESS blocked:')]
+        require(len(failures) == 1, 'Exactly one reviewed failed production origin required')
+        original = failures[0]
+        old_package, _ = self.manifest(original['releaseTag'])
+        operations = [item for item in original.get('remoteOperations', [])
+                          if item.get('env') == 'prod' and item.get('action') == 'deploy']
+        require(len(operations) == 1 and original.get('workflowPolicy', {}).get('productionRecovery') == 'external',
+                    'Original external deployment operation binding required')
+        incident = dict(version='stopped-origin-forward/v1', originalJobId=original['id'],
+                originalOperationId=operations[0]['operationId'], failedReleaseTag=original['releaseTag'],
+                stagingRoot=original.get('runtimeStagingRoots', {}).get('prod'),
+                manifestSha256=old_package['manifestSha256'], origin=deepcopy(original['originState']),
+                appliedMigrations=[{key:item[key] for key in ('migrationId','sha256')}
+                    for item in original['migrationPlan']['items'] if item['action'] == 'APPLY'])
+        prior = job.get('stoppedOriginRecovery')
+        require(not prior or prior == incident, 'Stopped-origin incident binding changed')
+        preliminary = target_input_plan(manifest['migrations'], observation['ledgerRecords'], 'prod')
+        probe_manifest = dict(self.runtime_manifest(env, manifest), executionPlans={'prod':preliminary})
+        verified = self.runtime.call('prod', 'inspect-stopped-origin', manifest=probe_manifest, incident=incident)
+        if prior:
+            require(all(verified.get(key) == job['originState'].get(key) for key in
+                        ('releaseTag', 'fingerprint', 'schemaSha256', 'ledgerSha256')),
+                    'Stopped-origin verified state changed before deployment')
+        job.update(stoppedOriginRecovery=incident, originState=verified,
+                   originFingerprint=verified['fingerprint'])
+        self.save()
+        return verified
+
     def deploy(self, env, p, manifest, job):
         self.step(job, 'check-migration-plan')
         observation = self.runtime.observe(env)
         stopped_incident = None
+        if job.get('stoppedOriginRecovery'):
+            require(env == 'prod' and not observation.get('releaseTag'),
+                    'Stopped-origin runtime changed before deployment')
         if env == 'prod' and not observation.get('releaseTag'):
-            failures = [item for item in self.state['jobs'] if item.get('action') == 'promote-prod'
-                        and item.get('target') == 'prod' and item.get('status') == 'failed'
-                        and item.get('effectsStarted') and not item.get('resolution')
-                        and item.get('error', '').startswith('Route snapshot READINESS blocked:')]
-            require(len(failures) == 1, 'Exactly one reviewed failed production origin required')
-            original = failures[0]
-            old_package, _ = self.manifest(original['releaseTag'])
-            operations = [item for item in original.get('remoteOperations', [])
-                          if item.get('env') == 'prod' and item.get('action') == 'deploy']
-            require(len(operations) == 1 and original.get('workflowPolicy', {}).get('productionRecovery') == 'external',
-                    'Original external deployment operation binding required')
-            stopped_incident = dict(version='stopped-origin-forward/v1', originalJobId=original['id'],
-                originalOperationId=operations[0]['operationId'], failedReleaseTag=original['releaseTag'],
-                stagingRoot=original.get('runtimeStagingRoots', {}).get('prod'),
-                manifestSha256=old_package['manifestSha256'], origin=original['originState'],
-                appliedMigrations=[{key:item[key] for key in ('migrationId','sha256')}
-                    for item in original['migrationPlan']['items'] if item['action'] == 'APPLY'])
-            preliminary = target_input_plan(manifest['migrations'],observation['ledgerRecords'],'prod')
-            probe_manifest = dict(self.runtime_manifest(env,manifest), executionPlans={'prod':preliminary})
-            observation = self.runtime.call('prod','inspect-stopped-origin',manifest=probe_manifest,incident=stopped_incident)
-            job.update(stoppedOriginRecovery=stopped_incident, originState=observation,
-                       originFingerprint=observation['fingerprint'])
-            self.save()
+            observation = self.stopped_forward_origin(env, manifest, job, observation)
+            stopped_incident = job['stoppedOriginRecovery']
         observed_environments = dict(self.state['environments'], **{env: observation})
         if env == 'backup':
             observed_environments['prod'] = self.runtime.observe('prod')

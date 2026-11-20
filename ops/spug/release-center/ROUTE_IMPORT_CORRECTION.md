@@ -14,7 +14,9 @@
 1. 在本次维护worktree运行`python -X utf8 -m unittest test_stopped_origin_recovery test_route_snapshot_handler test_resume_test_tail test_direct_release test_intruoyi_runtime test_interruption test_technical_verification test_source_runtime test_source_binding_entry`；应用Maven专项验证导入映射、拒绝非法源快照、仅纠正索引及固定范围。
 2. 新测试包通过后，运行`python -X utf8 route_import_correction.py --config <私密配置> --original-job-id <原失败JOB> --release-tag <新已测试tag> --plan <Java生成的私密计划> --output <全新私密预检记录>`，默认只读；核原停止态起点和零待执行SQL。
 3. 写入前记录experience-preflight PASS。用相同参数、全新output，加`--apply --confirm PROD`。命令只读读取发布状态，不写SQLite；以独立维护操作记录并使用既有远端journal/公共锁，原Spug失败保持。
-4. 正常Spug新包promote-prod重新核纠正原件/审计及全部身份，以docker cp读取停止容器的真实版本，不启动旧应用。新包技术部署成功后仅追加原失败的前向替代关联；业务开放仍必须单独验收。
+4. 正常Spug新包promote-prod必须从check-target-origin阶段即进入严格停止态合同；不能先以迁移前注册schema审计已迁移事故起点。入口绑定唯一原事故和实测起点，deploy阶段重核同一绑定，以docker cp读取停止容器真实版本，不启动旧应用。普通运行起点继续原注册基线审计，不改写全局基线或捕获不匹配后降级。新包技术部署成功后仅追加原失败的前向替代关联；业务开放仍必须单独验收。
+
+入口集成门禁：Trigger为已执行迁移后停止态恢复的普通Spug晋级；Preflight check必须用实际Executor.execute路径验证check-target-origin到deploy均执行相同事故绑定，运行态仍正常audit_target。Blocker为旧schema基线抢先阻断专用合同、事故/包/指纹漂移或任何专用核验失败。Verification须保留入口RED/GREEN及关联回归，正式实际schema与同包测试升级schema核对，并最终完整READINESS。Forbidden action为修改SQLite/注册baseline、绕过audit或吞异常后继续。Evidence记录首次零副作用失败JOB、新实现提交、两次事故绑定及新晋级原操作回执。推荐`python -X utf8 -m unittest test_stopped_origin_entry test_stopped_origin_recovery test_direct_release test_intruoyi_runtime test_technical_verification`，Fail Fast时不重复派发；必须先查原job副作用和worker。
 
 必须记录：新提交/tag/manifest和包摘要、原JOB/OP/起点、工作区路径、精确5条范围与计划SHA、原件路径、只读与写入结果、全量快照报告、正式部署/技术/页面/开放证据和最终收尾。Fail Fast保留原件；本合同不提供自动回退、数据恢复或未知结果重试。
 
