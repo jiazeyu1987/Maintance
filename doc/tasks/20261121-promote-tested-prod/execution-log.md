@@ -1,0 +1,14 @@
+# 执行记录
+- 用户要求发布到正式服，明确生产操作授权保留；承接同tag测试成功证据，尚未调用正式写入。
+- BDD: Given同tag测试验收及正式预检通过，When正常promote-prod，Then正式前后端镜像与manifest一致、服务UP/200、真实页面版本正确，正式菜单按已登记迁移对齐。
+- 正式只读起点为2026-11-19-23-41-45、UP/200、maintenance=false。同包正式预检JOB-f997ae2836 succeeded，真实Spug页显示全部12检查通过；配置沿用既有direct-three-server-v1及external独立恢复确认，不宣称本次重新验证独立备份。
+- 页面最初读取状态返回HTML解析错误，刷新后正常加载；实际Spug页选择固定tag并展示同包SHA、测试3项通过、正式预检通过。点击开始发布后观察超时；以权威state复核已受理JOB-02dc0e43d6 running/check-migration-plan，不重复点击或重发。
+- 流程记录缺口：将真实“开始发布”误称预览，未在点击前追加experience-preflight PASS；不倒填事前记录。用户正式发布授权、同包测试、正式专属预检及恢复策略已核，任务已受理，后续仅沿原任务观察并完成必要验收。此缺口须保留复盘，不据此中断已运行部署。
+- 原远端部署OP-efed0e9b744e2d6a4601在本次专属attempts/JOB-02dc0e43d6目录运行，python3 PID3118真实存活。首次诊断沿用了test的默认stagingRoot得到unknown，按任务实际runtimeStagingRoots纠正后确认running；未据观察失败重发。
+- GREEN: experience-preflight -> PASS，适用接下来正式维护入口及开放后只读页面验收：用户已授权正式发布；使用既有私密平台身份，Playwright真实登录，拦截非登录/验证码写入，核排产工单导航、真实page/latest-success请求、同包版本说明；保留全部观察项。专属脚本private/prod-promotion-20261121/menu-page-check.cjs已通过node --check，维护入口38084及开放入口8081分别记录，未执行业务写入。
+- GREEN: promote-prod JOB-02dc0e43d6 -> succeeded；technical-login终态通过，候选prod-deployed。维护38084真实登录、智能排产/排产工单页面及page/latest-success code0、同tag/sourceCommit和10条变更说明均PASS。
+- 页面评估PASS_WITH_OBSERVATIONS：维护入口6事件完整保留。事件1/2统计脚本连接关闭（同包src/plugins/tongji用途已核），事件3外部个人头像ORB拒绝；本轮登录/导航/排产必需请求/版本实际通过，均非关键资源。事件4/5/6为事前只读保护主动拦截workbench/context及派生错误；其用途为个人工作台查询上下文，已验排产路径成功，不宣称个人工作台通过。评估人为本维护任务，统计/头像留应用侧后续处理，范围非完整业务E2E。
+- GREEN: experience-preflight -> PASS，适用正式accept-prod开放：原同包部署及技术检查成功、维护真实页面已评估通过、无活动job。仅通过真实Spug验收按钮提交同包开放；开放后继续独立复核UP/200、IMAGE_TAG/镜像及主入口，不以派发成功代替完成。
+- 实际Spug开放点击等待响应超时，但权威state确认已受理JOB-3c06d8e213；沿原任务跟踪至succeeded，不重复提交。
+- GREEN: 最终运行态及开放页面 -> PASS_WITH_OBSERVATIONS。actual双镜像ID/tag、manifest、IMAGE_TAG同包、UP/200、maintenance=false、runtimeOpeningPending=false；开放8081页面必查PASS，6事件与维护轮同类且逐项归因见acceptance.md。无活动job。
+- 收尾ready_for_closeout后复核：原build worktree Test-Path=False，本轮无新工作区/新提交需合并；执行器43352实际入口仍为稳定source，未改控制台或其他任务进程。最终completed，记录单独提交。
