@@ -225,7 +225,7 @@ class TechnicalVerificationTest(unittest.TestCase):
         self.seed_rehearsal()
         self.run_action('promote-prod')
         current=self.executor.state['environments']['prod']
-        current.update(maintenance=False,runtimeOpeningPending=True)
+        current.update(maintenance=False,runtimeOpeningPending=True,observedEntryUrl='http://172.30.30.58:38084')
         def finish(env,enabled):
             self.assertFalse(enabled)
             self.executor.state['environments'][env]['runtimeOpeningPending']=False
@@ -233,6 +233,7 @@ class TechnicalVerificationTest(unittest.TestCase):
         accepted=self.run_action('accept-prod',note='Actual business acceptance passed')
         self.assertEqual(accepted['status'],'succeeded',accepted.get('error'))
         self.executor.maintenance.assert_called_once_with('prod',False)
+        self.assertEqual(self.login.call_args.args[1],'http://172.30.30.58:38084')
         self.assertEqual(self.package['stage'],'prod-accepted')
         self.executor.deploy.assert_called_once()
 

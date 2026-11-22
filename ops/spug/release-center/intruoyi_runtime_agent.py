@@ -127,6 +127,35 @@ def backend_jar_sha(profile, info):
     return digest
 
 
+def verification_entry(profile, maintenance, through_acceptance=False):
+    """Use the acceptance entry only for maintenance or an identity-bound opening."""
+    if maintenance or through_acceptance:
+        return profile['acceptanceUrl']
+    root = Path(profile['stagingRoot'])
+    markers = list(root.glob('*/runtime-opening-pending.private.json'))
+    if not markers:
+        return profile['entryUrl']
+    backend = remote.inspect(profile['backend'])
+    frontend = remote.inspect(profile['frontend'])
+    if frontend['State']['Running']:
+        return profile['entryUrl']
+    matching = []
+    for marker in markers:
+        value = json.loads(marker.read_text())
+        if value.get('backendId') != backend['Id']:
+            continue
+        candidate = json.loads((marker.parent / 'deployment-pending.json').read_text())
+        expected = dict(releaseTag=marker.parent.name, backendId=backend['Id'],
+                        frontendId=frontend['Id'], images=candidate['images'])
+        require(value == expected and candidate['releaseTag'] == marker.parent.name
+                and all(candidate['images'][role]['id'] == row['Image']
+                        for role, row in (('backend', backend), ('frontend', frontend))),
+                'Pending opening verification identity differs')
+        matching.append(marker)
+    require(len(matching) <= 1, 'Pending opening verification is ambiguous')
+    return profile['acceptanceUrl'] if matching else profile['entryUrl']
+
+
 def observe(profile):
     # Inspector performs SHOW TABLES/DESCRIBE before metadata/ledger queries.
     raw = remote.observe(profile)
@@ -145,7 +174,7 @@ def observe(profile):
         configs[role] = runtime_config_snapshot(info)
     backend_env = dict(v.split('=', 1) for v in remote.inspect(profile['backend'])['Config']['Env'])
     maintenance = backend_env.get('INTRUOYI_RELEASE_MAINTENANCE') == 'true'
-    entry = profile.get('acceptanceUrl') if maintenance else profile['entryUrl']
+    entry = verification_entry(profile, maintenance)
     require(isinstance(entry, str) and entry, 'Maintenance observation requires registered acceptanceUrl')
     status, metadata_status, release_tag, backend_health = None, None, None, None
     frontend_patch_tag = None
@@ -1049,7 +1078,7 @@ def startup_timeout(profile):
 
 
 def health(profile, tag, maintenance, through_acceptance=False, expected_gxp_mode=None):
-    entry = profile['acceptanceUrl'] if maintenance or through_acceptance else profile['entryUrl']
+    entry = verification_entry(profile, maintenance, through_acceptance)
     deadline = time.monotonic() + startup_timeout(profile)
     last_error = 'No observation attempted'
     while time.monotonic() < deadline:

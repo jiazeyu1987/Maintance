@@ -255,7 +255,10 @@ class _IntRuoyiExecutor(Executor):
             self.step(job, 'technical-login')
             from intruoyi_login import verify_login
             profile = self.runtime.profile(env)
-            target_url = profile['acceptanceUrl'] if current.get('maintenance') is True else profile['entryUrl']
+            target_url = (profile['acceptanceUrl'] if current.get('maintenance') is True
+                          or (current.get('runtimeOpeningPending') is True
+                              and current.get('observedEntryUrl') == profile['acceptanceUrl'])
+                          else profile['entryUrl'])
             evidence_dir = self.root / 'technical-evidence' / job['id'] / env
             receipt = verify_login(self.c, target_url, evidence_dir, binding)
             require(receipt.get('status') == 'passed' and receipt.get('binding') == binding and receipt.get('authenticated') is True,

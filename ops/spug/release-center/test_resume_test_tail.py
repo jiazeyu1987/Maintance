@@ -17,7 +17,8 @@ from intruoyi_runtime import RuntimeBlocked, file_sha, package_identity, sha
 
 class StartupWaitTest(unittest.TestCase):
     def test_default_and_explicit_wait_cover_196_second_start(self):
-        profile={'acceptanceUrl':'http://acceptance','entryUrl':'http://public','backend':'backend'}
+        staging=tempfile.TemporaryDirectory();self.addCleanup(staging.cleanup)
+        profile={'acceptanceUrl':'http://acceptance','entryUrl':'http://public','backend':'backend','stagingRoot':staging.name}
         for timeout, succeeds in ((None,True),(240,True),(180,False)):
             with self.subTest(timeout=timeout):
                 current=[0]
