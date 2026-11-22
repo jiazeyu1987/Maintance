@@ -4,9 +4,9 @@
 六步发布续办发现 register-targets target=prod 被其他环境历史失败任务拒绝。使失败副作用阻塞范围与显式登记目标一致；不修改历史记录，不降低同目标或未知目标保护。
 
 ## Milestones
-- [ ] RED：真实 submit 路径复现跨目标错误阻塞。
-- [ ] GREEN / REGRESSION：最小判断修复，保留运行中、同目标、未知目标及三服登记保护。
-- [ ] 提交、融合、安装与真实正式服登记验证。
+- [x] RED：真实 submit 路径复现跨目标错误阻塞。
+- [x] GREEN / REGRESSION：最小判断修复，保留运行中、同目标、未知目标及三服登记保护。
+- [x] 提交、融合、安装与真实正式服登记验证。
 
 ## Expected Verification
 定向单元测试覆盖提交入口；实际单服登记和正式发布预检提供运行证据。测试中的线程替身仅阻止真实远端执行，不冒充部署或 E2E 成功。
@@ -25,4 +25,4 @@
 - Evidence：execution-log.md、父任务 20261122-sixstep-repeat 的 HTTP409 与登记日志。
 
 ## Current Status
-in_progress
+completed：实现提交 4cf4363、3e7957b 已融合并推送，融合后38项回归通过，稳定执行器安装成功；正式服登记与后续预检真实成功。自有临时worktree已删除，Git登记与物理路径均不存在，运行路径仍为稳定source目录。
