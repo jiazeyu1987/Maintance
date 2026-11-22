@@ -1,11 +1,49 @@
 import copy
 import unittest
+import threading
+from unittest.mock import patch
 from types import SimpleNamespace
 
 from target_registration import registration_targets, validate_registered_takeover
 
 
 class TargetRegistrationTests(unittest.TestCase):
+    def registration_submit(self, target, failed_target, status='failed', remote_env=None):
+        from intruoyi_executor import IntRuoyiExecutor
+        executor = IntRuoyiExecutor.__new__(IntRuoyiExecutor)
+        executor.c = {'applicationId': 'intruoyi'}
+        executor.lock = threading.RLock()
+        executor.ensure_persistence = lambda: None
+        executor.save = lambda: None
+        prior = dict(id='old', requestId='old-request', action='publish-test',
+                     status=status, effectsStarted=True)
+        if failed_target is not None: prior['target'] = failed_target
+        if remote_env is not None: prior['remoteOperations'] = [{'env': remote_env}]
+        executor.state = dict(jobs=[prior], environments={}, packages=[])
+        payload = dict(applicationId='intruoyi', requestId='registration-scope-test')
+        if target is not None: payload['target'] = target
+        with patch('intruoyi_executor.threading.Thread'):
+            result = executor.submit('register-targets', payload, 'test-actor')
+        self.assertNotIn('resolution', prior)
+        return result
+
+    def test_prod_registration_not_blocked_by_failed_test_or_backup(self):
+        for other in ('test', 'backup'):
+            with self.subTest(other=other):
+                self.assertEqual(self.registration_submit('prod', other)['status'], 'running')
+
+    def test_registration_preserves_selected_unknown_and_global_active_guards(self):
+        for target, failed, status in [('prod', 'prod', 'failed'), ('prod', None, 'failed'),
+                                       (None, 'test', 'failed'), ('prod', 'test', 'running'),
+                                       ('prod', 'test', 'interrupted')]:
+            with self.subTest(target=target, failed=failed, status=status):
+                with self.assertRaises(ValueError):
+                    self.registration_submit(target, failed, status)
+
+    def test_cross_target_operation_evidence_still_blocks_selected_target(self):
+        with self.assertRaisesRegex(ValueError, 'Failed remote effects'):
+            self.registration_submit('prod', 'test', remote_env='prod')
+
     def fixture(self):
         original = dict(id='failed', action='publish-test', target='test',
                         currentStep='check-target-origin', status='failed',

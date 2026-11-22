@@ -540,7 +540,10 @@ class _IntRuoyiExecutor(Executor):
                 return rows[0]
             require(not any(j['status'] == 'running' or (j['status'] == 'interrupted' and not j.get('resolution'))
                             for j in self.state['jobs']), 'Running/interrupted task blocks registration')
+            targets = registration_targets(payload)
             require(not any(j.get('effectsStarted') and j['status'] == 'failed' and not j.get('resolution')
+                            and (j.get('target') not in ('test', 'prod', 'backup') or j['target'] in targets
+                                 or any(call.get('env') in targets for call in j.get('remoteOperations', [])))
                             for j in self.state['jobs']), 'Failed remote effects require reconciliation before registration')
             require(not any(e.get('maintenance') or e.get('maintenanceUnknown') for e in self.state['environments'].values()),
                     'Pending maintenance must be reconciled before replacing registered baselines')
