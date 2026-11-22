@@ -953,10 +953,25 @@ def configure_fenbeitong(config, profile):
     config['Env'] = [key + '=' + value for key, value in env.items()]
 
 
-def replace(profile, root, role, image, tag, maintenance=None, snapshot_suffix='initial'):
+def preserve_stopped_networks(stopped, before):
+    require(not stopped['State']['Running'] and stopped['Id']==before['Id']
+            and stopped['Image']==before['Image'], 'Pre-stop container identity changed')
+    current=stopped['NetworkSettings']['Networks']
+    observed=before['NetworkSettings']['Networks']
+    require(set(current)==set(observed) and all(
+        current[name].get('NetworkID')==entry.get('NetworkID') for name,entry in observed.items()),
+        'Pre-stop network identity changed')
+    result=copy.deepcopy(stopped)
+    result['NetworkSettings']['Networks']=copy.deepcopy(observed)
+    return result
+
+
+def replace(profile, root, role, image, tag, maintenance=None, snapshot_suffix='initial', before_stop=None):
     name = profile[role]
     original = remote.inspect(name)
     require(not original['State']['Running'], 'Original application must be stopped before replacement')
+    if before_stop is not None:
+        original=preserve_stopped_networks(original,before_stop)
     private_json(root / (role + '-before-' + snapshot_suffix + '.private.json'), original)
     config = clone_config(original, image, maintenance)
     removed_program_mounts = set()
@@ -1121,6 +1136,8 @@ def deploy(profile, manifest):
     plan = migration_plan(profile, manifest, obs)
     validate_direct_target_origin(profile, manifest, obs, plan)
     check_fence(profile)
+    before_stop={role:remote.inspect(profile[role]) for role in ('backend','frontend')}
+    private_json(root/'application-before-stop.private.json',before_stop)
     stop_writers(profile)
     if recovery_mode == 'external':
         recovery = dict(mode='external', policyVersion=manifest['workflowPolicy']['version'],
@@ -1144,8 +1161,8 @@ def deploy(profile, manifest):
     terminal_snapshot_readiness(profile, root, manifest, recovery)
     actual_schema = observe(profile)['schemaSha256']
     require(not expected_schema or actual_schema == expected_schema, 'Actual upgraded schema differs from verified upgrade basis; applications remain stopped')
-    replace(profile, root, 'backend', manifest['images']['backend']['id'], manifest['releaseTag'], True)
-    replace(profile, root, 'frontend', manifest['images']['frontend']['id'], manifest['releaseTag'])
+    replace(profile, root, 'backend', manifest['images']['backend']['id'], manifest['releaseTag'], True, before_stop=before_stop['backend'])
+    replace(profile, root, 'frontend', manifest['images']['frontend']['id'], manifest['releaseTag'], before_stop=before_stop['frontend'])
     docker('POST', '/containers/' + quote(profile['backend']) + '/start')
     acceptance_frontend(profile, root)
     verified_health = health(profile, manifest['releaseTag'], True)
@@ -1329,7 +1346,7 @@ def reopen(profile):
     health(profile, candidate['releaseTag'], True, expected_gxp_mode=gxp_release_mode(candidate))
     remote.run(['docker', 'stop', '--time', '90', profile['backend']], timeout=120)
     require(not remote.inspect(profile['backend'])['State']['Running'] and remote.inspect(profile['backend'])['State']['ExitCode'] != 137, 'Maintenance backend did not drain')
-    replace(profile, root, 'backend', backend['Image'], candidate['releaseTag'] + '-maintenance', False, 'reopen')
+    replace(profile, root, 'backend', backend['Image'], candidate['releaseTag'] + '-maintenance', False, 'reopen', before_stop=backend)
     docker('POST', '/containers/' + quote(profile['backend']) + '/start')
     health(profile, candidate['releaseTag'], False, through_acceptance=True, expected_gxp_mode=gxp_release_mode(candidate))
     return finish_reopen(profile, candidate)
