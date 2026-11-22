@@ -545,7 +545,8 @@ class _IntRuoyiExecutor(Executor):
                             and (j.get('target') not in ('test', 'prod', 'backup') or j['target'] in targets
                                  or any(call.get('env') in targets for call in j.get('remoteOperations', [])))
                             for j in self.state['jobs']), 'Failed remote effects require reconciliation before registration')
-            require(not any(e.get('maintenance') or e.get('maintenanceUnknown') for e in self.state['environments'].values()),
+            require(not any(self.state['environments'].get(env, {}).get('maintenance')
+                            or self.state['environments'].get(env, {}).get('maintenanceUnknown') for env in targets),
                     'Pending maintenance must be reconciled before replacing registered baselines')
             job = dict(id='JOB-'+secrets.token_hex(5), requestId=request_id, action=action, payload=payload,
                        releaseTag=None, actor=actor, status='running', createdAt=stamp(), logs=[])

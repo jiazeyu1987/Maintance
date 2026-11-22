@@ -8,7 +8,7 @@ from target_registration import registration_targets, validate_registered_takeov
 
 
 class TargetRegistrationTests(unittest.TestCase):
-    def registration_submit(self, target, failed_target, status='failed', remote_env=None):
+    def registration_submit(self, target, failed_target, status='failed', remote_env=None, environments=None):
         from intruoyi_executor import IntRuoyiExecutor
         executor = IntRuoyiExecutor.__new__(IntRuoyiExecutor)
         executor.c = {'applicationId': 'intruoyi'}
@@ -19,7 +19,7 @@ class TargetRegistrationTests(unittest.TestCase):
                      status=status, effectsStarted=True)
         if failed_target is not None: prior['target'] = failed_target
         if remote_env is not None: prior['remoteOperations'] = [{'env': remote_env}]
-        executor.state = dict(jobs=[prior], environments={}, packages=[])
+        executor.state = dict(jobs=[prior], environments=environments or {}, packages=[])
         payload = dict(applicationId='intruoyi', requestId='registration-scope-test')
         if target is not None: payload['target'] = target
         with patch('intruoyi_executor.threading.Thread'):
@@ -43,6 +43,18 @@ class TargetRegistrationTests(unittest.TestCase):
     def test_cross_target_operation_evidence_still_blocks_selected_target(self):
         with self.assertRaisesRegex(ValueError, 'Failed remote effects'):
             self.registration_submit('prod', 'test', remote_env='prod')
+
+    def test_only_selected_maintenance_blocks_registration(self):
+        self.registration_submit('prod', 'test', status='succeeded',
+                                 environments={'rehearsal': {'maintenance': True}})
+        for flag in ('maintenance', 'maintenanceUnknown'):
+            with self.subTest(flag=flag):
+                with self.assertRaisesRegex(ValueError, 'Pending maintenance'):
+                    self.registration_submit('prod', 'test', status='succeeded',
+                                             environments={'prod': {flag: True}})
+                with self.assertRaisesRegex(ValueError, 'Pending maintenance'):
+                    self.registration_submit(None, 'test', status='succeeded',
+                                             environments={'test': {flag: True}})
 
     def fixture(self):
         original = dict(id='failed', action='publish-test', target='test',
