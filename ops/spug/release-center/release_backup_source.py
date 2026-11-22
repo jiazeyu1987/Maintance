@@ -34,6 +34,28 @@ def create_attempt(generation):
     return Path(tempfile.mkdtemp(prefix='attempt-',dir=generation))
 
 
+def refresh_application_address(target, service, container):
+    """Bind the new application generation on its existing registered network."""
+    import ipaddress
+    role=service['role']
+    require(role in ('backend','frontend'),'SOURCE_APPLICATION_ROLE_REQUIRED')
+    old=service['ip']
+    if old=='127.0.0.1':return
+    expected=target['mainApplication']['networkAttachments'][role]
+    networks=container['NetworkSettings']['Networks']
+    require(set(networks)==set(expected) and all(
+        entry.get('NetworkID')==expected[name]['networkId'] for name,entry in networks.items()),
+        'SOURCE_APPLICATION_NETWORK_CHANGED')
+    addresses=[entry['IPAddress'] for entry in networks.values() if entry.get('IPAddress')]
+    require(len(addresses)==1,'SOURCE_APPLICATION_ADDRESS_AMBIGUOUS')
+    address=str(ipaddress.IPv4Address(addresses[0]))
+    for endpoint in target['mainApplication'].get('publishedDataEndpoints',[]):
+        fence=endpoint.get('writeFence',{})
+        if 'allowedWriterIPv4' in fence:
+            fence['allowedWriterIPv4']=[address if value==old else value for value in fence['allowedWriterIPv4']]
+    service['ip']=address
+
+
 def stage(binding, manifest, original_control_pin):
     engine=Path(binding['engineRoot'])
     sys.path[:0]=[str(engine/x) for x in ('control','common','formal')]
@@ -70,6 +92,7 @@ def stage(binding, manifest, original_control_pin):
      require(r['State']['Running'] and not r['State']['Paused'],'SOURCE_CONTAINER_NOT_RUNNING')
      if s['role'] in expected:
       require(r['Image']==expected[s['role']],'SOURCE_APPLICATION_IMAGE_MISMATCH')
+      refresh_application_address(t,s,r)
       replacements[s['id']]=r['Id'];replacements[s['imageId']]=r['Image']
      else:
       require(s['id']==r['Id'] and s['imageId']==r['Image'],'SOURCE_DATA_SERVICE_CHANGED')
