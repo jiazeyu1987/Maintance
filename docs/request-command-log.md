@@ -6180,3 +6180,12 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 用户需求：昨天全量备份包和增量备份包分别多大。
 - 命令意图：按上文两个成功备份点的manifestPin定位NAS归档，只读核清单SHA及目录文件元数据，逐载荷核集合和长度，元数据单独求和；不读取大型载荷或执行备份恢复。
 - 验证结果：FULL完整26675397164字节（26.68GB/24.84GiB）；INCREMENTAL完整2132996577字节（2.13GB/1.99GiB）。含.repository元数据，为各自目录逻辑大小，增量不累计父全量。初次长路径stat失败后按同一共享根使用Windows扩展UNC复核通过，无服务器写入。证据doc/tasks/20261123-backup-restore-thread-analysis/backup-size-evidence.json。
+
+
+## 2026-11-23 提交推送代码（20261123-commit-push）
+
+- 用户需求：提交推送代码。
+- 执行意图：核实维护仓int_main、远端状态与待推送提交；精确暂存本任务记录，不混入历史任务证据或共享日志的其他改动。
+- 验证：fetch/ls-remote确认22 ahead且无分叉；71个历史blob无超过100MiB对象，高置信敏感模式未命中；隔离依赖补齐后192项相关回归通过（2.828秒）。
+- 结果：22个已有代码及记录提交已推送至origin/int_main，远端c406210与本地代码HEAD一致；本次最终任务记录单独提交推送。
+- 收尾：无worktree或控制台遗留；自有ignored测试venv删除被自动审批以blocked by policy拒绝，保留依赖目录，不绕过审批。
