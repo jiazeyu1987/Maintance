@@ -6162,3 +6162,9 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 命令意图：使用read_thread分页读取并刷新最新回合；以显式UTF-8读取维护仓六步任务、执行日志和计时证据；只读核对Git身份及暂存状态。
 - 验证结果：旧版已完成发布、全量/增量及恢复，但附件页面暴露代码使用源库不存在tenant_id列；两次修复已提交融合，新版2026-11-23-08-35-27构建任务JOB-d3daa74d66仍running，处于清理/NAS发布阶段，新版本尚未部署。
 - 范围：仅聊天及本地证据分析；未给目标聊天发送消息，未访问或修改服务器，无凭据记录。
+
+## 2026-11-23 备份耗时追问（20261123-backup-restore-duration-followup）
+
+- 用户需求：全量备份和增量备份分别花了多长时间。
+- 命令意图：只读核对本轮sixstep-timing.md与execution-log.md的原生成功时间和秒数。
+- 验证结果：全量11727.915640秒（3小时15分27.915640秒），增量6308.050135秒（1小时45分8.050135秒）；均SUCCEEDED/exit0。总耗时包含采集、传输和校验，不等同停服窗口。无服务器操作。
