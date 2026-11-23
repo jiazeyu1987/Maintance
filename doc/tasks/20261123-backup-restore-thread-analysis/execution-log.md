@@ -1,5 +1,12 @@
 # 执行记录
 
+- 追问需求：昨天全量包和增量包分别多大。沿用固定FULL smallapp-b4616f1cafd94da59a40ee4beea3e517与INCREMENTAL smallapp-b08f5c6bd3324a368d626ce994a94665，先核原生日期、最终清单和大小口径。上一阶段completed，无遗留资源；只读查询，禁止拿单个SQL/镜像冒充完整包。
+- 经验适用：同一backupId与成功原件固定，数据范围/存储位置/验证方式必须有据；UTF-8读取；只读NAS元数据，不执行备份恢复或写入。已读release-backup-restore.md及server-access.md访问门禁，当前用户的备份大小查询仅覆盖该两点元数据读取。
+- 首次rg通配符路径在Windows被当字面路径拒绝，后续按目录与-g过滤，不以失败搜索判断文件缺失。首次NAS目录stat遇到长中文路径WinError3，改用同一已验证共享根的Windows扩展UNC前缀，未改目录、未替换目标或放宽文件匹配。
+- GREEN: final-manifest-pins -> PASS：两个清单长度和SHA均与原生成功result匹配。FULL载荷14363文件/26638406432字节；INCREMENTAL载荷54文件/2129242325字节。
+- GREEN: archive-directory-size -> PASS：显式不跟随reparse点，枚举全部目录，逐载荷校验集合和文件长度，.repository另计；FULL完整26675397164字节（26.675397164GB/24.843399566GiB），INCREMENTAL完整2132996577字节（2.132996577GB/1.986507864GiB）。全量元数据36990732字节，增量3754252字节。逻辑大小不等同NAS物理分配，增量不累计父链。
+- CLOSEOUT：大小证据保存backup-size-evidence.json，无凭据；只读元数据操作结束，无创建worktree/服务/后台进程遗留。验证JSON求和、UTF-8及精确暂存后单独提交本次记录，completed。
+
 - 追问目标：说明本轮增量备份实际内容及1小时45分耗时原因。前序分析completed，本次继续同一证据分析任务。先核本轮原生计时/载荷，再按经验路由只读查必要源码和原件；不启动备份或服务器操作。
 - 经验门禁：命中发布来源同步/增量父输入流成本门禁；完整内容校验不可削弱，当前源码与实际封包须区别。仅只读分析，不启动成本探针或远端采集。
 - 验证PASS：读取本轮status.private.json的9个timing-end原件和result(state=SUCCEEDED/exit0)，与sixstep-timing.md一致；读取本地Spug query确认成功和固定父全量；原IMAGE_EXPORT_COMPLETE为reused=true/13.261秒。观测文件89条、scratch-affected最多34目录。
