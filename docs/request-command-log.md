@@ -6155,3 +6155,10 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 验证结果：确认旧导入逻辑未同步替换工序配置对象键，且摘要计算不等于业务语义校验；旧发布预检仅对APPLY迁移检查，历史迁移已执行时漏检当前快照，终端READINESS才暴露问题。具体导入操作人和源文件仍未知。分析记录见doc/tasks/20261119-release-root-cause/analysis.md。
 
 - 2026-11-20 test-release-menu-repair：用户要求发布到测试服务器，继承下一次发布修复菜单授权。专用worktree新增5580前向菜单迁移，补齐新通知迁移登记并保护历史SQL摘要；152a084c3已合回int_main，4项真实MySQL及2项Node测试通过。2026-11-20-14-42-40构建JOB-8e4a355562及测试发布JOB-363a294001均succeeded；菜单APPLIED、实际镜像/IMAGE_TAG/manifest一致、UP/200，真实菜单与版本页面PASS_WITH_OBSERVATIONS。两处自有worktree清理及slot9释放完成。只执行build-release/publish-test，不执行mark-tested或正式/审查晋级；正式菜单仍待发布。最终记录doc/tasks/20261120-test-release-menu-repair/。
+
+## 2026-11-23 分析“备份恢复”聊天（20261123-backup-restore-thread-analysis）
+
+- 用户需求：分析聊天01a1cd7e-0968-7632-aa3f-edacd2e92c83在做什么。
+- 命令意图：使用read_thread分页读取并刷新最新回合；以显式UTF-8读取维护仓六步任务、执行日志和计时证据；只读核对Git身份及暂存状态。
+- 验证结果：旧版已完成发布、全量/增量及恢复，但附件页面暴露代码使用源库不存在tenant_id列；两次修复已提交融合，新版2026-11-23-08-35-27构建任务JOB-d3daa74d66仍running，处于清理/NAS发布阶段，新版本尚未部署。
+- 范围：仅聊天及本地证据分析；未给目标聊天发送消息，未访问或修改服务器，无凭据记录。
