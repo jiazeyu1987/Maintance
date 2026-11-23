@@ -1,5 +1,8 @@
 # 项目经验索引
 
+- Keywords: 历史登录失败阻断登记, Failed remote effects, register-targets, supersededLoginIncidents -> `docs/release-agent-checklist.md#历史登录失败与登记范围`。只接受同环境更晚完整发布的绑定证明，保留旧失败，不跳过未知迁移副作用。
+- Keywords: 打印助手运行期地址, invoiceVoucherPrintAssistantUrl, public-url, assistant-host, 同包跨环境 -> `ops/spug/release-center/invoice-print-runtime-config.md`。公开与内部地址独立，不改不可变恢复配置或通用包。
+
 - 下次发布菜单修复 / 排产工单池 / 5580 / 旧SQL回写 / 菜单现值与账本不符：`docs/next-release-menu-repair.md`；用户已授权下次发布专项修复，构建前核新增前向迁移，保留根级智能排产900120，最终按目标版本菜单合同验收，不重放历史SQL或复制全表。
 
 - Windows执行器安装 / Get-Acl模块加载失败 / File.Replace空备份路径 / 停机前权限探针：`docs/powershell-memory.md#停进程前验证文件原子替换与权限保全`，停止前先实测同运行时原子替换、ACL和原件读回；写后失败核实际成功前缀，不盲目续派。

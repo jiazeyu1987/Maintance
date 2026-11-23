@@ -13,7 +13,7 @@ from intruoyi_runtime import Runtime, audit_ledger, package_identity, rehearsal_
 from intruoyi_rehearsal import active_remote_progress
 from rehearsal_retention import registered_rehearsal_profile, retention_matches, retention_record
 from intruoyi_metadata import restore as restore_metadata, reference as metadata_reference, remote as metadata_remote
-from target_registration import registration_targets, validate_registered_takeover
+from target_registration import registration_targets, validate_registered_takeover, superseding_test_deployment
 
 
 def validate_origin(value):
@@ -544,7 +544,10 @@ class _IntRuoyiExecutor(Executor):
             require(not any(j['status'] == 'running' or (j['status'] == 'interrupted' and not j.get('resolution'))
                             for j in self.state['jobs']), 'Running/interrupted task blocks registration')
             targets = registration_targets(payload)
+            history = {j['id']: superseding_test_deployment(self.state, j) for j in self.state['jobs']
+                       if j.get('target') == 'test' and 'test' in targets and j.get('status') == 'failed'}
             require(not any(j.get('effectsStarted') and j['status'] == 'failed' and not j.get('resolution')
+                            and not history.get(j['id'])
                             and (j.get('target') not in ('test', 'prod', 'backup') or j['target'] in targets
                                  or any(call.get('env') in targets for call in j.get('remoteOperations', [])))
                             for j in self.state['jobs']), 'Failed remote effects require reconciliation before registration')
@@ -553,6 +556,7 @@ class _IntRuoyiExecutor(Executor):
                     'Pending maintenance must be reconciled before replacing registered baselines')
             job = dict(id='JOB-'+secrets.token_hex(5), requestId=request_id, action=action, payload=payload,
                        releaseTag=None, actor=actor, status='running', createdAt=stamp(), logs=[])
+            job['supersededLoginIncidents'] = [proof for proof in history.values() if proof]
             self.state['jobs'].insert(0, job)
             self.save()
             self.worker = threading.Thread(target=self.execute, args=(job,), daemon=True)

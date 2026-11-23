@@ -184,6 +184,17 @@
 
 ## 多机器发布接管与缺失记录分析门禁
 
+### 历史登录失败与登记范围
+
+- Trigger：显式 register-targets 被历史 test 发布的 technical-login 失败阻断，或部署需保留打印助手公开地址。
+- Preflight check：核原任务同包部署成功、版本/迁移通过且仅登录失败；核更晚同 test 的 publish-test 成功及同包摘要绑定的 version/upgrade/login 全部通过。无活动或未解决中断任务，目标不处于维护；打印配置另见 `ops/spug/release-center/invoice-print-runtime-config.md`。
+- Blocker：迁移失败、跨环境操作、证据身份不符、缺包摘要、没有更晚完整成功发布，继续拒绝登记。不能用当前健康替代历史证据。
+- Verification：运行 `python -X utf8 -B -m unittest test_registration_history test_target_registration test_technical_verification`；新登记记录 supersededLoginIncidents，原失败不改，不授予旧包验收。随后只读观察真实目标、正式登记并重新执行候选预检。
+- Forbidden action：禁止手改 SQLite、把旧失败改成功、恢复旧版本以补历史登录、丢弃迁移失败或绕过目标维护/活动任务门禁。
+- Evidence：`doc/tasks/20261123-update-test-release/execution-log.md`；三个历史登录失败均由更晚 JOB-05b93f6100 的同包完整证明覆盖，仍保留原失败。
+
+阶段必查：失败时保存原编号及实际状态；代码修复先 RED 再 GREEN/REGRESSION；已提交安装须等待无活动发布；登记后记录覆盖证明及真实起点，再运行目标预检。Fail Fast 按 Blocker，不重复派发已接受请求。
+
 - Trigger: 不同机器轮流发布、本机Spug记录缺失或落后、服务器版本新于交接资源包，或前端补丁不在本机历史中。
 - Preflight check: 在已授权目标上只读核实际release-info、主版本/前端补丁绑定、源码提交、前后端镜像ID及真正生效的启动配置；交叉核对服务器或共享存储中现存manifest、包摘要、部署回执、迁移台账及schema、当前任务锁和恢复依据。先检查现存证据，不能仅凭页面tag判断完整发布过程或要求重传整个资源包。
 - Blocker: 本机历史缺失本身不是阻塞，不强制重新导出最新资源包。存在活动发布/恢复或无法排除并发时阻塞远端写入；版本/镜像/清单冲突、缺少待执行动作必需的不可变包或迁移/恢复证据、无法确认真实起点时，只阻塞依赖该缺口的阶段，并记录精确缺项和影响。构建、空间、GxP及恢复门禁继续独立生效。

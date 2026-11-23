@@ -1,6 +1,45 @@
 """Explicit target adoption without rewriting failed deployment evidence."""
 
 
+def superseding_test_deployment(state, failed):
+    """Prove a login-only historical incident was followed by verified deployment.
+
+    This does not accept the old release or mutate its failed result. Unknown
+    effects, migration failures and failures on other targets remain blocking.
+    """
+    if not (failed.get('action') == 'publish-test' and failed.get('target') == 'test'
+            and failed.get('status') == 'failed' and failed.get('currentStep') == 'technical-login'
+            and failed.get('finishedAt')):
+        return None
+    if any(call.get('env') != 'test' for call in failed.get('remoteOperations', [])):
+        return None
+
+    def bound_proof(job, status, checks):
+        packages = [p for p in state.get('packages', []) if p.get('releaseTag') == job.get('releaseTag')]
+        if len(packages) != 1:
+            return False
+        package = packages[0]
+        proof = job.get('technicalVerification', {})
+        deployment = package.get('outcomes', {}).get('test', {}).get('deployment', {})
+        return (proof.get('jobId') == job.get('id') and proof.get('env') == 'test'
+                and proof.get('releaseTag') == job.get('releaseTag')
+                and proof.get('packageSha256') == package.get('packageSha256')
+                and bool(package.get('packageSha256')) and proof.get('status') == status
+                and deployment.get('status') == 'succeeded' and deployment.get('jobId') == job.get('id')
+                and all(proof.get('checks', {}).get(key, {}).get('status') == value for key, value in checks.items()))
+
+    if not bound_proof(failed, 'failed', dict(version='passed', upgrade='passed', login='failed')):
+        return None
+    for later in state.get('jobs', []):
+        if (later.get('action') == 'publish-test' and later.get('target') == 'test'
+                and later.get('status') == 'succeeded' and later.get('finishedAt')
+                and later.get('createdAt', '') > failed['finishedAt']
+                and bound_proof(later, 'passed', dict(version='passed', upgrade='passed', login='passed'))):
+            return dict(failedJobId=failed['id'], supersedingJobId=later['id'],
+                        releaseTag=later['releaseTag'], packageSha256=later['technicalVerification']['packageSha256'])
+    return None
+
+
 def registration_targets(payload):
     if 'target' not in payload:
         return ('test', 'prod', 'backup')
