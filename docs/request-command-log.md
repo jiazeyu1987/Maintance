@@ -6189,3 +6189,8 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 验证：fetch/ls-remote确认22 ahead且无分叉；71个历史blob无超过100MiB对象，高置信敏感模式未命中；隔离依赖补齐后192项相关回归通过（2.828秒）。
 - 结果：22个已有代码及记录提交已推送至origin/int_main，远端c406210与本地代码HEAD一致；本次最终任务记录单独提交推送。
 - 收尾：无worktree或控制台遗留；自有ignored测试venv删除被自动审批以blocked by policy拒绝，保留依赖目录，不绕过审批。
+
+## 2026-11-23 更新代码并发布测试服（20261123-update-test-release）
+- 用户需求：更新 IntRuoyi 到最新，然后发布测试服务器。
+- 命令意图：通过已配置代理fetch/fast-forward；初始bd01f08迁移阻断交IntRuoyi修复，最终固定d9022d50a在专用worktree构建2026-11-23-20-22-13，仅发布测试服。
+- 验证结果：初轮打印403已交IntRuoyi修复并推送275c87011；最终同包2026-11-23-22-02-22构建JOB-f8f6510f3c、发布JOB-2b57a4ae44成功。manifest/.env/双镜像/UP/200一致；真实登录、排产菜单、版本说明、打印新票据及认证后iframe通过。两页面各6项非阻断观察已逐项归因，PASS_WITH_OBSERVATIONS；完整业务写入未验。自有worktree均清理、稳定执行器路径已核，任务completed；维护两项修复已提交融合安装，最终记录单独提交推送，未发布正式服。原始凭据和日志不入库。
