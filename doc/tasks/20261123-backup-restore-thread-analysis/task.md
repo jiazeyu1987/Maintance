@@ -11,7 +11,7 @@ completed
 
 结果：本轮指smallapp-b08f5c6bd3324a368d626ce994a94665，父全量为smallapp-b4616f1cafd94da59a40ee4beea3e517。数据库为binlog增量SQL，采集中观测原始10815816字节、gzip1196169字节；另有约2097373184字节原应用镜像归档（原生事件reused=true、13.261秒），配置、结构/数据证据、对象索引和附件变更/删除清单。源码显示附件先扫描登记范围，再复制变化文件、记录删除；不能据此猜测本轮实际新增/修改/删除数量，本地保存的状态摘要未包含最终manifest内容。
 
-原生阶段：archive-admission895.512秒；source-capture2517.648秒；capture-validation9.042秒；nas-upload208.836秒；archive-metadata0.292秒；nas-readback402.955秒；archive-final-verification1125.701秒；capture-cleanup41.486秒；archive-chain-readback1106.071秒。阶段合计6307.543秒，与总6308.050135秒相差0.507135秒（阶段衔接）。上传占3.31%；三次父链/整链阶段合计3127.284秒（52分7.284秒，49.58%）；加NAS回读校验合计3530.239秒（58分50.239秒，55.96%）。采集加上述校验共95.87%。
+原生阶段：archive-admission895.512秒；source-capture2517.648秒；capture-validation9.042秒；nas-upload208.836秒；archive-metadata0.292秒；nas-readback402.955秒；archive-final-verification1125.701秒；capture-cleanup41.486秒；archive-chain-readback1106.071秒。阶段合计6307.543秒，与总6308.050135秒相差0.507135秒（阶段衔接）。上传占3.31%；三次父链/整链阶段合计3127.284秒（52分7.284秒，49.58%）；加NAS回读校验合计3530.239秒（58分50.239秒，55.96%）。采集加上述校验共95.88%（以原始秒数合计后四舍五入）。
 
 原因结论：该流程包含父全量及当前增量链的完整性检查，来源采集还包含受影响表数据取证、附件目录扫描、配置/镜像准备和来源停启恢复；SQL包小并不代表这些工作的范围小。89次本地观测中scratch-affected最多34目录，原生事件显示数据库fence后至MinIO停止约31分42秒，但无更细阶段计时，不能把source-capture全归因于SQL导出，或声称准确的单表/单文件瓶颈。后续性能分析应先补充采集子阶段和链读取字节证据；本任务不修改校验或产品。
 
