@@ -6200,3 +6200,8 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 需求：正式服务器发布，包括独立打印助手。
 - 命令意图：在本任务临时维护worktree编排已测试275c87011 / 2026-11-23-22-02-22同包晋级；助手使用已测试不可变镜像，保留正式环境配置和持久目录；核真实页面和身份版本后收口。
 - 验证：正式晋级JOB-0ee3f179cb和开放JOB-b530c70f8e成功；双镜像/manifest/IMAGE_TAG、UP/200/open一致，菜单版本与打印真实认证通过（含已归因非关键观察）。助手镜像与测试相同，正式配置/挂载保持；自有worktree删除、稳定执行器复核PASS。证据见doc/tasks/20261123-promote-prod-print/，凭据及原始运行资料仅留受保护目录。
+
+## 20261124-pqc-patrol-investigation
+
+- 需求：定位测试Z加入活跃订单异常根因。命令意图：只读核固定发布源码/manifest、测试58真实约束、迁移账本和错误日志。
+- 结果：6aa656b61将巡检改为PATROL，配套迁移未更新CHECK；现有新增迁移已APPLIED。未改服务器；本机旧调查文件不可用、订单关联及回滚不作独立确认。详情doc/tasks/20261124-pqc-patrol-investigation/findings.md。
