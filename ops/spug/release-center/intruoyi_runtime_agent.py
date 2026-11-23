@@ -703,6 +703,7 @@ def upgrade_origin(profile, manifest):
 
 
 def preflight(profile, manifest):
+    validate_invoice_print_profile(profile)
     if profile.get('environment') in ('test', 'prod', 'backup'):
         from release_runtime_metadata import read_environment
         read_environment(profile)
@@ -710,7 +711,7 @@ def preflight(profile, manifest):
     from intruoyi_recovery_agent import inventory, validate_database_identity
     inventory(profile, globals())
     validate_database_identity(remote.sql(profile, 'SELECT DATABASE(),DEFAULT_CHARACTER_SET_NAME,DEFAULT_COLLATION_NAME FROM information_schema.SCHEMATA WHERE SCHEMA_NAME=DATABASE();').split('\t'))
-    if 'fenbeitongAssistantHost' in profile:
+    if 'fenbeitongAssistantHost' in profile or 'invoiceVoucherPrintAssistantUrl' in profile:
         backend = remote.inspect(profile['backend'])
         command = ' '.join((backend['Config'].get('Entrypoint') or []) + (backend['Config'].get('Cmd') or []))
         require('JAVA_OPTS' in command, 'Registered backend launch command must consume JAVA_OPTS for assistant configuration')
@@ -953,6 +954,36 @@ def configure_fenbeitong(config, profile):
     config['Env'] = [key + '=' + value for key, value in env.items()]
 
 
+def validate_invoice_print_profile(profile):
+    if 'invoiceVoucherPrintAssistantUrl' not in profile:
+        return
+    require(profile.get('environment') in ('test', 'prod', 'backup'),
+            'Invoice print endpoint requires an explicit business target')
+    url = profile['invoiceVoucherPrintAssistantUrl']
+    require(isinstance(url, str) and re.fullmatch(r'https?://[A-Za-z0-9.-]+:18733/?', url),
+            'Invoice print public URL must be an explicit HTTP(S) root endpoint on port 18733')
+    require(urlsplit(url).hostname == profile.get('host'),
+            'Invoice print public endpoint must match the registered target host')
+
+
+def configure_invoice_print(config, profile):
+    validate_invoice_print_profile(profile)
+    if 'invoiceVoucherPrintAssistantUrl' not in profile:
+        return
+    property_name = 'yudao.erp.invoice-voucher-print-assistant.public-url'
+    env = dict(item.split('=', 1) for item in config['Env'])
+    # Remove prior CLI overrides so the reviewed JVM property is authoritative.
+    for key, prefix in (('INTRUOYI_EXTRA_ARGS', '--'), ('ARGS', '--'), ('JAVA_OPTS', '-D')):
+        value = env.get(key, '')
+        pattern = r'(?<!\S)' + re.escape(prefix + property_name + '=') + r'\S+'
+        cleaned = re.sub(pattern, '', value).strip()
+        if key in env or key == 'JAVA_OPTS':
+            env[key] = cleaned
+    env['JAVA_OPTS'] = (env['JAVA_OPTS'] + ' -D' + property_name + '=' +
+                        profile['invoiceVoucherPrintAssistantUrl']).strip()
+    config['Env'] = [key + '=' + value for key, value in env.items()]
+
+
 def preserve_stopped_networks(stopped, before):
     require(not stopped['State']['Running'] and stopped['Id']==before['Id']
             and stopped['Image']==before['Image'], 'Pre-stop container identity changed')
@@ -986,6 +1017,7 @@ def replace(profile, root, role, image, tag, maintenance=None, snapshot_suffix='
             for field in ('Entrypoint','Cmd','WorkingDir'):
                 config[field]=image_config.get(field)
         configure_fenbeitong(config, profile)
+        configure_invoice_print(config, profile)
     # An unmounted default.conf would otherwise be replaced by the generic image config.
     if role == 'frontend' and not any(m['Destination'] == '/etc/nginx/conf.d/default.conf' for m in original['Mounts']):
         nginx = root / 'nginx.conf'
