@@ -6194,3 +6194,9 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 用户需求：更新 IntRuoyi 到最新，然后发布测试服务器。
 - 命令意图：通过已配置代理fetch/fast-forward；初始bd01f08迁移阻断交IntRuoyi修复，最终固定d9022d50a在专用worktree构建2026-11-23-20-22-13，仅发布测试服。
 - 验证结果：初轮打印403已交IntRuoyi修复并推送275c87011；最终同包2026-11-23-22-02-22构建JOB-f8f6510f3c、发布JOB-2b57a4ae44成功。manifest/.env/双镜像/UP/200一致；真实登录、排产菜单、版本说明、打印新票据及认证后iframe通过。两页面各6项非阻断观察已逐项归因，PASS_WITH_OBSERVATIONS；完整业务写入未验。自有worktree均清理、稳定执行器路径已核，任务completed；维护两项修复已提交融合安装，最终记录单独提交推送，未发布正式服。原始凭据和日志不入库。
+
+## 20261123-promote-prod-print
+
+- 需求：正式服务器发布，包括独立打印助手。
+- 命令意图：在本任务临时维护worktree编排已测试275c87011 / 2026-11-23-22-02-22同包晋级；助手使用已测试不可变镜像，保留正式环境配置和持久目录；核真实页面和身份版本后收口。
+- 验证：正式晋级JOB-0ee3f179cb和开放JOB-b530c70f8e成功；双镜像/manifest/IMAGE_TAG、UP/200/open一致，菜单版本与打印真实认证通过（含已归因非关键观察）。助手镜像与测试相同，正式配置/挂载保持；自有worktree删除、稳定执行器复核PASS。证据见doc/tasks/20261123-promote-prod-print/，凭据及原始运行资料仅留受保护目录。

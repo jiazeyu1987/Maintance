@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "path": "C:\\SpugHandoff\\release\\promote-prod-print-20261123",
+  "commit": "624f6deb04a90bfff384ed576bb049166eb93f81",
+  "verifiedTrackedFiles": 5274,
+  "gitRemovalExitCode": 0,
+  "residualRemoved": false,
+  "ownershipVerified": true,
+  "generatedLinksDetached": 0,
+  "registeredAfter": false,
+  "physicalPathExists": false,
+  "producedNewCommits": false
+}

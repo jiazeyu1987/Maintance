@@ -1,0 +1,27 @@
+{
+  "status": "PASS",
+  "jobId": "JOB-0ee3f179cb",
+  "operation": "SUCCESS",
+  "releaseTag": "2026-11-23-22-02-22",
+  "gitCommit": "275c870118f8096328d94bd38700455de3e76fc0",
+  "packageSha256": "24568dfcc2d9f46c2876c8f2c19e46461f9ad75bf1abb1384ffab5ffc5788975",
+  "manifestSha256": "80bec78be45c2dc0066b70fd3d14215433886f40381d54ac710fca8e7ad2c6dd",
+  "IMAGE_TAG": "2026-11-23-22-02-22",
+  "images": {
+    "backend": {
+      "imageId": "sha256:90def9be4d4ff678181d04d4511402dc2ec7361727801ec40f1bcf2520630e8e",
+      "name": "intruoyi-backend:2026-11-23-22-02-22",
+      "running": true
+    },
+    "frontend": {
+      "imageId": "sha256:05e2c2b76bfaf41a8d0d66c8babb937de77e1c4027881e62d4f41b5d56c96a89",
+      "name": "intruoyi-frontend:2026-11-23-22-02-22",
+      "running": true
+    }
+  },
+  "backendHealth": "UP",
+  "frontendHttpStatus": 200,
+  "maintenance": false,
+  "runtimeOpeningPending": false,
+  "technicalStatus": "passed"
+}

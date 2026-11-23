@@ -1,0 +1,17 @@
+{
+  "status": "PASS",
+  "image": "erp-invoice-voucher-print-assistant:2026-11-23-6287cc5-fixes",
+  "imageId": "sha256:8165fe7917fea69e936eee00447f2bb1274cf4a8dd78fa158738cef2c5611a45",
+  "oldImageId": "sha256:aa6f61b9aeaeb1185a5bb4d299a2b409c89fbfaa3dfd988c18a220215625fb25",
+  "oldContainer": "erp-invoice-voucher-print-assistant-before-prod-20261124",
+  "newContainerId": "78b4a43ff306fff39e85ac54c6d2b68d36dbe674c11949bc2ad5813f4afd4782",
+  "unauthenticatedRootHttp": 403,
+  "environmentPreserved": true,
+  "mountsPreserved": true,
+  "networksPreserved": true,
+  "files": {
+    "server.js": "e532fe57ef094ec79ef16a5d3f499861969debeb9d8b8e92ef4c97ca42191d78",
+    "Query-ErpInvoiceVoucherMappings-List.py": "adeb0f5908232719fc0402f6b7ca538be3a93df92ce188c195ade461acc0f335",
+    "Get-ErpVoucherPrintData.ps1": "7d5356a3538c6ff7061ba8c3e5f01445e120b9fe0a400c937da56a399e1e5aa6"
+  }
+}
