@@ -1,0 +1,46 @@
+{
+  "mode": "installed",
+  "applicationCommit": "21f7528a51a85e45cd3eca6d03394ea35328ed95",
+  "maintenanceCommit": "3d3e6078310499c10ac58130281217721b5a71a6",
+  "moduleSha256": {
+    "ops/release/release_readonly_sql.py": "8a3792c25001c52d46d95a56967039d36b7d0c1adef94735640635d699bcafdb",
+    "ops/release/release_database_contract.py": "f12dec67ee9d6de6a7e088c9b330442ec8986ea1f94edf2afb64278ed278a091",
+    "ops/spug/release-center/intruoyi_runtime.py": "e8a4ef30ad464d66a3c02bef9c66b872655dfd25aba29753519c8feec7b01401"
+  },
+  "contract": {
+    "schemaVersion": "ApplicationDatabaseContract/v1",
+    "catalog": {
+      "file": "sql/mysql/database-contracts/catalog.json",
+      "sha256": "7fd0cde3224bcd380ab989756334c044187ac89786d2f808171f2276c6e19f6e"
+    },
+    "checks": [
+      {
+        "id": "mes-pqc-rule-key",
+        "file": "sql/mysql/database-contracts/mes-pqc-rule-key.sql",
+        "sha256": "6856f92502c82a30a2b1eeb8ce8ed4f84316be8630eee16c6efc0626d1556eb8"
+      }
+    ]
+  },
+  "targets": {
+    "test": {
+      "contract": {
+        "schemaVersion": "ApplicationDatabaseContract/v1",
+        "status": "PASS",
+        "catalogSha256": "7fd0cde3224bcd380ab989756334c044187ac89786d2f808171f2276c6e19f6e",
+        "checks": [
+          "mes-pqc-rule-key"
+        ]
+      },
+      "remoteBootstrapPassed": true
+    },
+    "prod": {
+      "contract": {
+        "status": "BLOCKED",
+        "error": "Database contract: requirement failed: mes-pqc-rule-key"
+      },
+      "remoteBootstrapPassed": true
+    }
+  },
+  "installedTests": 12,
+  "serverMutations": false
+}
