@@ -519,14 +519,14 @@ class Runtime:
         runtime_metadata = (self.sources / 'release_runtime_metadata.py').read_text('utf-8')
         backend_contract = (self.sources / 'backend_patch_contract.py').read_text('utf-8')
         backend_patch = (self.sources / 'backend_patch_agent.py').read_text('utf-8')
-        readonly_sql = (self.sources.parents[1] / 'release/release_target_preflight_contract.py').read_text('utf-8')
+        readonly_sql = (self.sources.parents[1] / 'release/release_readonly_sql.py').read_text('utf-8')
         database_contract = (self.sources.parents[1] / 'release/release_database_contract.py').read_text('utf-8')
         source = ('import types,sys\n'
                   'sys.modules["ops"]=types.ModuleType("ops")\n'
                   'sys.modules["ops.release"]=types.ModuleType("ops.release")\n'
-                  '_readonly=types.ModuleType("ops.release.release_target_preflight_contract")\n'
+                  '_readonly=types.ModuleType("ops.release.release_readonly_sql")\n'
                   'sys.modules[_readonly.__name__]=_readonly\n'
-                  'exec(compile(' + repr(readonly_sql) + ',"release_target_preflight_contract.py","exec"),_readonly.__dict__)\n'
+                  'exec(compile(' + repr(readonly_sql) + ',"release_readonly_sql.py","exec"),_readonly.__dict__)\n'
                   '_dbcontract=types.ModuleType("ops.release.release_database_contract")\n'
                   'sys.modules[_dbcontract.__name__]=_dbcontract\n'
                   'exec(compile(' + repr(database_contract) + ',"release_database_contract.py","exec"),_dbcontract.__dict__)\n'

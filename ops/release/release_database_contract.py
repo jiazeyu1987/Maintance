@@ -4,7 +4,7 @@ import json
 import re
 from pathlib import Path
 
-from ops.release.release_target_preflight_contract import _executable_sql, FORBIDDEN_PATTERN
+from ops.release.release_readonly_sql import _executable_sql, FORBIDDEN_PATTERN
 
 VERSION = 'ApplicationDatabaseContract/v1'
 DIRECTORY = 'sql/mysql/database-contracts'

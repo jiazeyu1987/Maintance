@@ -5,6 +5,14 @@ import re
 import sys
 from pathlib import Path
 
+if not __package__:
+    # The CLI and file-location loader share the same sibling package contract.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from ops.release.release_readonly_sql import (
+    FORBIDDEN_PATTERN, _executable_sql, ReadonlySqlError as TargetPreflightContractError,
+)
+
 
 METADATA_PATTERN = re.compile(
     r"^\s*--\s*release-target-preflight:\s*"
@@ -12,59 +20,7 @@ METADATA_PATTERN = re.compile(
     r"allowedEnvironments=(?P<environments>[A-Za-z0-9_,-]+)\s*$",
     re.MULTILINE,
 )
-FORBIDDEN_PATTERN = re.compile(
-    r"\b(?:insert|update|delete|replace|create|alter|drop|truncate|rename|call|do|handler|"
-    r"load|lock|unlock|grant|revoke|commit|rollback|start\s+transaction|set|outfile|dumpfile|"
-    r"get_lock|release_lock|release_all_locks|load_file|sleep|benchmark|delimiter|charset|into)\b|:=|"
-    r"\bfor\s+update\b|\block\s+in\s+share\s+mode\b",
-    re.IGNORECASE,
-)
 ALLOWED_ENVIRONMENTS = {"test", "prod", "backup"}
-
-
-class TargetPreflightContractError(RuntimeError):
-    pass
-
-
-def _executable_sql(text: str) -> str:
-    # Parse comments and literals together: quotes inside a comment must never
-    # mask executable statements on a later line. Queries use doubled SQL quotes;
-    # backslash commands/escapes are disallowed regardless of server sql_mode.
-    if '\\' in text or '/*' in text:
-        raise TargetPreflightContractError('client commands, backslash escapes and block comments are forbidden')
-    output = list(text)
-    quote: str | None = None
-    index = 0
-    while index < len(text):
-        char = text[index]
-        if quote is None:
-            comment = char == '#' or (text.startswith('--', index) and
-                       (index + 2 == len(text) or text[index + 2].isspace()))
-            if comment:
-                while index < len(text) and text[index] not in '\r\n':
-                    output[index] = ' '
-                    index += 1
-                continue
-            if char in ("'", '"', '`'):
-                quote = char
-                output[index] = " "
-            index += 1
-            continue
-        if char == quote:
-            if index + 1 < len(text) and text[index + 1] == quote:
-                output[index] = output[index + 1] = " "
-                index += 2
-                continue
-            output[index] = " "
-            quote = None
-            index += 1
-            continue
-        if char != "\n":
-            output[index] = " "
-        index += 1
-    if quote is not None:
-        raise TargetPreflightContractError("unterminated SQL string literal")
-    return "".join(output)
 
 
 def validate(path: Path, migration_id: str) -> None:
