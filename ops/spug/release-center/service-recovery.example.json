@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "ServiceRecoveryConfig/v1",
+  "environment": "test",
+  "stateDirectory": "/var/lib/intruoyi-service-recovery/test",
+  "stagingRoot": "/REPLACE_WITH_REGISTERED_OPERATION_LOCK_ROOT",
+  "backupEpochPolicyFile": "/REPLACE_WITH_EXISTING_PRIVATE_SOURCE_EPOCH_POLICY.json",
+  "database": "REPLACE_MYSQL_CONTAINER",
+  "services": {
+    "backend": {
+      "container": "REPLACE_BACKEND_CONTAINER",
+      "url": "http://192.0.2.10:48080/actuator/health",
+      "kind": "backend"
+    },
+    "frontend": {
+      "container": "REPLACE_FRONTEND_CONTAINER",
+      "url": "http://192.0.2.11/",
+      "kind": "http"
+    }
+  },
+  "dependencies": [{"container": "REPLACE_REDIS_CONTAINER"}],
+  "intervalSeconds": 15,
+  "failureThreshold": 3,
+  "startupGraceSeconds": 180,
+  "cooldownSeconds": 180,
+  "maxRestarts": 2,
+  "windowSeconds": 900,
+  "requestTimeoutSeconds": 3,
+  "stopTimeoutSeconds": 15,
+  "notification": {
+    "url": "https://alerts.example.invalid/service-events",
+    "tokenFile": "/etc/intruoyi-service-recovery/webhook.token",
+    "retrySeconds": 60,
+    "maxAttempts": 5
+  }
+}
