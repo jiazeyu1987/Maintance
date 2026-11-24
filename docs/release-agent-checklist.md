@@ -211,6 +211,17 @@
 Fail Fast：证据相互冲突或目标发生变化时保留原观察，重新采集分析；只对依赖该身份的写入/晋级暂停，不无条件要求重新导出资源包。
 
 必须记录：本机/远端主版本与补丁版本、源码、镜像及配置/schema/ledger指纹、证据来源与时间、并发检查、未知事项、恢复条件、被阻塞的具体动作及解除依据；记录缺失不等于发布失败或成功。
+## 当前应用数据库契约门禁
+
+- Trigger：构建或前向部署 IntRuoyi，迁移账本已执行但实际结构漂移，PQC PATROL 等代码写入值变化。
+- Preflight check：应用已提交源码须包含 `IntRuoyiBackend/sql/mysql/database-contracts/catalog.json`；目录描述当前有效契约，不累积已被替代的历史断言。构建固定 SQL、catalog 与 manifest.databaseContract 摘要，目标执行时再次核包内成员和只读语法。
+- Blocker：契约缺失、空集合、摘要不符、未批准函数、SQL执行失败或输出非精确 PASS 均阻断。旧包缺契约不能前向发布或开放；需使用含契约的新提交重新封包，禁止补写旧manifest。恢复/回滚原件保留原机制。
+- Verification：迁移完成后、正常后端开放前、公共入口开放前及停止态续办均执行当前契约，不因 APPLIED/SKIPPED_ALREADY_APPLIED 跳过。每次成功保存带阶段、tag、manifest与catalog摘要的独立回执；失败保留原任务及停止态。数据库契约通过不等于真实业务 E2E 通过。
+- Forbidden action：不重放已执行迁移、不删 CHECK 绕过、不改账本、不硬编码业务枚举到通用发布器、不允许存储函数/UDF或动态执行SQL，不以单测替代真实MySQL/页面验收。
+- Evidence：`doc/tasks/20261124-database-contract-gate/`；`test_database_contract_gate.py`，应用侧真实MySQL与跨层写入值验证。首批业务覆盖以应用catalog为准，不声称覆盖全库。
+
+阶段必查：构建前检查固定源码与契约目录；封包后核清单摘要；迁移后及开放前执行；失败先定位契约ID并由应用新增前向迁移修复。推荐在隔离维护worktree运行 `python -X utf8 -B -m unittest test_database_contract_gate test_intruoyi_archive test_direct_release test_runtime_metadata_entry`（运行目录ops/spug/release-center，PYTHONPATH设该worktree根）。必须记录源码/维护提交、SQL摘要、真实MySQL版本、目标任务与各阶段回执。Fail Fast按上述Blocker执行。
+
 ## 三服同版本同结构发布门禁
 
 - Trigger：同一发布包依次升级测试服、正式服和审查服，或发现程序同版本但数据库缺表、缺字段、缺索引。

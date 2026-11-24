@@ -17,6 +17,7 @@ CLASSES = ('MesRouteSnapshotMigrationCli', 'MesRouteLegacySummaryIdentity', 'Mes
 SOURCE_FILES = (
     'IntRuoyiBackend/pom.xml', 'IntRuoyiFronted/package.json', 'IntRuoyiFronted/pnpm-lock.yaml',
     'IntRuoyiBackend/sql/mysql/release-sources.json',
+    'IntRuoyiBackend/sql/mysql/database-contracts/catalog.json',
     'IntRuoyiBackend/yudao-framework/yudao-spring-boot-starter-monitor/src/main/java/cn/iocoder/yudao/framework/tracer/config/ReleaseRuntimeEndpoint.java',
     *('IntRuoyiBackend/yudao-module-mes/src/main/java/'+PREFIX+name+'.java' for name in CLASSES),
     'scripts/preflight/check-menu-migrations.py',
@@ -133,6 +134,7 @@ class ArtifactGuardTest(unittest.TestCase):
             root = Path(directory)
             worktree_root = root/'build'; worktree_root.mkdir()
             config = dict(repo='unit-repo', gxpConfigurationSourceUrl='http://source.invalid',
+                          targets={'prod': {'entryUrl': 'http://prod.invalid'}},
                           buildWorktreeRoot=str(worktree_root), nasPath=str(root/'nas'),
                           localRuntimeImages={'backend':'base-app','frontend':'base-web'})
             from test_direct_release import POLICY

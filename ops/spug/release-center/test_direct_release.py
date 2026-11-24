@@ -275,7 +275,7 @@ class ExternalRecoveryAgentTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             policy = dict(POLICY, recoveryMode='external', targetEnvironment='prod')
-            manifest = dict(releaseTag='2026-10-31-22-23-14', migrations=[],
+            manifest = dict(releaseTag='2026-10-31-22-23-14', migrations=[], databaseContract={},
                             releaseSettings={'gxpAuditMode':'DEVELOPMENT_DISABLED'},
                             images={role:{'id':'sha256:'+'a'*64} for role in ('backend','frontend')},
                             expectedSchemaSha256='b'*64, workflowPolicy=policy)
@@ -285,8 +285,9 @@ class ExternalRecoveryAgentTest(unittest.TestCase):
                                schemaSha256='b'*64,ledgerSha256='c'*64,fingerprint='origin')
             policy['validationBasis']=dict(targetEnvironment='prod',targetOrigin=observation,migrationPlanSha256=sha([]))
             names = ('preflight','verify_files','check_fence','stop_writers','apply_migration_plan',
-                     'persist_gxp_release_mode','terminal_snapshot_readiness','replace','docker','acceptance_frontend')
+                     'persist_gxp_release_mode','terminal_snapshot_readiness','verify_database_contract','replace','docker','acceptance_frontend')
             with patch.multiple(agent, **{name:Mock() for name in names}), \
+                    patch('ops.release.release_database_contract.validate_package'), \
                     patch.object(agent,'directory',return_value=root), \
                     patch.object(agent,'observe',return_value=observation), \
                     patch.object(agent,'migration_plan',return_value=[]), \

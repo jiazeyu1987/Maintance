@@ -26,7 +26,7 @@ class MetadataEntryTest(unittest.TestCase):
             containers={'b':dict(Id='current',Image='b',Config={'Env':['INTRUOYI_RELEASE_MAINTENANCE=false']}),
                         'f':dict(Id='frontend-current',Image='f')}
             profile=dict(stagingRoot=tmp,backend='b',frontend='f')
-            with patch.object(agent,'check_fence'), patch.object(agent.remote,'inspect',side_effect=lambda n:containers[n]), \
+            with patch.object(agent,'check_fence'), patch.object(agent,'verify_database_contract'), patch.object(agent.remote,'inspect',side_effect=lambda n:containers[n]), \
                  patch.object(agent,'health'),patch.object(agent,'gxp_release_mode'), \
                  patch.object(agent,'finish_reopen',return_value={'done':True}) as finish:
                 self.assertEqual(agent.reopen(profile),{'done':True})
@@ -58,6 +58,7 @@ class MetadataEntryTest(unittest.TestCase):
             def command(args,**kwargs):
                 if args[:2]==['docker','rm']:events.append('cleanup')
             with patch.object(agent,'directory',return_value=root), \
+                 patch.object(agent,'verify_database_contract') as database_contract, \
                  patch.object(agent,'BACKUP_SOURCE_PROGRAM','fixture',create=True), \
                  patch.object(agent.remote,'inspect',return_value=dict(Id='actual',State=dict(Running=True),Config=dict(Labels={'intruoyi.release.acceptance':'true'}))), \
                  patch.object(agent.remote,'run',side_effect=command), \
@@ -76,6 +77,7 @@ class MetadataEntryTest(unittest.TestCase):
                     self.assertEqual(result['runtimeMetadata']['status'],'ALIGNED')
                     self.assertEqual(events,['health','metadata','binding','cleanup'])
                     self.assertFalse((root/'runtime-opening-pending.private.json').exists())
+                database_contract.assert_called_once_with(profile, root, 'before-public-open')
 
 
 if __name__=='__main__':unittest.main()

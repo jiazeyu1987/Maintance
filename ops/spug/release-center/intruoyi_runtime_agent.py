@@ -1151,6 +1151,7 @@ def health(profile, tag, maintenance, through_acceptance=False, expected_gxp_mod
 
 
 def deploy(profile, manifest):
+    require(isinstance(manifest.get('databaseContract'), dict), 'Database contract required; rebuild old package for forward deployment')
     recovery_mode = runtime_recovery_policy(profile['environment'], manifest)
     gxp_release_mode(manifest)
     preflight(profile, manifest)
@@ -1159,6 +1160,8 @@ def deploy(profile, manifest):
     staged = json.loads((root / 'stage-verified.json').read_text())
     require(staged['manifestSha256'] == package_identity(manifest), 'Staged manifest identity differs')
     verify_files(root, staged['files'])
+    from ops.release.release_database_contract import validate_package
+    validate_package(root, manifest)
     for role in ('backend', 'frontend'):
         image = manifest['images'][role]['id']
         require(remote.run(['docker', 'image', 'inspect', '--format', '{{.Id}}', image]).decode().strip() == image, 'Candidate image not loaded')
@@ -1191,6 +1194,7 @@ def deploy(profile, manifest):
     # Later data migrations must not invalidate identities verified by an earlier
     # hook. This is a check only: failure keeps writers stopped, without repair.
     terminal_snapshot_readiness(profile, root, manifest, recovery)
+    verify_database_contract(profile, root, 'after-migrations', manifest)
     actual_schema = observe(profile)['schemaSha256']
     require(not expected_schema or actual_schema == expected_schema, 'Actual upgraded schema differs from verified upgrade basis; applications remain stopped')
     replace(profile, root, 'backend', manifest['images']['backend']['id'], manifest['releaseTag'], True, before_stop=before_stop['backend'])
@@ -1230,6 +1234,27 @@ def validate_direct_target_origin(profile, manifest, observation, plan, quiescen
             continue
         require(basis.get('targetOrigin', {}).get(key) and basis['targetOrigin'][key] == observation.get(key),
                 'Direct upgrade target origin changed: ' + key)
+
+
+def verify_database_contract(profile, root, phase, manifest=None):
+    from ops.release.release_database_contract import verify
+    staged = json.loads((root / 'stage-verified.json').read_text('utf-8'))
+    stored = json.loads((root / 'manifest.json').read_text('utf-8'))
+    require(staged['manifestSha256'] == package_identity(stored), 'Database contract manifest differs from staged package')
+    if manifest is not None:
+        require(package_identity(manifest) == package_identity(stored), 'Database contract candidate differs from staged package')
+    def execute(query):
+        return remote.sql(profile, 'SET SESSION TRANSACTION READ ONLY;\nSTART TRANSACTION READ ONLY;\n' + query + '\nROLLBACK;')
+    try:
+        proof = verify(root, stored, execute)
+    except (ValueError, OSError, RuntimeError) as error:
+        # Contract errors contain only IDs/paths or the existing sanitized MySQL error.
+        raise RuntimeBlocked('Database contract blocked at ' + phase + ': ' + str(error)) from error
+    proof.update(phase=phase, releaseTag=stored['releaseTag'], manifestSha256=staged['manifestSha256'])
+    # Each actual invocation has its own receipt; never overwrite earlier checks.
+    import uuid
+    private_json(root / ('database-contract-' + phase + '-' + uuid.uuid4().hex + '.json'), proof)
+    return proof
 
 
 def terminal_snapshot_readiness(profile, root, manifest, recovery):
@@ -1359,6 +1384,7 @@ def reopen(profile):
             candidates.append((record.parent, value))
     require(len(candidates) == 1, 'Pending candidate cannot be identified uniquely')
     root, candidate = candidates[0]
+    verify_database_contract(profile, root, 'before-backend-open')
     if environment.get('INTRUOYI_RELEASE_MAINTENANCE') != 'true':
         pending = root / 'runtime-opening-pending.private.json'
         legacy = root / 'backup-source-binding-pending.private.json'
@@ -1387,6 +1413,7 @@ def reopen(profile):
 def finish_reopen(profile, candidate):
     """Open only the entry and remaining writers after normal backend validation."""
     root = directory(profile, candidate['releaseTag'])
+    verify_database_contract(profile, root, 'before-public-open')
     opening_pending = root / 'runtime-opening-pending.private.json'
     opening_identity = dict(releaseTag=candidate['releaseTag'], backendId=remote.inspect(profile['backend'])['Id'],
                             frontendId=remote.inspect(profile['frontend'])['Id'], images=candidate['images'])
@@ -1770,6 +1797,7 @@ def resume_sealed_origin(profile, payload, root, recovery, observation):
         require(remote.run(['docker','image','inspect','--format','{{.Id}}',image]).decode().strip() == image,
                 'Candidate image not loaded')
     terminal_snapshot_readiness(profile, root, manifest, recovery)
+    verify_database_contract(profile, root, 'sealed-continuation', manifest)
     require(not manifest.get('expectedSchemaSha256') or fresh['schemaSha256'] == manifest['expectedSchemaSha256'],
             'Sealed schema differs from the verified upgrade basis')
     attempt = root / ('resume-'+payload['retryJobId'])

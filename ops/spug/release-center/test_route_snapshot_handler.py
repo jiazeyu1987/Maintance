@@ -18,7 +18,7 @@ class SnapshotHandlerTests(unittest.TestCase):
     def setUp(self):
         self.item = dict(migrationId=ROUTE_SNAPSHOT_MIGRATION, sha256=ROUTE_SNAPSHOT_SHA256,
                          approvedHook=ROUTE_SNAPSHOT_HOOK, type='schema', file='enforce.sql')
-        self.manifest = dict(releaseTag='2026-10-23-01-00-00', migrations=[self.item],
+        self.manifest = dict(releaseTag='2026-10-23-01-00-00', migrations=[self.item], databaseContract={},
                              releaseSettings={'gxpAuditMode':'FORMAL'},
                              images={'backend':{'id':'sha256:'+'a'*64}})
         self.expected = dict(mode='PRECHECK', releaseTag=self.manifest['releaseTag'],
@@ -153,6 +153,8 @@ class SnapshotHandlerTests(unittest.TestCase):
                 events.append('terminal-readiness')
                 raise RuntimeBlocked('CANONICAL_IDENTITY_MISMATCH')
             with patch.object(agent, 'preflight'), patch.object(agent, 'directory', return_value=root), \
+                    patch('ops.release.release_database_contract.validate_package'), \
+                    patch.object(agent.remote, 'inspect', return_value={'State': {'Running': False}}), \
                     patch.object(agent, 'verify_files'), patch.object(agent.remote, 'run', side_effect=lambda cmd:(cmd[-1]+'\n').encode()), \
                     patch.object(agent, 'observe', return_value={}), patch.object(agent, 'migration_plan', return_value=[]), \
                     patch.object(agent, 'check_fence'), patch.object(agent, 'stop_writers', side_effect=lambda *args:events.append('stop')), \
@@ -163,7 +165,7 @@ class SnapshotHandlerTests(unittest.TestCase):
                     patch.object(agent, 'replace') as replace, patch.object(agent, 'docker') as docker, \
                     patch.object(agent, 'reopen') as reopen:
                 with self.assertRaisesRegex(RuntimeBlocked, 'CANONICAL_IDENTITY_MISMATCH'):
-                    agent.deploy({'environment':'test'}, manifest)
+                    agent.deploy({'environment':'test', 'backend':'backend', 'frontend':'frontend'}, manifest)
             self.assertEqual(events, ['stop','all-sql','gxp-setting','terminal-readiness'])
             replace.assert_not_called()
             docker.assert_not_called()

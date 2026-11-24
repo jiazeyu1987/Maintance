@@ -23,8 +23,16 @@ class OriginalArchiveTests(unittest.TestCase):
 
     def package(self, artifacts=None, extra=None, change=None, omit=None):
         artifacts = artifacts or {'images.tar': b'original image archive', 'sql/a.sql': b'SELECT 1;'}
+        artifacts = dict(artifacts)
+        prefix = 'sql/mysql/database-contracts/'
+        catalog = dict(schemaVersion='ApplicationDatabaseContract/v1', contracts=[dict(id='fixture', file='fixture.sql')])
+        artifacts[prefix+'catalog.json'] = json.dumps(catalog).encode()
+        artifacts[prefix+'fixture.sql'] = b"SELECT 'DATABASE_CONTRACT_PASS:fixture';"
         manifest = {'releaseTag': '2026-10-22-21-00-00', 'images':{'backend':{'id':'backend-image'}, 'frontend':{'id':'frontend-image'}}, 'files': [
             {'name': name, 'sha256': hashlib.sha256(data).hexdigest()} for name, data in artifacts.items()]}
+        manifest['databaseContract'] = dict(schemaVersion=catalog['schemaVersion'],
+            catalog=dict(file=prefix+'catalog.json', sha256=hashlib.sha256(artifacts[prefix+'catalog.json']).hexdigest()),
+            checks=[dict(id='fixture',file=prefix+'fixture.sql',sha256=hashlib.sha256(artifacts[prefix+'fixture.sql']).hexdigest())])
         manifest_bytes = json.dumps(manifest, ensure_ascii=False).encode()
         members = {'manifest.json': manifest_bytes, **artifacts}
         with tarfile.open(self.root / 'release.tar', 'w') as archive:
@@ -47,7 +55,7 @@ class OriginalArchiveTests(unittest.TestCase):
         artifacts['images.tar'] = b'immutable original images'
         manifest, evidence = self.package(artifacts)
         result = unpack_original_package(self.root, manifest, evidence)
-        self.assertEqual(result['fileCount'], 871)
+        self.assertEqual(result['fileCount'], 873)
         self.assertEqual(result['archiveSha256'], evidence['sha256'])
         self.assertEqual(json.loads((self.root / 'manifest.json').read_text()), manifest)
         for name, content in artifacts.items():

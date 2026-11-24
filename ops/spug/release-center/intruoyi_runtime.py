@@ -519,7 +519,17 @@ class Runtime:
         runtime_metadata = (self.sources / 'release_runtime_metadata.py').read_text('utf-8')
         backend_contract = (self.sources / 'backend_patch_contract.py').read_text('utf-8')
         backend_patch = (self.sources / 'backend_patch_agent.py').read_text('utf-8')
+        readonly_sql = (self.sources.parents[1] / 'release/release_target_preflight_contract.py').read_text('utf-8')
+        database_contract = (self.sources.parents[1] / 'release/release_database_contract.py').read_text('utf-8')
         source = ('import types,sys\n'
+                  'sys.modules["ops"]=types.ModuleType("ops")\n'
+                  'sys.modules["ops.release"]=types.ModuleType("ops.release")\n'
+                  '_readonly=types.ModuleType("ops.release.release_target_preflight_contract")\n'
+                  'sys.modules[_readonly.__name__]=_readonly\n'
+                  'exec(compile(' + repr(readonly_sql) + ',"release_target_preflight_contract.py","exec"),_readonly.__dict__)\n'
+                  '_dbcontract=types.ModuleType("ops.release.release_database_contract")\n'
+                  'sys.modules[_dbcontract.__name__]=_dbcontract\n'
+                  'exec(compile(' + repr(database_contract) + ',"release_database_contract.py","exec"),_dbcontract.__dict__)\n'
                   '_metadata=types.ModuleType("release_runtime_metadata")\n'
                   'sys.modules["release_runtime_metadata"]=_metadata\n'
                   'exec(compile(' + repr(runtime_metadata) + ',"release_runtime_metadata.py","exec"),_metadata.__dict__)\n'
@@ -647,6 +657,8 @@ class Runtime:
                 match = readonly_contract.METADATA_PATTERN.search(path.read_text('utf-8'))
                 checked_preflights.append({'file': name, 'sha256': item['sha256'], 'migrationId': mid,
                                            'allowedEnvironments': match.group('environments').split(',')})
+        from ops.release.release_database_contract import validate_package
+        validate_package(root, manifest)
         archive = root / 'release.tar'
         manifest_path = root / 'manifest.json'
         require(archive.is_file() and manifest_path.is_file(), 'Original release.tar and manifest.json required')

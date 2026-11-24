@@ -14,6 +14,7 @@ RUNTIME_CLASS = 'cn/iocoder/yudao/framework/tracer/config/ReleaseRuntimeEndpoint
 SOURCE_FILES = (
     'IntRuoyiBackend/pom.xml', 'IntRuoyiFronted/package.json', 'IntRuoyiFronted/pnpm-lock.yaml',
     'IntRuoyiBackend/sql/mysql/release-sources.json', 'scripts/preflight/check-menu-migrations.py',
+    'IntRuoyiBackend/sql/mysql/database-contracts/catalog.json',
     'IntRuoyiBackend/yudao-framework/yudao-spring-boot-starter-monitor/src/main/java/'+RUNTIME_CLASS+'.java',
     *('IntRuoyiBackend/yudao-module-mes/src/main/java/'+MES_PREFIX+name+'.java' for name in MES_CLASSES),
 )

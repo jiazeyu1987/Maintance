@@ -142,7 +142,9 @@ def install_frontend(executor, job, pnpm, frontend, timeout=3600):
 
 
 def migration_inputs(worktree):
+    from ops.release.release_database_contract import collect
     sql_root = worktree/'IntRuoyiBackend/sql/mysql'
+    _, database_artifacts = collect(worktree/'IntRuoyiBackend')
     paths, references = release_paths(sql_root)
     result = run_migration_policy_gate(sql_root, sql_paths=paths)
     # Moving an immutable source into historical/ must not move its execution
@@ -150,6 +152,7 @@ def migration_inputs(worktree):
     # explicit applyOrder then control the final topological order.
     migrations = _order_migrations_by_dependencies(sorted(result['migrations'], key=lambda item: item['migrationId']))
     artifacts = {entry['file']: sql_root/Path(entry['file']).relative_to('sql/mysql') for entry in migrations}
+    artifacts.update(database_artifacts)
     for entry in migrations:
         bind_reviewed_session_profile(entry)
         if entry['type'] not in {'schema', 'data', 'menu', 'config', 'permission', 'seed'}:
@@ -409,7 +412,10 @@ def build(executor, job):
     archive_image_identities(folder/'images.tar', images)
     files = [dict(name=path.relative_to(folder).as_posix(), sha256=digest(path))
              for path in sorted(folder.rglob('*')) if path.is_file() and 'build-context' not in path.relative_to(folder).parts]
+    from ops.release.release_database_contract import collect
+    database_contract, _ = collect(folder)
     manifest = dict(applicationId=c['applicationId'], releaseTag=tag, IMAGE_TAG=tag, gitCommit=commit,
+                    databaseContract=database_contract,
                     releaseSettings=release_settings,
                     images=images, migrations=migrations, sourceReferences=references,
                     maintenanceProtocol='intruoyi-quiescent-start-v1', files=files,
