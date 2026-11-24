@@ -1,5 +1,11 @@
 # 请求与命令记录
 
+## 20261124-bounded-service-recovery
+
+- 用户需求：同意前后端有限自动恢复；本次本地实现，不代表授权服务器安装或重启。
+- 命令意图：独立worktree编写BDD与失败测试，新增Linux常驻健康检查、原容器有界重启、双锁与epoch保护、私密故障证据及持久通知；使用任务自有Linux Docker/MySQL/HTTP验证后精确提交、融合及清理。
+- 验证结论：实现43ee6e7已融合int_main，新增真实集成与相邻组合52项在分支及主线均PASS；故障证据、锁权限、daemon互斥、只读SQL与attempt台账有预期RED。额外旧备份2项失败已用原提交复现并独立报告。任务worktree及自有测试资源已清理，远端未安装启用。详情见doc/tasks/20261124-bounded-service-recovery/。
+
 ## 20261124-ops-auto-restart-assessment
 
 - 用户需求：服务器前后端崩溃后是否可以自动重启。

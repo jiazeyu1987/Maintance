@@ -1,0 +1,10 @@
+{
+  "worktreeRemoved": true,
+  "mergedCommit": "43ee6e7dba8d72429df936fd6779cebc577fdbba",
+  "networkRemoved": "maint-recovery-20261124-net",
+  "volumeRemoved": "maint-recovery-20261124-volume",
+  "archiveRemoved": true,
+  "archiveSha256": "9568fe41c1603cdf3e6f6c2b52748daafa248ed7a819a34dce8a9fe6aba09a47",
+  "remoteOperations": false,
+  "consolesStarted": false
+}

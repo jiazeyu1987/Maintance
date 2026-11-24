@@ -1,0 +1,19 @@
+{
+  "mainHead": "da07ac5a40c5cd397528636a056eb73764c93c9f",
+  "implementationCommit": "43ee6e7dba8d72429df936fd6779cebc577fdbba",
+  "branch": "int_main",
+  "paths": [
+    "docs/experience-index.md",
+    "docs/service-recovery.md",
+    "ops/spug/release-center/README.md",
+    "ops/spug/release-center/intruoyi-service-recovery@.service",
+    "ops/spug/release-center/service-recovery.example.json",
+    "ops/spug/release-center/service_recovery.py",
+    "ops/spug/release-center/service_recovery_docker.py",
+    "ops/spug/release-center/test_service_recovery.py"
+  ],
+  "overlap": [],
+  "initialIndexEmpty": true,
+  "unrelatedStatusSha256": "541b40e0a16e1a65dd380dce557c64325de4fa4da6b1ad939e8430c0cc80b20c",
+  "unrelatedStatusEntries": 9964
+}

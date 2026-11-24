@@ -1,0 +1,32 @@
+# Execution Log
+
+- 用户需求：同意前后端有限自动恢复方案；默认本地实现，未授权服务器安装或重启。
+- Bootstrap：显式UTF-8读取AGENTS、经验索引、PowerShell门禁及本聊天已完成前序任务。
+- 计划：先核对真实控制入口与维护保护，写BDD；在独立worktree严格RED → GREEN → REGRESSION，再提交、融合、复验及清理。
+- READ：worktree-memory、server-access、release-backup-restore相关门禁；operation_journal复用runtime-operation.lock，minimal_capture与replacement共同绑定sourceLockPath。
+- WORKTREE：托管创建因git config filter discovery超时失败；只读核无同名登记后，git worktree add -b codex/bounded-service-recovery固定da07ac5到C:/Users/D01021/Documents/ChatGPT/Maintance-worktrees/bounded-service-recovery，完整checkout，初始clean。
+- BDD：完整Given/When/Then及正式设计已写入task.md，生产代码尚未修改。
+- PREFLIGHT：本机Docker Linux、现存python:3.12-bookworm/mysql:8.0.39、捆绑Python3.12.14确认可用；真实集成仅使用任务自有资源。
+- COMMAND-NOTE：第一次误用Windows Python执行Linux集成用例，fcntl不可用；这是测试载体错误，不计业务RED。改为本机Linux Docker容器执行同一真实测试。
+- GREEN: experience-preflight -> PASS；隔离Linux测试只创建本任务明确命名的network/volume/runner及随机带任务前缀服务；不触碰现有业务，未读取私密凭据，无远端访问。
+- RED: Docker Linux `python -B -m unittest test_service_recovery -v` -> FAIL；预期缺少service_recovery正式模块，尚无自动恢复实现。此前Windows fcntl错误未计RED。
+- GREEN：首版14项真实Linux Docker/MySQL/HTTP集成测试PASS（156.373s）；涵盖仅对应服务重启、恢复通知、持久预算、停服、双锁、数据库只读、pause、身份漂移、未知重启、通知失败续投、缺失/链接锁、陈旧心跳与CLI。
+- 新增保护证据测试：发布后原arm失效、恢复epoch未闭合、启动宽限、并发控制锁及重启前私密日志。先运行故障证据定向用例取得RED，再补实现。
+- RED: 故障证据真实集成用例FAIL（23.949s），RESTART_REQUESTED缺evidence字段；随后补私有证据文件与SHA256。
+- RED: 三项补充真实用例FAIL（38.257s）：既有644发布锁误阻断、CLI未持有daemon生命周期锁、生产数据库适配器过宽接受写语句。先失败后分别补兼容锁校验、独立daemon锁与SELECT白名单；数据库写入只留在隔离测试自己的exec内。
+- GREEN + REGRESSION: `python -B -m unittest test_service_recovery -v` 于任务自有Linux runner执行，22项PASS（200.319s），无skip。保护状态在实际重启前再读，证据先持久化，数据库适配器只读，daemon锁兼容CLI pause。
+- 检查原发布器：公共operationLockRoot与attempts/JOB-*的stagingRoot可能不同。新增Given/When/Then及真实失败台账用例，验证释放锁后旧arm必须失效；文档明确配置公共根，不填写attempt路径。
+- RED: attempt台账真实用例FAIL（21.003s），旧实现遗漏attempt子目录并错误进入DEGRADED；随后将公共根与直接attempt目录的操作凭据共同纳入固定基线，并在重启前复核。
+- GREEN + REGRESSION: 新26项真实集成及现有发布锁/存储/运行元数据组合52项PASS（231.628s），无skip。维护标记即使HTTP健康仍阻断、未知依赖healthcheck阻断、告警投递耗尽显式可见均已覆盖。测试随后收紧维护场景，先等待真实HTTP健康，再证明maintenance保护。
+- 扩展验证环境问题：额外尝试recovery_minimal旧套件在导入时缺jsonschema，尚未进入测试，不算业务RED；与本次仅依赖标准库的epoch读取模块不同。尝试隔离测试卷安装依赖，未改正式依赖或业务容器。
+- 扩展验证进展：jsonschema4.26的rpds依赖不可获取、直连PyPI TLS失败均如实保留；用兼容Draft202012的jsonschema4.17.3/attrs26.1.0/pyrsistent0.20.0安装到本任务测试卷，未增加生产依赖。原python符号链接触发PATH_ALIAS_REJECTED，按原守卫改用实际python3.12文件重跑，没有放宽检查。
+- 扩展验证结果：未改动的recovery_minimal旧套件23项中21PASS、2FAIL，实际MINIMAL_ENTRY_KEYERROR（未派发child）与测试旧预期不同。当前停止把该套件算作PASS；归因核验改用原始da07ac5的git archive，不扩修本次范围之外的备份实现。该套件非自动恢复控制器的必要验证，自动恢复与相关发布回归52项已PASS。
+- GREEN: 收紧后的维护用例真实HTTP健康再检查maintenance，1项PASS（21.791s）。
+- BASELINE: 从da07ac5原始Git归档仅提取ops/recovery，两个失败同样复现（2.234s）；确认与本任务新增控制器无调用依赖、该目录零改动。已向用户报告失败与影响：旧备份套件不宣称通过，原备份修复另属范围；本次必要自动恢复/发布回归不受其阻断。
+- COMMIT: 43ee6e7dba8d72429df936fd6779cebc577fdbba，严格8个实现/说明/测试文件，cached diff --check通过，分支提交后clean。
+- GREEN: experience-preflight -> PASS；融合前核int_main=da07ac5、空暂存区、fast-forward祖先成立；8个目标路径与主线tracked/untracked改动重叠为0，证据integration-preflight.json。按worktree-memory的“主线同路径未跟踪任务目录融合门禁”保全9964项既有状态，不stash/reset/clean、不运行要求全局clean的closeout apply；仅允许原生ff-only安全融合。
+- INTEGRATION: int_main原生ff-only到43ee6e7，目标8路径status为空；主线同一组合命令52项PASS（247.778s），无skip。状态ready_for_closeout。
+- GREEN: experience-preflight -> PASS；清理仅限本任务已提交且融合的clean worktree，使用integration_worktree_cleanup.py及外置归属回执；任务测试runner已退出，network/volume标签均等于20261124-bounded-service-recovery。只删除这两个明确资源和自有baseline-recovery.tar，不触碰其他worktree、容器、卷或控制台。
+- 归档证据：da07ac5原始ops/recovery临时tar SHA256=9568fe41c1603cdf3e6f6c2b52748daafa248ed7a819a34dce8a9fe6aba09a47；原Git对象可重建，不提交临时tar。
+- CLOSEOUT: 官方清理入口PASS，verifiedTrackedFiles=5307、gitRemovalExitCode=0、registeredAfter=false、physicalPathExists=false；本任务network/volume标签核验且无容器占用后删除，临时tar按固定哈希删除。未改动任何业务控制台，其他worktree和资源保留。
+- FINAL: completed；实现与主线必要验证均通过，远端未安装启用。最终记录单独提交，公共request-command-log仅暂存本任务新增段落，保留原文件其他未提交内容。
