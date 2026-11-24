@@ -1,0 +1,65 @@
+{
+  "status": "PASS",
+  "jobId": "JOB-3f61957ac8",
+  "operation": "SUCCESS",
+  "releaseTag": "2026-11-24-15-38-40",
+  "gitCommit": "21f7528a51a85e45cd3eca6d03394ea35328ed95",
+  "packageSha256": "d3c6cd1029071c2af75e54bbe5447d55a6cc91f4f17bf9474f92f4a43fec9f50",
+  "manifestSha256": "d5fe5fa2f870669df5976aba65fbf0768966221d3cd8da794ef5614aab3f25d8",
+  "IMAGE_TAG": "2026-11-24-15-38-40",
+  "images": {
+    "backend": {
+      "imageId": "sha256:498fbc87a993f2afc526d670ffe5982298226f52b7d10eec5973110b9034327c",
+      "name": "intruoyi-backend:2026-11-24-15-38-40",
+      "running": true
+    },
+    "frontend": {
+      "imageId": "sha256:dd3735bb65b32d8c828bd437fc1ffc37ca88c3935b0c73e11a0fe741850d0b5b",
+      "name": "intruoyi-frontend:2026-11-24-15-38-40",
+      "running": true
+    }
+  },
+  "backendHealth": "UP",
+  "frontendHttpStatus": 200,
+  "maintenance": false,
+  "runtimeOpeningPending": false,
+  "technicalStatus": "passed",
+  "databaseContractReceipts": [
+    {
+      "schemaVersion": "ApplicationDatabaseContract/v1",
+      "status": "PASS",
+      "catalogSha256": "7fd0cde3224bcd380ab989756334c044187ac89786d2f808171f2276c6e19f6e",
+      "checks": [
+        "mes-pqc-rule-key"
+      ],
+      "phase": "before-backend-open",
+      "releaseTag": "2026-11-24-15-38-40",
+      "manifestSha256": "12b09216e302f3706eb5c93ff680bc5429ce5fcc5de2620dd2b1717e702c1247"
+    },
+    {
+      "schemaVersion": "ApplicationDatabaseContract/v1",
+      "status": "PASS",
+      "catalogSha256": "7fd0cde3224bcd380ab989756334c044187ac89786d2f808171f2276c6e19f6e",
+      "checks": [
+        "mes-pqc-rule-key"
+      ],
+      "phase": "before-public-open",
+      "releaseTag": "2026-11-24-15-38-40",
+      "manifestSha256": "12b09216e302f3706eb5c93ff680bc5429ce5fcc5de2620dd2b1717e702c1247"
+    },
+    {
+      "schemaVersion": "ApplicationDatabaseContract/v1",
+      "status": "PASS",
+      "catalogSha256": "7fd0cde3224bcd380ab989756334c044187ac89786d2f808171f2276c6e19f6e",
+      "checks": [
+        "mes-pqc-rule-key"
+      ],
+      "phase": "after-migrations",
+      "releaseTag": "2026-11-24-15-38-40",
+      "manifestSha256": "12b09216e302f3706eb5c93ff680bc5429ce5fcc5de2620dd2b1717e702c1247"
+    }
+  ],
+  "backupSourceBindingPending": false,
+  "businessDataSupplemented": false,
+  "activeOrderBusinessE2E": "NOT_VERIFIED"
+}
