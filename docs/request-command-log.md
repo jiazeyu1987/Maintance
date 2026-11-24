@@ -1,5 +1,11 @@
 # 请求与命令记录
 
+## 20261124-ops-auto-restart-assessment
+
+- 用户需求：服务器前后端崩溃后是否可以自动重启。
+- 命令意图：只读核对本地前后端部署模板、服务器访问门禁和Docker官方重启/HEALTHCHECK文档；不连接业务服务器、不改配置或重启。
+- 验证结论：模板backend/frontend均声明restart: unless-stopped，容器主进程退出可按策略重启；卡死/unhealthy需额外监测和有上限的恢复控制，并尊重维护及发布/备份恢复锁。现网策略未核实，不承诺依赖/主机故障可由重启应用解决。追加记录：doc/tasks/20261124-ops-tool-priority-review/。
+
 ## 20261124-ops-tool-priority-review
 
 - 用户需求：评估当前运维工具缺口，只选一个最应该马上添加的能力。
