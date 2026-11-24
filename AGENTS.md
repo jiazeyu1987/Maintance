@@ -1,5 +1,7 @@
 # Related Project Paths
 
+- 用户最新验证身份偏好（2026-11-24）：后续验证默认使用“芋道源码 / admin”，凭据从本机受保护私密配置读取，不记录明文密码。该明确指示覆盖本文及关联文档中旧的“仅测试租户/aoteman写入、芋道源码/admin只读”限制；需要真实写入的验收仍限已授权任务范围、真实前端路径及可追踪用例，正式环境操作仍需对应任务授权。
+
 - IntAuth: `D:\ProjectPackage\Int\IntAuth`
 - IntKB: `D:\ProjectPackage\Int\IntKB`
 - IntGY: `D:\ProjectPackage\Int\IntGY`
