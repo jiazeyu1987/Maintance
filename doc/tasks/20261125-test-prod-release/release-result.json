@@ -1,0 +1,192 @@
+{
+  "releaseTag": "2026-11-25-10-22-04",
+  "runtime": {
+    "test": {
+      "status": "PASS",
+      "jobId": "JOB-58851b5e0e",
+      "operation": "SUCCESS",
+      "releaseTag": "2026-11-25-10-22-04",
+      "gitCommit": "462d6647fc484ef4d3433a5a640015c9559c37db",
+      "packageSha256": "ef37a84ad925e7c06ea7f7a4c815392de36dedb76d5e090c14160e9ee4e265d9",
+      "manifestSha256": "d37bea36ae1001ed7debf9448822b52e1b1d47cbd22523865b25dfac0878da8c",
+      "IMAGE_TAG": "2026-11-25-10-22-04",
+      "images": {
+        "backend": {
+          "imageId": "sha256:50a8294e39caeebf5b0a3e50a9a290c3a7c8d13b2c53a4e3441b35b2e64f11b2",
+          "name": "intruoyi-backend:2026-11-25-10-22-04",
+          "running": true
+        },
+        "frontend": {
+          "imageId": "sha256:e5cd4ea562c5fae64eed25717ac48e0c747d8b10be4c1bca1638698fd7e13447",
+          "name": "intruoyi-frontend:2026-11-25-10-22-04",
+          "running": true
+        }
+      },
+      "backendHealth": "UP",
+      "frontendHttpStatus": 200,
+      "maintenance": false,
+      "runtimeOpeningPending": false,
+      "technicalStatus": "passed"
+    },
+    "prod": {
+      "status": "PASS",
+      "jobId": "JOB-eb73176ba8",
+      "operation": "SUCCESS",
+      "releaseTag": "2026-11-25-10-22-04",
+      "gitCommit": "462d6647fc484ef4d3433a5a640015c9559c37db",
+      "packageSha256": "ef37a84ad925e7c06ea7f7a4c815392de36dedb76d5e090c14160e9ee4e265d9",
+      "manifestSha256": "d37bea36ae1001ed7debf9448822b52e1b1d47cbd22523865b25dfac0878da8c",
+      "IMAGE_TAG": "2026-11-25-10-22-04",
+      "images": {
+        "backend": {
+          "imageId": "sha256:50a8294e39caeebf5b0a3e50a9a290c3a7c8d13b2c53a4e3441b35b2e64f11b2",
+          "name": "intruoyi-backend:2026-11-25-10-22-04",
+          "running": true
+        },
+        "frontend": {
+          "imageId": "sha256:e5cd4ea562c5fae64eed25717ac48e0c747d8b10be4c1bca1638698fd7e13447",
+          "name": "intruoyi-frontend:2026-11-25-10-22-04",
+          "running": true
+        }
+      },
+      "backendHealth": "UP",
+      "frontendHttpStatus": 200,
+      "maintenance": false,
+      "runtimeOpeningPending": false,
+      "technicalStatus": "passed"
+    }
+  },
+  "databaseContracts": {
+    "test": [
+      {
+        "schemaVersion": "ApplicationDatabaseContract/v1",
+        "status": "PASS",
+        "catalogSha256": "7fd0cde3224bcd380ab989756334c044187ac89786d2f808171f2276c6e19f6e",
+        "checks": [
+          "mes-pqc-rule-key"
+        ],
+        "phase": "after-migrations",
+        "releaseTag": "2026-11-25-10-22-04",
+        "manifestSha256": "ec0ce828305e4daeeaae61bd8732ac73efe4f39942e91e0416484433bf4bb082"
+      },
+      {
+        "schemaVersion": "ApplicationDatabaseContract/v1",
+        "status": "PASS",
+        "catalogSha256": "7fd0cde3224bcd380ab989756334c044187ac89786d2f808171f2276c6e19f6e",
+        "checks": [
+          "mes-pqc-rule-key"
+        ],
+        "phase": "before-public-open",
+        "releaseTag": "2026-11-25-10-22-04",
+        "manifestSha256": "ec0ce828305e4daeeaae61bd8732ac73efe4f39942e91e0416484433bf4bb082"
+      },
+      {
+        "schemaVersion": "ApplicationDatabaseContract/v1",
+        "status": "PASS",
+        "catalogSha256": "7fd0cde3224bcd380ab989756334c044187ac89786d2f808171f2276c6e19f6e",
+        "checks": [
+          "mes-pqc-rule-key"
+        ],
+        "phase": "before-backend-open",
+        "releaseTag": "2026-11-25-10-22-04",
+        "manifestSha256": "ec0ce828305e4daeeaae61bd8732ac73efe4f39942e91e0416484433bf4bb082"
+      }
+    ],
+    "prod": [
+      {
+        "schemaVersion": "ApplicationDatabaseContract/v1",
+        "status": "PASS",
+        "catalogSha256": "7fd0cde3224bcd380ab989756334c044187ac89786d2f808171f2276c6e19f6e",
+        "checks": [
+          "mes-pqc-rule-key"
+        ],
+        "phase": "before-backend-open",
+        "releaseTag": "2026-11-25-10-22-04",
+        "manifestSha256": "ec0ce828305e4daeeaae61bd8732ac73efe4f39942e91e0416484433bf4bb082"
+      },
+      {
+        "schemaVersion": "ApplicationDatabaseContract/v1",
+        "status": "PASS",
+        "catalogSha256": "7fd0cde3224bcd380ab989756334c044187ac89786d2f808171f2276c6e19f6e",
+        "checks": [
+          "mes-pqc-rule-key"
+        ],
+        "phase": "before-public-open",
+        "releaseTag": "2026-11-25-10-22-04",
+        "manifestSha256": "ec0ce828305e4daeeaae61bd8732ac73efe4f39942e91e0416484433bf4bb082"
+      },
+      {
+        "schemaVersion": "ApplicationDatabaseContract/v1",
+        "status": "PASS",
+        "catalogSha256": "7fd0cde3224bcd380ab989756334c044187ac89786d2f808171f2276c6e19f6e",
+        "checks": [
+          "mes-pqc-rule-key"
+        ],
+        "phase": "after-migrations",
+        "releaseTag": "2026-11-25-10-22-04",
+        "manifestSha256": "ec0ce828305e4daeeaae61bd8732ac73efe4f39942e91e0416484433bf4bb082"
+      }
+    ]
+  },
+  "worktreeCleanup": [
+    {
+      "status": "passed",
+      "path": "C:\\SpugHandoff\\release\\build\\2026-11-25-10-22-04",
+      "commit": "462d6647fc484ef4d3433a5a640015c9559c37db",
+      "verifiedTrackedFiles": 25285,
+      "gitRemovalExitCode": 0,
+      "residualRemoved": false,
+      "ownershipVerified": true,
+      "generatedLinksDetached": 3128,
+      "registeredAfter": false,
+      "physicalPathExists": false,
+      "producedNewCommits": false
+    },
+    {
+      "status": "passed",
+      "path": "C:\\SpugHandoff\\release\\build\\2026-11-25-08-59-37",
+      "commit": "5b2a0938303abc36740bca1a54e213c317488265",
+      "verifiedTrackedFiles": 25282,
+      "gitRemovalExitCode": 0,
+      "residualRemoved": false,
+      "ownershipVerified": true,
+      "generatedLinksDetached": 0,
+      "registeredAfter": false,
+      "physicalPathExists": false,
+      "producedNewCommits": false
+    },
+    {
+      "status": "passed",
+      "path": "C:\\SpugHandoff\\release\\build\\2026-11-25-09-59-57",
+      "commit": "a330c9004fe1dafcc259de9dcf61ba97a8b07439",
+      "verifiedTrackedFiles": 25284,
+      "gitRemovalExitCode": 0,
+      "residualRemoved": false,
+      "ownershipVerified": true,
+      "generatedLinksDetached": 0,
+      "registeredAfter": false,
+      "physicalPathExists": false,
+      "producedNewCommits": false
+    },
+    {
+      "status": "passed",
+      "path": "C:\\SpugHandoff\\release\\test-prod-20261125",
+      "commit": "5b341d9a9fd68d79d75830dac1df705e8c016b0e",
+      "verifiedTrackedFiles": 5315,
+      "gitRemovalExitCode": 0,
+      "residualRemoved": false,
+      "ownershipVerified": true,
+      "generatedLinksDetached": 0,
+      "registeredAfter": false,
+      "physicalPathExists": false,
+      "producedNewCommits": false
+    }
+  ],
+  "scope": [
+    "test58",
+    "prod57"
+  ],
+  "businessDataSupplemented": false,
+  "fullOrderBusinessFlowVerified": false,
+  "physicalPrintingVerified": false
+}
