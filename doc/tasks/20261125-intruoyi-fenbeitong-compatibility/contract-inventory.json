@@ -1,0 +1,1082 @@
+{
+  "test": {
+    "observedAtUtc": "2026-11-25T10:01:36.352111Z",
+    "containers": {
+      "backend": {
+        "name": "brlab-prod57-nas-test58-20261020-r3-backend",
+        "image": "sha256:50a8294e39caeebf5b0a3e50a9a290c3a7c8d13b2c53a4e3441b35b2e64f11b2",
+        "imageId": "sha256:50a8294e39caeebf5b0a3e50a9a290c3a7c8d13b2c53a4e3441b35b2e64f11b2",
+        "running": true,
+        "settings": {
+          "assistant-host": "fenbeitong-assistant"
+        },
+        "networks": [
+          "brlab-prod57-nas-test58-20261020-r1-net"
+        ]
+      },
+      "frontend": {
+        "name": "intruoyi-july-unified-58-frontend",
+        "image": "sha256:e5cd4ea562c5fae64eed25717ac48e0c747d8b10be4c1bca1638698fd7e13447",
+        "imageId": "sha256:e5cd4ea562c5fae64eed25717ac48e0c747d8b10be4c1bca1638698fd7e13447",
+        "running": true,
+        "settings": {},
+        "networks": [
+          "host"
+        ]
+      },
+      "assistant": {
+        "name": "fenbeitong-assistant",
+        "image": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+        "imageId": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+        "running": true,
+        "settings": {
+          "FENBEITONG_ASSISTANT_TICKET_VALIDATE_URL": "http://brlab-prod57-nas-test58-20261020-r3-backend:48081/admin-api/system/auth/fenbeitong-assistant-ticket/validate",
+          "FENBEITONG_ASSISTANT_HOST": "0.0.0.0",
+          "SCHEDULER_ENABLED": "false",
+          "PAYMENT_STATUS_SYNC_ENABLED": "false"
+        },
+        "networks": [
+          "bridge",
+          "brlab-prod57-nas-test58-20261020-r1-net"
+        ]
+      }
+    },
+    "assistantSource": {
+      "files": [
+        "/app/backend/src/assistant-session-context.js"
+      ],
+      "serverContractLines": [
+        {
+          "line": 9,
+          "text": "  runWithAssistantSession\r"
+        },
+        {
+          "line": 10,
+          "text": "} from './backend/src/assistant-session-context.js';\r"
+        },
+        {
+          "line": 25,
+          "text": "const ticketValidateUrl = requiredEnvironment('FENBEITONG_ASSISTANT_TICKET_VALIDATE_URL');\r"
+        },
+        {
+          "line": 26,
+          "text": "const sessionTtlSeconds = positiveInteger(\r"
+        },
+        {
+          "line": 27,
+          "text": "  process.env.FENBEITONG_ASSISTANT_SESSION_TTL_SECONDS || 14_400,\r"
+        },
+        {
+          "line": 28,
+          "text": "  'FENBEITONG_ASSISTANT_SESSION_TTL_SECONDS'\r"
+        },
+        {
+          "line": 30,
+          "text": "const sessionHeaderName = 'x-fenbeitong-assistant-session';\r"
+        },
+        {
+          "line": 31,
+          "text": "const sessionCookieName = 'fenbeitong_assistant_session';\r"
+        },
+        {
+          "line": 32,
+          "text": "const sessionQueryName = 'assistantSession';\r"
+        },
+        {
+          "line": 33,
+          "text": "const callbackReplayTtlMillis = 30_000;\r"
+        },
+        {
+          "line": 34,
+          "text": "const queryPermission = 'erp:fenbeitong-voucher:query';\r"
+        },
+        {
+          "line": 35,
+          "text": "const sessions = new Map();\r"
+        },
+        {
+          "line": 36,
+          "text": "const callbackReplayGrants = new Map();\r"
+        },
+        {
+          "line": 71,
+          "text": "function getSessionId(request, requestUrl) {\r"
+        },
+        {
+          "line": 72,
+          "text": "  const header = request.headers[sessionHeaderName];\r"
+        },
+        {
+          "line": 74,
+          "text": "  const query = requestUrl.searchParams.get(sessionQueryName);\r"
+        },
+        {
+          "line": 76,
+          "text": "  return parseCookies(request.headers.cookie)[sessionCookieName] || '';\r"
+        },
+        {
+          "line": 79,
+          "text": "function cleanupExpiredSessions() {\r"
+        },
+        {
+          "line": 81,
+          "text": "  for (const [sessionId, session] of sessions.entries()) {\r"
+        },
+        {
+          "line": 82,
+          "text": "    if (!session || session.expiresAt <= now) sessions.delete(sessionId);\r"
+        },
+        {
+          "line": 84,
+          "text": "  for (const [ticket, grant] of callbackReplayGrants.entries()) {\r"
+        },
+        {
+          "line": 85,
+          "text": "    if (!grant || grant.expiresAt <= now || !sessions.has(grant.sessionId)) {\r"
+        },
+        {
+          "line": 86,
+          "text": "      callbackReplayGrants.delete(ticket);\r"
+        },
+        {
+          "line": 91,
+          "text": "function getSession(request, requestUrl) {\r"
+        },
+        {
+          "line": 92,
+          "text": "  cleanupExpiredSessions();\r"
+        },
+        {
+          "line": 93,
+          "text": "  return sessions.get(getSessionId(request, requestUrl)) || null;\r"
+        },
+        {
+          "line": 96,
+          "text": "function getApiSession(request) {\r"
+        },
+        {
+          "line": 97,
+          "text": "  cleanupExpiredSessions();\r"
+        },
+        {
+          "line": 98,
+          "text": "  const header = request.headers[sessionHeaderName];\r"
+        },
+        {
+          "line": 99,
+          "text": "  const sessionId = String(Array.isArray(header) ? header[0] : header || '').trim();\r"
+        },
+        {
+          "line": 100,
+          "text": "  return sessionId ? sessions.get(sessionId) || null : null;\r"
+        },
+        {
+          "line": 103,
+          "text": "function callbackUserAgent(request) {\r"
+        },
+        {
+          "line": 108,
+          "text": "function replaySessionId(ticket, request) {\r"
+        },
+        {
+          "line": 109,
+          "text": "  cleanupExpiredSessions();\r"
+        },
+        {
+          "line": 110,
+          "text": "  const grant = callbackReplayGrants.get(ticket);\r"
+        },
+        {
+          "line": 111,
+          "text": "  if (!grant || grant.userAgent !== callbackUserAgent(request)) return '';\r"
+        },
+        {
+          "line": 112,
+          "text": "  return sessions.has(grant.sessionId) ? grant.sessionId : '';\r"
+        },
+        {
+          "line": 115,
+          "text": "function rememberCallback(ticket, sessionId, request) {\r"
+        },
+        {
+          "line": 116,
+          "text": "  callbackReplayGrants.set(ticket, {\r"
+        },
+        {
+          "line": 117,
+          "text": "    sessionId,\r"
+        },
+        {
+          "line": 118,
+          "text": "    userAgent: callbackUserAgent(request),\r"
+        },
+        {
+          "line": 119,
+          "text": "    expiresAt: Date.now() + Math.min(callbackReplayTtlMillis, sessionTtlSeconds * 1000)\r"
+        },
+        {
+          "line": 123,
+          "text": "function createAssistantSession(validation) {\r"
+        },
+        {
+          "line": 124,
+          "text": "  const permissions = [...new Set(\r"
+        },
+        {
+          "line": 125,
+          "text": "    (Array.isArray(validation.permissions) ? validation.permissions : [])\r"
+        },
+        {
+          "line": 126,
+          "text": "      .map((value) => String(value || '').trim())\r"
+        },
+        {
+          "line": 127,
+          "text": "      .filter(Boolean)\r"
+        },
+        {
+          "line": 128,
+          "text": "  )];\r"
+        },
+        {
+          "line": 129,
+          "text": "  if (!permissions.includes(queryPermission)) {\r"
+        },
+        {
+          "line": 130,
+          "text": "    throw new Error('ERP 授权响应缺少分贝通费用报销查询权限。');\r"
+        },
+        {
+          "line": 131,
+          "text": "  }\r"
+        },
+        {
+          "line": 132,
+          "text": "  const sessionId = randomUUID();\r"
+        },
+        {
+          "line": 133,
+          "text": "  sessions.set(sessionId, {\r"
+        },
+        {
+          "line": 134,
+          "text": "    userId: validation.userId,\r"
+        },
+        {
+          "line": 135,
+          "text": "    permissions: [queryPermission],\r"
+        },
+        {
+          "line": 136,
+          "text": "    kingdeeConfig: normalizeAssistantKingdeeConfig(validation.kingdeeConfig),\r"
+        },
+        {
+          "line": 137,
+          "text": "    expiresAt: Date.now() + sessionTtlSeconds * 1000\r"
+        },
+        {
+          "line": 138,
+          "text": "  });\r"
+        },
+        {
+          "line": 139,
+          "text": "  return sessionId;\r"
+        },
+        {
+          "line": 140,
+          "text": "}\r"
+        },
+        {
+          "line": 141,
+          "text": "\r"
+        },
+        {
+          "line": 142,
+          "text": "async function validateTicket(ticket) {\r"
+        },
+        {
+          "line": 143,
+          "text": "  const response = await fetch(ticketValidateUrl, {\r"
+        },
+        {
+          "line": 144,
+          "text": "    method: 'POST',\r"
+        },
+        {
+          "line": 145,
+          "text": "    headers: { 'Content-Type': 'application/json' },\r"
+        },
+        {
+          "line": 146,
+          "text": "    body: JSON.stringify({ ticket })\r"
+        },
+        {
+          "line": 147,
+          "text": "  });\r"
+        },
+        {
+          "line": 148,
+          "text": "  if (!response.ok) throw new Error(`ERP 授权校验失败：HTTP ${response.status}`);\r"
+        },
+        {
+          "line": 149,
+          "text": "  const body = await response.json();\r"
+        },
+        {
+          "line": 150,
+          "text": "  if (body?.code !== 0) {\r"
+        },
+        {
+          "line": 151,
+          "text": "    throw new Error(body?.msg || 'ERP 拒绝了分贝通助手授权。');\r"
+        },
+        {
+          "line": 152,
+          "text": "  }\r"
+        },
+        {
+          "line": 153,
+          "text": "  return body.data || { valid: false, reason: 'empty_response' };\r"
+        },
+        {
+          "line": 154,
+          "text": "}\r"
+        },
+        {
+          "line": 155,
+          "text": "\r"
+        },
+        {
+          "line": 156,
+          "text": "function redirectToSession(response, sessionId) {\r"
+        },
+        {
+          "line": 158,
+          "text": "    Location: `/?${sessionQueryName}=${encodeURIComponent(sessionId)}`,\r"
+        },
+        {
+          "line": 159,
+          "text": "    'Set-Cookie': `${sessionCookieName}=${encodeURIComponent(sessionId)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${sessionTtlSeconds}`,\r"
+        },
+        {
+          "line": 165,
+          "text": "async function handleAuthCallback(request, response, requestUrl) {\r"
+        },
+        {
+          "line": 166,
+          "text": "  const ticket = String(requestUrl.searchParams.get('ticket') || '').trim();\r"
+        },
+        {
+          "line": 167,
+          "text": "  if (!ticket) return sendForbiddenPage(response, '没有取得 ERP 授权票据，请从 ERP 系统入口重新进入。');\r"
+        },
+        {
+          "line": 169,
+          "text": "  const replay = replaySessionId(ticket, request);\r"
+        },
+        {
+          "line": 170,
+          "text": "  if (replay) return redirectToSession(response, replay);\r"
+        },
+        {
+          "line": 173,
+          "text": "    const validation = await validateTicket(ticket);\r"
+        },
+        {
+          "line": 177,
+          "text": "    const sessionId = createAssistantSession(validation);\r"
+        },
+        {
+          "line": 178,
+          "text": "    rememberCallback(ticket, sessionId, request);\r"
+        },
+        {
+          "line": 179,
+          "text": "    return redirectToSession(response, sessionId);\r"
+        },
+        {
+          "line": 245,
+          "text": "    if (request.method === 'GET' && requestUrl.pathname === '/auth/callback') {\r"
+        },
+        {
+          "line": 246,
+          "text": "      return await handleAuthCallback(request, response, requestUrl);\r"
+        },
+        {
+          "line": 249,
+          "text": "    const session = requestUrl.pathname.startsWith('/api/')\r"
+        },
+        {
+          "line": 250,
+          "text": "      ? getApiSession(request)\r"
+        },
+        {
+          "line": 251,
+          "text": "      : getSession(request, requestUrl);\r"
+        },
+        {
+          "line": 252,
+          "text": "    if (!session) {\r"
+        },
+        {
+          "line": 256,
+          "text": "          'ASSISTANT_SESSION_REQUIRED',\r"
+        },
+        {
+          "line": 263,
+          "text": "    if (request.method === 'GET' && requestUrl.pathname === '/api/assistant/session') {\r"
+        },
+        {
+          "line": 267,
+          "text": "          userId: session.userId,\r"
+        },
+        {
+          "line": 268,
+          "text": "          permissions: session.permissions,\r"
+        },
+        {
+          "line": 269,
+          "text": "          expiresTime: new Date(session.expiresAt).toISOString()\r"
+        },
+        {
+          "line": 275,
+          "text": "      if (!session.permissions.includes(queryPermission)) {\r"
+        },
+        {
+          "line": 278,
+          "text": "          'ASSISTANT_PERMISSION_DENIED',\r"
+        },
+        {
+          "line": 279,
+          "text": "          `当前账号缺少权限：${queryPermission}`\r"
+        },
+        {
+          "line": 282,
+          "text": "      return await runWithAssistantSession(session, () => handleApi(request, response));\r"
+        }
+      ],
+      "kingdeeContract": [
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 13,
+          "text": "export function normalizeAssistantKingdeeConfig(input) {\r"
+        },
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 18,
+          "text": "    baseUrl: requiredText(input.baseUrl, 'kingdeeConfig.baseUrl'),\r"
+        },
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 19,
+          "text": "    acctId: requiredText(input.acctId, 'kingdeeConfig.acctId'),\r"
+        },
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 20,
+          "text": "    username: requiredText(input.username, 'kingdeeConfig.username'),\r"
+        },
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 21,
+          "text": "    password: requiredText(input.password, 'kingdeeConfig.password'),\r"
+        },
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 22,
+          "text": "    lcid: positiveInteger(input.lcid, 'kingdeeConfig.lcid')\r"
+        },
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 26,
+          "text": "function requiredText(value, field) {\r"
+        },
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 28,
+          "text": "  if (!text) throw new Error(`${field} is required`);\r"
+        }
+      ],
+      "backendConnectivity": [
+        {
+          "path": "/actuator/health",
+          "status": 200
+        },
+        {
+          "path": "/admin-api/system/auth/fenbeitong-assistant-ticket/validate",
+          "status": 200
+        }
+      ]
+    },
+    "frontendAssets": [
+      {
+        "file": "/proc/27071/root/usr/share/nginx/html/assets/index-CMPcygOf.js",
+        "assistantUrls": [],
+        "hasTicketEndpoint": false,
+        "hasCallback": true,
+        "hasStatus": false,
+        "callbackContext": "LZyrPI.js\";const k={key:1,class:\"fenbeitong-assistant-launch\"},E={class:\"fenbeitong-assistant-launch__actions\"},x=[\"src\"],I=t(o({name:\"ErpFenbeitongVoucher\",__name:\"index\",setup(t){const o=u(!1),I=u(\"\"),S=u(!1),T=u(!1),j=u(\"\"),A=u(\"\"),L=c((()=>\"\".trim()||\"\")),N=async()=>{const a=await s();A.value=((a,e)=>{if(!e)throw new Error(\"分贝通费用报销助手授权失败：未取得访问票据。\");const s=a.endsWith(\"/\")?a:`${a}/`,t=new URL(\"auth/callback\",s);return t.searchParams.set(\"ticket\",e),t.toString()})(L.value,a.ticket),S.value=!1},C=async()=>{if(L.value){T.value=!0,o.value=!0,I.value=\"\";try{const a=await e();if(j.value=a.message",
+        "currentIndexDependencyChain": [
+          "index-B6e3-tiL.js",
+          "index-CMPcygOf.js"
+        ]
+      },
+      {
+        "file": "/proc/27071/root/usr/share/nginx/html/assets/index-B6e3-tiL.js",
+        "assistantUrls": [],
+        "hasTicketEndpoint": true,
+        "hasCallback": false,
+        "hasStatus": true,
+        "callbackContext": ""
+      },
+      {
+        "nginxAssistantConfig": [],
+        "entryScripts": [
+          "index-B6e3-tiL.js",
+          "form-create-BPLZyrPI.js",
+          "form-designer-XEVJJnpf.js"
+        ]
+      }
+    ]
+  },
+  "prod": {
+    "observedAtUtc": "2026-11-25T10:01:36.409484Z",
+    "containers": {
+      "backend": {
+        "name": "intruoyi-backend",
+        "image": "sha256:50a8294e39caeebf5b0a3e50a9a290c3a7c8d13b2c53a4e3441b35b2e64f11b2",
+        "imageId": "sha256:50a8294e39caeebf5b0a3e50a9a290c3a7c8d13b2c53a4e3441b35b2e64f11b2",
+        "running": true,
+        "settings": {
+          "assistant-host": "fenbeitong-assistant"
+        },
+        "networks": [
+          "intruoyi-runtime_intruoyi_net"
+        ]
+      },
+      "frontend": {
+        "name": "intruoyi-frontend",
+        "image": "sha256:e5cd4ea562c5fae64eed25717ac48e0c747d8b10be4c1bca1638698fd7e13447",
+        "imageId": "sha256:e5cd4ea562c5fae64eed25717ac48e0c747d8b10be4c1bca1638698fd7e13447",
+        "running": true,
+        "settings": {},
+        "networks": [
+          "intruoyi-runtime_intruoyi_net"
+        ]
+      },
+      "assistant": {
+        "name": "fenbeitong-assistant",
+        "image": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+        "imageId": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+        "running": true,
+        "settings": {
+          "FENBEITONG_ASSISTANT_TICKET_VALIDATE_URL": "http://intruoyi-backend:48081/admin-api/system/auth/fenbeitong-assistant-ticket/validate",
+          "FENBEITONG_ASSISTANT_HOST": "0.0.0.0",
+          "SCHEDULER_ENABLED": "false",
+          "PAYMENT_STATUS_SYNC_ENABLED": "false"
+        },
+        "networks": [
+          "bridge",
+          "intruoyi-runtime_intruoyi_net"
+        ]
+      }
+    },
+    "assistantSource": {
+      "files": [
+        "/app/backend/src/assistant-session-context.js"
+      ],
+      "serverContractLines": [
+        {
+          "line": 9,
+          "text": "  runWithAssistantSession\r"
+        },
+        {
+          "line": 10,
+          "text": "} from './backend/src/assistant-session-context.js';\r"
+        },
+        {
+          "line": 25,
+          "text": "const ticketValidateUrl = requiredEnvironment('FENBEITONG_ASSISTANT_TICKET_VALIDATE_URL');\r"
+        },
+        {
+          "line": 26,
+          "text": "const sessionTtlSeconds = positiveInteger(\r"
+        },
+        {
+          "line": 27,
+          "text": "  process.env.FENBEITONG_ASSISTANT_SESSION_TTL_SECONDS || 14_400,\r"
+        },
+        {
+          "line": 28,
+          "text": "  'FENBEITONG_ASSISTANT_SESSION_TTL_SECONDS'\r"
+        },
+        {
+          "line": 30,
+          "text": "const sessionHeaderName = 'x-fenbeitong-assistant-session';\r"
+        },
+        {
+          "line": 31,
+          "text": "const sessionCookieName = 'fenbeitong_assistant_session';\r"
+        },
+        {
+          "line": 32,
+          "text": "const sessionQueryName = 'assistantSession';\r"
+        },
+        {
+          "line": 33,
+          "text": "const callbackReplayTtlMillis = 30_000;\r"
+        },
+        {
+          "line": 34,
+          "text": "const queryPermission = 'erp:fenbeitong-voucher:query';\r"
+        },
+        {
+          "line": 35,
+          "text": "const sessions = new Map();\r"
+        },
+        {
+          "line": 36,
+          "text": "const callbackReplayGrants = new Map();\r"
+        },
+        {
+          "line": 71,
+          "text": "function getSessionId(request, requestUrl) {\r"
+        },
+        {
+          "line": 72,
+          "text": "  const header = request.headers[sessionHeaderName];\r"
+        },
+        {
+          "line": 74,
+          "text": "  const query = requestUrl.searchParams.get(sessionQueryName);\r"
+        },
+        {
+          "line": 76,
+          "text": "  return parseCookies(request.headers.cookie)[sessionCookieName] || '';\r"
+        },
+        {
+          "line": 79,
+          "text": "function cleanupExpiredSessions() {\r"
+        },
+        {
+          "line": 81,
+          "text": "  for (const [sessionId, session] of sessions.entries()) {\r"
+        },
+        {
+          "line": 82,
+          "text": "    if (!session || session.expiresAt <= now) sessions.delete(sessionId);\r"
+        },
+        {
+          "line": 84,
+          "text": "  for (const [ticket, grant] of callbackReplayGrants.entries()) {\r"
+        },
+        {
+          "line": 85,
+          "text": "    if (!grant || grant.expiresAt <= now || !sessions.has(grant.sessionId)) {\r"
+        },
+        {
+          "line": 86,
+          "text": "      callbackReplayGrants.delete(ticket);\r"
+        },
+        {
+          "line": 91,
+          "text": "function getSession(request, requestUrl) {\r"
+        },
+        {
+          "line": 92,
+          "text": "  cleanupExpiredSessions();\r"
+        },
+        {
+          "line": 93,
+          "text": "  return sessions.get(getSessionId(request, requestUrl)) || null;\r"
+        },
+        {
+          "line": 96,
+          "text": "function getApiSession(request) {\r"
+        },
+        {
+          "line": 97,
+          "text": "  cleanupExpiredSessions();\r"
+        },
+        {
+          "line": 98,
+          "text": "  const header = request.headers[sessionHeaderName];\r"
+        },
+        {
+          "line": 99,
+          "text": "  const sessionId = String(Array.isArray(header) ? header[0] : header || '').trim();\r"
+        },
+        {
+          "line": 100,
+          "text": "  return sessionId ? sessions.get(sessionId) || null : null;\r"
+        },
+        {
+          "line": 103,
+          "text": "function callbackUserAgent(request) {\r"
+        },
+        {
+          "line": 108,
+          "text": "function replaySessionId(ticket, request) {\r"
+        },
+        {
+          "line": 109,
+          "text": "  cleanupExpiredSessions();\r"
+        },
+        {
+          "line": 110,
+          "text": "  const grant = callbackReplayGrants.get(ticket);\r"
+        },
+        {
+          "line": 111,
+          "text": "  if (!grant || grant.userAgent !== callbackUserAgent(request)) return '';\r"
+        },
+        {
+          "line": 112,
+          "text": "  return sessions.has(grant.sessionId) ? grant.sessionId : '';\r"
+        },
+        {
+          "line": 115,
+          "text": "function rememberCallback(ticket, sessionId, request) {\r"
+        },
+        {
+          "line": 116,
+          "text": "  callbackReplayGrants.set(ticket, {\r"
+        },
+        {
+          "line": 117,
+          "text": "    sessionId,\r"
+        },
+        {
+          "line": 118,
+          "text": "    userAgent: callbackUserAgent(request),\r"
+        },
+        {
+          "line": 119,
+          "text": "    expiresAt: Date.now() + Math.min(callbackReplayTtlMillis, sessionTtlSeconds * 1000)\r"
+        },
+        {
+          "line": 123,
+          "text": "function createAssistantSession(validation) {\r"
+        },
+        {
+          "line": 124,
+          "text": "  const permissions = [...new Set(\r"
+        },
+        {
+          "line": 125,
+          "text": "    (Array.isArray(validation.permissions) ? validation.permissions : [])\r"
+        },
+        {
+          "line": 126,
+          "text": "      .map((value) => String(value || '').trim())\r"
+        },
+        {
+          "line": 127,
+          "text": "      .filter(Boolean)\r"
+        },
+        {
+          "line": 128,
+          "text": "  )];\r"
+        },
+        {
+          "line": 129,
+          "text": "  if (!permissions.includes(queryPermission)) {\r"
+        },
+        {
+          "line": 130,
+          "text": "    throw new Error('ERP 授权响应缺少分贝通费用报销查询权限。');\r"
+        },
+        {
+          "line": 131,
+          "text": "  }\r"
+        },
+        {
+          "line": 132,
+          "text": "  const sessionId = randomUUID();\r"
+        },
+        {
+          "line": 133,
+          "text": "  sessions.set(sessionId, {\r"
+        },
+        {
+          "line": 134,
+          "text": "    userId: validation.userId,\r"
+        },
+        {
+          "line": 135,
+          "text": "    permissions: [queryPermission],\r"
+        },
+        {
+          "line": 136,
+          "text": "    kingdeeConfig: normalizeAssistantKingdeeConfig(validation.kingdeeConfig),\r"
+        },
+        {
+          "line": 137,
+          "text": "    expiresAt: Date.now() + sessionTtlSeconds * 1000\r"
+        },
+        {
+          "line": 138,
+          "text": "  });\r"
+        },
+        {
+          "line": 139,
+          "text": "  return sessionId;\r"
+        },
+        {
+          "line": 140,
+          "text": "}\r"
+        },
+        {
+          "line": 141,
+          "text": "\r"
+        },
+        {
+          "line": 142,
+          "text": "async function validateTicket(ticket) {\r"
+        },
+        {
+          "line": 143,
+          "text": "  const response = await fetch(ticketValidateUrl, {\r"
+        },
+        {
+          "line": 144,
+          "text": "    method: 'POST',\r"
+        },
+        {
+          "line": 145,
+          "text": "    headers: { 'Content-Type': 'application/json' },\r"
+        },
+        {
+          "line": 146,
+          "text": "    body: JSON.stringify({ ticket })\r"
+        },
+        {
+          "line": 147,
+          "text": "  });\r"
+        },
+        {
+          "line": 148,
+          "text": "  if (!response.ok) throw new Error(`ERP 授权校验失败：HTTP ${response.status}`);\r"
+        },
+        {
+          "line": 149,
+          "text": "  const body = await response.json();\r"
+        },
+        {
+          "line": 150,
+          "text": "  if (body?.code !== 0) {\r"
+        },
+        {
+          "line": 151,
+          "text": "    throw new Error(body?.msg || 'ERP 拒绝了分贝通助手授权。');\r"
+        },
+        {
+          "line": 152,
+          "text": "  }\r"
+        },
+        {
+          "line": 153,
+          "text": "  return body.data || { valid: false, reason: 'empty_response' };\r"
+        },
+        {
+          "line": 154,
+          "text": "}\r"
+        },
+        {
+          "line": 155,
+          "text": "\r"
+        },
+        {
+          "line": 156,
+          "text": "function redirectToSession(response, sessionId) {\r"
+        },
+        {
+          "line": 158,
+          "text": "    Location: `/?${sessionQueryName}=${encodeURIComponent(sessionId)}`,\r"
+        },
+        {
+          "line": 159,
+          "text": "    'Set-Cookie': `${sessionCookieName}=${encodeURIComponent(sessionId)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${sessionTtlSeconds}`,\r"
+        },
+        {
+          "line": 165,
+          "text": "async function handleAuthCallback(request, response, requestUrl) {\r"
+        },
+        {
+          "line": 166,
+          "text": "  const ticket = String(requestUrl.searchParams.get('ticket') || '').trim();\r"
+        },
+        {
+          "line": 167,
+          "text": "  if (!ticket) return sendForbiddenPage(response, '没有取得 ERP 授权票据，请从 ERP 系统入口重新进入。');\r"
+        },
+        {
+          "line": 169,
+          "text": "  const replay = replaySessionId(ticket, request);\r"
+        },
+        {
+          "line": 170,
+          "text": "  if (replay) return redirectToSession(response, replay);\r"
+        },
+        {
+          "line": 173,
+          "text": "    const validation = await validateTicket(ticket);\r"
+        },
+        {
+          "line": 177,
+          "text": "    const sessionId = createAssistantSession(validation);\r"
+        },
+        {
+          "line": 178,
+          "text": "    rememberCallback(ticket, sessionId, request);\r"
+        },
+        {
+          "line": 179,
+          "text": "    return redirectToSession(response, sessionId);\r"
+        },
+        {
+          "line": 245,
+          "text": "    if (request.method === 'GET' && requestUrl.pathname === '/auth/callback') {\r"
+        },
+        {
+          "line": 246,
+          "text": "      return await handleAuthCallback(request, response, requestUrl);\r"
+        },
+        {
+          "line": 249,
+          "text": "    const session = requestUrl.pathname.startsWith('/api/')\r"
+        },
+        {
+          "line": 250,
+          "text": "      ? getApiSession(request)\r"
+        },
+        {
+          "line": 251,
+          "text": "      : getSession(request, requestUrl);\r"
+        },
+        {
+          "line": 252,
+          "text": "    if (!session) {\r"
+        },
+        {
+          "line": 256,
+          "text": "          'ASSISTANT_SESSION_REQUIRED',\r"
+        },
+        {
+          "line": 263,
+          "text": "    if (request.method === 'GET' && requestUrl.pathname === '/api/assistant/session') {\r"
+        },
+        {
+          "line": 267,
+          "text": "          userId: session.userId,\r"
+        },
+        {
+          "line": 268,
+          "text": "          permissions: session.permissions,\r"
+        },
+        {
+          "line": 269,
+          "text": "          expiresTime: new Date(session.expiresAt).toISOString()\r"
+        },
+        {
+          "line": 275,
+          "text": "      if (!session.permissions.includes(queryPermission)) {\r"
+        },
+        {
+          "line": 278,
+          "text": "          'ASSISTANT_PERMISSION_DENIED',\r"
+        },
+        {
+          "line": 279,
+          "text": "          `当前账号缺少权限：${queryPermission}`\r"
+        },
+        {
+          "line": 282,
+          "text": "      return await runWithAssistantSession(session, () => handleApi(request, response));\r"
+        }
+      ],
+      "kingdeeContract": [
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 13,
+          "text": "export function normalizeAssistantKingdeeConfig(input) {\r"
+        },
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 18,
+          "text": "    baseUrl: requiredText(input.baseUrl, 'kingdeeConfig.baseUrl'),\r"
+        },
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 19,
+          "text": "    acctId: requiredText(input.acctId, 'kingdeeConfig.acctId'),\r"
+        },
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 20,
+          "text": "    username: requiredText(input.username, 'kingdeeConfig.username'),\r"
+        },
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 21,
+          "text": "    password: requiredText(input.password, 'kingdeeConfig.password'),\r"
+        },
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 22,
+          "text": "    lcid: positiveInteger(input.lcid, 'kingdeeConfig.lcid')\r"
+        },
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 26,
+          "text": "function requiredText(value, field) {\r"
+        },
+        {
+          "file": "/app/backend/src/assistant-session-context.js",
+          "line": 28,
+          "text": "  if (!text) throw new Error(`${field} is required`);\r"
+        }
+      ],
+      "backendConnectivity": [
+        {
+          "path": "/actuator/health",
+          "status": 200
+        },
+        {
+          "path": "/admin-api/system/auth/fenbeitong-assistant-ticket/validate",
+          "status": 200
+        }
+      ]
+    },
+    "frontendAssets": [
+      {
+        "file": "/proc/29697/root/usr/share/nginx/html/assets/index-CMPcygOf.js",
+        "assistantUrls": [],
+        "hasTicketEndpoint": false,
+        "hasCallback": true,
+        "hasStatus": false,
+        "callbackContext": "LZyrPI.js\";const k={key:1,class:\"fenbeitong-assistant-launch\"},E={class:\"fenbeitong-assistant-launch__actions\"},x=[\"src\"],I=t(o({name:\"ErpFenbeitongVoucher\",__name:\"index\",setup(t){const o=u(!1),I=u(\"\"),S=u(!1),T=u(!1),j=u(\"\"),A=u(\"\"),L=c((()=>\"\".trim()||\"\")),N=async()=>{const a=await s();A.value=((a,e)=>{if(!e)throw new Error(\"分贝通费用报销助手授权失败：未取得访问票据。\");const s=a.endsWith(\"/\")?a:`${a}/`,t=new URL(\"auth/callback\",s);return t.searchParams.set(\"ticket\",e),t.toString()})(L.value,a.ticket),S.value=!1},C=async()=>{if(L.value){T.value=!0,o.value=!0,I.value=\"\";try{const a=await e();if(j.value=a.message",
+        "currentIndexDependencyChain": [
+          "index-B6e3-tiL.js",
+          "index-CMPcygOf.js"
+        ]
+      },
+      {
+        "file": "/proc/29697/root/usr/share/nginx/html/assets/index-B6e3-tiL.js",
+        "assistantUrls": [],
+        "hasTicketEndpoint": true,
+        "hasCallback": false,
+        "hasStatus": true,
+        "callbackContext": ""
+      },
+      {
+        "nginxAssistantConfig": [],
+        "entryScripts": [
+          "index-B6e3-tiL.js",
+          "form-create-BPLZyrPI.js",
+          "form-designer-XEVJJnpf.js"
+        ]
+      }
+    ]
+  }
+}

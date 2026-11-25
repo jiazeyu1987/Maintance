@@ -1,5 +1,11 @@
 # 请求与命令记录
 
+## 20261125-intruoyi-fenbeitong-compatibility
+
+- 用户需求：另一台机器发布分贝通后，IntRuoyi是否需要对应修改。
+- 命令意图：只读本机接入源码与两服登记容器的安全配置、助手契约、当前前端静态依赖链；不登录写入、不发布或重启。
+- 验证结论：两服当前IntRuoyi前端产物均把助手地址编译为空，需补齐前端按环境地址配置；现有票据字段契约未发现必要修改。仅技术核查，未做真实页面验收。证据见doc/tasks/20261125-intruoyi-fenbeitong-compatibility/。
+
 ## 20261125-fenbeitong-cross-machine-release-observation
 
 - 用户需求：另一台机器发布分贝通到测试与正式，本机是否能看到。
