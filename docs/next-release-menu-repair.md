@@ -2,9 +2,11 @@
 
 ## 状态与授权
 
-test_completed_prod_pending。用户2026-11-20明确要求“更新IntRuoyi的代码，然后在下次发布的时候帮我修复菜单问题”，随后要求“发布到测试服务器”。测试服修复已完成，正式服仍待下一次授权发布，无需重复询问已授权的菜单修复范围。
+completed。用户2026-11-20授权下一次发布修复菜单，本轮明确要求发布IntRuoyi到测试服务器和正式服务器。2026-11-26已在同一releaseTag `2026-11-26-01-52-12` 下完成两服发布及真实页面验收，关闭此前正式服待核验项。
 
-代码已更新并新增前向修复，应用提交152a084c3ebc8eefcddf300f66384e1117b297b9。测试服版本2026-11-20-14-42-40、publish-test JOB-363a294001 succeeded；20261120_mes_schedule_order_menu_forward在test账本APPLIED（SHA256 48b977ec238a8c8c215ff65b52d664da36d64e0a1af09d83bcdc43daf0e4082b）。真实库1941条菜单仅5580改变，900120保持根级，已查角色关联/套餐不变；登录权限树和真实菜单点击通过。运行态、版本与变更说明验收见[测试发布记录](../doc/tasks/20261120-test-release-menu-repair/verification.md)。**本轮未发布正式服，不能宣称两服菜单均已修复。**
+2026-11-20阶段历史：应用提交152a084c3ebc8eefcddf300f66384e1117b297b9新增前向修复。测试服版本2026-11-20-14-42-40、publish-test JOB-363a294001 succeeded；20261120_mes_schedule_order_menu_forward在test账本APPLIED（SHA256 48b977ec238a8c8c215ff65b52d664da36d64e0a1af09d83bcdc43daf0e4082b）。该阶段真实库1941条菜单仅5580改变，900120保持根级，角色关联/套餐不变，登录权限树和真实菜单点击通过；当时未发布正式服。历史证据见[测试发布记录](../doc/tasks/20261120-test-release-menu-repair/verification.md)。
+
+2026-11-26最终核验：源码 `eb866bbaf4ea1b1c6db93daa63e77576766c3684`，测试JOB-ea115d06b9、正式JOB-9bf24c43bb和开放JOB-65c04bddbe均succeeded。两服5580均为“排产工单”、parent=900120、path=/mes/pro/schedule-order、permission=mes:pro-schedule-order:query、sort=1；900120保持根级。两服实际登录后从“智能排产”点击“排产工单”、真实列表及最近排产读取、可见版本说明均通过。两服所核5条菜单最终结构一致；991503位于990253下并使用绝对配置路径。5580/991503直接角色关联数量保持；正式服必要祖先990200/990253各补1个既有配置角色的祖先关联，未扩大到全角色授权。正式服本轮之前5580已是目标结构，本轮确认其保持，不重建其它机器的具体历史变更时点。证据见[本轮验收](../doc/tasks/20261125-intruoyi-fenbeitong-test-prod-release/verification.md)及同目录release-result.json、逐入口页面验收报告。
 
 ## 执行门禁
 

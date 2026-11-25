@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "path": "C:\\SpugHandoff\\release\\fenbeitong-ticket-tenant-20261126",
+  "commit": "eb866bbaf4ea1b1c6db93daa63e77576766c3684",
+  "verifiedTrackedFiles": 25300,
+  "gitRemovalExitCode": 0,
+  "residualRemoved": false,
+  "ownershipVerified": true,
+  "generatedLinksDetached": 0,
+  "registeredAfter": false,
+  "physicalPathExists": false
+}

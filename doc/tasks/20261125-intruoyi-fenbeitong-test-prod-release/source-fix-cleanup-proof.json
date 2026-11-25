@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "path": "C:\\SpugHandoff\\release\\registration-config-release-fix-20261126",
+  "commit": "6a099294a0b045f59b4f3896e06c20f1486a35e3",
+  "verifiedTrackedFiles": 25300,
+  "gitRemovalExitCode": 0,
+  "residualRemoved": false,
+  "ownershipVerified": true,
+  "generatedLinksDetached": 0,
+  "registeredAfter": false,
+  "physicalPathExists": false
+}

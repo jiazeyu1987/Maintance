@@ -1,0 +1,31 @@
+{
+  "status": "KNOWN_CONFIGURATION_GAP",
+  "releaseTag": "2026-11-26-01-52-12",
+  "observedIn": [
+    "test",
+    "prod-maintenance"
+  ],
+  "endpoint": "/api/fenbeitong-expense-reimbursement/config",
+  "httpStatus": 400,
+  "errorCode": "REQUEST_FAILED",
+  "message": "configuration is missing",
+  "realUiState": "NOT_CONFIGURED",
+  "sourceFiles": [
+    {
+      "path": "/app/backend/src/routes.js",
+      "sha256": "c7497077de690d89ecc413b05445d311b117226a3b3f0c1003ebd7944fc11bb9"
+    },
+    {
+      "path": "/app/frontend/src/api.js",
+      "sha256": "fb2b768bd7a930809e1a95456d748db555cf469aade4179fe610e3cfe543f5f7"
+    },
+    {
+      "path": "/app/frontend/src/app.js",
+      "sha256": "cad6fca3e11d13f67ad24b5f06f5f12fdda7c09fc1260015d34d53d9cb0bc573"
+    }
+  ],
+  "actualSourcesEqualAcrossTargets": true,
+  "attribution": "助手未保存费用报销字段对应关系。真实映射面板显示尚无已保存配置；本次未改动助手、未保存业务配置。",
+  "impact": "ERP真实认证入口已通过；财务同步、生成报销单、记账未进行验收，使用前需确认业务映射。",
+  "scopeDecision": "不阻断本次ERP程序部署和认证入口验收，不代表财务业务已就绪。"
+}

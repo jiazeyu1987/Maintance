@@ -1,0 +1,29 @@
+{
+  "status": "PASS",
+  "executorPid": 29472,
+  "stableExecutorPathVerified": true,
+  "stableExecutorCwdVerified": true,
+  "privateConfigBytesPreserved": true,
+  "installedAgentMatchesCommit": true,
+  "ownedWorktreesAbsent": [
+    "C:\\SpugHandoff\\release\\build\\2026-11-25-23-53-05",
+    "C:\\SpugHandoff\\release\\build\\2026-11-26-00-12-02",
+    "C:\\SpugHandoff\\release\\build\\2026-11-26-01-52-12",
+    "C:\\SpugHandoff\\release\\registration-config-release-fix-20261126",
+    "C:\\SpugHandoff\\release\\fenbeitong-ticket-tenant-20261126",
+    "C:\\SpugHandoff\\release\\intruoyi-fenbeitong-release-20261125"
+  ],
+  "slots": [
+    {
+      "name": "registration-config-release-fix-20261126",
+      "slot": 9,
+      "active": false
+    },
+    {
+      "name": "fenbeitong-ticket-tenant-20261126",
+      "slot": 10,
+      "active": false
+    }
+  ],
+  "sourceFixInIntMain": true
+}

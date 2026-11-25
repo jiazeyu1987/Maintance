@@ -1,0 +1,352 @@
+{
+  "environment": "test",
+  "releaseTag": "2026-11-26-01-52-12",
+  "sourceCommit": "eb866bbaf4ea1b1c6db93daa63e77576766c3684",
+  "packageSha256": "74357f22c93cb3db8e98cd3cc217f36ddc18f4d28afb2717dc396447dc1147f3",
+  "jobId": "JOB-ea115d06b9",
+  "reviewer": "Codex",
+  "status": "PASS_WITH_OBSERVATIONS",
+  "scope": {
+    "verified": [
+      "real frontend login",
+      "schedule menu and actual list response (including actual empty state)",
+      "Fenbeitong status URL, issued ticket and authenticated helper iframe",
+      "visible version and nonempty changelog"
+    ],
+    "notVerified": [
+      "Fenbeitong voucher synchronization or accounting writes",
+      "workbench context initialization and source registry loading",
+      "full business E2E"
+    ]
+  },
+  "blockers": [],
+  "reports": [
+    {
+      "probe": "menu",
+      "evidenceSha256": "b12001fe8977e2f30371c2de51bec876c246dd1c43d5452430e97869df2c4ecc",
+      "script": "menu-page-check.cjs",
+      "scriptSha256": "6ba2a382c3a09a88ee19e5ccbceff1b705ba4997a8e32fe680f6ff4eeb778222",
+      "observationWindow": [
+        "2026-11-25T19:32:39.153Z",
+        "2026-11-25T19:32:48.740Z"
+      ],
+      "checks": [
+        {
+          "name": "real-login",
+          "status": "PASS"
+        },
+        {
+          "name": "menu-navigation-and-real-data",
+          "status": "PASS",
+          "path": "/mes/pro/schedule-order",
+          "total": 0,
+          "rows": 0,
+          "latestStatus": 0
+        },
+        {
+          "name": "page-version-and-changelog",
+          "status": "PASS",
+          "releaseTag": "2026-11-26-01-52-12",
+          "sourceCommit": "eb866bbaf4ea1b1c6db93daa63e77576766c3684",
+          "changes": [
+            "eb866bbaf 任务: 修复分贝通票据租户上下文",
+            "6a099294a 任务: 补齐注册证配置菜单发布登记和预检",
+            "e1ccafbc6 Merge remote-tracking branch 'origin/int_main' into int_main",
+            "b3ee0c561 fix(mes): guard SOP upload saves and extend route lifecycle regression tests",
+            "2b4d90c40 Merge remote-tracking branch 'origin/int_main' into int_main",
+            "54a0f7d8e fix: synchronize MES scheduling, route snapshots and registration fixes",
+            "158f4fed3 fix: 修复分贝通运行时地址接入",
+            "8d27d375d Merge remote-tracking branch 'origin/int_main' into int_main",
+            "cee13378b fix(dcc): show registration Excel import button without permission checks",
+            "01c362bff docs(release): record workbook permission preflight contract verification"
+          ]
+        }
+      ],
+      "observations": [
+        {
+          "id": "menu-0",
+          "rawEvent": {
+            "kind": "requestfailed",
+            "path": "https://hm.baidu.com/hm.js",
+            "error": "net::ERR_CONNECTION_CLOSED"
+          },
+          "index": 0,
+          "disposition": "nonblocking",
+          "attribution": "百度访问统计脚本请求被网络关闭；源码 plugins/tongji/index.ts 用途为页面访问统计。",
+          "impactEvidence": "本观察窗口真实登录、排产/分贝通入口、实际版本和变更说明均通过，统计脚本不参与这些路径。",
+          "owner": "前端访问统计及外部网络"
+        },
+        {
+          "id": "menu-1",
+          "rawEvent": {
+            "kind": "console",
+            "message": "Failed to load resource: net::ERR_CONNECTION_CLOSED",
+            "location": {
+              "url": "https://hm.baidu.com/hm.js?<redacted>",
+              "line": 0,
+              "column": 0,
+              "lineNumber": 0,
+              "columnNumber": 0
+            }
+          },
+          "index": 1,
+          "disposition": "nonblocking",
+          "attribution": "与索引0同一统计脚本请求对应的浏览器资源错误。",
+          "impactEvidence": "错误地址和 ERR_CONNECTION_CLOSED 与索引0一致；本窗口必需页面路径通过。",
+          "owner": "前端访问统计及外部网络"
+        },
+        {
+          "id": "menu-2",
+          "rawEvent": {
+            "kind": "requestfailed",
+            "path": "http://test.yudao.iocoder.cn/user/avatar/<redacted>",
+            "error": "net::ERR_BLOCKED_BY_ORB"
+          },
+          "index": 2,
+          "disposition": "nonblocking",
+          "attribution": "用户头像外部图片被浏览器 ORB 拦截；UserInfo.vue 将该资源用于顶部头像装饰，未确定服务端 MIME 根因。",
+          "impactEvidence": "已核真实身份及页面必需检查通过，截图仅顶部头像为灰色；未将头像问题隐藏或修复。",
+          "owner": "用户头像资源配置"
+        },
+        {
+          "id": "menu-3",
+          "rawEvent": {
+            "kind": "interception",
+            "path": "/admin-api/workbench/context",
+            "method": "POST",
+            "reason": "predeclared read-only boundary"
+          },
+          "index": 3,
+          "disposition": "nonblocking",
+          "attribution": "验收预先声明的只读保护拦截 workbench/context POST，属于工作台上下文初始化。",
+          "impactEvidence": "该写入不在已授权只读页面验收范围；排产列表、分贝通认证及版本读取均实际通过。工作台初始化未验证。",
+          "owner": "验收只读范围与工作台上下文模块"
+        },
+        {
+          "id": "menu-4",
+          "rawEvent": {
+            "kind": "requestfailed",
+            "path": "http://172.30.30.58:8081/admin-api/workbench/context",
+            "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+          },
+          "index": 4,
+          "disposition": "nonblocking",
+          "attribution": "索引3主动拦截对应的 ERR_BLOCKED_BY_CLIENT 请求失败。",
+          "impactEvidence": "相同 workbench/context 路径、同一观察窗口；没有向服务器发送该写请求。",
+          "owner": "验收只读保护"
+        },
+        {
+          "id": "menu-5",
+          "rawEvent": {
+            "kind": "console",
+            "message": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector",
+            "location": {
+              "url": "http://172.30.30.58:8081/admin-api/workbench/context",
+              "line": 0,
+              "column": 0,
+              "lineNumber": 0,
+              "columnNumber": 0
+            }
+          },
+          "index": 5,
+          "disposition": "nonblocking",
+          "attribution": "索引3和4对应的 workbench/context 浏览器控制台资源错误。",
+          "impactEvidence": "地址及 blocked-by-client 原因一致；其它必需检查实际通过，不代表工作台完整业务通过。",
+          "owner": "验收只读保护"
+        }
+      ],
+      "pendingRequestsAtWindowEnd": []
+    },
+    {
+      "probe": "fenbeitong",
+      "evidenceSha256": "19003c94120799e8f00b6409b8c0a992abf9b4f48ae41fc5c52bd4832c2f72da",
+      "script": "page-check.cjs",
+      "scriptSha256": "f90f0afbb22945317034dc252e31083bf006d9a5dfa98d0df0f9996daf7438da",
+      "observationWindow": [
+        "2026-11-25T19:59:52.167Z",
+        "2026-11-25T19:59:58.345Z"
+      ],
+      "checks": [
+        {
+          "name": "real-login",
+          "status": "PASS",
+          "tenant": "芋道源码",
+          "username": "admin"
+        },
+        {
+          "name": "runtime-public-url",
+          "status": "PASS",
+          "publicUrl": "http://172.30.30.58:18734/"
+        },
+        {
+          "name": "real-ticket-and-authenticated-iframe",
+          "status": "PASS",
+          "frameUrl": "http://172.30.30.58:18734/",
+          "visibleTextLength": 952
+        },
+        {
+          "name": "observed-page-requests-completed",
+          "status": "PASS",
+          "pendingRequests": 0
+        },
+        {
+          "name": "visible-version-and-changelog",
+          "status": "PASS",
+          "releaseTag": "2026-11-26-01-52-12",
+          "sourceCommit": "eb866bbaf4ea1b1c6db93daa63e77576766c3684",
+          "changes": [
+            "eb866bbaf 任务: 修复分贝通票据租户上下文",
+            "6a099294a 任务: 补齐注册证配置菜单发布登记和预检",
+            "e1ccafbc6 Merge remote-tracking branch 'origin/int_main' into int_main",
+            "b3ee0c561 fix(mes): guard SOP upload saves and extend route lifecycle regression tests",
+            "2b4d90c40 Merge remote-tracking branch 'origin/int_main' into int_main",
+            "54a0f7d8e fix: synchronize MES scheduling, route snapshots and registration fixes",
+            "158f4fed3 fix: 修复分贝通运行时地址接入",
+            "8d27d375d Merge remote-tracking branch 'origin/int_main' into int_main",
+            "cee13378b fix(dcc): show registration Excel import button without permission checks",
+            "01c362bff docs(release): record workbook permission preflight contract verification"
+          ]
+        }
+      ],
+      "observations": [
+        {
+          "id": "fenbeitong-0",
+          "rawEvent": {
+            "kind": "requestfailed",
+            "path": "https://hm.baidu.com/hm.js",
+            "error": "net::ERR_CONNECTION_CLOSED"
+          },
+          "index": 0,
+          "disposition": "nonblocking",
+          "attribution": "百度访问统计脚本请求被网络关闭；源码 plugins/tongji/index.ts 用途为页面访问统计。",
+          "impactEvidence": "本观察窗口真实登录、排产/分贝通入口、实际版本和变更说明均通过，统计脚本不参与这些路径。",
+          "owner": "前端访问统计及外部网络"
+        },
+        {
+          "id": "fenbeitong-1",
+          "rawEvent": {
+            "kind": "console",
+            "message": "Failed to load resource: net::ERR_CONNECTION_CLOSED",
+            "location": {
+              "url": "https://hm.baidu.com/hm.js?<redacted>",
+              "line": 0,
+              "column": 0,
+              "lineNumber": 0,
+              "columnNumber": 0
+            }
+          },
+          "index": 1,
+          "disposition": "nonblocking",
+          "attribution": "与索引0同一统计脚本请求对应的浏览器资源错误。",
+          "impactEvidence": "错误地址和 ERR_CONNECTION_CLOSED 与索引0一致；本窗口必需页面路径通过。",
+          "owner": "前端访问统计及外部网络"
+        },
+        {
+          "id": "fenbeitong-2",
+          "rawEvent": {
+            "kind": "requestfailed",
+            "path": "http://test.yudao.iocoder.cn/user/avatar/<redacted>",
+            "error": "net::ERR_BLOCKED_BY_ORB"
+          },
+          "index": 2,
+          "disposition": "nonblocking",
+          "attribution": "用户头像外部图片被浏览器 ORB 拦截；UserInfo.vue 将该资源用于顶部头像装饰，未确定服务端 MIME 根因。",
+          "impactEvidence": "已核真实身份及页面必需检查通过，截图仅顶部头像为灰色；未将头像问题隐藏或修复。",
+          "owner": "用户头像资源配置"
+        },
+        {
+          "id": "fenbeitong-3",
+          "rawEvent": {
+            "kind": "interception",
+            "path": "http://172.30.30.58:8081/admin-api/workbench/context",
+            "method": "POST",
+            "reason": "predeclared read-only protection"
+          },
+          "index": 3,
+          "disposition": "nonblocking",
+          "attribution": "验收预先声明的只读保护拦截 workbench/context POST，属于工作台上下文初始化。",
+          "impactEvidence": "该写入不在已授权只读页面验收范围；排产列表、分贝通认证及版本读取均实际通过。工作台初始化未验证。",
+          "owner": "验收只读范围与工作台上下文模块"
+        },
+        {
+          "id": "fenbeitong-4",
+          "rawEvent": {
+            "kind": "requestfailed",
+            "path": "http://172.30.30.58:8081/admin-api/workbench/context",
+            "error": "net::ERR_BLOCKED_BY_CLIENT.Inspector"
+          },
+          "index": 4,
+          "disposition": "nonblocking",
+          "attribution": "索引3主动拦截对应的 ERR_BLOCKED_BY_CLIENT 请求失败。",
+          "impactEvidence": "相同 workbench/context 路径、同一观察窗口；没有向服务器发送该写请求。",
+          "owner": "验收只读保护"
+        },
+        {
+          "id": "fenbeitong-5",
+          "rawEvent": {
+            "kind": "console",
+            "message": "Failed to load resource: net::ERR_BLOCKED_BY_CLIENT.Inspector",
+            "location": {
+              "url": "http://172.30.30.58:8081/admin-api/workbench/context",
+              "line": 0,
+              "column": 0,
+              "lineNumber": 0,
+              "columnNumber": 0
+            }
+          },
+          "index": 5,
+          "disposition": "nonblocking",
+          "attribution": "索引3和4对应的 workbench/context 浏览器控制台资源错误。",
+          "impactEvidence": "地址及 blocked-by-client 原因一致；其它必需检查实际通过，不代表工作台完整业务通过。",
+          "owner": "验收只读保护"
+        },
+        {
+          "id": "fenbeitong-6",
+          "rawEvent": {
+            "kind": "http",
+            "path": "http://172.30.30.58:18734/api/fenbeitong-expense-reimbursement/config",
+            "status": 400
+          },
+          "index": 6,
+          "disposition": "nonblocking",
+          "attribution": "本次未改动的助手实例尚无已保存字段对应关系；实际 GET config 返回 REQUEST_FAILED / configuration is missing，实际 routes.js:121-125 明确如此返回。",
+          "impactEvidence": "Playwright 已打开字段对应关系面板，明确显示尚无已保存配置；认证票据、助手页面和版本均通过。该配置缺口影响后续财务业务准备，未验证或放行凭证同步、生成/记账写入，本次不保存业务配置。",
+          "owner": "分贝通助手字段映射配置维护"
+        },
+        {
+          "id": "fenbeitong-7",
+          "rawEvent": {
+            "kind": "console",
+            "message": "Failed to load resource: the server responded with a status of 400 (Bad Request)",
+            "location": {
+              "url": "http://172.30.30.58:18734/api/fenbeitong-expense-reimbursement/config",
+              "line": 0,
+              "column": 0,
+              "lineNumber": 0,
+              "columnNumber": 0
+            }
+          },
+          "index": 7,
+          "disposition": "nonblocking",
+          "attribution": "索引6同一字段配置 GET 400 对应的浏览器控制台错误。",
+          "impactEvidence": "错误地址、状态与实际响应一致；助手 frontend/src/app.js:507-520 明确显示未保存映射状态，已通过真实页面核实，财务操作不在验收范围。",
+          "owner": "分贝通助手字段映射配置维护"
+        }
+      ],
+      "pendingRequestsAtWindowEnd": [
+        {
+          "rawEvent": {
+            "path": "http://172.30.30.58:8081/admin-api/workbench/sources",
+            "method": "GET",
+            "startedAt": "2026-11-25T19:59:58.336Z"
+          },
+          "index": 0,
+          "disposition": "out-of-scope-unverified",
+          "attribution": "窗口结束时刚发起的 GET /workbench/sources，源码 src/workbench/registry.ts:24-35 属于工作台来源目录加载。",
+          "impactEvidence": "未取得该请求响应，明确不记为成功；工作台上下文/初始化不在本次只读页面验收范围。此前所检查的请求已结束，真实排产、分贝通票据/iframe及版本说明均已通过。",
+          "owner": "工作台来源注册目录模块（未验收）"
+        }
+      ]
+    }
+  ]
+}

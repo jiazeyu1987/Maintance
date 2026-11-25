@@ -1,5 +1,7 @@
 # 项目经验索引
 
+- 维护worktree生成缓存 / ops/release/__pycache__ / Unknown non-generated build file / Python -B / ignored pyc：`docs/worktree-memory.md#维护工作区python生成缓存门禁`。先核ignored清单及完整派生字节，未知文件保持；精确缓存处理后继续原正式清理器。
+
 - 前后端自动重启 / service_recovery / unhealthy / 持久预算 / 人工停服pause / runtime-operation.lock / sourceLockPath：`docs/service-recovery.md#安装前门禁`。真实健康后显式arm；公共发布锁与原备份epoch共同保护，停服前pause，重启前保存私密日志，未知结果不重放，不清空预算或失败记录。
 
 - 当前数据库契约 / PATROL / APPLIED后漂移 / databaseContract / 迁移后语义检查：`docs/release-agent-checklist.md#当前应用数据库契约门禁`。当前有效契约随固定包发布，迁移后和开放前无条件核验；旧包缺契约不能前向晋级，不修改原包补字段。

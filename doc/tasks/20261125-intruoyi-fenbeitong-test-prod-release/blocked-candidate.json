@@ -1,0 +1,27 @@
+{
+  "status": "BLOCKED",
+  "environment": "test",
+  "releaseTag": "2026-11-26-00-12-02",
+  "sourceCommit": "6a099294a0b045f59b4f3896e06c20f1486a35e3",
+  "packageSha256": "4950b064d9ea01bcef157b5bcd1b234019847869a97a353dafe09dd0bef231c0",
+  "jobId": "JOB-7143335ebc",
+  "runtimeStatus": "PASS",
+  "scope": [
+    "real-login",
+    "schedule-menu-read",
+    "visible-version-and-changelog",
+    "fenbeitong-authenticated-iframe"
+  ],
+  "blocker": {
+    "path": "/auth/callback",
+    "status": 503,
+    "rootCause": "ERP ticket lacked issuing tenant; tenant configuration lookup failed"
+  },
+  "rawObservationCount": 8,
+  "observationWindow": [
+    "2026-11-25T17:23:56.540Z",
+    "2026-11-25T17:24:53.474Z"
+  ],
+  "evidenceSha256": "c386241639ae3973faaff7d82288b17cccef62b1f036e5798a51271061b14e0f",
+  "disposition": "Not marked tested; not promoted to production. Replaced by a new committed release after tenant fix."
+}

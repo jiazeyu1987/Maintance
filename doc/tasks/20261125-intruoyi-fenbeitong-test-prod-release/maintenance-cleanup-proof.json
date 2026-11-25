@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "path": "C:\\SpugHandoff\\release\\intruoyi-fenbeitong-release-20261125",
+  "commit": "ea06ce8983d2330f9fab478551209582c11582fe",
+  "verifiedTrackedFiles": 5348,
+  "gitRemovalExitCode": 0,
+  "residualRemoved": false,
+  "ownershipVerified": true,
+  "generatedLinksDetached": 0,
+  "registeredAfter": false,
+  "physicalPathExists": false,
+  "producedNewCommits": false
+}

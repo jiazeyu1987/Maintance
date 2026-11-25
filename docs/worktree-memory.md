@@ -11,6 +11,17 @@
 
 阶段命令：先`git rev-parse HEAD`、`git branch --show-current`和`git status --porcelain`，稀疏初始化后再次核；提交前运行cached清单/diff检查，提交后核与父提交差异。Fail Fast按Blocker保留现场；记录worktree绝对路径、目标SHA、稀疏初始化命令、预期/实际提交文件和是否已融合。此为执行门禁，尚非自动提交守卫。
 
+## 维护工作区Python生成缓存门禁
+
+- Trigger: 维护仓隔离worktree执行Python验证后准备清理，或清理器拒绝ops/release/__pycache__等路径。
+- Preflight check: 验证命令显式使用python -X utf8 -B；清理前核目标HEAD、Git登记、普通status及git ls-files --others --ignored --exclude-standard，不能只看普通Git洁净。出现缓存时列出精确路径，并对受控源码、pyc magic/flags/源时间与大小、完整marshal编译结果、无尾随数据和无链接逐项核验；删除前再核无消费者。
+- Blocker: 存在未知ignored文件、缓存和当前受控源码不符、来源或路径归属不明、源码未提交/未融合、活动消费者时保留工作区；pyc扩展名本身不构成删除依据。
+- Verification: 只有精确派生匹配的缓存可在外部保存原字节和SHA后逐文件unlink；确认缓存目录为空才rmdir，随后继续使用原正式清理器核全部受控文件、Git登记和物理目录。记录目标提交、精确文件清单、来源SHA、比较结果、原始拦截、删除回执和最终运行路径。
+- Forbidden action: 禁止扩大清理白名单、递归删除整个__pycache__、执行未知缓存验证来源、以git clean -fdx跳过未知文件保护，或把最初清理失败改成成功。
+- Evidence: doc/tasks/20261125-intruoyi-fenbeitong-test-prod-release/maintenance-generated-cache-proof.json、finish-maintenance-cleanup.py、execution-log.md及maintenance-cleanup-proof.json。
+
+阶段必查与推荐命令：验证前固定提交并使用python -X utf8 -B -m unittest <定向模块>；删除前执行git -C <worktree> status --porcelain和git -C <worktree> ls-files --others --ignored --exclude-standard。Fail Fast遵循Blocker；需要处理既有生成缓存时先只读核验并持久保存精确证据，通过后才处理对应文件，再走正式worktree清理。不得修改主工作区或其它任务缓存。
+
 - 已融合的任务分支使用 `ops/spug/release-center/integration_worktree_cleanup.py` 收尾，显式传 repo/worktree/root/commit/branch/merged-into 和工作区外的 proof。该入口复用长路径删除和生成物链接隔离，删除前持久记录归属；Git 登记已删除时只能凭同一回执重试，未知残留保持。详见 `docs/release-agent-checklist.md#发布来源同步与独立恢复收尾`。
 
 > 路径约定：`docs/...` 相对本维护仓根目录；`IntRuoyiBackend/...`、`IntRuoyiFronted/...` 及其源码命令相对当次已验证配置确定的主程序根目录。不依赖盘符，不猜测源码目录。此文件沿用交接资料中的规则；当前用户授权和 AGENTS.md 优先。

@@ -55,7 +55,7 @@
 阶段必查项与推荐命令：
 1. 发布：使用正常发布的 reopen 入口，记录 releaseTag、实际容器与来源 config pin；失败按同一候选身份重试，身份变化立即停止。
 2. 恢复：准备阶段解析父策略，实际恢复读取归档版本；运行 `python -m pytest scripts/tests/test_backup_variants.py`（Linux）及恢复相关测试，记录缺失/漂移拒绝证据；不增加第二轮全载荷扫描。
-3. 收尾：运行 `python ops/spug/release-center/integration_worktree_cleanup.py --repo REPO --worktree PATH --root ROOT --commit SHA --branch BRANCH --merged-into int_main --proof OUTSIDE_JSON`；记录融合验证、清理结果和 proof。未知归属立即停止，保留原件。
+3. 收尾：先按 `docs/worktree-memory.md#维护工作区python生成缓存门禁` 核普通status和全部ignored文件；维护Python验证使用 `python -X utf8 -B`，未知缓存必须先证明精确派生，不扩清理白名单。再运行 `python ops/spug/release-center/integration_worktree_cleanup.py --repo REPO --worktree PATH --root ROOT --commit SHA --branch BRANCH --merged-into int_main --proof OUTSIDE_JSON`；记录融合验证、清理结果和 proof。未知归属立即停止，保留原件。
 
 ## NAS 元数据打开后单链接校验门禁
 

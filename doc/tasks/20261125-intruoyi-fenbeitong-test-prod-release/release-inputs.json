@@ -1,0 +1,13 @@
+{
+  "sourceCommit": "e1ccafbc6638e64f544e609f9072096f529e45b2",
+  "maintenanceCommit": "ea06ce8983d2330f9fab478551209582c11582fe",
+  "maintenanceWorktree": "C:\\SpugHandoff\\release\\intruoyi-fenbeitong-release-20261125",
+  "newCommits": false,
+  "mainDirtyExcluded": true,
+  "installerSha256": "4184d2bded17da74a4e38ea7afd3377a90def0fa2d3d12c1d0525665854183a4",
+  "baselineScript": "menu-page-check.cjs",
+  "targets": [
+    "test",
+    "prod"
+  ]
+}

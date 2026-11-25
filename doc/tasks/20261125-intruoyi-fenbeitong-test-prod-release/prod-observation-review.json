@@ -1,0 +1,124 @@
+{
+  "releaseTag": "2026-11-26-01-52-12",
+  "reviewer": "Codex",
+  "probes": {
+    "menu": {
+      "evidenceSha256": "ee3edad3534686a34f587735352fb4d15358359e415c3dc08b083befcb1db1a9",
+      "observations": [
+        {
+          "index": 0,
+          "disposition": "nonblocking",
+          "attribution": "百度访问统计脚本请求被网络关闭；源码 plugins/tongji/index.ts 用途为页面访问统计。",
+          "impactEvidence": "本观察窗口真实登录、排产/分贝通入口、实际版本和变更说明均通过，统计脚本不参与这些路径。",
+          "owner": "前端访问统计及外部网络"
+        },
+        {
+          "index": 1,
+          "disposition": "nonblocking",
+          "attribution": "与索引0同一统计脚本请求对应的浏览器资源错误。",
+          "impactEvidence": "错误地址和 ERR_CONNECTION_CLOSED 与索引0一致；本窗口必需页面路径通过。",
+          "owner": "前端访问统计及外部网络"
+        },
+        {
+          "index": 2,
+          "disposition": "nonblocking",
+          "attribution": "用户头像外部图片被浏览器 ORB 拦截；UserInfo.vue 将该资源用于顶部头像装饰，未确定服务端 MIME 根因。",
+          "impactEvidence": "已核真实身份及页面必需检查通过，截图仅顶部头像为灰色；未将头像问题隐藏或修复。",
+          "owner": "用户头像资源配置"
+        },
+        {
+          "index": 3,
+          "disposition": "nonblocking",
+          "attribution": "验收预先声明的只读保护拦截 workbench/context POST，属于工作台上下文初始化。",
+          "impactEvidence": "该写入不在已授权只读页面验收范围；排产列表、分贝通认证及版本读取均实际通过。工作台初始化未验证。",
+          "owner": "验收只读范围与工作台上下文模块"
+        },
+        {
+          "index": 4,
+          "disposition": "nonblocking",
+          "attribution": "索引3主动拦截对应的 ERR_BLOCKED_BY_CLIENT 请求失败。",
+          "impactEvidence": "相同 workbench/context 路径、同一观察窗口；没有向服务器发送该写请求。",
+          "owner": "验收只读保护"
+        },
+        {
+          "index": 5,
+          "disposition": "nonblocking",
+          "attribution": "索引3和4对应的 workbench/context 浏览器控制台资源错误。",
+          "impactEvidence": "地址及 blocked-by-client 原因一致；其它必需检查实际通过，不代表工作台完整业务通过。",
+          "owner": "验收只读保护"
+        }
+      ],
+      "pendingRequests": []
+    },
+    "fenbeitong": {
+      "evidenceSha256": "28b2987a25e4801090d2b8f4be3f826dd59f72899dcc70e7ad2d4802393ed36f",
+      "observations": [
+        {
+          "index": 0,
+          "disposition": "nonblocking",
+          "attribution": "百度访问统计脚本请求被网络关闭；源码 plugins/tongji/index.ts 用途为页面访问统计。",
+          "impactEvidence": "本观察窗口真实登录、排产/分贝通入口、实际版本和变更说明均通过，统计脚本不参与这些路径。",
+          "owner": "前端访问统计及外部网络"
+        },
+        {
+          "index": 1,
+          "disposition": "nonblocking",
+          "attribution": "与索引0同一统计脚本请求对应的浏览器资源错误。",
+          "impactEvidence": "错误地址和 ERR_CONNECTION_CLOSED 与索引0一致；本窗口必需页面路径通过。",
+          "owner": "前端访问统计及外部网络"
+        },
+        {
+          "index": 2,
+          "disposition": "nonblocking",
+          "attribution": "用户头像外部图片被浏览器 ORB 拦截；UserInfo.vue 将该资源用于顶部头像装饰，未确定服务端 MIME 根因。",
+          "impactEvidence": "已核真实身份及页面必需检查通过，截图仅顶部头像为灰色；未将头像问题隐藏或修复。",
+          "owner": "用户头像资源配置"
+        },
+        {
+          "index": 3,
+          "disposition": "nonblocking",
+          "attribution": "验收预先声明的只读保护拦截 workbench/context POST，属于工作台上下文初始化。",
+          "impactEvidence": "该写入不在已授权只读页面验收范围；排产列表、分贝通认证及版本读取均实际通过。工作台初始化未验证。",
+          "owner": "验收只读范围与工作台上下文模块"
+        },
+        {
+          "index": 4,
+          "disposition": "nonblocking",
+          "attribution": "索引3主动拦截对应的 ERR_BLOCKED_BY_CLIENT 请求失败。",
+          "impactEvidence": "相同 workbench/context 路径、同一观察窗口；没有向服务器发送该写请求。",
+          "owner": "验收只读保护"
+        },
+        {
+          "index": 5,
+          "disposition": "nonblocking",
+          "attribution": "索引3和4对应的 workbench/context 浏览器控制台资源错误。",
+          "impactEvidence": "地址及 blocked-by-client 原因一致；其它必需检查实际通过，不代表工作台完整业务通过。",
+          "owner": "验收只读保护"
+        },
+        {
+          "index": 6,
+          "disposition": "nonblocking",
+          "attribution": "本次未改动的助手实例尚无已保存字段对应关系；实际 GET config 返回 REQUEST_FAILED / configuration is missing，实际 routes.js:121-125 明确如此返回。",
+          "impactEvidence": "Playwright 已打开字段对应关系面板，明确显示尚无已保存配置；认证票据、助手页面和版本均通过。该配置缺口影响后续财务业务准备，未验证或放行凭证同步、生成/记账写入，本次不保存业务配置。",
+          "owner": "分贝通助手字段映射配置维护"
+        },
+        {
+          "index": 7,
+          "disposition": "nonblocking",
+          "attribution": "索引6同一字段配置 GET 400 对应的浏览器控制台错误。",
+          "impactEvidence": "错误地址、状态与实际响应一致；助手 frontend/src/app.js:507-520 明确显示未保存映射状态，已通过真实页面核实，财务操作不在验收范围。",
+          "owner": "分贝通助手字段映射配置维护"
+        }
+      ],
+      "pendingRequests": [
+        {
+          "index": 0,
+          "disposition": "out-of-scope-unverified",
+          "attribution": "窗口结束时刚发起的 GET /workbench/sources，源码 src/workbench/registry.ts:24-35 属于工作台来源目录加载。",
+          "impactEvidence": "未取得该请求响应，明确不记为成功；工作台上下文/初始化不在本次只读页面验收范围。此前所检查的请求已结束，真实排产、分贝通票据/iframe及版本说明均已通过。",
+          "owner": "工作台来源注册目录模块（未验收）"
+        }
+      ]
+    }
+  }
+}

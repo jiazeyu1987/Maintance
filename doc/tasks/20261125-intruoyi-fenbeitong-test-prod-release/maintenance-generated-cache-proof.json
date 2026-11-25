@@ -1,0 +1,24 @@
+{
+  "status": "derived-cache-removed",
+  "commit": "ea06ce8983d2330f9fab478551209582c11582fe",
+  "files": [
+    {
+      "path": "ops/release/__pycache__/release_readonly_sql.cpython-312.pyc",
+      "source": "ops/release/release_readonly_sql.py",
+      "bytes": 2356,
+      "sha256": "21fae6bebea6dc7ad2ad9d421d2d8a711225681c7562be33b982c9c9507f9fb9",
+      "sourceSha256": "e0e4abcdafd4d3905763d81928f2f00d2baa4b2f0f864e07b73fe9a737641dca",
+      "exactCompiledCodeMatch": true
+    },
+    {
+      "path": "ops/release/__pycache__/release_target_preflight_contract.cpython-312.pyc",
+      "source": "ops/release/release_target_preflight_contract.py",
+      "bytes": 4790,
+      "sha256": "af62d7908842af25086ccc21a88646471d9c59a316372db0e9667f5907e018f4",
+      "sourceSha256": "883cd952d0fdb893b3a7fe272feb12e9d3ba8b325d432334408ecc6842136f47",
+      "exactCompiledCodeMatch": true
+    }
+  ],
+  "ignoredFilesExactlyMatched": true,
+  "originalBytesPreservedPrivately": true
+}

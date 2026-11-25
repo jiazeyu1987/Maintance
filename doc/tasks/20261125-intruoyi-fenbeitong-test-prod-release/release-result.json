@@ -1,0 +1,555 @@
+{
+  "status": "PASS",
+  "verifiedAt": "2026-11-25T20:11:29.165772+00:00",
+  "releaseTag": "2026-11-26-01-52-12",
+  "sourceCommit": "eb866bbaf4ea1b1c6db93daa63e77576766c3684",
+  "packageSha256": "74357f22c93cb3db8e98cd3cc217f36ddc18f4d28afb2717dc396447dc1147f3",
+  "manifestSha256": "b3b960c270ebec0a5594c75aee2d02e07739705004a1f1af99c38f1368d3976b",
+  "jobChain": [
+    {
+      "id": "JOB-1486fa339e",
+      "action": "build-release",
+      "status": "succeeded",
+      "releaseTag": "2026-11-26-01-52-12",
+      "createdAt": "2026-11-26-01-50-59",
+      "finishedAt": "2026-11-26-02-54-19"
+    },
+    {
+      "id": "JOB-ea115d06b9",
+      "action": "publish-test",
+      "status": "succeeded",
+      "releaseTag": "2026-11-26-01-52-12",
+      "createdAt": "2026-11-26-02-59-58",
+      "finishedAt": "2026-11-26-03-31-41"
+    },
+    {
+      "id": "JOB-b458ccb56f",
+      "action": "mark-tested",
+      "status": "succeeded",
+      "releaseTag": "2026-11-26-01-52-12",
+      "createdAt": "2026-11-26-03-40-10",
+      "finishedAt": "2026-11-26-03-42-27"
+    },
+    {
+      "id": "JOB-9bf24c43bb",
+      "action": "promote-prod",
+      "status": "succeeded",
+      "releaseTag": "2026-11-26-01-52-12",
+      "createdAt": "2026-11-26-03-46-15",
+      "finishedAt": "2026-11-26-03-55-19"
+    },
+    {
+      "id": "JOB-65c04bddbe",
+      "action": "accept-prod",
+      "status": "succeeded",
+      "releaseTag": "2026-11-26-01-52-12",
+      "createdAt": "2026-11-26-04-01-28",
+      "finishedAt": "2026-11-26-04-07-16"
+    }
+  ],
+  "targets": [
+    "test",
+    "prod"
+  ],
+  "runtimes": {
+    "test": {
+      "status": "PASS",
+      "environment": "test",
+      "releaseTag": "2026-11-26-01-52-12",
+      "gitCommit": "eb866bbaf4ea1b1c6db93daa63e77576766c3684",
+      "packageSha256": "74357f22c93cb3db8e98cd3cc217f36ddc18f4d28afb2717dc396447dc1147f3",
+      "manifestSha256": "b3b960c270ebec0a5594c75aee2d02e07739705004a1f1af99c38f1368d3976b",
+      "deploymentJob": "JOB-ea115d06b9",
+      "finalJob": "JOB-ea115d06b9",
+      "operation": "SUCCESS",
+      "backendHealth": "UP",
+      "frontendHttpStatus": 200,
+      "maintenance": false,
+      "runtimeOpeningPending": false,
+      "backupSourceBindingPending": false,
+      "technicalStatus": "passed",
+      "images": {
+        "backend": {
+          "imageId": "sha256:4825fe1571a18e634066c2d9927ecc4e7f6595fc24027fa992de195239a3f675",
+          "name": "intruoyi-backend:2026-11-26-01-52-12",
+          "running": true
+        },
+        "frontend": {
+          "imageId": "sha256:462ac2f7377973951734aa20d5373afef4a3a30c20aa83fbee55ee4082d503e6",
+          "name": "intruoyi-frontend:2026-11-26-01-52-12",
+          "running": true
+        }
+      },
+      "IMAGE_TAG": "2026-11-26-01-52-12",
+      "operationStatus": "succeeded",
+      "operationId": "OP-a0ba82e7c8e1222f67c0",
+      "publicUrl": "http://172.30.30.58:18734/",
+      "internalHost": "fenbeitong-assistant",
+      "actualJvmVerified": true,
+      "frontendReleaseTag": "2026-11-26-01-52-12",
+      "databaseContracts": [
+        {
+          "phase": "after-migrations",
+          "status": "PASS",
+          "releaseTag": "2026-11-26-01-52-12"
+        },
+        {
+          "phase": "before-backend-open",
+          "status": "PASS",
+          "releaseTag": "2026-11-26-01-52-12"
+        },
+        {
+          "phase": "before-public-open",
+          "status": "PASS",
+          "releaseTag": "2026-11-26-01-52-12"
+        }
+      ],
+      "privateEvidenceSha256": "f8df9a9f7fd5bbda05f7622c452a0a263767ea9f60fe86ccf8d058d90eabe73c"
+    },
+    "prod": {
+      "status": "PASS",
+      "environment": "prod",
+      "releaseTag": "2026-11-26-01-52-12",
+      "gitCommit": "eb866bbaf4ea1b1c6db93daa63e77576766c3684",
+      "packageSha256": "74357f22c93cb3db8e98cd3cc217f36ddc18f4d28afb2717dc396447dc1147f3",
+      "manifestSha256": "b3b960c270ebec0a5594c75aee2d02e07739705004a1f1af99c38f1368d3976b",
+      "deploymentJob": "JOB-9bf24c43bb",
+      "finalJob": "JOB-65c04bddbe",
+      "operation": "SUCCESS",
+      "backendHealth": "UP",
+      "frontendHttpStatus": 200,
+      "maintenance": false,
+      "runtimeOpeningPending": false,
+      "backupSourceBindingPending": false,
+      "technicalStatus": "passed",
+      "images": {
+        "backend": {
+          "imageId": "sha256:4825fe1571a18e634066c2d9927ecc4e7f6595fc24027fa992de195239a3f675",
+          "name": "intruoyi-backend:2026-11-26-01-52-12",
+          "running": true
+        },
+        "frontend": {
+          "imageId": "sha256:462ac2f7377973951734aa20d5373afef4a3a30c20aa83fbee55ee4082d503e6",
+          "name": "intruoyi-frontend:2026-11-26-01-52-12",
+          "running": true
+        }
+      },
+      "IMAGE_TAG": "2026-11-26-01-52-12",
+      "operationStatus": "succeeded",
+      "operationId": "OP-968efedbe5fbf6f10546",
+      "publicUrl": "http://172.30.30.57:18734/",
+      "internalHost": "fenbeitong-assistant",
+      "actualJvmVerified": true,
+      "frontendReleaseTag": "2026-11-26-01-52-12",
+      "databaseContracts": [
+        {
+          "phase": "after-migrations",
+          "status": "PASS",
+          "releaseTag": "2026-11-26-01-52-12"
+        },
+        {
+          "phase": "before-backend-open",
+          "status": "PASS",
+          "releaseTag": "2026-11-26-01-52-12"
+        },
+        {
+          "phase": "before-public-open",
+          "status": "PASS",
+          "releaseTag": "2026-11-26-01-52-12"
+        }
+      ],
+      "privateEvidenceSha256": "fef9792d50c539ceebcf7c331237e15c29e3c6a9ae5e2a2d0348564cc7326e4d"
+    }
+  },
+  "pageAcceptance": {
+    "test": {
+      "status": "PASS_WITH_OBSERVATIONS",
+      "report": "test-page-acceptance.json",
+      "sha256": "fd772e779cf7f61ac4d24b07741dedbf35a8f467d2bb20ca2be94c5929780890"
+    },
+    "prod-maintenance": {
+      "status": "PASS_WITH_OBSERVATIONS",
+      "report": "prod-maintenance-page-acceptance.json",
+      "sha256": "0f164c53e0add2fa814bf802785693571f15f086bef052af3af8c66ef918e6fa"
+    },
+    "prod": {
+      "status": "PASS_WITH_OBSERVATIONS",
+      "report": "prod-page-acceptance.json",
+      "sha256": "6137c92f1a0a8af529caaeec7ffcce114629260d3f3bc1fe57539def6f8f03fd"
+    }
+  },
+  "menuVerification": {
+    "test": {
+      "rows": [
+        [
+          "5580",
+          "排产工单",
+          "900120",
+          "/mes/pro/schedule-order",
+          "mes/pro/scheduleorder/index",
+          "MesProScheduleOrder",
+          "mes:pro-schedule-order:query",
+          "2",
+          "0",
+          "1",
+          "0",
+          "1"
+        ],
+        [
+          "900120",
+          "智能排产",
+          "0",
+          "/mes/smart-scheduling",
+          "",
+          "",
+          "mes:pro-smart-scheduling:query",
+          "1",
+          "0",
+          "1",
+          "0",
+          "60"
+        ],
+        [
+          "990200",
+          "基础数据",
+          "0",
+          "/mdm",
+          "NULL",
+          "NULL",
+          "",
+          "1",
+          "0",
+          "1",
+          "0",
+          "30"
+        ],
+        [
+          "990253",
+          "注册证管理",
+          "990200",
+          "registration-certificate-management",
+          "NULL",
+          "NULL",
+          "",
+          "1",
+          "0",
+          "1",
+          "0",
+          "22"
+        ],
+        [
+          "991503",
+          "注册证配置",
+          "990253",
+          "/dcc/registration-certificate/config",
+          "dcc/registration-certificate/config/index",
+          "DccRegistrationCertificateConfig",
+          "dcc:registration-certificate:config:query",
+          "2",
+          "0",
+          "1",
+          "0",
+          "30"
+        ]
+      ],
+      "rowsBefore": [
+        [
+          "5580",
+          "排产工单",
+          "900120",
+          "/mes/pro/schedule-order",
+          "mes/pro/scheduleorder/index",
+          "MesProScheduleOrder",
+          "mes:pro-schedule-order:query",
+          "2",
+          "0",
+          "1",
+          "0",
+          "1"
+        ],
+        [
+          "900120",
+          "智能排产",
+          "0",
+          "/mes/smart-scheduling",
+          "",
+          "",
+          "mes:pro-smart-scheduling:query",
+          "1",
+          "0",
+          "1",
+          "0",
+          "60"
+        ],
+        [
+          "990200",
+          "基础数据",
+          "0",
+          "/mdm",
+          "NULL",
+          "NULL",
+          "",
+          "1",
+          "0",
+          "1",
+          "0",
+          "30"
+        ],
+        [
+          "990253",
+          "注册证管理",
+          "990200",
+          "registration-certificate-management",
+          "NULL",
+          "NULL",
+          "",
+          "1",
+          "0",
+          "1",
+          "0",
+          "22"
+        ],
+        [
+          "991503",
+          "注册证配置",
+          "990253",
+          "/dcc/registration-certificate/config",
+          "dcc/registration-certificate/config/index",
+          "DccRegistrationCertificateConfig",
+          "dcc:registration-certificate:config:query",
+          "2",
+          "0",
+          "1",
+          "0",
+          "30"
+        ]
+      ],
+      "roleBindingCounts": {
+        "5580": "27",
+        "900120": "60",
+        "990200": "69",
+        "990253": "43",
+        "991503": "23"
+      },
+      "roleBindingCountsBefore": {
+        "5580": "27",
+        "900120": "60",
+        "990200": "69",
+        "990253": "43",
+        "991503": "23"
+      },
+      "roleBindingDeltas": {
+        "5580": 0,
+        "900120": 0,
+        "990200": 0,
+        "990253": 0,
+        "991503": 0
+      },
+      "preservedDirectMenuBindings": [
+        5580,
+        991503
+      ]
+    },
+    "prod": {
+      "rows": [
+        [
+          "5580",
+          "排产工单",
+          "900120",
+          "/mes/pro/schedule-order",
+          "mes/pro/scheduleorder/index",
+          "MesProScheduleOrder",
+          "mes:pro-schedule-order:query",
+          "2",
+          "0",
+          "1",
+          "0",
+          "1"
+        ],
+        [
+          "900120",
+          "智能排产",
+          "0",
+          "/mes/smart-scheduling",
+          "",
+          "",
+          "mes:pro-smart-scheduling:query",
+          "1",
+          "0",
+          "1",
+          "0",
+          "60"
+        ],
+        [
+          "990200",
+          "基础数据",
+          "0",
+          "/mdm",
+          "NULL",
+          "NULL",
+          "",
+          "1",
+          "0",
+          "1",
+          "0",
+          "30"
+        ],
+        [
+          "990253",
+          "注册证管理",
+          "990200",
+          "registration-certificate-management",
+          "NULL",
+          "NULL",
+          "",
+          "1",
+          "0",
+          "1",
+          "0",
+          "22"
+        ],
+        [
+          "991503",
+          "注册证配置",
+          "990253",
+          "/dcc/registration-certificate/config",
+          "dcc/registration-certificate/config/index",
+          "DccRegistrationCertificateConfig",
+          "dcc:registration-certificate:config:query",
+          "2",
+          "0",
+          "1",
+          "0",
+          "30"
+        ]
+      ],
+      "rowsBefore": [
+        [
+          "5580",
+          "排产工单",
+          "900120",
+          "/mes/pro/schedule-order",
+          "mes/pro/scheduleorder/index",
+          "MesProScheduleOrder",
+          "mes:pro-schedule-order:query",
+          "2",
+          "0",
+          "1",
+          "0",
+          "1"
+        ],
+        [
+          "900120",
+          "智能排产",
+          "0",
+          "/mes/smart-scheduling",
+          "",
+          "",
+          "mes:pro-smart-scheduling:query",
+          "1",
+          "0",
+          "1",
+          "0",
+          "60"
+        ],
+        [
+          "990200",
+          "基础数据",
+          "0",
+          "/mdm",
+          "NULL",
+          "NULL",
+          "",
+          "1",
+          "0",
+          "1",
+          "0",
+          "30"
+        ],
+        [
+          "990253",
+          "注册证管理",
+          "990200",
+          "registration-certificate-management",
+          "NULL",
+          "NULL",
+          "",
+          "1",
+          "0",
+          "1",
+          "0",
+          "22"
+        ],
+        [
+          "991503",
+          "注册证配置",
+          "6800",
+          "registration-certificate/config",
+          "dcc/registration-certificate/config/index",
+          "DccRegistrationCertificateConfig",
+          "dcc:registration-certificate:config:query",
+          "2",
+          "0",
+          "1",
+          "0",
+          "95"
+        ]
+      ],
+      "roleBindingCounts": {
+        "5580": "4",
+        "900120": "22",
+        "990200": "21",
+        "990253": "11",
+        "991503": "4"
+      },
+      "roleBindingCountsBefore": {
+        "5580": "4",
+        "900120": "22",
+        "990200": "20",
+        "990253": "10",
+        "991503": "4"
+      },
+      "roleBindingDeltas": {
+        "5580": 0,
+        "900120": 0,
+        "990200": 1,
+        "990253": 1,
+        "991503": 0
+      },
+      "preservedDirectMenuBindings": [
+        5580,
+        991503
+      ]
+    }
+  },
+  "scope": {
+    "verified": [
+      "actual frontend login",
+      "schedule menu and actual list response",
+      "Fenbeitong ticket and authenticated helper iframe",
+      "visible version and changelog"
+    ],
+    "notVerified": [
+      "voucher synchronization and accounting writes",
+      "workbench context initialization",
+      "full business E2E",
+      "audit server deployment"
+    ]
+  },
+  "knownIssues": [
+    "Pre-existing registration reminder owner/deadline configuration is missing for some tenants; no business configuration was changed.",
+    "Both helpers have no saved reimbursement field mapping (GET config HTTP400, explicitly verified in each real UI); financial synchronization/accounting was not accepted."
+  ],
+  "historicalAttempts": [
+    {
+      "releaseTag": "2026-11-25-23-53-05",
+      "status": "build_failed",
+      "reason": "Unregistered forward menu migration; fixed in 6a099294a0b045f59b4f3896e06c20f1486a35e3"
+    },
+    {
+      "releaseTag": "2026-11-26-00-12-02",
+      "status": "test_page_blocked",
+      "reason": "Fenbeitong callback missing issuing tenant context; fixed in final source commit"
+    }
+  ]
+}
