@@ -1,0 +1,45 @@
+{
+  "status": "OBSERVED_SAME_RELEASE_HEALTHY",
+  "collectedAtUtc": "2026-11-25T09:32:14.728349+00:00",
+  "evidenceSha256": "00ab0258c19daf85c8990d7b392e32082da3dfc30c5c5a3135b0eb06b304ece9",
+  "targets": [
+    {
+      "environment": "test",
+      "host": "172.30.30.58",
+      "releaseTag": "2026-11-25-16-50-01",
+      "sourceSha256": "22bce5353416bbc02e24859f926c9fa16b5f7ec013a23c6a154cb36b4a6921a9",
+      "imageId": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+      "packageSha256": "79fe21eab8045c21c5e3f5cec9b490edfc1572d7e0946415e6cc48c9caf3b428",
+      "manifestSha256": "188e684f4b5d4b616046db4148a45037abfa8e442f8760638232aba26d6db5e1",
+      "status": "running",
+      "health": "HTTP 200 / ok",
+      "deploymentJob": "JOB-fccf5f1839",
+      "verificationJob": "JOB-cba63fd7b2",
+      "deployedAtUtc": "2026-11-25T09:01:27.246775Z",
+      "stableDuringObservation": true
+    },
+    {
+      "environment": "prod",
+      "host": "172.30.30.57",
+      "releaseTag": "2026-11-25-16-50-01",
+      "sourceSha256": "22bce5353416bbc02e24859f926c9fa16b5f7ec013a23c6a154cb36b4a6921a9",
+      "imageId": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+      "packageSha256": "79fe21eab8045c21c5e3f5cec9b490edfc1572d7e0946415e6cc48c9caf3b428",
+      "manifestSha256": "188e684f4b5d4b616046db4148a45037abfa8e442f8760638232aba26d6db5e1",
+      "status": "running",
+      "health": "HTTP 200 / ok",
+      "deploymentJob": "JOB-c9131deb67",
+      "verificationJob": "JOB-4413e71479",
+      "deployedAtUtc": "2026-11-25T09:09:18.935777Z",
+      "stableDuringObservation": true
+    }
+  ],
+  "scope": "Read-only installed identity, health and existing remote receipts",
+  "notVerified": [
+    "Other computer local task/acceptance history",
+    "End-to-end reimbursement or external integration business behavior",
+    "Original release.tar full content checksum or recovery archive integrity"
+  ],
+  "remoteWrites": false,
+  "localHistoryImported": false
+}

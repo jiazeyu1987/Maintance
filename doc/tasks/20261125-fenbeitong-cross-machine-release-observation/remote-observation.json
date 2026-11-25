@@ -1,0 +1,733 @@
+{
+  "collectedAtUtc": "2026-11-25T09:32:14.728349+00:00",
+  "authorization": "read-only test/prod Fenbeitong release observation",
+  "transportConfig": "C:\\SpugHandoff\\release\\executor.private.json",
+  "results": [
+    {
+      "observedAtUtc": "2026-11-25T09:32:13.169130Z",
+      "root": "/var/lib/docker/fenbeitong-release",
+      "assistantContainers": [
+        "fenbeitong-assistant",
+        "fenbeitong-assistant-before-JOB-fccf5f1839",
+        "fenbeitong-assistant-before-JOB-c6f154e414",
+        "fenbeitong-assistant-before-JOB-20fcf14371",
+        "fenbeitong-assistant-before-JOB-8518d6932b",
+        "fenbeitong-assistant-before-JOB-4863285a07",
+        "fenbeitong-assistant-before-JOB-82ccb56a1a",
+        "fenbeitong-assistant-before-network-JOB-e4dc941f0c"
+      ],
+      "installed": true,
+      "applicationLabelVerified": true,
+      "container": {
+        "id": "dc22118a70e66ffddc42ca8820bcfb4eb2cde699e79a76fc01cce6d25d093cfa",
+        "imageId": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+        "imageReference": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+        "created": "2026-11-25T09:01:25.936314234Z",
+        "state": {
+          "Status": "running",
+          "Running": true,
+          "Restarting": false,
+          "ExitCode": 0,
+          "StartedAt": "2026-11-25T09:01:26.607734587Z",
+          "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "restartPolicy": {
+          "Name": "unless-stopped",
+          "MaximumRetryCount": 0
+        },
+        "labels": {
+          "release.application": "fenbeitong",
+          "release.package": "79fe21eab8045c21c5e3f5cec9b490edfc1572d7e0946415e6cc48c9caf3b428",
+          "release.version": "2026-11-25-16-50-01"
+        },
+        "portBindings": {
+          "18734/tcp": [
+            {
+              "HostIp": "",
+              "HostPort": "18734"
+            }
+          ]
+        },
+        "dataMounts": [
+          {
+            "Type": "bind",
+            "Source": "/var/lib/docker/fenbeitong-release/data",
+            "Destination": "/data",
+            "RW": true
+          }
+        ]
+      },
+      "image": {
+        "Id": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+        "RepoTags": [
+          "fenbeitong-assistant:2026-11-25-16-50-01"
+        ],
+        "Created": "2026-11-25T08:50:06.354735861Z"
+      },
+      "releaseInfo": {
+        "applicationId": "fenbeitong",
+        "releaseTag": "2026-11-25-16-50-01",
+        "sourceSha256": "22bce5353416bbc02e24859f926c9fa16b5f7ec013a23c6a154cb36b4a6921a9",
+        "sourceKind": "local-snapshot"
+      },
+      "releaseInfoSha256": "35c9ad5c6a4ecff123ce52bb079f9d386e8b163465b09e4f895917c1438d2ead",
+      "health": {
+        "httpStatus": 200,
+        "body": {
+          "success": true,
+          "status": "ok"
+        }
+      },
+      "receipts": [
+        {
+          "jobId": "JOB-cba63fd7b2",
+          "status": "succeeded",
+          "action": "verify",
+          "effectsStarted": false,
+          "phase": "complete",
+          "packageSha256": "79fe21eab8045c21c5e3f5cec9b490edfc1572d7e0946415e6cc48c9caf3b428",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-cba63fd7b2.json",
+          "sha256": "bc91d780339d66c0ff1c8f50f508ea0ea246a08f4d589a6fb02ed241890e5c3a",
+          "modifiedAtUtc": "2026-11-25T09:02:40.961197Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-11-25-16-50-01",
+            "imageId": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+            "containerId": "dc22118a70e66ffddc42ca8820bcfb4eb2cde699e79a76fc01cce6d25d093cfa",
+            "packageSha256": "79fe21eab8045c21c5e3f5cec9b490edfc1572d7e0946415e6cc48c9caf3b428"
+          }
+        },
+        {
+          "jobId": "JOB-fccf5f1839",
+          "status": "succeeded",
+          "action": "deploy",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "79fe21eab8045c21c5e3f5cec9b490edfc1572d7e0946415e6cc48c9caf3b428",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-fccf5f1839.tar.gz",
+          "previousContainer": "fenbeitong-assistant-before-JOB-fccf5f1839",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-fccf5f1839.json",
+          "sha256": "745dbb837518ac372add04f3cd50f9390c97344234d95b1f2af771caf9f17cc1",
+          "modifiedAtUtc": "2026-11-25T09:01:27.246775Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-11-25-16-50-01",
+            "imageId": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+            "containerId": "dc22118a70e66ffddc42ca8820bcfb4eb2cde699e79a76fc01cce6d25d093cfa",
+            "packageSha256": "79fe21eab8045c21c5e3f5cec9b490edfc1572d7e0946415e6cc48c9caf3b428"
+          }
+        },
+        {
+          "jobId": "JOB-7e832504ce",
+          "status": "succeeded",
+          "action": "verify",
+          "effectsStarted": false,
+          "phase": "complete",
+          "packageSha256": "376d7201415d78bcdf05f7fd4277356dc82ebd346b8e6154dbc4ead983d1feb4",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-7e832504ce.json",
+          "sha256": "b4bf038eb3f2dabdecc6124c60c7d453d36b1ce0b5aafd736d1d05661b7e7efe",
+          "modifiedAtUtc": "2026-11-02T07:48:50.718808Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-11-02-15-42-24",
+            "imageId": "sha256:c02c393bc03896f08b975c4fd4853de7916e693b960d2473fb3e1387cf148768",
+            "containerId": "28f48d7ba587032125be0306aea3f2c9dffecef0095b7d6528a9cbcbe97571f4",
+            "packageSha256": "376d7201415d78bcdf05f7fd4277356dc82ebd346b8e6154dbc4ead983d1feb4"
+          }
+        },
+        {
+          "jobId": "JOB-c6f154e414",
+          "status": "succeeded",
+          "action": "deploy",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "376d7201415d78bcdf05f7fd4277356dc82ebd346b8e6154dbc4ead983d1feb4",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-c6f154e414.tar.gz",
+          "previousContainer": "fenbeitong-assistant-before-JOB-c6f154e414",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-c6f154e414.json",
+          "sha256": "42858d796667e9c6812ba862a589e5eb84c5741ad8ce61c1d47302e024781a49",
+          "modifiedAtUtc": "2026-11-02T07:45:31.766882Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-11-02-15-42-24",
+            "imageId": "sha256:c02c393bc03896f08b975c4fd4853de7916e693b960d2473fb3e1387cf148768",
+            "containerId": "28f48d7ba587032125be0306aea3f2c9dffecef0095b7d6528a9cbcbe97571f4",
+            "packageSha256": "376d7201415d78bcdf05f7fd4277356dc82ebd346b8e6154dbc4ead983d1feb4"
+          }
+        },
+        {
+          "jobId": "JOB-59a12fa583",
+          "status": "succeeded",
+          "action": "verify",
+          "effectsStarted": false,
+          "phase": "complete",
+          "packageSha256": "0952f9607736d9336b9b72569188102c9206aa2c13487d7a007f860ba585a322",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-59a12fa583.json",
+          "sha256": "68d9c7a6248ec1fb3f84fdb70f64b3bd2d1fa13ce8c7b3d6e1ed378cfb13c290",
+          "modifiedAtUtc": "2026-11-01T11:30:45.333606Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-11-01-19-28-30",
+            "imageId": "sha256:b9101b77e824799e7254b57ab6704133e2807464f2803614ca163a0fd25fc379",
+            "containerId": "b980da24b9ba7fa1e58875004694afcd576b9588c95dff023b78641a0f266eff",
+            "packageSha256": "0952f9607736d9336b9b72569188102c9206aa2c13487d7a007f860ba585a322"
+          }
+        },
+        {
+          "jobId": "JOB-20fcf14371",
+          "status": "succeeded",
+          "action": "deploy",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "0952f9607736d9336b9b72569188102c9206aa2c13487d7a007f860ba585a322",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-20fcf14371.tar.gz",
+          "previousContainer": "fenbeitong-assistant-before-JOB-20fcf14371",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-20fcf14371.json",
+          "sha256": "72dcfe6c1becafc707651b8c5f1923d03c8bb5aba97f9219bba7410404dd08a2",
+          "modifiedAtUtc": "2026-11-01T11:29:50.047518Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-11-01-19-28-30",
+            "imageId": "sha256:b9101b77e824799e7254b57ab6704133e2807464f2803614ca163a0fd25fc379",
+            "containerId": "b980da24b9ba7fa1e58875004694afcd576b9588c95dff023b78641a0f266eff",
+            "packageSha256": "0952f9607736d9336b9b72569188102c9206aa2c13487d7a007f860ba585a322"
+          }
+        },
+        {
+          "jobId": "JOB-bb70be2bc1",
+          "status": "succeeded",
+          "action": "verify",
+          "effectsStarted": false,
+          "phase": "complete",
+          "packageSha256": "f7eb92eded8b17ea270d73ba799686feec10e740af25691fd2e99eee3e37e0be",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-bb70be2bc1.json",
+          "sha256": "58f768b37b4a5af87168696d5a72250b5569a287605a8b1c475d0aef7bfd20b7",
+          "modifiedAtUtc": "2026-10-28T02:06:12.902004Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-10-28-09-40-06",
+            "imageId": "sha256:6e9632013cda26c44f27a5d249996a30f0b05e7ccd4eead4ed05e08f9359018a",
+            "containerId": "d79dc23917220a0e3a62d976a99bb17135995f8744a794755925de5ea1d64204",
+            "packageSha256": "f7eb92eded8b17ea270d73ba799686feec10e740af25691fd2e99eee3e37e0be"
+          }
+        },
+        {
+          "jobId": "JOB-8518d6932b",
+          "status": "succeeded",
+          "action": "deploy",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "f7eb92eded8b17ea270d73ba799686feec10e740af25691fd2e99eee3e37e0be",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-8518d6932b.tar.gz",
+          "previousContainer": "fenbeitong-assistant-before-JOB-8518d6932b",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-8518d6932b.json",
+          "sha256": "dac372fb279e3dd4cd0ab1dd76bccaed3072f205cb79239badbc9073396a2ef3",
+          "modifiedAtUtc": "2026-10-28T02:03:18.674577Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-10-28-09-40-06",
+            "imageId": "sha256:6e9632013cda26c44f27a5d249996a30f0b05e7ccd4eead4ed05e08f9359018a",
+            "containerId": "d79dc23917220a0e3a62d976a99bb17135995f8744a794755925de5ea1d64204",
+            "packageSha256": "f7eb92eded8b17ea270d73ba799686feec10e740af25691fd2e99eee3e37e0be"
+          }
+        },
+        {
+          "jobId": "JOB-67b06a053a",
+          "status": "succeeded",
+          "action": "verify",
+          "effectsStarted": false,
+          "phase": "complete",
+          "packageSha256": "f2b57be447c983e996ab15b9234b4c9b9aa11b2bb183a972379080d8c2dd4080",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-67b06a053a.json",
+          "sha256": "80d3e6362401779af7ae6e6336ceb1d2abf5fabfa93dbd6e11a34332a8f6bece",
+          "modifiedAtUtc": "2026-10-27T11:35:20.057896Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-10-27-19-31-50",
+            "imageId": "sha256:1b21cd4493820b1c0525de1b509aff84774aca88435dcbe767c10f4b80fa6a49",
+            "containerId": "97b62ca0e4d784b73004fa98fdffcf1467803b2c5fdfa6a243225f892fe13aef",
+            "packageSha256": "f2b57be447c983e996ab15b9234b4c9b9aa11b2bb183a972379080d8c2dd4080"
+          }
+        },
+        {
+          "jobId": "JOB-4863285a07",
+          "status": "succeeded",
+          "action": "deploy",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "f2b57be447c983e996ab15b9234b4c9b9aa11b2bb183a972379080d8c2dd4080",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-4863285a07.tar.gz",
+          "previousContainer": "fenbeitong-assistant-before-JOB-4863285a07",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-4863285a07.json",
+          "sha256": "029e94c96482da9e8e5ba4cb5be5de4871eced412ec7cfc35e51808e40e5d6f3",
+          "modifiedAtUtc": "2026-10-27T11:33:16.075524Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-10-27-19-31-50",
+            "imageId": "sha256:1b21cd4493820b1c0525de1b509aff84774aca88435dcbe767c10f4b80fa6a49",
+            "containerId": "97b62ca0e4d784b73004fa98fdffcf1467803b2c5fdfa6a243225f892fe13aef",
+            "packageSha256": "f2b57be447c983e996ab15b9234b4c9b9aa11b2bb183a972379080d8c2dd4080"
+          }
+        },
+        {
+          "jobId": "JOB-82ccb56a1a",
+          "status": "succeeded",
+          "action": "deploy",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "8920be6f1133f62d970c485972eedbe95cd659e9aa061c3cde30bd937dcc2659",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-82ccb56a1a.tar.gz",
+          "previousContainer": "fenbeitong-assistant-before-JOB-82ccb56a1a",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-82ccb56a1a.json",
+          "sha256": "04bcc7f586108a10226dfdcb3e1a8f8ea0087ed18427cbf4075ccabe2c447f1a",
+          "modifiedAtUtc": "2026-10-27T10:46:00.049016Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-10-27-18-40-26",
+            "imageId": "sha256:ff6938e833319ddc06b213fdaca8975d9123fa7a5a8534526156b9b328f3b064",
+            "containerId": "1dee79c36db45e2ed58420efcf68731b3febedeee23ed3568ea7b10bc767f984",
+            "packageSha256": "8920be6f1133f62d970c485972eedbe95cd659e9aa061c3cde30bd937dcc2659"
+          }
+        },
+        {
+          "jobId": "JOB-1da39ac761",
+          "status": "succeeded",
+          "action": "deploy",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "e073488d288ce9aa325f08bed4b3644d996729f4c0b43404045e86cfdb53fd94",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-1da39ac761.tar.gz",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-1da39ac761.json",
+          "sha256": "3bd573af55d32dd778090b2f27641f3f4c811df0687573f3ec8b81eb972d583e",
+          "modifiedAtUtc": "2026-10-27T02:07:03.979921Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-10-27-10-03-10",
+            "imageId": "sha256:3e6c3d11f3a95c9bf48c6a457af1a4844dfe1f6d942e4c64e90d61dba3ef1c6e",
+            "containerId": "fa23b9ecc010e226c341996bf3d5aea6efedc660eb20a17a569754f32ce051f1",
+            "packageSha256": "e073488d288ce9aa325f08bed4b3644d996729f4c0b43404045e86cfdb53fd94"
+          }
+        }
+      ],
+      "matchingManifests": [
+        {
+          "applicationId": "fenbeitong",
+          "releaseTag": "2026-11-25-16-50-01",
+          "sourceSha256": "22bce5353416bbc02e24859f926c9fa16b5f7ec013a23c6a154cb36b4a6921a9",
+          "image": "fenbeitong-assistant:2026-11-25-16-50-01",
+          "imageId": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+          "path": "/var/lib/docker/fenbeitong-release/uploads/JOB-fccf5f1839/manifest.json",
+          "manifestSha256": "188e684f4b5d4b616046db4148a45037abfa8e442f8760638232aba26d6db5e1",
+          "archiveExists": true,
+          "archiveBytes": 80281600
+        }
+      ],
+      "releaseLock": {
+        "exists": true,
+        "inode": 54132745,
+        "held": false
+      },
+      "recentRunningReceipts": [],
+      "stableDuringObservation": true,
+      "environment": "test",
+      "host": "172.30.30.58",
+      "observed": true
+    },
+    {
+      "observedAtUtc": "2026-11-25T09:32:13.234659Z",
+      "root": "/var/lib/docker/fenbeitong-release",
+      "assistantContainers": [
+        "fenbeitong-assistant",
+        "fenbeitong-assistant-rehearsal-JOB-042d148da4",
+        "fenbeitong-assistant-before-JOB-c9131deb67",
+        "fenbeitong-assistant-rehearsal-JOB-a7bfc93b4a",
+        "fenbeitong-assistant-before-JOB-b378387f4f",
+        "fenbeitong-assistant-rehearsal-JOB-0863591f96",
+        "fenbeitong-assistant-before-JOB-435492c63c",
+        "fenbeitong-assistant-rehearsal-JOB-fdfa757a6f",
+        "fenbeitong-assistant-before-JOB-97faa53c05",
+        "fenbeitong-assistant-rehearsal-JOB-d400caef84"
+      ],
+      "installed": true,
+      "applicationLabelVerified": true,
+      "container": {
+        "id": "611feadd2807cd30773ce40df10dc39abdb5759568d70206898ec8a6a7c88e03",
+        "imageId": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+        "imageReference": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+        "created": "2026-11-25T09:09:17.76679057Z",
+        "state": {
+          "Status": "running",
+          "Running": true,
+          "Restarting": false,
+          "ExitCode": 0,
+          "StartedAt": "2026-11-25T09:09:18.275014638Z",
+          "FinishedAt": "0001-01-01T00:00:00Z"
+        },
+        "restartPolicy": {
+          "Name": "unless-stopped",
+          "MaximumRetryCount": 0
+        },
+        "labels": {
+          "release.application": "fenbeitong",
+          "release.package": "79fe21eab8045c21c5e3f5cec9b490edfc1572d7e0946415e6cc48c9caf3b428",
+          "release.version": "2026-11-25-16-50-01"
+        },
+        "portBindings": {
+          "18734/tcp": [
+            {
+              "HostIp": "",
+              "HostPort": "18734"
+            }
+          ]
+        },
+        "dataMounts": [
+          {
+            "Type": "bind",
+            "Source": "/var/lib/docker/fenbeitong-release/data",
+            "Destination": "/data",
+            "RW": true
+          }
+        ]
+      },
+      "image": {
+        "Id": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+        "RepoTags": [
+          "fenbeitong-assistant:2026-11-25-16-50-01"
+        ],
+        "Created": "2026-11-25T08:50:06.354735861Z"
+      },
+      "releaseInfo": {
+        "applicationId": "fenbeitong",
+        "releaseTag": "2026-11-25-16-50-01",
+        "sourceSha256": "22bce5353416bbc02e24859f926c9fa16b5f7ec013a23c6a154cb36b4a6921a9",
+        "sourceKind": "local-snapshot"
+      },
+      "releaseInfoSha256": "35c9ad5c6a4ecff123ce52bb079f9d386e8b163465b09e4f895917c1438d2ead",
+      "health": {
+        "httpStatus": 200,
+        "body": {
+          "success": true,
+          "status": "ok"
+        }
+      },
+      "receipts": [
+        {
+          "jobId": "JOB-4413e71479",
+          "status": "succeeded",
+          "action": "verify",
+          "effectsStarted": false,
+          "phase": "complete",
+          "packageSha256": "79fe21eab8045c21c5e3f5cec9b490edfc1572d7e0946415e6cc48c9caf3b428",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-4413e71479.json",
+          "sha256": "c6bb0c8933b3ad5d044113a53c25eba456ec7887d7efecb5d7cb3841d8cdc6c1",
+          "modifiedAtUtc": "2026-11-25T09:12:14.843171Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-11-25-16-50-01",
+            "imageId": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+            "containerId": "611feadd2807cd30773ce40df10dc39abdb5759568d70206898ec8a6a7c88e03",
+            "packageSha256": "79fe21eab8045c21c5e3f5cec9b490edfc1572d7e0946415e6cc48c9caf3b428"
+          }
+        },
+        {
+          "jobId": "JOB-c9131deb67",
+          "status": "succeeded",
+          "action": "deploy",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "79fe21eab8045c21c5e3f5cec9b490edfc1572d7e0946415e6cc48c9caf3b428",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-c9131deb67.tar.gz",
+          "previousContainer": "fenbeitong-assistant-before-JOB-c9131deb67",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-c9131deb67.json",
+          "sha256": "ee77cb917fd6231843984519079f71e8451c2c4274e9d6fb27266831d433aab7",
+          "modifiedAtUtc": "2026-11-25T09:09:18.935777Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-11-25-16-50-01",
+            "imageId": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+            "containerId": "611feadd2807cd30773ce40df10dc39abdb5759568d70206898ec8a6a7c88e03",
+            "packageSha256": "79fe21eab8045c21c5e3f5cec9b490edfc1572d7e0946415e6cc48c9caf3b428"
+          }
+        },
+        {
+          "jobId": "JOB-042d148da4",
+          "status": "succeeded",
+          "action": "rehearse",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "79fe21eab8045c21c5e3f5cec9b490edfc1572d7e0946415e6cc48c9caf3b428",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-042d148da4.tar.gz",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-042d148da4.json",
+          "sha256": "5cdcdecea7bc520247a5a43de3e97f57b78f86945ae4cfba9c5765d16e26da8f",
+          "modifiedAtUtc": "2026-11-25T09:05:52.437789Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-11-02-15-42-24",
+            "imageId": "sha256:c02c393bc03896f08b975c4fd4853de7916e693b960d2473fb3e1387cf148768",
+            "containerId": "7dbf8a3197a28a216a0da19f731cf20a40aa35117d73f348e3d5f50fcf027251",
+            "packageSha256": "376d7201415d78bcdf05f7fd4277356dc82ebd346b8e6154dbc4ead983d1feb4"
+          }
+        },
+        {
+          "jobId": "JOB-af740ad93c",
+          "status": "succeeded",
+          "action": "verify",
+          "effectsStarted": false,
+          "phase": "complete",
+          "packageSha256": "376d7201415d78bcdf05f7fd4277356dc82ebd346b8e6154dbc4ead983d1feb4",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-af740ad93c.json",
+          "sha256": "a9612b588d9fc2edbb20d085dec30f020563ffad8b4e0c19cd8983673d96603e",
+          "modifiedAtUtc": "2026-11-02T08:03:03.105375Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-11-02-15-42-24",
+            "imageId": "sha256:c02c393bc03896f08b975c4fd4853de7916e693b960d2473fb3e1387cf148768",
+            "containerId": "7dbf8a3197a28a216a0da19f731cf20a40aa35117d73f348e3d5f50fcf027251",
+            "packageSha256": "376d7201415d78bcdf05f7fd4277356dc82ebd346b8e6154dbc4ead983d1feb4"
+          }
+        },
+        {
+          "jobId": "JOB-b378387f4f",
+          "status": "succeeded",
+          "action": "deploy",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "376d7201415d78bcdf05f7fd4277356dc82ebd346b8e6154dbc4ead983d1feb4",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-b378387f4f.tar.gz",
+          "previousContainer": "fenbeitong-assistant-before-JOB-b378387f4f",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-b378387f4f.json",
+          "sha256": "e54266559e88f8cf3ce2a85bc3fe54f920f9441487186c8a24b2509001820480",
+          "modifiedAtUtc": "2026-11-02T07:53:31.812181Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-11-02-15-42-24",
+            "imageId": "sha256:c02c393bc03896f08b975c4fd4853de7916e693b960d2473fb3e1387cf148768",
+            "containerId": "7dbf8a3197a28a216a0da19f731cf20a40aa35117d73f348e3d5f50fcf027251",
+            "packageSha256": "376d7201415d78bcdf05f7fd4277356dc82ebd346b8e6154dbc4ead983d1feb4"
+          }
+        },
+        {
+          "jobId": "JOB-a7bfc93b4a",
+          "status": "succeeded",
+          "action": "rehearse",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "376d7201415d78bcdf05f7fd4277356dc82ebd346b8e6154dbc4ead983d1feb4",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-a7bfc93b4a.tar.gz",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-a7bfc93b4a.json",
+          "sha256": "a4e3ff9ee9eef11c26dea2cd78a21ee802f068284576e0425298aecbae277133",
+          "modifiedAtUtc": "2026-11-02T07:50:26.466549Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-11-01-19-28-30",
+            "imageId": "sha256:b9101b77e824799e7254b57ab6704133e2807464f2803614ca163a0fd25fc379",
+            "containerId": "f0e945d0dd86a009c95fc7ffc91443a9cd3852a11002d40b45cf8ec15834ef9f",
+            "packageSha256": "0952f9607736d9336b9b72569188102c9206aa2c13487d7a007f860ba585a322"
+          }
+        },
+        {
+          "jobId": "JOB-abff3067c5",
+          "status": "succeeded",
+          "action": "verify",
+          "effectsStarted": false,
+          "phase": "complete",
+          "packageSha256": "0952f9607736d9336b9b72569188102c9206aa2c13487d7a007f860ba585a322",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-abff3067c5.json",
+          "sha256": "7aa23e3f16d62c62d02ef1b4af2178cf88764c3c395aca56af69dd7a0874ad3c",
+          "modifiedAtUtc": "2026-11-01T11:33:18.950387Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-11-01-19-28-30",
+            "imageId": "sha256:b9101b77e824799e7254b57ab6704133e2807464f2803614ca163a0fd25fc379",
+            "containerId": "f0e945d0dd86a009c95fc7ffc91443a9cd3852a11002d40b45cf8ec15834ef9f",
+            "packageSha256": "0952f9607736d9336b9b72569188102c9206aa2c13487d7a007f860ba585a322"
+          }
+        },
+        {
+          "jobId": "JOB-435492c63c",
+          "status": "succeeded",
+          "action": "deploy",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "0952f9607736d9336b9b72569188102c9206aa2c13487d7a007f860ba585a322",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-435492c63c.tar.gz",
+          "previousContainer": "fenbeitong-assistant-before-JOB-435492c63c",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-435492c63c.json",
+          "sha256": "ed2e9e2d333b63d7f128824e96dbb59168f8c4db6548d7d74b5ca907b7519855",
+          "modifiedAtUtc": "2026-11-01T11:32:24.969326Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-11-01-19-28-30",
+            "imageId": "sha256:b9101b77e824799e7254b57ab6704133e2807464f2803614ca163a0fd25fc379",
+            "containerId": "f0e945d0dd86a009c95fc7ffc91443a9cd3852a11002d40b45cf8ec15834ef9f",
+            "packageSha256": "0952f9607736d9336b9b72569188102c9206aa2c13487d7a007f860ba585a322"
+          }
+        },
+        {
+          "jobId": "JOB-0863591f96",
+          "status": "succeeded",
+          "action": "rehearse",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "0952f9607736d9336b9b72569188102c9206aa2c13487d7a007f860ba585a322",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-0863591f96.tar.gz",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-0863591f96.json",
+          "sha256": "41297954fad8e6e432b0329abb523325dd267d996278aef94b24a5375647dc4c",
+          "modifiedAtUtc": "2026-11-01T11:31:26.426174Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-10-28-09-40-06",
+            "imageId": "sha256:6e9632013cda26c44f27a5d249996a30f0b05e7ccd4eead4ed05e08f9359018a",
+            "containerId": "f659a59ee858e27b90f8fc9b8781775f5a7660ee5ce7f88989bb766e856af9ac",
+            "packageSha256": "f7eb92eded8b17ea270d73ba799686feec10e740af25691fd2e99eee3e37e0be"
+          }
+        },
+        {
+          "jobId": "JOB-ea4cb67d47",
+          "status": "succeeded",
+          "action": "verify",
+          "effectsStarted": false,
+          "phase": "complete",
+          "packageSha256": "f7eb92eded8b17ea270d73ba799686feec10e740af25691fd2e99eee3e37e0be",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-ea4cb67d47.json",
+          "sha256": "c2b754a36ce1f4d14e7abddf012a2317794104568b4e47296c9d72bdabe1dd2b",
+          "modifiedAtUtc": "2026-10-28T02:12:35.771732Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-10-28-09-40-06",
+            "imageId": "sha256:6e9632013cda26c44f27a5d249996a30f0b05e7ccd4eead4ed05e08f9359018a",
+            "containerId": "f659a59ee858e27b90f8fc9b8781775f5a7660ee5ce7f88989bb766e856af9ac",
+            "packageSha256": "f7eb92eded8b17ea270d73ba799686feec10e740af25691fd2e99eee3e37e0be"
+          }
+        },
+        {
+          "jobId": "JOB-97faa53c05",
+          "status": "succeeded",
+          "action": "deploy",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "f7eb92eded8b17ea270d73ba799686feec10e740af25691fd2e99eee3e37e0be",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-97faa53c05.tar.gz",
+          "previousContainer": "fenbeitong-assistant-before-JOB-97faa53c05",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-97faa53c05.json",
+          "sha256": "b5b2e7cbf67c838f087a0a4fca110c0e8314779821d6ba27d436656e4c116883",
+          "modifiedAtUtc": "2026-10-28T02:11:21.841269Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-10-28-09-40-06",
+            "imageId": "sha256:6e9632013cda26c44f27a5d249996a30f0b05e7ccd4eead4ed05e08f9359018a",
+            "containerId": "f659a59ee858e27b90f8fc9b8781775f5a7660ee5ce7f88989bb766e856af9ac",
+            "packageSha256": "f7eb92eded8b17ea270d73ba799686feec10e740af25691fd2e99eee3e37e0be"
+          }
+        },
+        {
+          "jobId": "JOB-fdfa757a6f",
+          "status": "succeeded",
+          "action": "rehearse",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "f7eb92eded8b17ea270d73ba799686feec10e740af25691fd2e99eee3e37e0be",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-fdfa757a6f.tar.gz",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-fdfa757a6f.json",
+          "sha256": "ebf987bd9211c8d7cf1cfa1460d484e0844e2487788da6c3c9ab5bca230594d1",
+          "modifiedAtUtc": "2026-10-28T02:07:11.321356Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-10-27-19-31-50",
+            "imageId": "sha256:1b21cd4493820b1c0525de1b509aff84774aca88435dcbe767c10f4b80fa6a49",
+            "containerId": "e2eba0522579063a91b30019bf3edfede6931a68dcb5b99afd63bdc86355b9e0",
+            "packageSha256": "f2b57be447c983e996ab15b9234b4c9b9aa11b2bb183a972379080d8c2dd4080"
+          }
+        },
+        {
+          "jobId": "JOB-635bf5a874",
+          "status": "succeeded",
+          "action": "verify",
+          "effectsStarted": false,
+          "phase": "complete",
+          "packageSha256": "f2b57be447c983e996ab15b9234b4c9b9aa11b2bb183a972379080d8c2dd4080",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-635bf5a874.json",
+          "sha256": "8524e9e82680d3fc44d19b8a39436b05cdf544ceb0284dc577aa46c0488ac673",
+          "modifiedAtUtc": "2026-10-27T14:39:06.182167Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-10-27-19-31-50",
+            "imageId": "sha256:1b21cd4493820b1c0525de1b509aff84774aca88435dcbe767c10f4b80fa6a49",
+            "containerId": "e2eba0522579063a91b30019bf3edfede6931a68dcb5b99afd63bdc86355b9e0",
+            "packageSha256": "f2b57be447c983e996ab15b9234b4c9b9aa11b2bb183a972379080d8c2dd4080"
+          }
+        },
+        {
+          "jobId": "JOB-fd4798a4f7",
+          "status": "succeeded",
+          "action": "deploy",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "f2b57be447c983e996ab15b9234b4c9b9aa11b2bb183a972379080d8c2dd4080",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-fd4798a4f7.tar.gz",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-fd4798a4f7.json",
+          "sha256": "1930385da1f66c7e8e8de2680f3b185a1745a0fd54784dced061948298996b8e",
+          "modifiedAtUtc": "2026-10-27T14:32:05.878183Z",
+          "environment": {
+            "status": "running",
+            "releaseTag": "2026-10-27-19-31-50",
+            "imageId": "sha256:1b21cd4493820b1c0525de1b509aff84774aca88435dcbe767c10f4b80fa6a49",
+            "containerId": "e2eba0522579063a91b30019bf3edfede6931a68dcb5b99afd63bdc86355b9e0",
+            "packageSha256": "f2b57be447c983e996ab15b9234b4c9b9aa11b2bb183a972379080d8c2dd4080"
+          }
+        },
+        {
+          "jobId": "JOB-d400caef84",
+          "status": "succeeded",
+          "action": "rehearse",
+          "effectsStarted": true,
+          "phase": "complete",
+          "packageSha256": "f2b57be447c983e996ab15b9234b4c9b9aa11b2bb183a972379080d8c2dd4080",
+          "recovery": "/var/lib/docker/fenbeitong-release/recovery/JOB-d400caef84.tar.gz",
+          "path": "/var/lib/docker/fenbeitong-release/jobs/JOB-d400caef84.json",
+          "sha256": "e6415a89fb6c67a1ff68a9a94057b75398d9e7fc7bd0849f531cbe96dfdfccbb",
+          "modifiedAtUtc": "2026-10-27T14:29:11.852877Z",
+          "environment": {
+            "status": "not-installed",
+            "releaseTag": null,
+            "imageId": null
+          }
+        }
+      ],
+      "matchingManifests": [
+        {
+          "applicationId": "fenbeitong",
+          "releaseTag": "2026-11-25-16-50-01",
+          "sourceSha256": "22bce5353416bbc02e24859f926c9fa16b5f7ec013a23c6a154cb36b4a6921a9",
+          "image": "fenbeitong-assistant:2026-11-25-16-50-01",
+          "imageId": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+          "path": "/var/lib/docker/fenbeitong-release/uploads/JOB-c9131deb67/manifest.json",
+          "manifestSha256": "188e684f4b5d4b616046db4148a45037abfa8e442f8760638232aba26d6db5e1",
+          "archiveExists": true,
+          "archiveBytes": 80281600
+        },
+        {
+          "applicationId": "fenbeitong",
+          "releaseTag": "2026-11-25-16-50-01",
+          "sourceSha256": "22bce5353416bbc02e24859f926c9fa16b5f7ec013a23c6a154cb36b4a6921a9",
+          "image": "fenbeitong-assistant:2026-11-25-16-50-01",
+          "imageId": "sha256:fd3abf301f72f780eafc35c3fd9f5893ab5c173dfe37ccf217eb0912dbccb880",
+          "path": "/var/lib/docker/fenbeitong-release/uploads/JOB-042d148da4/manifest.json",
+          "manifestSha256": "188e684f4b5d4b616046db4148a45037abfa8e442f8760638232aba26d6db5e1",
+          "archiveExists": true,
+          "archiveBytes": 80281600
+        }
+      ],
+      "releaseLock": {
+        "exists": true,
+        "inode": 38928393,
+        "held": false
+      },
+      "recentRunningReceipts": [],
+      "stableDuringObservation": true,
+      "environment": "prod",
+      "host": "172.30.30.57",
+      "observed": true
+    }
+  ]
+}

@@ -1,5 +1,11 @@
 # 请求与命令记录
 
+## 20261125-fenbeitong-cross-machine-release-observation
+
+- 用户需求：另一台机器发布分贝通到测试与正式，本机是否能看到。
+- 命令意图：按多机器接管门禁仅只读SSH两服助手容器、版本、健康、manifest及现存部署/验证回执，不发布、不重启、不导入历史。
+- 验证结论：2026-11-25T09:32Z，两服同版2026-11-25-16-50-01、同镜像同包，running且HTTP200/ok，deploy/verify succeeded回执与现容器绑定一致；另一机器本地历史与业务验收不在本次结论内。证据见doc/tasks/20261125-fenbeitong-cross-machine-release-observation/。
+
 ## 20261124-bounded-service-recovery
 
 - 用户需求：同意前后端有限自动恢复；本次本地实现，不代表授权服务器安装或重启。
