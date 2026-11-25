@@ -703,6 +703,7 @@ def upgrade_origin(profile, manifest):
 
 
 def preflight(profile, manifest):
+    validate_fenbeitong_profile(profile)
     validate_invoice_print_profile(profile)
     if profile.get('environment') in ('test', 'prod', 'backup'):
         from release_runtime_metadata import read_environment
@@ -936,21 +937,35 @@ def clone_config(original, image, maintenance=None):
     return config
 
 
+def validate_fenbeitong_profile(profile):
+    if 'fenbeitongAssistantHost' not in profile and 'fenbeitongAssistantUrl' not in profile:
+        return
+    require(profile.get('environment') in ('test', 'prod', 'backup'),
+            'Fenbeitong endpoint requires an explicit business target')
+    url = profile.get('fenbeitongAssistantUrl')
+    require(isinstance(url, str) and re.fullmatch(r'https?://[A-Za-z0-9.-]+:18734/?', url),
+            'Fenbeitong public URL must be an explicit HTTP(S) root endpoint on port 18734')
+    require(urlsplit(url).hostname == profile.get('host'),
+            'Fenbeitong public endpoint must match the registered target host')
+    require(isinstance(profile.get('fenbeitongAssistantHost'), str)
+            and re.fullmatch(r'[A-Za-z0-9.-]+', profile['fenbeitongAssistantHost']),
+            'Fenbeitong requires a valid registered internal assistant host')
+
+
 def configure_fenbeitong(config, profile):
-    """Apply the explicitly registered same-server assistant endpoint at deployment."""
+    """Keep browser and internal assistant addresses explicit and independent."""
+    validate_fenbeitong_profile(profile)
     if 'fenbeitongAssistantHost' not in profile:
         return
     host = profile['fenbeitongAssistantHost']
-    require(isinstance(host, str) and re.fullmatch(r'[A-Za-z0-9.-]+', host), 'Invalid registered assistant host')
-    require(profile.get('environment') != 'rehearsal', 'Isolated rehearsal must not point to a business assistant')
     env = dict(item.split('=', 1) for item in config['Env'])
-    extra = env.get('INTRUOYI_EXTRA_ARGS', '')
-    property_name = '--yudao.erp.fenbeitong-assistant.assistant-host='
-    extra = re.sub(r'(?<!\S)' + re.escape(property_name) + r'\S+', '', extra).strip()
-    env['INTRUOYI_EXTRA_ARGS'] = extra
-    jvm_property = '-Dyudao.erp.fenbeitong-assistant.assistant-host='
-    java_options = re.sub(r'(?<!\S)' + re.escape(jvm_property) + r'\S+', '', env.get('JAVA_OPTS', '')).strip()
-    env['JAVA_OPTS'] = (java_options + ' ' + jvm_property + host).strip()
+    for suffix, value in [('assistant-host', host), ('public-url', profile['fenbeitongAssistantUrl'])]:
+        property_name = 'yudao.erp.fenbeitong-assistant.' + suffix
+        for key, prefix in [('INTRUOYI_EXTRA_ARGS', '--'), ('ARGS', '--'), ('JAVA_OPTS', '-D')]:
+            pattern = r'(?<!\S)' + re.escape(prefix + property_name + '=') + r'\S+'
+            if key in env or key == 'JAVA_OPTS':
+                env[key] = re.sub(pattern, '', env.get(key, '')).strip()
+        env['JAVA_OPTS'] = (env['JAVA_OPTS'] + ' -D' + property_name + '=' + value).strip()
     config['Env'] = [key + '=' + value for key, value in env.items()]
 
 

@@ -5,7 +5,7 @@
 - 当前数据库契约 / PATROL / APPLIED后漂移 / databaseContract / 迁移后语义检查：`docs/release-agent-checklist.md#当前应用数据库契约门禁`。当前有效契约随固定包发布，迁移后和开放前无条件核验；旧包缺契约不能前向晋级，不修改原包补字段。
 
 - Keywords: 历史登录失败阻断登记, Failed remote effects, register-targets, supersededLoginIncidents -> `docs/release-agent-checklist.md#历史登录失败与登记范围`。只接受同环境更晚完整发布的绑定证明，保留旧失败，不跳过未知迁移副作用。
-- Keywords: 打印助手运行期地址, invoiceVoucherPrintAssistantUrl, public-url, assistant-host, 同包跨环境 -> `ops/spug/release-center/invoice-print-runtime-config.md`。公开与内部地址独立，不改不可变恢复配置或通用包。
+- Keywords: 打印助手运行期地址, invoiceVoucherPrintAssistantUrl, 分贝通运行时地址, fenbeitongAssistantUrl, public-url, assistant-host, 同包跨环境 -> `ops/spug/release-center/invoice-print-runtime-config.md`。公开与内部地址独立，不改不可变恢复配置或通用包；分贝通接入缺公开URL在远端读取前拒绝。
 
 - 下次发布菜单修复 / 排产工单池 / 5580 / 旧SQL回写 / 菜单现值与账本不符：`docs/next-release-menu-repair.md`；用户已授权下次发布专项修复，构建前核新增前向迁移，保留根级智能排产900120，最终按目标版本菜单合同验收，不重放历史SQL或复制全表。
 

@@ -52,7 +52,9 @@ class IntegrationConfigTests(unittest.TestCase):
 
     def test_deploy_replaces_only_assistant_host_and_preserves_other_flags(self):
         config = {'Env': ['UNCHANGED=one', 'JAVA_OPTS=-Xmx512m -Dyudao.erp.fenbeitong-assistant.assistant-host=old', 'INTRUOYI_EXTRA_ARGS=--existing=true --yudao.erp.fenbeitong-assistant.assistant-host=old --other=2']}
-        configure_fenbeitong(config, {'environment': 'test', 'fenbeitongAssistantHost': '172.30.30.58'})
+        configure_fenbeitong(config, {'environment': 'test', 'host': '172.30.30.58',
+                                    'fenbeitongAssistantHost': '172.30.30.58',
+                                    'fenbeitongAssistantUrl': 'http://172.30.30.58:18734/'})
         env = dict(x.split('=', 1) for x in config['Env'])
         self.assertEqual(env['UNCHANGED'], 'one')
         self.assertIn('--existing=true', env['INTRUOYI_EXTRA_ARGS'])
