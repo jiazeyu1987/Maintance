@@ -1,0 +1,12 @@
+{
+  "baselineCommit": "01c362bff",
+  "sameDiagnostics": true,
+  "diagnosticCount": 32,
+  "baselineExit": 2,
+  "fixedExit": 2,
+  "restoredFiles": {
+    "IntRuoyiFronted/src/api/login/index.ts": "44cc9c7a18c0afe6c5abd624593509530c4591227b7658966ebbec94e92c2e01",
+    "IntRuoyiFronted/src/views/erp/finance/fenbeitong-voucher/index.vue": "afbcf52983d8313757bcc2e4d2371ca717c2a7645a6140624527d7ffd7bac050",
+    "IntRuoyiFronted/types/env.d.ts": "cbd1c45f64a8d9191a5ec091d3de58d4d423c4a6031edf3eecbc33a97d44a407"
+  }
+}

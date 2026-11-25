@@ -1,0 +1,30 @@
+{
+  "source": {
+    "commit": "158f4fed30dd4995b0a2501c07216ce07972d421",
+    "files": [
+      "IntRuoyiBackend/yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/controller/admin/auth/vo/AuthFenbeitongAssistantStatusRespVO.java",
+      "IntRuoyiBackend/yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/service/fenbeitongassistant/FenbeitongAssistantProperties.java",
+      "IntRuoyiBackend/yudao-module-system/src/main/java/cn/iocoder/yudao/module/system/service/fenbeitongassistant/FenbeitongAssistantServiceImpl.java",
+      "IntRuoyiBackend/yudao-module-system/src/test/java/cn/iocoder/yudao/module/system/service/fenbeitongassistant/FenbeitongAssistantServiceImplTest.java",
+      "IntRuoyiBackend/yudao-server/src/main/resources/application-local.yaml",
+      "IntRuoyiFronted/.env.prod",
+      "IntRuoyiFronted/.env.test",
+      "IntRuoyiFronted/src/api/login/index.ts",
+      "IntRuoyiFronted/src/views/erp/finance/fenbeitong-voucher/index.vue",
+      "IntRuoyiFronted/tests/e2e/fenbeitong-assistant-static.spec.cjs",
+      "IntRuoyiFronted/types/env.d.ts",
+      "IntRuoyiFronted/tests/fenbeitong-runtime-url.behavior.spec.cjs"
+    ]
+  },
+  "maintenance": {
+    "commit": "87faa54b57af43016043bd465adba0c2f88ec77e",
+    "files": [
+      "docs/experience-index.md",
+      "ops/spug/release-center/README.md",
+      "ops/spug/release-center/intruoyi_runtime_agent.py",
+      "ops/spug/release-center/invoice-print-runtime-config.md",
+      "ops/spug/release-center/test_fenbeitong_integration_config.py",
+      "ops/spug/release-center/test_fenbeitong_runtime_url.py"
+    ]
+  }
+}

@@ -1,5 +1,11 @@
 # 请求与命令记录
 
+## 20261125-fenbeitong-runtime-url-fix
+
+- 用户需求：修复IntRuoyi分贝通接入地址缺口，继续完成。
+- 命令意图：独立worktree完成运行时publicUrl前后端与发布配置契约，失败测试后实现并回归；本机精确登记test/prod公开URL，提交并合回int_main后清理自有资源。未发布、重启执行器或操作远端。
+- 验证结论：源码158f4fed3、维护87faa54已集成；后端61项、前端3项行为及静态契约、维护24项PASS。全量类型检查仍有与固定基线完全相同的32条CRM checkPermi错误，未新增；不宣称E2E或线上生效。详见doc/tasks/20261125-fenbeitong-runtime-url-fix/。
+
 ## 20261125-intruoyi-fenbeitong-compatibility
 
 - 用户需求：另一台机器发布分贝通后，IntRuoyi是否需要对应修改。

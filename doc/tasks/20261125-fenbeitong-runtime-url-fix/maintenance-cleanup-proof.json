@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "path": "C:\\SpugHandoff\\release\\fenbeitong-runtime-url-maint-20261125",
+  "commit": "87faa54b57af43016043bd465adba0c2f88ec77e",
+  "verifiedTrackedFiles": 5332,
+  "gitRemovalExitCode": 0,
+  "residualRemoved": false,
+  "ownershipVerified": true,
+  "generatedLinksDetached": 0,
+  "registeredAfter": false,
+  "physicalPathExists": false
+}

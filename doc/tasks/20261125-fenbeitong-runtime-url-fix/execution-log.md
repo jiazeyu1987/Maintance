@@ -1,0 +1,34 @@
+# Execution Log
+
+- 用户需求：进行修复；承接已确认的IntRuoyi分贝通前端空地址缺口。
+- 授权范围：本机代码、必要配置契约及测试；未授权远端发布、重启或业务写入。
+- Bootstrap：UTF-8读取本仓与已验证源码根AGENTS、经验索引、PowerShell经验及前序completed状态。
+- 初步方案：现有助手状态响应提供运行时公开URL，前端据此生成票据回调地址；维护发布逻辑按已确认target entryUrl配置后端公开URL。不得回退到Vite编译常量。
+- 方案固定：沿用打印助手的publicUrl合同，公开URL与后端探测host分离；新目标显式登记fenbeitongAssistantUrl（本服HTTP(S)根地址、18734端口），不从entryUrl或内部host猜测公开地址。配置了分贝通接入但缺公开URL时在任何远端preflight前失败；不更改恢复配置原件或通用前端包。
+- 已读命中经验：invoice-print-runtime-config（公开/内部地址分离、原部署与开放路径均注入、旧CLI覆盖清除）、worktree-memory（精确索引、依赖独立安装、集成后验证及自有清理）、PowerShell UTF-8及Maven参数完整引用。
+- 实际Git结构：前后端属于同一个IntRuoyi仓库（01c362bff），因此只创建一条源代码分支；Maintance基线0e4dca4独立同名分支。主源码工作区只有无关verification.md修改，保留不动。
+- Worktrees：C:/SpugHandoff/release/fenbeitong-runtime-url-20261125（IntRuoyi）；C:/SpugHandoff/release/fenbeitong-runtime-url-maint-20261125（Maintance）。分支均codex/fenbeitong-runtime-url-20261125，正常完整checkout，初始索引/工作树干净；当前只跑测试，不启动服务，未预约运行端口。
+- BDD: 同包跨环境 -> Given 同一前端代码和各服公开地址 When 打开分贝通入口 Then 先取得运行时地址，再签发票据，只打开当前服auth/callback。
+- BDD: 配置不可用 -> Given 公开地址缺失/非法或状态请求失败 When 打开入口 Then 页面显示错误，不签发票据、不加载iframe。
+- BDD: 启动助手 -> Given 助手未运行且允许启动 When 用户点击启动 Then 使用启动响应中的最新公开地址，保持原票据协议。
+- BDD: 部署配置 -> Given 已登记内部host和公开URL When 正常替换/维护开放 Then JVM仅保留一次本服public-url；跨服/空值/缺值/非法值在远端读取前拒绝。
+- RED: node --test tests/fenbeitong-runtime-url.behavior.spec.cjs -> 3 FAIL；旧页面编译地址为空直接return，不请求状态、不显示运行地址错误。
+- RED: Maven -pl yudao-module-system -am -Dtest=FenbeitongAssistantServiceImplTest -Dsurefire.failIfNoSpecifiedTests=false test -> 8运行、3 FAIL：缺publicUrl响应、缺值未拒绝、非法地址未拒绝。
+- RED: python -B -m unittest test_fenbeitong_runtime_url -> 替换未注入public-url、重复旧ARGS未移除；10个非法/缺失用例未在preflight最前拒绝而到达既有runtimeEnvironmentFile门禁。无远端调用；不将这些门禁异常冒充指定业务断言。
+- GREEN: 维护配置及相邻回归24项PASS；实际replace构造测试覆盖test/prod与maintenance True/False，使用受控Docker边界，非真实部署/E2E验收。
+- GREEN: Maven -q -pl yudao-module-system -am -Dtest=FenbeitongAssistantServiceImplTest,InvoiceVoucherPrintAssistantServiceImplTest,AuthControllerTest -Dsurefire.failIfNoSpecifiedTests=false test -> exit0；Surefire分别8/15/38项，失败0、错误0、跳过0。
+- GREEN: 前端组件行为3项PASS（真实页面脚本经TypeScript转译、受控接口依赖）；分贝通及打印助手静态契约exit0。单元测试不冒充真实E2E。
+- pnpm install --frozen-lockfile -> exit0，任务自有1119依赖，未改lockfile；只有pnpm配置字段迁移warning，无缺失编译依赖。
+- 全量类型：pnpm ts:check -> exit2，32条CRM checkPermi错误；compare-typecheck.py以固定01c362bff临时恢复三份任务文件基线后复跑，再恢复任务原始字节并复跑；两个结果exit2、逐条相同32诊断。哈希及摘要见typecheck-comparison.json。已证实非当前任务，不扩大修改CRM、不关闭类型规则；全量类型检查保持FAIL事实，当前改动无新增诊断。
+- Port guard首次因未登记profile拒绝，未启动服务；随后正式reserve-worktree-slot登记int_main slot9/8090/48090，guard PASS。全程未启动/停止主工作区或任务服务。
+- 本机配置：configure-local-profile.ps1先核test/prod原host及内部host；同目录File.Replace探针验证读回、备份、ACL，再精确插入两URL。原件恢复副本只在私密目录executor.before-fenbeitong-url-8684c422e1a0459389f8f804194b1d88.private.json，原字节及SDDL验证PASS，其它原始字节保留。未更改backup目标、其它配置或任何恢复原件。
+- GREEN: Runtime实际构造并读取本机test/prod profile -> public URL完整保留且validate_fenbeitong_profile PASS；无网络请求或执行器重启。
+- 当前限制：仓库全量类型检查存在已确认基线失败；本次修复所需定向验证通过，真实本机/线上页面与最终票据交换仍未执行，不宣称E2E或线上生效。
+- GREEN: experience-preflight -> PASS（后续精确提交/融合/清理）：双worktree绝对路径归属明确，初始干净，目标改动与主线无关verification.md不重叠；不碰其它worktree/进程，集成后按相同代码及定向验证收口，自有槽位最终释放。
+- 实现提交：source=158f4fed30dd4995b0a2501c07216ce07972d421（12文件），maintenance=87faa54b57af43016043bd465adba0c2f88ec77e（6文件）；暂存及最终commit文件集合与预期完全一致，自有工作树干净。首次Git hook因PATH中Python解析失败返回1且未产生提交，补齐正式Python/pwsh路径后原hook正常通过；未跳过hook。
+- 集成：integrate.py -> 双仓int_main fast-forward PASS，12/6任务文件与提交读回一致。IntRuoyi主线无关docs/tasks/20261124-database-contract-gate/verification.md修改保留。
+- REGRESSION: 集成后主线node组件3项+分贝通/打印静态契约exit0；主线维护24项PASS；主线int_main端口guard PASS；后端隔离worktree（与主线同一158f4fed3、源码字节一致）重复定向61项JUnit exit0，无失败/跳过。
+- 状态ready_for_closeout；未执行发布构建，无构建命令、无新包，无服务器操作，无运行控制台变更。两个开发worktree均产生上述实现提交且已合回int_main，当前准备精确删除并释放槽位。
+- Closeout PASS：cleanup.py调用正式cleanup_build_worktree，两个worktree核归属/分支/融合/干净源码/进程后删除。source核25287个tracked、3128依赖链接；maintenance核5332个tracked。gitRemovalExitCode均0、registeredAfter=false、physicalPathExists=false，归属证明及最终回执保存为source/maintenance-cleanup-proof.json。
+- 槽位释放首次因调用进程cwd导致相对Git common目录解析到维护仓而拒绝，零写入；从源码repo cwd运行后正确持同一mutex核精确name/path/branch/slot及8090/48090无监听，仅标inactive，其它登记JSON一致，PASS。任务脚本改为git -C显式解析绝对common目录以消除调用cwd依赖。
+- Final：本机修复、定向验证、双仓int_main集成与自有资源收尾完成；没有其它任务worktree/进程被删除或停止。未push、未发布、未重启执行器、未作真实E2E。全量类型32条既有错误仍FAIL且已报告，线上尚未生效。
