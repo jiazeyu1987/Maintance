@@ -6257,3 +6257,11 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 结果：按现有少量 Linux/Docker 服务器建议 Zabbix 统一监测告警，保留 service_recovery 作为唯一有限恢复执行方；Prometheus/Alertmanager/Grafana 适合进一步的多维指标和动态服务场景。
 - 验证：Zabbix Docker/Web监测、维护、确认、升级、远程命令与 Prometheus/Alertmanager 官方能力已核对；明确状态适配尚待实施，监控静默不等于实际恢复暂停。
 - 证据：doc/tasks/20261126-ops-monitoring-mature-solution/assessment.md、task.md、execution-log.md；文档 UTF-8 与差异检查通过。
+
+## 2026-11-26：Zabbix 接入正式服和测试服可行性评估
+- 需求：全面评估Zabbix接入两服，交付环境事实、部署/安全/灾备/成本/实施验收方案。
+- 命令意图：UTF-8读取任务与经验门禁；注册身份和严格主机密钥执行两服有界SSH只读元数据与健康GET；官方公开文档GET核对支持矩阵；本地规范化脱敏证据与文档校验；仅提交本任务产物。不安装、不重启、不改网络/容器/数据库、不注入故障。
+- 实测：两服CentOS Linux8、Docker26.1.3，登记前端200/后端UP；正式Docker盘33%、16运行容器，测试80%、178运行容器；测试已有Prometheus/node_exporter但标准API400、覆盖未证实；两服未发现指定恢复unit，Python3.12仅PATH未发现。单次快照不替代长期容量和灾备证明。
+- 结论：技术可行、上线有条件；建议独立中心/专用数据库、主机HTTP先行、Docker精确白名单和权限路线独立验收；现有业务MySQL8.0.39不满足Zabbix8后端MySQL8.4起要求；自动恢复后续单独实施。
+- 验证：12个正式交付文件UTF-8/无BOM/无替换字符/凭据模式检查通过，5个Python AST、4个JSON解析与核心事实一致性通过；初始原始快照仅本地保留，提交脱敏摘要和补核证据。无任务worktree/持久进程/远端写入待收尾。
+- 任务：doc/tasks/20261126-zabbix-prod-test-feasibility/；报告 feasibility-report.md；状态 completed。共享日志仅暂存本段，不纳入其他任务未提交内容。

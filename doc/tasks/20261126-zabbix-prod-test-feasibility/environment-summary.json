@@ -1,0 +1,712 @@
+{
+  "scope": "Read-only feasibility assessment; no installation or fault injection",
+  "hosts": {
+    "prod": {
+      "observedAtUtc": "2026-11-26T08:54:47.943281Z",
+      "supplementObservedAtUtc": "2026-11-26T08:58:44.629337Z",
+      "host": "172.30.30.57",
+      "os": {
+        "NAME": "CentOS Linux",
+        "VERSION": "8 (Core)",
+        "ID": "centos",
+        "ID_LIKE": "rhel fedora",
+        "VERSION_ID": "8",
+        "PRETTY_NAME": "CentOS Linux 8 (Core)"
+      },
+      "architecture": "x86_64",
+      "cpuCount": 16,
+      "virtualization": {
+        "exitCode": 0,
+        "stdout": "kvm"
+      },
+      "kernel": {
+        "exitCode": 0,
+        "stdout": "4.18.0-147.el8.x86_64"
+      },
+      "glibc": {
+        "exitCode": 0,
+        "stdout": "glibc 2.28"
+      },
+      "memoryKiB": {
+        "MemTotal": 32770288,
+        "MemAvailable": 24313528,
+        "SwapTotal": 10485756,
+        "SwapFree": 7627800
+      },
+      "loadAverage": [
+        0.55,
+        0.64,
+        0.66
+      ],
+      "docker": {
+        "serverVersion": "26.1.3",
+        "root": "/var/lib/docker",
+        "driver": "overlay2",
+        "cgroupDriver": "cgroupfs",
+        "running": 16,
+        "stopped": 201,
+        "images": 77
+      },
+      "filesystems": [
+        {
+          "device": "/dev/mapper/cl-root",
+          "type": "xfs",
+          "totalKiB": 52403200,
+          "usedKiB": 14221404,
+          "availableKiB": 38181796,
+          "usedPercent": "28%",
+          "mount": "/"
+        },
+        {
+          "device": "/dev/vdb",
+          "type": "ext4",
+          "totalKiB": 2063187344,
+          "usedKiB": 635495412,
+          "availableKiB": 1322817948,
+          "usedPercent": "33%",
+          "mount": "/var/lib/docker"
+        }
+      ],
+      "registeredContainers": {
+        "frontend": {
+          "name": "intruoyi-frontend",
+          "image": "sha256:462ac2f7377973951734aa20d5373afef4a3a30c20aa83fbee55ee4082d503e6",
+          "running": true,
+          "status": "running",
+          "health": null,
+          "healthcheckConfigured": false,
+          "restartPolicy": "unless-stopped",
+          "restartCount": 0,
+          "oomKilled": false,
+          "memoryLimitBytes": 0,
+          "networkMode": "intruoyi-runtime_intruoyi_net",
+          "ports": {
+            "80/tcp": [
+              {
+                "HostIp": "0.0.0.0",
+                "HostPort": "8081"
+              },
+              {
+                "HostIp": "::",
+                "HostPort": "8081"
+              }
+            ]
+          },
+          "dataMounts": []
+        },
+        "backend": {
+          "name": "intruoyi-backend",
+          "image": "sha256:4825fe1571a18e634066c2d9927ecc4e7f6595fc24027fa992de195239a3f675",
+          "running": true,
+          "status": "running",
+          "health": null,
+          "healthcheckConfigured": false,
+          "restartPolicy": "unless-stopped",
+          "restartCount": 0,
+          "oomKilled": false,
+          "memoryLimitBytes": 0,
+          "networkMode": "intruoyi-runtime_intruoyi_net",
+          "ports": {
+            "48081/tcp": [
+              {
+                "HostIp": "0.0.0.0",
+                "HostPort": "48081"
+              },
+              {
+                "HostIp": "::",
+                "HostPort": "48081"
+              }
+            ]
+          },
+          "dataMounts": [
+            {
+              "type": "bind",
+              "destination": "/var/run/docker.sock",
+              "readWrite": true
+            }
+          ]
+        },
+        "database": {
+          "name": "intruoyi-mysql",
+          "image": "mysql:8.0.39",
+          "running": true,
+          "status": "running",
+          "health": "healthy",
+          "healthcheckConfigured": true,
+          "restartPolicy": "unless-stopped",
+          "restartCount": 0,
+          "oomKilled": false,
+          "memoryLimitBytes": 0,
+          "networkMode": "intruoyi-runtime_intruoyi_net",
+          "ports": {
+            "3306/tcp": null,
+            "33060/tcp": null
+          },
+          "dataMounts": [
+            {
+              "type": "bind",
+              "destination": "/var/lib/mysql",
+              "readWrite": true
+            }
+          ]
+        },
+        "redis": {
+          "name": "intruoyi-redis",
+          "image": "redis:7-alpine",
+          "running": true,
+          "status": "running",
+          "health": "healthy",
+          "healthcheckConfigured": true,
+          "restartPolicy": "unless-stopped",
+          "restartCount": 0,
+          "oomKilled": false,
+          "memoryLimitBytes": 0,
+          "networkMode": "intruoyi-runtime_intruoyi_net",
+          "ports": {
+            "6379/tcp": null
+          },
+          "dataMounts": [
+            {
+              "type": "bind",
+              "destination": "/data",
+              "readWrite": true
+            }
+          ]
+        },
+        "minio": {
+          "name": "ragflow_compose-minio-1",
+          "image": "quay.io/minio/minio:RELEASE.2025-06-13T11-33-47Z",
+          "running": true,
+          "status": "running",
+          "health": null,
+          "healthcheckConfigured": false,
+          "restartPolicy": "unless-stopped",
+          "restartCount": 0,
+          "oomKilled": false,
+          "memoryLimitBytes": 0,
+          "networkMode": "bridge",
+          "ports": {
+            "9000/tcp": [
+              {
+                "HostIp": "0.0.0.0",
+                "HostPort": "9000"
+              },
+              {
+                "HostIp": "::",
+                "HostPort": "9000"
+              }
+            ],
+            "9001/tcp": [
+              {
+                "HostIp": "0.0.0.0",
+                "HostPort": "9001"
+              },
+              {
+                "HostIp": "::",
+                "HostPort": "9001"
+              }
+            ]
+          },
+          "dataMounts": [
+            {
+              "type": "bind",
+              "destination": "/data",
+              "readWrite": true
+            }
+          ]
+        }
+      },
+      "registeredStats": {
+        "frontend": {
+          "BlockIO": "614kB / 0B",
+          "CPUPerc": "0.00%",
+          "Container": "dc29583896df",
+          "ID": "dc29583896df",
+          "MemPerc": "0.06%",
+          "MemUsage": "18.01MiB / 31.25GiB",
+          "Name": "intruoyi-frontend",
+          "NetIO": "10.3MB / 76.4MB",
+          "PIDs": "17"
+        },
+        "backend": {
+          "BlockIO": "3.22MB / 13MB",
+          "CPUPerc": "2.24%",
+          "Container": "97b56b4fac6a",
+          "ID": "97b56b4fac6a",
+          "MemPerc": "10.65%",
+          "MemUsage": "3.327GiB / 31.25GiB",
+          "Name": "intruoyi-backend",
+          "NetIO": "922MB / 226MB",
+          "PIDs": "200"
+        },
+        "database": {
+          "BlockIO": "114GB / 345GB",
+          "CPUPerc": "0.41%",
+          "Container": "9a288d20d254",
+          "ID": "9a288d20d254",
+          "MemPerc": "17.05%",
+          "MemUsage": "5.328GiB / 31.25GiB",
+          "Name": "intruoyi-mysql",
+          "NetIO": "19.2GB / 32.4GB",
+          "PIDs": "51"
+        },
+        "redis": {
+          "BlockIO": "336MB / 432MB",
+          "CPUPerc": "0.60%",
+          "Container": "5099e7bd566e",
+          "ID": "5099e7bd566e",
+          "MemPerc": "0.05%",
+          "MemUsage": "17.27MiB / 31.25GiB",
+          "Name": "intruoyi-redis",
+          "NetIO": "756MB / 1.49GB",
+          "PIDs": "8"
+        },
+        "minio": {
+          "BlockIO": "58.6MB / 458MB",
+          "CPUPerc": "0.06%",
+          "Container": "b9f1d48ecf88",
+          "ID": "b9f1d48ecf88",
+          "MemPerc": "1.33%",
+          "MemUsage": "426.2MiB / 31.25GiB",
+          "Name": "ragflow_compose-minio-1",
+          "NetIO": "18.4MB / 9.69GB",
+          "PIDs": "18"
+        }
+      },
+      "dockerSocket": {
+        "exists": true,
+        "mode": "0o660",
+        "owner": "root",
+        "group": "docker"
+      },
+      "selinux": {
+        "exitCode": 0,
+        "stdout": "Enforcing"
+      },
+      "http": {
+        "frontend": {
+          "url": "http://172.30.30.57:8081/",
+          "httpStatus": 200
+        },
+        "backend": {
+          "url": "http://172.30.30.57:48081/actuator/health",
+          "httpStatus": 200,
+          "status": "UP"
+        }
+      },
+      "initialLoopbackHttp": {
+        "frontend": {
+          "httpStatus": 200
+        },
+        "backend": {
+          "httpStatus": 200,
+          "status": "UP"
+        }
+      },
+      "zabbixPackages": {
+        "exitCode": 4,
+        "stdout": "package zabbix-agent is not installed\npackage zabbix-agent2 is not installed\npackage zabbix-server-mysql is not installed\npackage zabbix-proxy-sqlite3 is not installed\n",
+        "stderr": ""
+      },
+      "clock": {
+        "exitCode": 0,
+        "stdout": "Timezone=Asia/Shanghai\nNTPSynchronized=yes\n",
+        "stderr": ""
+      },
+      "firewall": {
+        "inputRules": {
+          "exitCode": 0,
+          "stdout": "-P INPUT ACCEPT\n",
+          "stderr": ""
+        },
+        "outputRules": {
+          "exitCode": 0,
+          "stdout": "-P OUTPUT ACCEPT\n",
+          "stderr": ""
+        },
+        "dockerUserRules": {
+          "exitCode": 0,
+          "stdout": "-N DOCKER-USER\n-A DOCKER-USER -j RETURN\n",
+          "stderr": ""
+        },
+        "ipv6InputRules": {
+          "exitCode": 0,
+          "stdout": "-P INPUT ACCEPT\n",
+          "stderr": ""
+        },
+        "nftTables": {
+          "exitCode": 0,
+          "stdout": "table ip filter\ntable ip nat\ntable ip mangle\ntable ip6 mangle\ntable ip6 filter\n",
+          "stderr": ""
+        }
+      },
+      "firewalld": {
+        "exitCode": 252,
+        "stdout": "",
+        "stderr": "not running\n"
+      },
+      "recoveryUnit": {
+        "exitCode": 0,
+        "stdout": "MainPID=0\nLoadState=not-found\nActiveState=inactive\nSubState=dead\nUnitFileState="
+      },
+      "python": "3.6.8",
+      "python312OnPath": null,
+      "rawSnapshotSha256": "190b538e6a1ae3422de60d14a97df908c0b6c1cda13ba56f3444604e9ac2e033",
+      "notes": [
+        "Initial rpm locale output was not valid UTF-8 and is not used; LC_ALL=C supplement is authoritative.",
+        "Initial combined timedatectl property returned empty text; separate property supplement is authoritative.",
+        "Single resource sample does not establish peak load or storage growth.",
+        "Host firewall observations do not establish upstream ACL, external reachability, or all nft/mangle effects."
+      ]
+    },
+    "test": {
+      "observedAtUtc": "2026-11-26T08:54:50.558436Z",
+      "supplementObservedAtUtc": "2026-11-26T08:58:44.702065Z",
+      "host": "172.30.30.58",
+      "os": {
+        "NAME": "CentOS Linux",
+        "VERSION": "8 (Core)",
+        "ID": "centos",
+        "ID_LIKE": "rhel fedora",
+        "VERSION_ID": "8",
+        "PRETTY_NAME": "CentOS Linux 8 (Core)"
+      },
+      "architecture": "x86_64",
+      "cpuCount": 16,
+      "virtualization": {
+        "exitCode": 0,
+        "stdout": "kvm"
+      },
+      "kernel": {
+        "exitCode": 0,
+        "stdout": "4.18.0-147.el8.x86_64"
+      },
+      "glibc": {
+        "exitCode": 0,
+        "stdout": "glibc 2.28"
+      },
+      "memoryKiB": {
+        "MemTotal": 32770288,
+        "MemAvailable": 25064896,
+        "SwapTotal": 10485756,
+        "SwapFree": 8172920
+      },
+      "loadAverage": [
+        0.7,
+        0.9,
+        0.96
+      ],
+      "docker": {
+        "serverVersion": "26.1.3",
+        "root": "/var/lib/docker",
+        "driver": "overlay2",
+        "cgroupDriver": "cgroupfs",
+        "running": 178,
+        "stopped": 356,
+        "images": 127
+      },
+      "filesystems": [
+        {
+          "device": "/dev/mapper/cl-root",
+          "type": "xfs",
+          "totalKiB": 52403200,
+          "usedKiB": 14422664,
+          "availableKiB": 37980536,
+          "usedPercent": "28%",
+          "mount": "/"
+        },
+        {
+          "device": "/dev/vdb",
+          "type": "ext4",
+          "totalKiB": 2063187344,
+          "usedKiB": 1639853380,
+          "availableKiB": 412831820,
+          "usedPercent": "80%",
+          "mount": "/var/lib/docker"
+        }
+      ],
+      "registeredContainers": {
+        "frontend": {
+          "name": "intruoyi-july-unified-58-frontend",
+          "image": "sha256:462ac2f7377973951734aa20d5373afef4a3a30c20aa83fbee55ee4082d503e6",
+          "running": true,
+          "status": "running",
+          "health": null,
+          "healthcheckConfigured": false,
+          "restartPolicy": "unless-stopped",
+          "restartCount": 0,
+          "oomKilled": false,
+          "memoryLimitBytes": 268435456,
+          "networkMode": "host",
+          "ports": {},
+          "dataMounts": []
+        },
+        "backend": {
+          "name": "brlab-prod57-nas-test58-20261020-r3-backend",
+          "image": "sha256:4825fe1571a18e634066c2d9927ecc4e7f6595fc24027fa992de195239a3f675",
+          "running": true,
+          "status": "running",
+          "health": "healthy",
+          "healthcheckConfigured": true,
+          "restartPolicy": "no",
+          "restartCount": 0,
+          "oomKilled": false,
+          "memoryLimitBytes": 3221225472,
+          "networkMode": "72f4b6562e02daa514b3102d4e6ce61b986e3ed60259b4e333ad14bea3d5284b",
+          "ports": {},
+          "dataMounts": []
+        },
+        "database": {
+          "name": "brlab-prod57-nas-test58-20261020-r3-mysql",
+          "image": "sha256:f5da8fc4b539c8ff9005b316b41b09d99b6ef6cdf55b5abbfcfd40dd3547f845",
+          "running": true,
+          "status": "running",
+          "health": null,
+          "healthcheckConfigured": false,
+          "restartPolicy": "no",
+          "restartCount": 0,
+          "oomKilled": false,
+          "memoryLimitBytes": 2147483648,
+          "networkMode": "72f4b6562e02daa514b3102d4e6ce61b986e3ed60259b4e333ad14bea3d5284b",
+          "ports": {},
+          "dataMounts": [
+            {
+              "type": "volume",
+              "destination": "/var/lib/mysql",
+              "readWrite": true
+            }
+          ]
+        },
+        "redis": {
+          "name": "brlab-prod57-nas-test58-20261020-r3-redis",
+          "image": "sha256:487efc0616382465781b8fdc3d6d1db449e6fd80ae23bf48432a2da6b6929908",
+          "running": true,
+          "status": "running",
+          "health": null,
+          "healthcheckConfigured": false,
+          "restartPolicy": "no",
+          "restartCount": 0,
+          "oomKilled": false,
+          "memoryLimitBytes": 268435456,
+          "networkMode": "72f4b6562e02daa514b3102d4e6ce61b986e3ed60259b4e333ad14bea3d5284b",
+          "ports": {},
+          "dataMounts": [
+            {
+              "type": "volume",
+              "destination": "/data",
+              "readWrite": true
+            }
+          ]
+        },
+        "minio": {
+          "name": "brlab-prod57-nas-test58-20261020-r3-minio",
+          "image": "sha256:c4260bcf2c25b683e4f6e6ed6474f12c5c28dc8e375bfe0ecea7a5d3fbecbc04",
+          "running": true,
+          "status": "running",
+          "health": "healthy",
+          "healthcheckConfigured": true,
+          "restartPolicy": "no",
+          "restartCount": 0,
+          "oomKilled": false,
+          "memoryLimitBytes": 805306368,
+          "networkMode": "72f4b6562e02daa514b3102d4e6ce61b986e3ed60259b4e333ad14bea3d5284b",
+          "ports": {},
+          "dataMounts": [
+            {
+              "type": "volume",
+              "destination": "/data",
+              "readWrite": true
+            }
+          ]
+        }
+      },
+      "registeredStats": {
+        "frontend": {
+          "BlockIO": "6.92MB / 0B",
+          "CPUPerc": "0.00%",
+          "Container": "ff955698db23",
+          "ID": "ff955698db23",
+          "MemPerc": "8.73%",
+          "MemUsage": "22.34MiB / 256MiB",
+          "Name": "intruoyi-july-unified-58-frontend",
+          "NetIO": "0B / 0B",
+          "PIDs": "17"
+        },
+        "backend": {
+          "BlockIO": "264MB / 13MB",
+          "CPUPerc": "2.22%",
+          "Container": "7b9e22936e7a",
+          "ID": "7b9e22936e7a",
+          "MemPerc": "80.03%",
+          "MemUsage": "2.401GiB / 3GiB",
+          "Name": "brlab-prod57-nas-test58-20261020-r3-backend",
+          "NetIO": "1.2GB / 240MB",
+          "PIDs": "169"
+        },
+        "database": {
+          "BlockIO": "568GB / 572GB",
+          "CPUPerc": "0.94%",
+          "Container": "b4592b704b97",
+          "ID": "b4592b704b97",
+          "MemPerc": "97.29%",
+          "MemUsage": "1.946GiB / 2GiB",
+          "Name": "brlab-prod57-nas-test58-20261020-r3-mysql",
+          "NetIO": "20.4GB / 37.7GB",
+          "PIDs": "47"
+        },
+        "redis": {
+          "BlockIO": "12.1MB / 10.5MB",
+          "CPUPerc": "0.58%",
+          "Container": "028bb0541d32",
+          "ID": "028bb0541d32",
+          "MemPerc": "2.55%",
+          "MemUsage": "6.516MiB / 256MiB",
+          "Name": "brlab-prod57-nas-test58-20261020-r3-redis",
+          "NetIO": "15.1MB / 21.3MB",
+          "PIDs": "6"
+        },
+        "minio": {
+          "BlockIO": "97.7MB / 87MB",
+          "CPUPerc": "0.08%",
+          "Container": "98216faac1ae",
+          "ID": "98216faac1ae",
+          "MemPerc": "42.13%",
+          "MemUsage": "323.6MiB / 768MiB",
+          "Name": "brlab-prod57-nas-test58-20261020-r3-minio",
+          "NetIO": "7.34MB / 10.9kB",
+          "PIDs": "21"
+        }
+      },
+      "dockerSocket": {
+        "exists": true,
+        "mode": "0o660",
+        "owner": "root",
+        "group": "docker"
+      },
+      "selinux": {
+        "exitCode": 0,
+        "stdout": "Enforcing"
+      },
+      "http": {
+        "frontend": {
+          "url": "http://172.30.30.58:8081/",
+          "httpStatus": 200
+        },
+        "backend": {
+          "url": "http://172.30.30.58:48081/actuator/health",
+          "httpStatus": 200,
+          "status": "UP"
+        }
+      },
+      "initialLoopbackHttp": {
+        "frontend": {
+          "errorType": "URLError"
+        },
+        "backend": {
+          "errorType": "URLError"
+        }
+      },
+      "zabbixPackages": {
+        "exitCode": 4,
+        "stdout": "package zabbix-agent is not installed\npackage zabbix-agent2 is not installed\npackage zabbix-server-mysql is not installed\npackage zabbix-proxy-sqlite3 is not installed\n",
+        "stderr": ""
+      },
+      "clock": {
+        "exitCode": 0,
+        "stdout": "Timezone=Asia/Shanghai\nNTPSynchronized=yes\n",
+        "stderr": ""
+      },
+      "firewall": {
+        "inputRules": {
+          "exitCode": 0,
+          "stdout": "-P INPUT ACCEPT\n",
+          "stderr": ""
+        },
+        "outputRules": {
+          "exitCode": 0,
+          "stdout": "-P OUTPUT ACCEPT\n",
+          "stderr": ""
+        },
+        "dockerUserRules": {
+          "exitCode": 0,
+          "stdout": "-N DOCKER-USER\n-A DOCKER-USER -j RETURN\n",
+          "stderr": ""
+        },
+        "ipv6InputRules": {
+          "exitCode": 0,
+          "stdout": "-P INPUT ACCEPT\n",
+          "stderr": ""
+        },
+        "nftTables": {
+          "exitCode": 0,
+          "stdout": "table ip filter\ntable ip nat\ntable ip6 filter\n",
+          "stderr": ""
+        }
+      },
+      "firewalld": {
+        "exitCode": 252,
+        "stdout": "",
+        "stderr": "not running\n"
+      },
+      "recoveryUnit": {
+        "exitCode": 0,
+        "stdout": "MainPID=0\nLoadState=not-found\nActiveState=inactive\nSubState=dead\nUnitFileState="
+      },
+      "python": "3.6.8",
+      "python312OnPath": null,
+      "rawSnapshotSha256": "2e620a07b6a815b457898deb7ff497daf149d1044a4e5d8a12a015741efe6bac",
+      "notes": [
+        "Initial rpm locale output was not valid UTF-8 and is not used; LC_ALL=C supplement is authoritative.",
+        "Initial combined timedatectl property returned empty text; separate property supplement is authoritative.",
+        "Single resource sample does not establish peak load or storage growth.",
+        "Host firewall observations do not establish upstream ACL, external reachability, or all nft/mangle effects."
+      ]
+    }
+  },
+  "existingMonitoringOnTest": {
+    "environment": "test",
+    "host": "172.30.30.58",
+    "observedAtUtc": "2026-11-26T09:01:18.519982Z",
+    "processes": [
+      {
+        "pid": 3687,
+        "comm": "node_exporter",
+        "executable": "/opt/intruoyi-monitoring/node_exporter",
+        "selectedFlags": {
+          "--web.listen-address": "172.30.30.58:19100"
+        }
+      },
+      {
+        "pid": 3690,
+        "comm": "prometheus",
+        "executable": "/opt/intruoyi-monitoring/prometheus",
+        "selectedFlags": {
+          "--config.file": "/opt/intruoyi-monitoring/prometheus.yml",
+          "--storage.tsdb.path": "/opt/intruoyi-monitoring/data",
+          "--storage.tsdb.retention.time": "30d",
+          "--web.listen-address": "172.30.30.58:19090"
+        }
+      }
+    ],
+    "prometheusStatus": {
+      "build": {
+        "errorType": "HTTPError"
+      },
+      "targets": {
+        "errorType": "HTTPError"
+      },
+      "alertmanagers": {
+        "errorType": "HTTPError"
+      },
+      "rules": {
+        "errorType": "HTTPError"
+      }
+    },
+    "additionalProbe": {
+      "origin": "maintenance workstation",
+      "url": "http://172.30.30.58:19090/api/v1/status/buildinfo",
+      "httpStatus": 400,
+      "meaning": "Version, targets, rules and alert routing remain unverified; no bypass or configuration changes attempted."
+    }
+  }
+}

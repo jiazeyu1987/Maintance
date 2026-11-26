@@ -1,0 +1,40 @@
+{
+  "environment": "test",
+  "host": "172.30.30.58",
+  "observedAtUtc": "2026-11-26T09:01:18.519982Z",
+  "processes": [
+    {
+      "pid": 3687,
+      "comm": "node_exporter",
+      "executable": "/opt/intruoyi-monitoring/node_exporter",
+      "selectedFlags": {
+        "--web.listen-address": "172.30.30.58:19100"
+      }
+    },
+    {
+      "pid": 3690,
+      "comm": "prometheus",
+      "executable": "/opt/intruoyi-monitoring/prometheus",
+      "selectedFlags": {
+        "--config.file": "/opt/intruoyi-monitoring/prometheus.yml",
+        "--storage.tsdb.path": "/opt/intruoyi-monitoring/data",
+        "--storage.tsdb.retention.time": "30d",
+        "--web.listen-address": "172.30.30.58:19090"
+      }
+    }
+  ],
+  "prometheusStatus": {
+    "build": {
+      "errorType": "HTTPError"
+    },
+    "targets": {
+      "errorType": "HTTPError"
+    },
+    "alertmanagers": {
+      "errorType": "HTTPError"
+    },
+    "rules": {
+      "errorType": "HTTPError"
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "environment": "prod",
+  "host": "172.30.30.57",
+  "observedAtUtc": "2026-11-26T08:58:44.629337Z",
+  "commands": {
+    "zabbixPackages": {
+      "exitCode": 4,
+      "stdout": "package zabbix-agent is not installed\npackage zabbix-agent2 is not installed\npackage zabbix-server-mysql is not installed\npackage zabbix-proxy-sqlite3 is not installed\n",
+      "stderr": ""
+    },
+    "clock": {
+      "exitCode": 0,
+      "stdout": "Timezone=Asia/Shanghai\nNTPSynchronized=yes\n",
+      "stderr": ""
+    },
+    "inputRules": {
+      "exitCode": 0,
+      "stdout": "-P INPUT ACCEPT\n",
+      "stderr": ""
+    },
+    "outputRules": {
+      "exitCode": 0,
+      "stdout": "-P OUTPUT ACCEPT\n",
+      "stderr": ""
+    },
+    "dockerUserRules": {
+      "exitCode": 0,
+      "stdout": "-N DOCKER-USER\n-A DOCKER-USER -j RETURN\n",
+      "stderr": ""
+    },
+    "ipv6InputRules": {
+      "exitCode": 0,
+      "stdout": "-P INPUT ACCEPT\n",
+      "stderr": ""
+    },
+    "nftTables": {
+      "exitCode": 0,
+      "stdout": "table ip filter\ntable ip nat\ntable ip mangle\ntable ip6 mangle\ntable ip6 filter\n",
+      "stderr": ""
+    },
+    "monitorProcesses": {
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  },
+  "registeredHostHttp": {
+    "frontend": {
+      "url": "http://172.30.30.57:8081/",
+      "httpStatus": 200
+    },
+    "backend": {
+      "url": "http://172.30.30.57:48081/actuator/health",
+      "httpStatus": 200,
+      "status": "UP"
+    }
+  }
+}
