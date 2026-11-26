@@ -6249,3 +6249,11 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 结果：优先持续监测与告警/有限恢复闭环，其次灾备可恢复性证据及独立副本，第三按环境/动作权限及安全基线；若无独立可恢复副本则灾备升为最高优先级。
 - 验证：服务恢复实现与部署差距、外部恢复确认边界、Spug 桥接权限粒度均有本地依据；部署状态仅引用既有时间点记录，未知安全/灾备现状不写成已发现漏洞。
 - 证据：doc/tasks/20261126-ops-capability-priority-review/assessment.md、task.md、execution-log.md。
+
+## 20261126-ops-monitoring-mature-solution
+
+- 用户需求：第一优先项持续监测、外部告警与有限自动恢复有没有成熟解决方案。
+- 命令意图：复核本地恢复约束和官方公开文档，不安装或操作服务器。
+- 结果：按现有少量 Linux/Docker 服务器建议 Zabbix 统一监测告警，保留 service_recovery 作为唯一有限恢复执行方；Prometheus/Alertmanager/Grafana 适合进一步的多维指标和动态服务场景。
+- 验证：Zabbix Docker/Web监测、维护、确认、升级、远程命令与 Prometheus/Alertmanager 官方能力已核对；明确状态适配尚待实施，监控静默不等于实际恢复暂停。
+- 证据：doc/tasks/20261126-ops-monitoring-mature-solution/assessment.md、task.md、execution-log.md；文档 UTF-8 与差异检查通过。
