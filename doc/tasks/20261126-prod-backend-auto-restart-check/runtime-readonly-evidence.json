@@ -1,0 +1,67 @@
+{
+  "environment": "prod",
+  "host": "172.30.30.57",
+  "containers": {
+    "backend": {
+      "name": "/intruoyi-backend",
+      "containerId": "97b56b4fac6a2db9ceb00012f961d71c8a5b83e746c0747513a4d358d69d2a67",
+      "image": "sha256:4825fe1571a18e634066c2d9927ecc4e7f6595fc24027fa992de195239a3f675",
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "restartCount": 0,
+      "running": true,
+      "restarting": false,
+      "oomKilled": false,
+      "exitCode": 0,
+      "startedAt": "2026-11-25T20:03:54.782746682Z",
+      "health": null,
+      "healthcheck": {
+        "configured": false,
+        "interval": null,
+        "timeout": null,
+        "retries": null,
+        "usesActuatorHealth": false
+      }
+    },
+    "frontend": {
+      "name": "/intruoyi-frontend",
+      "containerId": "dc29583896dfa925252b41f4afdc73f76e1347bb27034108b4bc91888b692040",
+      "image": "sha256:462ac2f7377973951734aa20d5373afef4a3a30c20aa83fbee55ee4082d503e6",
+      "restartPolicy": {
+        "Name": "unless-stopped",
+        "MaximumRetryCount": 0
+      },
+      "restartCount": 0,
+      "running": true,
+      "restarting": false,
+      "oomKilled": false,
+      "exitCode": 0,
+      "startedAt": "2026-11-25T20:06:12.062771289Z",
+      "health": null,
+      "healthcheck": {
+        "configured": false,
+        "interval": null,
+        "timeout": null,
+        "retries": null,
+        "usesActuatorHealth": false
+      }
+    }
+  },
+  "serviceRecovery": {
+    "unitFiles": "",
+    "units": "",
+    "productionUnit": "MainPID=0\nLoadState=not-found\nActiveState=inactive\nSubState=dead\nFragmentPath=\nUnitFileState=",
+    "matchingProcessPids": [],
+    "configurationDirectoryExists": false,
+    "configurationNames": [],
+    "installedEntryExists": false
+  },
+  "backendHealth": {
+    "httpStatus": 200,
+    "status": "UP"
+  },
+  "dockerService": "Restart=always\nLoadState=loaded\nActiveState=active\nSubState=running\nUnitFileState=enabled",
+  "checkedAt": "2026-11-26T10:23:36+08:00"
+}

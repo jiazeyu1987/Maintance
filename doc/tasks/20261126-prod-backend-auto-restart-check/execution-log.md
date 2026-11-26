@@ -1,0 +1,9 @@
+- BDD: 正式服后端自动恢复核查 -> Given 正式服当前运行态，When 后端异常退出或健康失败，Then 依据实际restart策略、healthcheck和控制器归属判断是否自动恢复；不通过故障注入推断。
+- GREEN: task-preflight -> PASS，已识别前序发布任务completed；本任务限定只读，不停止正式服进程。
+- GREEN: readonly-remote-preflight -> PASS，目标明确prod/172.30.30.57，仅docker inspect、systemctl show/list、文件元数据与health只读GET；不调用arm/pause/run/once或任何重启/发布入口。service-recovery文档明确代码交付不代表远端启用，必须分别核容器退出策略与健康恢复控制器。
+- 首次只读SSH探针exit1，未取得远端策略证据，不判自动重启可用；不调用任何变更入口。增加私密stderr留存定位实际失败。前序completed使用通用换行读取已确认（初次直接LF字符串比较误判不作为前序状态）。
+- RED: read-only SSH probe -> FAIL，目标Python 3.6不支持capture_output参数，属于探针兼容性错误，不是正式服运行结论；未写入/停止任何远端资源。
+- GREEN: probe-fix -> 改用subprocess.PIPE保持同一只读命令和目标范围，准备复跑。
+- GREEN: check-runtime.py -> PASS，prod/172.30.30.57后端实际unless-stopped、running=true、restartCount=0、OOMKilled=false，健康HTTP200/UP；Docker active/enabled。后端未配置Docker healthcheck，项目健康恢复unit not-found，配置/安装入口不存在，无对应进程。
+- Verification scope：只核实际生效配置和当前状态，无崩溃演练、不承诺假死/依赖故障能恢复；未调用服务恢复arm/pause/run/once，不修改远端配置。
+- completed：结果、原始失败和兼容性修正均已记录；本任务无临时工作区或运行控制台。行为未改变，不增加实现镜像测试；归档前执行UTF-8和精确暂存范围检查。
