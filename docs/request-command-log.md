@@ -6241,3 +6241,11 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 
 - 需求：定位测试Z加入活跃订单异常根因。命令意图：只读核固定发布源码/manifest、测试58真实约束、迁移账本和错误日志。
 - 结果：6aa656b61将巡检改为PATROL，配套迁移未更新CHECK；现有新增迁移已APPLIED。未改服务器；本机旧调查文件不可用、订单关联及回滚不作独立确认。详情doc/tasks/20261124-pqc-patrol-investigation/findings.md。
+
+## 20261126-ops-capability-priority-review
+
+- 用户需求：从日常运维、服务器安全、灾备等角度筛选当前运维工具最重要的新增或改进能力。
+- 命令意图：本地读取现有实现、专项文档和当天既有正式服核查记录；公开读取 CISA 指南；不连接服务器、不修改产品。
+- 结果：优先持续监测与告警/有限恢复闭环，其次灾备可恢复性证据及独立副本，第三按环境/动作权限及安全基线；若无独立可恢复副本则灾备升为最高优先级。
+- 验证：服务恢复实现与部署差距、外部恢复确认边界、Spug 桥接权限粒度均有本地依据；部署状态仅引用既有时间点记录，未知安全/灾备现状不写成已发现漏洞。
+- 证据：doc/tasks/20261126-ops-capability-priority-review/assessment.md、task.md、execution-log.md。
