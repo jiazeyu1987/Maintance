@@ -1,0 +1,5 @@
+- BDD: 最高优先级建议 -> Given 当前Docker异常退出恢复已启用而健康恢复未落地，When 评估运维工具缺口，Then 区分已有实现与生产启用/可观察性，选一项能减少实际停机的能力。
+- GREEN: preflight -> PASS，前序 task.md=completed；本任务只读建议，无实现行为变更，因此不进行产品RED/GREEN或远端故障演练。
+- GREEN: local-evidence-review -> PASS，service-recovery.md及README确认已有独立恢复实现和安装门禁，前序正式服证据确认unless-stopped与健康恢复未安装；入口代码定向检索用于核接入线索。首次rg包含不存在的static目录，路径错误保留，不视为功能缺失证明；改为实际目录复核。
+- 官方Docker资料搜索及直接读取均遇web上游502，未获取外部页面，不将外部资料作为结论依据；本次建议基于本地代码/文档及已保存真实正式服证据。
+- completed：只选择健康监测与有限自动恢复接入这一项；未修改产品或远端，未请求安装授权，未制造故障。
