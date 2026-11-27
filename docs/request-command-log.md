@@ -6265,3 +6265,5 @@ Runtime clarification: user asked whether agent can start it directly. Checked e
 - 结论：技术可行、上线有条件；建议独立中心/专用数据库、主机HTTP先行、Docker精确白名单和权限路线独立验收；现有业务MySQL8.0.39不满足Zabbix8后端MySQL8.4起要求；自动恢复后续单独实施。
 - 验证：12个正式交付文件UTF-8/无BOM/无替换字符/凭据模式检查通过，5个Python AST、4个JSON解析与核心事实一致性通过；初始原始快照仅本地保留，提交脱敏摘要和补核证据。无任务worktree/持久进程/远端写入待收尾。
 - 任务：doc/tasks/20261126-zabbix-prod-test-feasibility/；报告 feasibility-report.md；状态 completed。共享日志仅暂存本段，不纳入其他任务未提交内容。
+
+2026-11-27 本任务最终结果：同包2026-11-27-17-47-06已发布测试58及正式57并开放；真实版本、镜像、健康、页面和打印认证通过。按精确授权完成test165/prod161证书逻辑删除，审计原件保留；不补造数据、不发布59。维护1240217修复连续迁移替代链，77 tests/39 subtests通过、融合安装。三个自有临时worktree已删除，稳定执行器配置保持，任务completed；证据doc/tasks/20261126-test-prod-release/release-result.md。

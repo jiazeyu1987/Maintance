@@ -1,0 +1,142 @@
+{
+  "releaseTag": "2026-11-27-17-47-06",
+  "status": "PASS_WITH_OBSERVATIONS",
+  "jobId": "JOB-7551def033",
+  "environment": "prod",
+  "scope": "真实登录、排产菜单及现有空数据查询、版本及变更说明、打印票据和iframe。未验证工作台业务、实物打印、完整业务E2E。",
+  "packageSha256": "9b6fd1aa422ac5c8fe8f25c89a24214a911fdf0057d735aabe2a286635320acb",
+  "pages": [
+    {
+      "page": "menu-page",
+      "startedAt": "2026-11-27T12:05:12.036Z",
+      "endedAt": "2026-11-27T12:05:18.698Z",
+      "checks": [
+        {
+          "name": "real-login",
+          "status": "PASS"
+        },
+        {
+          "name": "menu-navigation-and-real-data",
+          "status": "PASS",
+          "path": "/mes/pro/schedule-order",
+          "total": 0,
+          "rows": 0,
+          "latestStatus": 0
+        },
+        {
+          "name": "page-version-and-changelog",
+          "status": "PASS",
+          "releaseTag": "2026-11-27-17-47-06",
+          "sourceCommit": "c87c0ccf50e6db6754ee1cc261e542bea295dd9d",
+          "changes": [
+            "c87c0ccf5 fix(release): compare retained evidence trigger definitions directly",
+            "03e88e463 fix(dcc): preserve certificate evidence during audited disposal",
+            "41811b51e docs(release): record pinned nine-migration input plan",
+            "975d82300 fix(release): register pending SQL with target admission checks",
+            "04e39c9eb Merge remote-tracking branch 'origin/int_main' into int_main",
+            "efef198bf docs(dcc): validate recovery preserving test certificate repair",
+            "df40edcde test(dcc): align registration regressions with creation validation",
+            "e706060bd merge: integrate latest int_main with local business fixes",
+            "d6f3f9175 fix: synchronize business fixes and retire SRM module",
+            "505121263 docs(dcc): record temporary matching of disposable test certificates"
+          ]
+        }
+      ],
+      "observationCount": 6,
+      "rawSha256": "A2F3EA67421360D47DD3D826AE03C88B3366A6F1EB4F4D7E989A9CE874A28C33",
+      "scriptSha256": "F6258C61758B305404C1D1E2EF18E6B41A83BF007514BE6785D48F84FE661FB3",
+      "observations": [
+        {
+          "indices": [
+            0,
+            1
+          ],
+          "impact": "不承担必需排产/版本/打印能力，实际必要请求及认证iframe通过",
+          "disposition": "nonblocking",
+          "cause": "统计hm.js连接关闭"
+        },
+        {
+          "indices": [
+            2
+          ],
+          "impact": "头像显示不影响本轮已验证功能",
+          "disposition": "nonblocking",
+          "cause": "外部头像ORB阻止"
+        },
+        {
+          "indices": [
+            3,
+            4,
+            5
+          ],
+          "impact": "非本轮必要页面；不把工作台初始化计为通过",
+          "disposition": "nonblocking",
+          "cause": "事前只读规则拦截工作台context POST"
+        }
+      ]
+    },
+    {
+      "page": "print-page",
+      "startedAt": "2026-11-27T12:05:19.904Z",
+      "endedAt": "2026-11-27T12:05:25.538Z",
+      "checks": [
+        {
+          "name": "real-login",
+          "status": "PASS"
+        },
+        {
+          "name": "runtime-public-url",
+          "status": "PASS",
+          "publicUrl": "http://172.30.30.57:18733/"
+        },
+        {
+          "name": "real-ticket-and-authenticated-iframe",
+          "status": "PASS",
+          "frameOrigin": "http://172.30.30.57:18733",
+          "framePath": "/"
+        },
+        {
+          "name": "bound-release",
+          "status": "PASS",
+          "releaseTag": "2026-11-27-17-47-06",
+          "sourceCommit": "c87c0ccf50e6db6754ee1cc261e542bea295dd9d"
+        }
+      ],
+      "observationCount": 6,
+      "rawSha256": "B95F6A11D6B7D59A26EF50549024CC3205869AEA9079B257898D5976073A25EB",
+      "scriptSha256": "8EB60756D3520D05CBB228F52B2955FEECF808A369D41F087D248BD9DBC22D8F",
+      "observations": [
+        {
+          "indices": [
+            0,
+            1
+          ],
+          "impact": "不承担必需排产/版本/打印能力，实际必要请求及认证iframe通过",
+          "disposition": "nonblocking",
+          "cause": "统计hm.js连接关闭"
+        },
+        {
+          "indices": [
+            5
+          ],
+          "impact": "头像显示不影响本轮已验证功能",
+          "disposition": "nonblocking",
+          "cause": "外部头像ORB阻止"
+        },
+        {
+          "indices": [
+            2,
+            3,
+            4
+          ],
+          "impact": "非本轮必要页面；不把工作台初始化计为通过",
+          "disposition": "nonblocking",
+          "cause": "事前只读规则拦截工作台context POST"
+        }
+      ]
+    }
+  ],
+  "blockers": [],
+  "owner": "IntRuoyi跟进外部资源和工作台业务；发布方保留本轮全部观察证据",
+  "reviewer": "Codex"
+}
