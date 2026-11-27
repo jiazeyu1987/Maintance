@@ -9,6 +9,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 import intruoyi_runtime_agent as agent
+from database_contract_test_fixture import install as install_contract
 from intruoyi_runtime import file_sha, package_identity, runtime_config_snapshot, sha
 
 
@@ -45,6 +46,7 @@ class SealedOriginResumeTest(unittest.TestCase):
             with tarfile.open(archive,'w') as stream: stream.add(source/'data',arcname='data')
             resources.append(dict(role=role,containerId='original-'+role,mount=mount,
                                   artifact=dict(path=str(archive),sha256=file_sha(archive),bytes=archive.stat().st_size)))
+        contract_sql = install_contract(self, self.root, self.manifest)
         self.write('manifest.json',self.manifest)
         (self.root/'release.tar').write_bytes(b'original sealed release')
         (self.root/'recovery.sql').write_bytes(b'full bound database checkpoint')
@@ -69,7 +71,7 @@ class SealedOriginResumeTest(unittest.TestCase):
             (agent,'check_fence'):{},(agent,'observe'):dict(return_value=self.obs),
             (agent,'migration_plan'):dict(return_value=self.plan),
             (agent.remote,'inspect'):dict(side_effect=lambda name:self.containers[name]),
-            (agent.remote,'sql'):dict(side_effect=lambda p,q: '' if q.startswith('SELECT migration_id') else 'DEVELOPMENT_DISABLED\t1\t1' if 'system.gxp.audit-mode' in q else '0'),
+            (agent.remote,'sql'):dict(side_effect=contract_sql(lambda p,q: '' if q.startswith('SELECT migration_id') else 'DEVELOPMENT_DISABLED\t1\t1' if 'system.gxp.audit-mode' in q else '0')),
             (agent.remote,'run'):dict(side_effect=lambda args:args[-1].encode()),
             (agent,'replace'):{},(agent,'docker'):{},(agent,'acceptance_frontend'):{},
             (agent,'terminal_snapshot_readiness'):{},(agent,'health'):dict(return_value={'maintenance':True}),
@@ -84,6 +86,18 @@ class SealedOriginResumeTest(unittest.TestCase):
 
     def write(self,name,value): (self.root/name).write_text(json.dumps(value),encoding='utf-8')
     def invoke(self): return agent.resume_test_tail_locked(self.profile,self.payload,self.root)
+
+    def test_contract_drift_blocks_sealed_continuation(self):
+        self.contract_db.execute('DELETE FROM rules')
+        with self.assertRaisesRegex(agent.RuntimeBlocked, 'requirement failed: resume-rule'):
+            self.invoke()
+        self.mocks['reopen'].assert_not_called()
+
+    def test_missing_contract_file_blocks_sealed_continuation(self):
+        (self.root / 'sql/mysql/database-contracts/resume-rule.sql').unlink()
+        with self.assertRaisesRegex(agent.RuntimeBlocked, 'file missing'):
+            self.invoke()
+        self.mocks['reopen'].assert_not_called()
 
     def test_sealed_origin_switches_program_only_and_keeps_original_failure(self):
         failed=(self.root/'deployment-progress.private.json').read_bytes()

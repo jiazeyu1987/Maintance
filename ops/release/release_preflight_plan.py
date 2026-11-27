@@ -153,10 +153,6 @@ def _validate_supersession_graph(
         visit(migration_id)
 
     for successor_id in supersession_owners.values():
-        if successor_id in supersession_owners:
-            raise ValueError(
-                f"multi-level supersession is not supported: '{successor_id}' is also superseded"
-            )
         successor = migration_by_id[successor_id]
         allowed_environments = {str(value) for value in successor.get("allowedEnvironments", [])}
         if target_environment not in allowed_environments:
@@ -232,6 +228,12 @@ def build_preflight_plan(
         target_environment=target_environment,
         publish_scope=publish_scope,
     )
+    # Validate the complete graph before resolving each legacy ID to its endpoint.
+    for legacy_id in list(supersession_owners):
+        successor_id = supersession_owners[legacy_id]
+        while successor_id in supersession_owners:
+            successor_id = supersession_owners[successor_id]
+        supersession_owners[legacy_id] = successor_id
     ordered_migrations = _order_migrations_by_dependencies(migrations, supersession_owners)
     unresolved = {
         migration_id: state for migration_id, state in target_state.items()

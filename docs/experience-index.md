@@ -376,3 +376,5 @@
 
 - 冻结路线快照 / 跨租户导入错键 / 74个排程索引 / APPLIED后晚导入 / 停止态前向发布 / check-target-origin / Registered baseline mismatch / 停服来源GxP配置 / read-stopped-gxp：`ops/spug/release-center/ROUTE_IMPORT_CORRECTION.md`；已执行迁移仍须在停服前PRECHECK现有快照，不能重放BACKFILL。专项纠正固定原SHA/引用、封存原文及事务审计；停止态合同须从普通执行入口先核原事故再绑定实测起点，deploy重核，不写旧注册基线。停止态构建只读配置须核原事故身份，明确不是认证或运行模式验证，不切换来源。
 - 路线真实导入E2E / calendar_plan_id / 导出HTTP200业务失败 / 缺少源工作簿：`docs/release-build-preflight-lessons.md#真实路线导入回归的源工作簿门禁`；在长构建或正式维护前核真实导出文件、源版本及关联资源，业务错误立即阻断该回归，不以登录或mock冒充；已明确的身份/范围答复持续有效。
+
+- 多级 supersedes / 连续替代 / 终点依赖 / Unexplained superseded migration：`docs/release-agent-checklist.md#多级迁移替代链门禁`。核唯一无环后继链、终点执行或账本证明、依赖顺序，禁止重放历史 SQL。

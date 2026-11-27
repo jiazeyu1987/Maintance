@@ -389,6 +389,25 @@ def migration_plan(profile, manifest, obs):
     require(set(audit['missing']) & executable <= {entry.get('migrationId') for entry in plan}, 'Execution plan must explain each missing executable migration')
     require(len({e.get('migrationId') for e in plan}) == len(plan), 'Duplicate execution plan migration')
     known = {migration_id(m): m for m in manifest['migrations']}
+    require(len(known) == len(manifest['migrations']), 'Duplicate manifest migration')
+    successors = {}
+    for successor_id, source in known.items():
+        for predecessor_id in source.get('supersedes', []):
+            require(predecessor_id in known, 'Unknown superseded migration: ' + predecessor_id)
+            require(predecessor_id not in successors, 'Ambiguous migration successor: ' + predecessor_id)
+            successors[predecessor_id] = successor_id
+
+    def terminal(mid):
+        visited = set()
+        while mid in successors:
+            require(mid not in visited, 'Cyclic migration successor: ' + mid)
+            visited.add(mid)
+            mid = successors[mid]
+        return mid
+
+    for mid in known:
+        terminal(mid)
+    actions = {entry['migrationId']: entry.get('action') for entry in plan}
     completed = set(audit['applied'])
     for entry in plan:
         mid = entry['migrationId']
@@ -405,14 +424,17 @@ def migration_plan(profile, manifest, obs):
             scopes = source.get('allowedPublishScopes', [])
             require(scopes and manifest.get('publishScope') not in scopes, 'Unexplained publish-scope exclusion: ' + mid)
         elif action == 'SKIP_IMMUTABLE':
-            successors = [m for m in manifest['migrations'] if mid in m.get('supersedes', [])]
-            require(successors and all(migration_id(m) in completed or any(e.get('migrationId') == migration_id(m) and e.get('action') == 'APPLY' for e in plan) for m in successors), 'Unexplained superseded migration: ' + mid)
+            endpoint = terminal(mid)
+            require(endpoint != mid and (endpoint in completed or actions.get(endpoint) == 'APPLY'),
+                    'Unexplained superseded migration: ' + mid)
         else:
+            require(mid not in successors, 'Superseded migration cannot be applied: ' + mid)
             require(source.get('type') in ('schema', 'data', 'menu', 'config', 'permission', 'seed'), 'Evidence-only SQL cannot be executed as application migration')
             require(mid not in audit['applied'], 'Applied migration cannot be replayed')
             require(effective_environment in source.get('allowedEnvironments', []), 'Migration environment not allowed: ' + mid)
             validate_migration_handler(source)
-            dependencies = {next((migration_id(m) for m in manifest['migrations'] if dep in m.get('supersedes', [])), dep) for dep in source.get('dependsOn', [])}
+            require(all(dep in known for dep in source.get('dependsOn', [])), 'Unknown migration dependency: ' + mid)
+            dependencies = {terminal(dep) for dep in source.get('dependsOn', [])}
             require(dependencies <= completed, 'Migration dependency not applied before: ' + mid)
             require(not (source.get('requiresTargetPreflight') or source.get('type') != 'schema') or isinstance(entry.get('targetPreflight'), dict), 'Required target preflight missing: ' + mid)
             if entry.get('targetPreflight') is not None:

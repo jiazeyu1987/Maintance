@@ -897,3 +897,15 @@ Codex 只有在以下条件同时成立时，才能判定完整发布完成：
 执行本checklist时同步遵守`ops/spug/release-center/ROUTE_IMPORT_CORRECTION.md`的Trigger、Preflight check、Blocker、Verification、Forbidden action、Evidence及四阶段命令。每次停服前均用候选Canonicalizer PRECHECK真实现有快照，包括已APPLIED的身份迁移；仅未执行迁移才可BACKFILL。已停服且迁移已执行的正式事故禁止套用pre-migration恢复；专项修复需固定原身份、无签名/执行引用、封存原件和审计。新同包测试成功且零待执行SQL后，使用既有正式按钮的受约束停止态起点校验；原失败保留，不跳过READINESS。入口必须在check-target-origin先核严格事故绑定，部署再核同一事故与实测指纹；不可直接拿迁移前注册schema阻断专用合同，也不准改注册基线或吞异常。推荐实际Executor.execute路径的test_stopped_origin_entry、test_stopped_origin_recovery及test_direct_release回归。必须记录原失败、新包、纠正计划及最终真实运行态，任一证据不全立即停止对应动作。
 
 真实路线导入验收先执行`docs/release-build-preflight-lessons.md#真实路线导入回归的源工作簿门禁`：长构建/维护前由Playwright经原前端核真实源版本及导出下载，HTTP200仍须核业务code；无工作簿或calendar_plan_id资源错误立即阻断该业务回归，记录零导入，不造mock或改旧资源。独立发布按其完整技术合同采证，不能替代未完成的导入验收；已明确用户答复不重复请求。
+
+
+## 多级迁移替代链门禁
+
+- Trigger: 新迁移 supersedes 已有替代迁移，或 dependsOn 指向已被替代的历史迁移。
+- Preflight check: 固定 manifest 全量构建唯一后继图；沿替代链解析最终迁移，核完整目标计划与真实账本。执行顺序须先完成最终依赖，旧迁移不得再次 APPLY。
+- Blocker: 未知前驱、重复迁移、循环、分叉、缺少可执行或已应用终点、依赖乱序或替代后自依赖。
+- Verification: 在隔离 worktree 执行 `python -X utf8 -B -m unittest test_migration_successor_chain test_intruoyi_migration_order`（目录 ops/spug/release-center），并用实际固定 manifest、目标执行计划与当前账本调用 migration_plan；上线前记录目标提交、计划摘要及结果。
+- Forbidden action: 不重放被替代 SQL，不把中间节点即将跳过视为已完成依赖，不修改历史账本或放宽数据库契约来通过。
+- Evidence: doc/tasks/20261126-test-prod-release/execution-log.md；test_migration_successor_chain.py。
+
+阶段必查：构建核图和计划，目标预检核账本，执行前重核终点与顺序。Fail Fast 保留原计划及错误，不重建成功记录。必须记录实际计划来源、账本观察环境与校验结果。

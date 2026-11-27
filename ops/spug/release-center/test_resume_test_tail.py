@@ -12,6 +12,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).parent))
 import intruoyi_runtime_agent as agent
+from database_contract_test_fixture import install as install_contract
 from intruoyi_runtime import RuntimeBlocked, file_sha, package_identity, sha
 
 
@@ -249,6 +250,7 @@ class ResumeTailTest(unittest.TestCase):
                              releaseSettings={'gxpAuditMode':'DEVELOPMENT_DISABLED'},
                              images={'backend':{'id':'candidate-backend'},'frontend':{'id':'candidate-frontend'}},
                              executionPlans={'test':dict(status='passed',targetEnvironment='test',items=[dict(migrationId='one',sha256='a'*64,action='SKIP_ALREADY_APPLIED')])})
+        contract_sql = install_contract(self, self.root, self.manifest)
         self.write('manifest.json', self.manifest)
         (self.root/'release.tar').write_bytes(b'immutable release package')
         (self.root/'recovery.sql').write_bytes(b'immutable full recovery snapshot')
@@ -275,7 +277,8 @@ class ResumeTailTest(unittest.TestCase):
             'check_fence':patch.object(agent,'check_fence'),
             'observe':patch.object(agent,'observe',return_value=self.obs),
             'inspect':patch.object(agent.remote,'inspect',side_effect=lambda name:self.containers[name]),
-            'sql':patch.object(agent.remote,'sql',return_value='one\t'+'a'*64+'\tAPPLIED'),
+            'sql':patch.object(agent.remote,'sql',return_value='one\t'+'a'*64+'\tAPPLIED',
+                               side_effect=contract_sql(lambda p,q: self.mock['sql'].return_value)),
             'backend':patch.object(agent,'resume_backend_health',return_value={'maintenance':True,'schedulingDisabled':True,'consumersDisabled':True}),
             'repair':patch.object(agent,'repair_acceptance_frontend'),
             'health':patch.object(agent,'health',return_value={'maintenance':True}),
@@ -505,7 +508,9 @@ class ResumeTailTest(unittest.TestCase):
         self.mock['repair'].assert_not_called()
         self.mock['apply'].assert_not_called()
         self.mock['backup'].assert_not_called()
-        self.assertTrue(all(call.args[1].startswith('SELECT ') for call in self.mock['sql'].call_args_list))
+        self.assertTrue(all(call.args[1].startswith('SELECT ') or
+                            call.args[1].startswith('SET SESSION TRANSACTION READ ONLY;\nSTART TRANSACTION READ ONLY;\n')
+                            for call in self.mock['sql'].call_args_list))
         self.assertEqual({name:(self.root/name).read_bytes() for name in originals}, originals)
 
     def test_runtime_metadata_tail_rejects_marker_pending_frontend_and_backend_drift(self):
